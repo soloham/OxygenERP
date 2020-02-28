@@ -1,0 +1,47 @@
+{
+  "version": "1.0",
+  "defaultProvider": "unpkg",
+  "libraries": [
+    {
+      "library": "smartwizard@4.4.1",
+      "destination": "wwwroot/libs/smartwizard/",
+      "files": [
+        ".travis.yml",
+        "bower.json",
+        "CODE_OF_CONDUCT.md",
+        "composer.json",
+        "CONTRIBUTING.md",
+        "gulpfile.js",
+        "karma.conf.js",
+        "LICENSE",
+        "package.json",
+        "README.md",
+        "dist/css/smart_wizard.css",
+        "dist/css/smart_wizard.min.css",
+        "dist/css/smart_wizard_theme_arrows.css",
+        "dist/css/smart_wizard_theme_arrows.min.css",
+        "dist/css/smart_wizard_theme_circles.css",
+        "dist/css/smart_wizard_theme_circles.min.css",
+        "dist/css/smart_wizard_theme_dots.css",
+        "dist/css/smart_wizard_theme_dots.min.css",
+        "dist/js/jquery.smartWizard.js",
+        "dist/js/jquery.smartWizard.min.js",
+        "examples/ajaxtest.php",
+        "examples/index.html",
+        "examples/smartwizard-ajax.html",
+        "examples/smartwizard-events.html",
+        "examples/smartwizard-input.html",
+        "examples/smartwizard-modal.html",
+        "examples/smartwizard-multiple.html"
+      ]
+    },
+    {
+      "library": "validator@12.2.0",
+      "destination": "wwwroot/libs/validator/",
+      "files": [
+        "validator.js",
+        "validator.min.js"
+      ]
+    }
+  ]
+}

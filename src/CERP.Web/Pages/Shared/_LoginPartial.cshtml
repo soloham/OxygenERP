@@ -1,0 +1,40 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+<ul class="nav navbar-nav navbar-right">
+@*@if (SignInManager.IsSignedIn(User))
+{*@
+    <li class="nav-table dropdown hidden-sm-down">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            <span class="nav-cell p-r-10">
+                <img class="img-circle" src="~/img/avatars/1.jpg" alt="" width="32" height="32">
+            </span>
+            <span class="nav-cell">
+                @User.Identity.Name
+                <span class="caret"></span>
+            </span>
+        </a>
+        <ul class="dropdown-menu">
+            <li>
+                <a href="#">
+                    <i class="zmdi zmdi-account-o m-r-10"></i> Profile
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="zmdi zmdi-settings m-r-10"></i> Settings
+                </a>
+            </li>
+            <li role="separator" class="divider"></li>
+            <li>
+                    @*<button type="submit" class="nav-link btn btn-link text-dark">Logout</button>*@
+                    <a href="javascript:$('#logoutForm').submit();">
+                        <i class="zmdi zmdi-power m-r-10"></i> Logout
+                    </a>
+            </li>
+            <form id="logoutForm" asp-area="Account" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
+                <input type="hidden" />
+            </form>
+        </ul>
+    </li>
+@*}*@
+</ul>

@@ -1,0 +1,30 @@
+﻿<div class="panel panel-primary">
+    @*<div class="panel-body">
+        <div class="row">
+            <breadcrumb></breadcrumb>
+        </div>
+    </div>*@
+    <div class="panel-heading">
+        <div>
+            <div class="col-sm-8 col-xs-12 padding-left-0">
+                <h1 class="">
+                    <span class="menu-icon"><i class="fa fa-sitemap"></i></span>
+                    <span class="menu-text">@ViewData["HeaderTitle"]</span>
+                    <span class="menu-text clearfix" style="font-size: 12px">@ViewData["SubTitle"]</span>
+                </h1>
+            </div>
+            <div class="col-sm-4  col-xs-12 text-right padding-right-0">
+                <div class="clearfix margin-15"></div>
+                @if (ViewContext.RouteData.Values["area"].ToString() == "FM" && ViewContext.RouteData.Values["page"].ToString() == "/COA/Create")
+                {
+
+                }
+                else
+                {
+                    <a asp-area="FM" asp-page="/COA/Create" class="btn btn-outline-dark" style="color: white"><i class="fa fa-plus fa-fw"></i> Create New</a>
+                }
+            </div>
+        </div>
+        <div class="clearfix " style=""></div>
+    </div>
+</div>

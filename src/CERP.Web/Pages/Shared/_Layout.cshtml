@@ -1,0 +1,855 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization;
+@using CERP.Localization;
+@inject IHtmlLocalizer<CERPResource> L
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="">
+    <title>@ViewData["Title"] - Cloud ERP</title>
+    <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
+
+    @RenderSection("Styles", required: false)
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500,700" rel="stylesheet">
+
+    <link href="~/styles/cerp/cosmos.min.css" rel="stylesheet" />
+    <link href="~/styles/cerp/application.min.css" rel="stylesheet" />
+    <link href="~/styles/cerp/site.css" rel="stylesheet" asp-append-version="true"/>
+
+    <link href="~/libs/font-awesome/css/all.css" rel="stylesheet" />
+
+    <link href="~/libs/fabricUI/fabric.min.css" rel="stylesheet" />
+    <link href="~/libs/fabricUI/fabric-11.0.0.scoped.min.css" rel="stylesheet" />
+
+
+</head>
+<body class="layout layout-header-fixed layout-left-sidebar-fixed">
+    <div class="site-overlay"></div>
+    <div class="site-header">
+        <nav class="navbar navbar-default">
+            <div class="navbar-header">
+                <a class="navbar-brand" asp-page="/">
+                    <img src="/img/logo.png" alt="" height="25">
+                    <span> &nbsp; Cloud ERP</span>
+                </a>
+                @*<button class="navbar-toggler left-sidebar-toggle pull-left visible-xs" type="button">
+                        <span class="hamburger"></span>
+                    </button>
+                    <button class="navbar-toggler right-sidebar-toggle pull-right visible-xs-block" type="button">
+                        <i class="zmdi zmdi-long-arrow-left"></i>
+                        <div class="dot bg-danger"></div>
+                    </button>
+                    <button class="navbar-toggler pull-right visible-xs-block" type="button" data-toggle="collapse" data-target="#navbar">
+                        <span class="more"></span>
+                    </button>*@
+            </div>
+            <div class="navbar-collapsible">
+                <div id="navbar" class="navbar-collapse collapse">
+                    <button class="navbar-toggler left-sidebar-collapse pull-left hidden-xs" type="button">
+                        <span class="hamburger"></span>
+                    </button>
+                    @*<button class="navbar-toggler right-sidebar-toggle pull-right hidden-xs" type="button">
+                            <i class="zmdi zmdi-long-arrow-left"></i>
+                            <div class="dot bg-danger"></div>
+                        </button>*@
+                    <form class="navbar-form navbar-left">
+                        <div class="navbar-search-group">
+                            <input type="text" class="form-control" placeholder="Search">
+                            <button type="submit" class="btn btn-default">
+                                <i class="zmdi zmdi-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="site-main">
+        <div class="site-left-sidebar">
+            <div class="sidebar-backdrop"></div>
+            <div class="custom-scrollbar">
+                <ul class="sidebar-menu">
+                    <li class="menu-title">@L["ps:main"]</li>
+                    <li>
+                        <a asp-area="Main" asp-page="/Dashboard">
+                            <span class="menu-icon">
+                                <i class="ms-Icon ms-Icon--BIDashboard"></i>
+                            </span>
+                            <span class="menu-text active"> @L["ps:dashboard"]</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-title">Financial Management</li>
+                    <li class="with-sub">
+                        <a href="#" aria-haspopup="true">
+                            <span class="menu-icon">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </span>
+                            <span class="menu-text">General Ledger</span>
+                        </a>
+                        <ul class="sidebar-submenu collapse">
+                            <li class="menu-subtitle">General Ledgers</li>
+                            @*          NEXT            *@
+                            <li class="with-sub">
+                                <a href="#" aria-haspopup="true">
+                                    <span class="menu-icon">
+                                        <i class="fas fa-sitemap"></i>
+                                    </span>
+                                    <span class="menu-text">Chart of Accounts</span>
+                                </a>
+                                <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                    <li class="menu-subtitle">Chart of Accounts</li>
+                                    <li class=""><a asp-area="FM" asp-page="/COA/List">Accounts List</a></li>
+                                    <li class=""><a href="index-2.html">Account Sub Categories</a></li>
+                                    <li class=""><a href="index-2.html">Mapping Accounts</a></li>
+                                    @*<li><a href="dashboard-2.html">Reports</a></li>*@
+                                </ul>
+                            </li>
+                            @*          NEXT            *@
+                            <li class="with-sub">
+                                <a href="#" aria-haspopup="true">
+                                    <span class="menu-icon">
+                                        <i class="fas fa-file-invoice"></i>
+                                    </span>
+                                    <span class="menu-text">GL Transactions</span>
+                                </a>
+                                <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                    <li class="menu-subtitle">GL Transactions</li>
+                                    <li class=""><a href="index-2.html">Journal Transactions</a></li>
+                                    <li class=""><a href="index-2.html">Applications Vouchers</a></li>
+                                    <li class=""><a href="index-2.html">Recurring Vouchers</a></li>
+                                    <li class=""><a href="index-2.html">Prepaid Vouchers</a></li>
+                                    <li class=""><a href="index-2.html">Batch Status</a></li>
+                                    <li class=""><a href="index-2.html">Batch List</a></li>
+                                    <li class=""><a href="index-2.html">Transaction Details Optional Fields</a></li>
+                                </ul>
+                            </li>
+                            @*          NEXT            *@
+                            <li class="with-sub">
+                                <a href="#" aria-haspopup="true">
+                                    <span class="menu-icon">
+                                        <i class="fas fa-chart-bar"></i>
+                                    </span>
+                                    <span class="menu-text">Transaction Reports</span>
+                                </a>
+                                <ul class="sidebar-submenu collapse" style="padding-left: 31px; height:auto">
+                                    <li class="menu-subtitle">Transaction Reports</li>
+                                    <li class=""><a href="index-2.html">Transactions History</a></li>
+                                    <li class=""><a href="index-2.html">Account History</a></li>
+                                    <li class=""><a href="index-2.html">Account Categories</a></li>
+                                    <li class="with-sub">
+                                        <a href="#" aria-haspopup="true">
+                                            <span class="menu-icon">
+                                                <i class="zmdi zmdi-chart-donut"></i>
+                                            </span>
+                                            <span class="menu-text">Trial Balance</span>
+                                        </a>
+                                        <ul class="sidebar-submenu collapse" style="padding-left: 31px; background-color:white;height:100%">
+                                            <li class="menu-subtitle">Trial Balanace</li>
+                                            <li class=""><a href="index-2.html">List</a></li>
+                                            <li class=""><a href="index-2.html">With Movements</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="with-sub">
+                                        <a href="#" aria-haspopup="true">
+                                            <span class="menu-icon">
+                                                <i class="zmdi zmdi-chart-donut"></i>
+                                            </span>
+                                            <span class="menu-text">Profit & Loss</span>
+                                        </a>
+                                        <ul class="sidebar-submenu collapse" style="padding-left: 31px;background-color:white;height:100%">
+                                            <li class="menu-subtitle">Profit & Loss</li>
+                                            <li class=""><a href="index-2.html">Account Full</a></li>
+                                            <li class=""><a href="index-2.html">By Departments</a></li>
+                                            <li class=""><a href="index-2.html">By Location/Branches</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class=""><a href="index-2.html">Balance Sheet</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="with-sub">
+                        <a href="#" aria-haspopup="true">
+                            <span class="menu-icon">
+                                <i class="zmdi zmdi-long-arrow-left"></i>
+                            </span>
+                            <span class="menu-text">Accounts Receivable</span>
+                        </a>
+                        <ul class="sidebar-submenu collapse">
+                            <li class="menu-subtitle">Accounts Receivable</li>
+                            @*          NEXT            *@
+                            <li class="with-sub">
+                                <a href="#" aria-haspopup="true">
+                                    <span class="menu-icon">
+                                        <i class="fas fa-file-invoice"></i>
+                                    </span>
+                                    <span class="menu-text">Transactions</span>
+                                </a>
+                                <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                    <li class="menu-subtitle">Transactions</li>
+                                    <li class="with-sub">
+                                        <a href="#" aria-haspopup="true">
+                                            <span class="menu-icon">
+                                                <i class="ms-Icon ms-Icon--M365InvoicingLogo"></i>
+                                            </span>
+                                            <span class="menu-text">Customer Transaction</span>
+                                        </a>
+                                        <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                            <li class="menu-subtitle">Customer Transaction</li>
+                                            <li class=""><a href="index-2.html">Customer Invoice</a></li>
+                                            <li class=""><a href="index-2.html">Customer Returns / Credit Notes</a></li>
+                                            <li class=""><a href="index-2.html">Customer Collection</a></li>
+                                            <li class=""><a href="index-2.html">Close Advances</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="with-sub">
+                                        <a href="#" aria-haspopup="true">
+                                            <span class="menu-icon">
+                                                <i class="ms-Icon ms-Icon--M365InvoicingLogo"></i>
+                                            </span>
+                                            <span class="menu-text">Recurring Entries</span>
+                                        </a>
+                                        <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                            <li class="menu-subtitle">Recurring Entries</li>
+                                            <li class=""><a href="index-2.html">Rental & O&M Contracts</a></li>
+                                            <li class=""><a href="index-2.html">Favourites</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="with-sub">
+                                        <a href="#" aria-haspopup="true">
+                                            <span class="menu-icon">
+                                                <i class="ms-Icon ms-Icon--M365InvoicingLogo"></i>
+                                            </span>
+                                            <span class="menu-text">Transaction By Batch</span>
+                                        </a>
+                                        <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                            <li class="menu-subtitle">Transaction By Batch</li>
+                                            <li class=""><a href="index-2.html">All Transactions</a></li>
+                                            <li class=""><a href="index-2.html">Bulk Transactions</a></li>
+                                            <li class=""><a href="index-2.html">Import Bulk entries</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class=""><a href="index-2.html">Mapping Accounts</a></li>
+                                </ul>
+                            </li>
+                            @*          NEXT            *@
+                            <li class="with-sub">
+                                <a href="#" aria-haspopup="true">
+                                    <span class="menu-icon">
+                                        <i class="fas fa-chart-bar"></i>
+                                    </span>
+                                    <span class="menu-text">Reports</span>
+                                </a>
+                                <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                    <li class="menu-subtitle">Reports</li>
+                                    <li class="with-sub">
+                                        <a href="#" aria-haspopup="true">
+                                            Customers Report
+                                        </a>
+                                        <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                            <li class="menu-subtitle">Customers Report</li>
+                                            <li class=""><a href="index-2.html">Customers List</a></li>
+                                            <li class=""><a href="index-2.html">Customers Ledger Balance</a></li>
+                                            <li class=""><a href="index-2.html">Detailed Customer Ledger With Balance</a></li>
+                                            <li class=""><a href="index-2.html">Customer Aging Report</a></li>
+                                            <li class=""><a href="index-2.html">Customer Net Balance List</a></li>
+                                            <li class=""><a href="index-2.html">Customer Advance Balance List</a></li>
+                                            <li class=""><a href="index-2.html">Customer Due Balance List</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="with-sub">
+                                        <a href="#" aria-haspopup="true">
+                                            Periodic Reports
+                                        </a>
+                                        <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                            <li class="menu-subtitle">Periodic Reports</li>
+                                            <li class=""><a href="index-2.html">Approval Status</a></li>
+                                            <li class=""><a href="index-2.html">Approval by User Report</a></li>
+                                            <li class=""><a href="index-2.html">All Unposted Batches</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="with-sub">
+                                        <a href="#" aria-haspopup="true">
+                                            Sales Reports
+                                        </a>
+                                        <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                            <li class="menu-subtitle">Sales Reports</li>
+                                            <li class=""><a href="index-2.html">Sales by Category Report</a></li>
+                                            <li class=""><a href="index-2.html">Sales by Period Report</a></li>
+                                            <li class=""><a href="index-2.html">Sales by Location Report</a></li>
+                                            <li class=""><a href="index-2.html">Sales by User Report</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="with-sub">
+                                        <a href="#" aria-haspopup="true">
+                                            GL Reports
+                                        </a>
+                                        <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                            <li class="menu-subtitle">GL</li>
+                                            <li class=""><a href="index-2.html">Sales Account Breakdown</a></li>
+                                            <li class=""><a href="index-2.html">Sales VAT Account Breakdown</a></li>
+                                            <li class=""><a href="index-2.html">Account Receivables Breakdown</a></li>
+                                            <li class=""><a href="index-2.html">Advance from Customers Breakdown</a></li>
+                                            <li class=""><a href="index-2.html">Advance VAT Breakdown</a></li>
+                                            <li class=""><a href="index-2.html">Related Party Breakdown</a></li>
+                                            <li class=""><a href="index-2.html">Accrued Revenue Breakdown</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="with-sub">
+                        <a href="#" aria-haspopup="true">
+                            <span class="menu-icon">
+                                <i class="zmdi zmdi-long-arrow-right"></i>
+                            </span>
+                            <span class="menu-text">Accounts Payables</span>
+                        </a>
+                        <ul class="sidebar-submenu collapse">
+                            <li class="menu-subtitle">Accounts Payables</li>
+                            @*          NEXT            *@
+                            <li class="with-sub">
+                                <a href="#" aria-haspopup="true">
+                                    <span class="menu-icon">
+                                        <i class="fas fa-file-invoice"></i>
+                                    </span>
+                                    <span class="menu-text">Transactions</span>
+                                </a>
+                                <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                    <li class="menu-subtitle">Transactions</li>
+                                    <li class="with-sub">
+                                        <a href="#" aria-haspopup="true">
+                                            <span class="menu-icon">
+                                                <i class="ms-Icon ms-Icon--M365InvoicingLogo"></i>
+                                            </span>
+                                            <span class="menu-text">Vendor Transaction</span>
+                                        </a>
+                                        <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                            <li class="menu-subtitle">Vendor Transaction</li>
+                                            <li class=""><a href="index-2.html">Vendor Invoice</a></li>
+                                            <li class=""><a href="index-2.html">Vendor Returns / Credit Notes</a></li>
+                                            <li class=""><a href="index-2.html">Payments</a></li>
+                                            <li class=""><a href="index-2.html">Close Advances</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="with-sub">
+                                        <a href="#" aria-haspopup="true">
+                                            <span class="menu-icon">
+                                                <i class="ms-Icon ms-Icon--M365InvoicingLogo"></i>
+                                            </span>
+                                            <span class="menu-text">Recurring Entries</span>
+                                        </a>
+                                        <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                            <li class="menu-subtitle">Recurring Entries</li>
+                                            <li class=""><a href="index-2.html">Rental & O&M Contracts</a></li>
+                                            <li class=""><a href="index-2.html">Favourites</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="with-sub">
+                                        <a href="#" aria-haspopup="true">
+                                            <span class="menu-icon">
+                                                <i class="ms-Icon ms-Icon--M365InvoicingLogo"></i>
+                                            </span>
+                                            <span class="menu-text">Transaction By Batch</span>
+                                        </a>
+                                        <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                            <li class="menu-subtitle">Transaction By Batch</li>
+                                            <li class=""><a href="index-2.html">All Transactions</a></li>
+                                            <li class=""><a href="index-2.html">Bulk Transactions</a></li>
+                                            <li class=""><a href="index-2.html">Import Bulk entries</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class=""><a href="index-2.html">Mapping Accounts</a></li>
+                                </ul>
+                            </li>
+                            @*          NEXT            *@
+                            <li class="with-sub">
+                                <a href="#" aria-haspopup="true">
+                                    <span class="menu-icon">
+                                        <i class="fas fa-chart-bar"></i>
+                                    </span>
+                                    <span class="menu-text">Reports</span>
+                                </a>
+                                <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                    <li class="menu-subtitle">Reports</li>
+                                    <li class="with-sub">
+                                        <a href="#" aria-haspopup="true">
+                                            Vendors Report
+                                        </a>
+                                        <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                            <li class="menu-subtitle">Vendors Report</li>
+                                            <li class=""><a href="index-2.html">Vendors List</a></li>
+                                            <li class=""><a href="index-2.html">Vendors Ledger Balance</a></li>
+                                            <li class=""><a href="index-2.html">Detailed Vendors Ledger With Balance</a></li>
+                                            <li class=""><a href="index-2.html">Vendors Aging Report</a></li>
+                                            <li class=""><a href="index-2.html">Vendors Net Balance List</a></li>
+                                            <li class=""><a href="index-2.html">Vendors Advance Balance List</a></li>
+                                            <li class=""><a href="index-2.html">Vendors Due Balance List</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="with-sub">
+                                        <a href="#" aria-haspopup="true">
+                                            Periodic Reports
+                                        </a>
+                                        <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                            <li class="menu-subtitle">Periodic Reports</li>
+                                            <li class=""><a href="index-2.html">Approval Status</a></li>
+                                            <li class=""><a href="index-2.html">Approval by User Report</a></li>
+                                            <li class=""><a href="index-2.html">All Unposted Batches</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="with-sub">
+                                        <a href="#" aria-haspopup="true">
+                                            Sales Reports
+                                        </a>
+                                        <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                            <li class="menu-subtitle">Purchases Reports</li>
+                                            <li class=""><a href="index-2.html">Purchases by Category Report</a></li>
+                                            <li class=""><a href="index-2.html">Purchases by Period Report</a></li>
+                                            <li class=""><a href="index-2.html">Purchases by Location Report</a></li>
+                                            <li class=""><a href="index-2.html">Purchases by User Report</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="with-sub">
+                                        <a href="#" aria-haspopup="true">
+                                            GL Reports
+                                        </a>
+                                        <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                            <li class="menu-subtitle">GL</li>
+                                            <li class=""><a href="index-2.html">Purchases Account Breakdown</a></li>
+                                            <li class=""><a href="index-2.html">Purchases VAT Account Breakdown</a></li>
+                                            <li class=""><a href="index-2.html">Account Payable Breakdown</a></li>
+                                            <li class=""><a href="index-2.html">Advance from Vendors Breakdown</a></li>
+                                            <li class=""><a href="index-2.html">Advance VAT Breakdown</a></li>
+                                            <li class=""><a href="index-2.html">Related Party Breakdown</a></li>
+                                            <li class=""><a href="index-2.html">Accrued Expenses Breakdown</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="with-sub">
+                        <a href="#" aria-haspopup="true">
+                            <span class="menu-icon">
+                                <i class="fas fa-building"></i>
+                            </span>
+                            <span class="menu-text">Fixed Assets</span>
+                        </a>
+                        <ul class="sidebar-submenu collapse">
+                            <li class="menu-subtitle">Fixed Assets</li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Classification</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Fixed Assets</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+
+                    <li class="menu-title">Inventory Management</li>
+                    <li class="with-sub">
+                        <a href="#" aria-haspopup="true">
+                            <span class="menu-icon">
+                                <i class="ms-Icon ms-Icon--ProductVariant" "></i>
+                            </span>
+                            <span class="menu-text">Inventory</span>
+                        </a>
+                        <ul class="sidebar-submenu collapse">
+                            <li class="menu-subtitle">Inventory</li>
+                            <li>
+                                <a href="widgets.html">
+                                    <span class="badge badge-success">27</span>
+                                    <span class="menu-icon">
+                                        <i class="ms-Icon ms-Icon--ProductList"></i>
+                                    </span>
+                                    <span class="menu-text">Item Catalog</span>
+                                </a>
+                            </li>
+                            @*          NEXT            *@
+                            <li class="with-sub">
+                                <a href="#" aria-haspopup="true">
+                                    <span class="menu-icon">
+                                        <i class="zmdi zmdi-wrench"></i>
+                                    </span>
+                                    <span class="menu-text">Setup</span>
+                                </a>
+                                <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                    <li class="menu-subtitle">Inventory Setup</li>
+                                    <li class=""><a href="index-2.html">Brands</a></li>
+                                    <li class=""><a href="index-2.html">Item Categories</a></li>
+                                    <li class=""><a href="index-2.html">Warehouses</a></li>
+                                    <li class=""><a href="index-2.html">Unit of Measures</a></li>
+                                    <li class=""><a href="index-2.html">Mapping Accounts</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="with-sub">
+                        <a href="#" aria-haspopup="true">
+                            <span class="menu-icon">
+                                <i class="fas fa-cash-register"></i>
+                            </span>
+                            <span class="menu-text">Transactions</span>
+                        </a>
+                        <ul class="sidebar-submenu collapse">
+                            <li class="menu-subtitle">Inventory Transactions</li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span>Inventory Transactions</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span>Inventory Transfer</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span>Inventory Dispatch</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+
+                    <li class="menu-title">Human Resources</li>
+                    <li class="with-sub">
+                        <a href="#" aria-haspopup="true">
+                            <span class="menu-icon">
+                                <i class="fas fa-user-tie"></i>
+                            </span>
+                            <span class="menu-text">Employees</span>
+                        </a>
+                        <ul class="sidebar-submenu collapse">
+                            <li class="menu-subtitle">Employees</li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Employee List</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Documents</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Work Shifts</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Timesheet (Admin)</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Mapping Accounts</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="with-sub">
+                        <a href="#" aria-haspopup="true">
+                            <span class="menu-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </span>
+                            <span class="menu-text">Payroll</span>
+                        </a>
+                        <ul class="sidebar-submenu collapse">
+                            <li class="menu-subtitle">Payroll</li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Leaves</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Return from Leaves</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Loans</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">General Request</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Attendence</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Payrun</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="with-sub">
+                        <a href="#" aria-haspopup="true">
+                            <span class="menu-icon">
+                                <i class="fas fa-info"></i>
+                            </span>
+                            <span class="menu-text">HR Self Services</span>
+                        </a>
+                        <ul class="sidebar-submenu collapse">
+                            <li class="menu-subtitle">HR Self Services</li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Code of Conduct Document</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Data Protection Policy</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Independence Confirmation Document</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">AML Guidelines</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Audit Practice Manual</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">System of Internal Control Charter</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Timesheet</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Expense Claims</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+
+                    <li class="menu-title">CUSTOMER RELATIONS MANAGEMENT</li>
+                    <li class="with-sub">
+                        <a href="#" aria-haspopup="true">
+                            <span class="menu-icon">
+                                <i class="fas fa-address-book"></i>
+                            </span>
+                            <span class="menu-text">Address Book</span>
+                        </a>
+                        <ul class="sidebar-submenu collapse">
+                            <li class="menu-subtitle">Address Book</li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">View Address Book</span>
+                                </a>
+                            </li>
+                            @*<li><a href="dashboard-2.html">Reports</a></li>*@
+                            <li class="with-sub">
+                                <a href="#" aria-haspopup="true">
+                                    <span class="menu-icon">
+                                        <i class="zmdi zmdi-chart-donut"></i>
+                                    </span>
+                                    <span class="menu-text">Reports</span>
+                                </a>
+                                <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                    <li class="menu-subtitle">Reports</li>
+                                    <li class=""><a href="index-2.html">Report by Address</a></li>
+                                    <li class=""><a href="index-2.html">Report by Primary Contacts</a></li>
+                                    <li><a href="dashboard-2.html">Check for Duplicates</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="with-sub">
+                        <a href="#" aria-haspopup="true">
+                            <span class="menu-icon">
+                                <i class="fas fa-bullseye"></i>
+                            </span>
+                            <span class="menu-text">Engagements</span>
+                        </a>
+                        <ul class="sidebar-submenu collapse">
+                            <li class="menu-subtitle">Engagements</li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Opportunities</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Engagements</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="with-sub">
+                        <a href="#" aria-haspopup="true">
+                            <span class="menu-icon">
+                                <i class="fas fa-puzzle-piece"></i>
+                            </span>
+                            <span class="menu-text">Products / Services</span>
+                        </a>
+                        <ul class="sidebar-submenu collapse">
+                            <li class="menu-subtitle">Products / Services</li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Item List</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+
+                    <li class="menu-title">Business Intelligence</li>
+                    <li class="">
+                        <a href="index-2.html">
+                            <span class="menu-icon"><i class="fas fa-chart-pie"></i></span>
+                            <span class="menu-text">Reports</span>
+                        </a>
+                    </li>
+
+
+                    <li class="menu-title">Settings</li>
+                    <li class="with-sub">
+                        <a href="#" aria-haspopup="true">
+                            <span class="menu-icon">
+                                <i class="fas fa-cogs"></i>
+                            </span>
+                            <span class="menu-text">GL Setup</span>
+                        </a>
+                        <ul class="sidebar-submenu collapse">
+                            <li class="menu-subtitle">GL Setup</li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Company</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Address Book</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Contact Types</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Currency</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Fiscal Period</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Parameters</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="index-2.html">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Lookup Setup</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="">
+                        <a href="index-2.html">
+                            <span class="menu-icon"><i class="fas fa-certificate"></i></span>
+                            <span class="menu-text">Approval Routes</span>
+                        </a>
+                    </li>
+                    <li class="">
+                        <a href="index-2.html">
+                            <span class="menu-icon"><i class="fas fa-coins"></i></span>
+                            <span class="menu-text">VAT Setup</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        @RenderBody()
+        <div class="site-footer position-sticky">
+            2020 © Cloud ERP
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+
+    <script src="~/scripts/cerp/site.js" asp-append-version="true"></script>
+    <script src="~/scripts/cerp/vendor.min.js"></script>
+    <script src="~/scripts/cerp/cosmos.min.js"></script>
+    <script src="~/scripts/cerp/application.min.js"></script>
+    <script src="~/scripts/cerp/index.min.js"></script>
+
+    <script src="~/libs/font-awesome/js/fontawesome.min.js"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
