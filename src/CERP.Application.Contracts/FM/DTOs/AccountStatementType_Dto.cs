@@ -7,13 +7,13 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace CERP.FM.DTOs
 {
-    public class AccountStatementType_UV_Dto : AuditedEntityDto<Guid> 
+    public class AccountStatementType_Dto : AuditedEntityDto<Guid> 
     {
-        public AccountStatementType_UV_Dto()
+        public AccountStatementType_Dto()
         {
 
         }
-        public AccountStatementType_UV_Dto(Guid id)
+        public AccountStatementType_Dto(Guid id)
         {
             Id = id;
         }

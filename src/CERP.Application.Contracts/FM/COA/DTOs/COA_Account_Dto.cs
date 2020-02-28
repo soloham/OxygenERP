@@ -38,7 +38,7 @@ namespace CERP.FM.COA.DTOs
         public virtual Guid? SubLedgerAccountId { get; set; }
         public int? SubLedgerTypeId { get; set; }
 
-        public int AccountCode { get; set; }
+        public string AccountCode { get; set; }
 
         public virtual Company_Dto Company { get; set; }
         public virtual Guid CompanyId { get; set; }
@@ -50,9 +50,9 @@ namespace CERP.FM.COA.DTOs
         public string AccountNameLocalizationKey { get; set; }
 
 
-        public virtual AccountStatementType_UV_Dto AccountStatementType { get; set; }
+        public virtual AccountStatementType_Dto AccountStatementType { get; set; }
         public Guid AccountStatementTypeId { get; set; }
-        public virtual AccountStatementType_UV_Dto AccountStatementDetailType { get; set; }
+        public virtual AccountStatementType_Dto AccountStatementDetailType { get; set; }
         public Guid AccountStatementDetailTypeId { get; set; }
         public virtual DictionaryValue_Dto CashFlowStatementType { get; set; }
         public Guid CashFlowStatementTypeId { get; set; }
@@ -61,7 +61,7 @@ namespace CERP.FM.COA.DTOs
         public bool AllowPayment { get; set; }
         public bool AllowReceipt { get; set; }
 
-        public virtual ICollection<COA_SubLedgerRequirement_Dto> SubLedgerRequirements { get; set; }
+        public virtual ICollection<COA_SubLedgerRequirement_Account_Dto> SubLedgerRequirementAccounts { get; set; }
 
         public bool? ActiveStatus { get; set; }
     }

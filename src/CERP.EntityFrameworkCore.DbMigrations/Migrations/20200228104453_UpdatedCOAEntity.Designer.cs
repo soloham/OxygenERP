@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200228104453_UpdatedCOAEntity")]
+    partial class UpdatedCOAEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -312,13 +314,13 @@ namespace CERP.Migrations
                     b.Property<Guid>("AccountSubCat1Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("AccountSubCat2Id")
+                    b.Property<Guid>("AccountSubCat2Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("AccountSubCat3Id")
+                    b.Property<Guid>("AccountSubCat3Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("AccountSubCat4Id")
+                    b.Property<Guid>("AccountSubCat4Id")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool?>("ActiveStatus")
@@ -333,7 +335,7 @@ namespace CERP.Migrations
                     b.Property<bool>("AllowReceipt")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("BranchId")
+                    b.Property<Guid>("BranchId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("CashFlowStatementTypeId")
@@ -563,6 +565,9 @@ namespace CERP.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("COA_AccountId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnName("ConcurrencyStamp")
@@ -611,50 +616,9 @@ namespace CERP.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("COA_AccountId");
+
                     b.ToTable("SubLedgerRequirements","FM");
-                });
-
-            modelBuilder.Entity("CERP.FM.COA.COA_SubLedgerRequirement_Account", b =>
-                {
-                    b.Property<Guid>("AccountId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("SubLedgerRequirementId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnName("ConcurrencyStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnName("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnName("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnName("ExtraProperties")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnName("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnName("LastModifierId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("AccountId", "SubLedgerRequirementId");
-
-                    b.HasIndex("SubLedgerRequirementId");
-
-                    b.ToTable("SubLedgerRequirement_Account","FM");
                 });
 
             modelBuilder.Entity("CERP.FM.Company", b =>
@@ -2339,19 +2303,27 @@ namespace CERP.Migrations
 
                     b.HasOne("CERP.FM.COA.COA_AccountSubCategory", "AccountSubCategory_2")
                         .WithMany()
-                        .HasForeignKey("AccountSubCat2Id");
+                        .HasForeignKey("AccountSubCat2Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("CERP.FM.COA.COA_AccountSubCategory", "AccountSubCategory_3")
                         .WithMany()
-                        .HasForeignKey("AccountSubCat3Id");
+                        .HasForeignKey("AccountSubCat3Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("CERP.FM.COA.COA_AccountSubCategory", "AccountSubCategory_4")
                         .WithMany()
-                        .HasForeignKey("AccountSubCat4Id");
+                        .HasForeignKey("AccountSubCat4Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("CERP.FM.Branch", "Branch")
                         .WithMany()
-                        .HasForeignKey("BranchId");
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("CERP.App.DictionaryValue", "CashFlowStatementType")
                         .WithMany()
@@ -2395,19 +2367,11 @@ namespace CERP.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CERP.FM.COA.COA_SubLedgerRequirement_Account", b =>
+            modelBuilder.Entity("CERP.FM.COA.COA_SubLedgerRequirement", b =>
                 {
-                    b.HasOne("CERP.FM.COA.COA_Account", "Account")
-                        .WithMany("SubLedgerRequirementAccounts")
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CERP.FM.COA.COA_SubLedgerRequirement", "SubLedgerRequirement")
-                        .WithMany("SubLedgerRequirementAccounts")
-                        .HasForeignKey("SubLedgerRequirementId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("CERP.FM.COA.COA_Account", null)
+                        .WithMany("SubLedgerRequirements")
+                        .HasForeignKey("COA_AccountId");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLogAction", b =>

@@ -32,6 +32,13 @@ namespace CERP
             return result;
         }
 
+        public async Task<COA_Account_Dto> CreateAccount(COA_Account_UV_Dto dto)
+        {
+            var account = MapToEntity(dto);
+            var result = await Repository.InsertAsync(account);
+            return MapToGetOutputDto(result);
+        }
+
         //public async Task<COA_Account_Dto> CreateAccount(COA_Account_UV_Dto dto)
         //{
         //    //COA coa = new COA(dto.Id) {

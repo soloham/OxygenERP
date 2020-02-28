@@ -17,16 +17,18 @@ using Microsoft.Extensions.Primitives;
 using Syncfusion.EJ2.Navigations;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Guids;
 
 namespace CERP.Web.Areas.FM.Pages.COA
 {
     public class CreateModel : CERPPageModel
     {
         [BindProperty]
-        public COAInputModel COAInput { get; set; }
+        public COA_Account_UV_Dto COAInput { get; set; }
 
         private readonly coaAppService _coaAppService;
         private readonly companyAppService _companyAppService;
+        private readonly branchAppService _branchAppService;
         private readonly coaHeadAccountAppService _headAccountsAppService;
         private readonly coaAccountSubCategoryAppService _subCategoryAppService;
 
@@ -35,7 +37,9 @@ namespace CERP.Web.Areas.FM.Pages.COA
 
         public IRepository<DictionaryValue, Guid> _dictionaryValuesRepo;
 
-        public CreateModel(coaAppService coaAppService, companyAppService companyAppService, coaHeadAccountAppService headAccountsAppService, coaAccountSubCategoryAppService subCategoryAppService, IRepository<COA_SubLedgerRequirement, Guid> subLedgerRequirementsRepo, IRepository<AccountStatementType, Guid> accStatementTypeRepo, IRepository<DictionaryValue, Guid> dictionaryValuesRepo, coaSubLedgerRequirementsAppService subLedgerRequirementsAppService)
+        private IGuidGenerator _guidGenerator;
+
+        public CreateModel(coaAppService coaAppService, companyAppService companyAppService, coaHeadAccountAppService headAccountsAppService, coaAccountSubCategoryAppService subCategoryAppService, IRepository<AccountStatementType, Guid> accStatementTypeRepo, IRepository<DictionaryValue, Guid> dictionaryValuesRepo, coaSubLedgerRequirementsAppService subLedgerRequirementsAppService, branchAppService branchAppService, IGuidGenerator guidGenerator)
         {
             _coaAppService = coaAppService;
             _subCategoryAppService = subCategoryAppService;
@@ -45,19 +49,22 @@ namespace CERP.Web.Areas.FM.Pages.COA
             _accStatementTypeRepo = accStatementTypeRepo;
             _dictionaryValuesRepo = dictionaryValuesRepo;
             _subLedgerRequirementsAppService = subLedgerRequirementsAppService;
+            _branchAppService = branchAppService;
+            _guidGenerator = guidGenerator;
         }
 
         public List<Company_Dto> Companies = new List<Company_Dto>();
-        public List<Company> Companies_ = new List<Company>();
+        public List<Branch_Dto> Branches = new List<Branch_Dto>();
         public List<COA_HeadAccount_Dto> HeadAccounts = new List<COA_HeadAccount_Dto>();
-        public List<COA_AccountSubCategory> SubCategories_ = new List<COA_AccountSubCategory>();
         public List<COA_AccountSubCategory_Dto> SubCategories = new List<COA_AccountSubCategory_Dto>();
         public List<COA_Account_Dto> SubLedgerAccounts = new List<COA_Account_Dto>();
 
         public List<COA_SubLedgerRequirement_Dto> SubLedgerRequirements = new List<COA_SubLedgerRequirement_Dto>();
+
         public async Task OnGetAsync()
         {
             Companies = (await _companyAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
+            Branches = (await _branchAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
             HeadAccounts = (await _headAccountsAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
             SubCategories = (await _subCategoryAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
             SubLedgerAccounts = _coaAppService.GetNonSubLedgerAccounts();
@@ -66,28 +73,99 @@ namespace CERP.Web.Areas.FM.Pages.COA
 
         public async Task<IActionResult> OnPost(COA_Account_UV_Dto dto)
         {
-            SubLedgerRequirements = (await _subLedgerRequirementsAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
-
-            var form = Request.Form;
-            dto.SubLedgerRequirements = new List<COA_SubLedgerRequirement_Dto>();
-            for (int i = 0; i < SubLedgerRequirements.Count; i++)
+            dto.Id = _guidGenerator.Create();
+            try
             {
-                if(form.TryGetValue("requirement:" + i, out StringValues isChecked))
+                var _COAsList = (await _coaAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
+                SubLedgerRequirements = (await _subLedgerRequirementsAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
+            
+                var form = Request.Form;
+                dto.SubLedgerRequirements = new List<COA_SubLedgerRequirement_Account_Dto>();
+                for (int i = 0; i < SubLedgerRequirements.Count; i++)
                 {
-                    if(isChecked == "on")
-                        dto.SubLedgerRequirements.Add(SubLedgerRequirements[i]);
-                    else
-                        dto.SubLedgerRequirements.Add(SubLedgerRequirements[i]);
+                    if(form.TryGetValue("requirement:" + i, out StringValues isChecked))
+                    {
+                        if(isChecked == "on")
+                            dto.SubLedgerRequirements.Add(new COA_SubLedgerRequirement_Account_Dto() { SubLedgerRequirementId = SubLedgerRequirements[i].Id, AccountId = dto.Id });
+                    
+                    }
                 }
-            }
 
-            var result = await _coaAppService.CreateAsync(dto);
-            if (result != null)
-            {
-                return RedirectToPage("/COA");
+                if (form.TryGetValue("allowPosting", out StringValues isAPostingChecked))
+                {
+                    if (isAPostingChecked == "on")
+                        dto.AllowPosting = true;
+                    else
+                        dto.AllowPosting = false;
+                }
+                if (form.TryGetValue("allowPayment", out StringValues isAPChecked))
+                {
+                    if (isAPChecked == "on")
+                        dto.AllowPayment = true;
+                    else
+                        dto.AllowPayment = false;
+                }
+                if (form.TryGetValue("allowReceipt", out StringValues isARChecked))
+                {
+                    if (isARChecked == "on")
+                        dto.AllowReceipt = true;
+                    else
+                        dto.AllowReceipt = false;
+                }
+
+                form.TryGetValue("companyCode", out StringValues companyCode);
+                companyCode = string.IsNullOrEmpty(companyCode) ? (StringValues)"00" : companyCode;
+                form.TryGetValue("headAccCode", out StringValues headAccCode);
+                headAccCode = string.IsNullOrEmpty(headAccCode) ? (StringValues)"00" : headAccCode;
+                form.TryGetValue("subCat1Code", out StringValues subCat1Code);
+                subCat1Code = string.IsNullOrEmpty(subCat1Code) ? (StringValues)"00" : subCat1Code;
+                form.TryGetValue("subCat2Code", out StringValues subCat2Code);
+                subCat2Code = string.IsNullOrEmpty(subCat2Code) ? (StringValues)"00" : subCat2Code;
+                form.TryGetValue("subCat3Code", out StringValues subCat3Code);
+                subCat3Code = string.IsNullOrEmpty(subCat3Code) ? (StringValues)"00" : subCat3Code;
+                form.TryGetValue("subCat4Code", out StringValues subCat4Code);
+                subCat4Code = string.IsNullOrEmpty(subCat4Code) ? (StringValues)"00" : subCat4Code;
+
+                StringValues subLedgerAccountCode = "";
+                form.TryGetValue("subLedgerAccountCode", out subLedgerAccountCode);
+                subLedgerAccountCode = !string.IsNullOrEmpty(subLedgerAccountCode) ? "." + subLedgerAccountCode : "";
+
+                dto.AccountCode = $"{companyCode}-{headAccCode}{subCat1Code}{subCat2Code}{subCat3Code}{subCat4Code}{subLedgerAccountCode}";
+
+                int maxCode = 0;
+                try
+                {
+                    Convert.ToInt32(_COAsList.Count > 0 ? _COAsList.Where(c => c.HeadAccountId == dto.HeadAccountId && c.AccountSubCat1Id == dto.AccountSubCat1Id).Max(c => c.AccountId) : 0);
+                }
+                catch { }
+                dto.AccountId = maxCode + 1;
+
+                //dto.HeadAccount = await _headAccountsAppService.GetAsync(dto.HeadAccountId);
+                //dto.AccountSubCategory_1 = await _subCategoryAppService.GetAsync(dto.AccountSubCat1Id);
+                //dto.Company = await _companyAppService.GetAsync(dto.CompanyId);
+                //if(dto.BranchId.HasValue)
+                //    dto.Branch = await _branchAppService.GetAsync(dto.BranchId.Value);
+
+                COA_Account_Dto result = null;
+                try
+                {
+                    result = await _coaAppService.CreateAccount(dto);
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                if (result != null)
+                {
+                    return RedirectToPage("./COA");
+                }
+                else
+                    return Page();
             }
-            else
+            catch (Exception ex)
+            {
                 return Page();
+            }
         }
 
         public JsonResult OnGetStatementDetails(Guid statementType)
@@ -98,34 +176,13 @@ namespace CERP.Web.Areas.FM.Pages.COA
 
             return new JsonResult(result);
         }
-        public JsonResult OnGetSubCategories(Guid headAccount)
+        public async Task<JsonResult> OnGetSubCategories(Guid headAccount)
         {
-            List<COA_AccountSubCategory> result = new List<COA_AccountSubCategory>();
+            List<COA_AccountSubCategory_Dto> result = new List<COA_AccountSubCategory_Dto>();
 
-            result = _subCategoryAppService.Repository.Where(x => x.HeadAccountId == headAccount).ToList();
+            result = (await _subCategoryAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();//GetSubCategories(headAccount, 2, Guid.Empty).ToList();
 
             return new JsonResult(result);
         }
-    }
-
-    public class COAInputModel
-    {
-        public string AccountName { get; set; }
-        public string AccountNameSL { get; set; }
-        public Guid CompanyGuid { get; set; }
-        public Guid HeadAccountGuid { get; set; }
-        public Guid SubAccountGuid { get; set; }
-        public Guid SubLedgerAccountGuid { get; set; }
-
-        public List<(Guid requirementId, bool IsChecked)> SubLedgerRequirements { get; set; }
-
-        public string allowGLPosting { get; set; }
-        public string allowAutomatedPosting { get; set; }
-        public string allowPayment { get; set; }
-        public string allowReceipt { get; set; }
-
-        public Guid StatementTypeId { get; set; }
-        public Guid StatementDetailsId { get; set; }
-        public Guid CashflowStatementTypeId { get; set; }
     }
 }

@@ -18,5 +18,7 @@ namespace CERP.FM.COA
         }
         public string Title { get; set; }
         public string TitleLocalizationKey { get; set; }
+
+        public virtual ICollection<COA_SubLedgerRequirement_Account> SubLedgerRequirementAccounts { get; set; }
     }
 }

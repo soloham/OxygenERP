@@ -28,13 +28,13 @@ namespace CERP.FM.COA
         public Guid AccountSubCat1Id { get; set; }
         [ForeignKey("AccountSubCat2Id")]
         public virtual COA_AccountSubCategory AccountSubCategory_2 { get; set; }
-        public Guid AccountSubCat2Id { get; set; }
+        public Guid? AccountSubCat2Id { get; set; }
         [ForeignKey("AccountSubCat3Id")]
         public virtual COA_AccountSubCategory AccountSubCategory_3 { get; set; }
-        public Guid AccountSubCat3Id { get; set; }
+        public Guid? AccountSubCat3Id { get; set; }
         [ForeignKey("AccountSubCat4Id")]
         public virtual COA_AccountSubCategory AccountSubCategory_4 { get; set; }
-        public Guid AccountSubCat4Id { get; set; }
+        public Guid? AccountSubCat4Id { get; set; }
 
         public int AccountId { get; set; }
 
@@ -43,7 +43,7 @@ namespace CERP.FM.COA
         public virtual Guid? SubLedgerAccountId { get; set; }
         public int? SubLedgerTypeId { get; set; }
 
-        public int AccountCode { get; set; }
+        public string AccountCode { get; set; }
         
         [ForeignKey("CompanyId")]
         public virtual Company Company { get; set; }
@@ -51,7 +51,7 @@ namespace CERP.FM.COA
 
         [ForeignKey("BranchId")]
         public virtual Branch Branch { get; set; }
-        public Guid BranchId { get; set; }
+        public Guid? BranchId { get; set; }
 
         public string AccountName { get; set; }
         public string AccountNameLocalizationKey { get; set; }
@@ -71,7 +71,7 @@ namespace CERP.FM.COA
         public bool AllowPayment { get; set; }
         public bool AllowReceipt { get; set; }
 
-        public virtual ICollection<COA_SubLedgerRequirement> SubLedgerRequirements { get; set; }
+        public virtual ICollection<COA_SubLedgerRequirement_Account> SubLedgerRequirementAccounts { get; set; }
 
         public bool? ActiveStatus { get; set; }
     }

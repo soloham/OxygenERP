@@ -42,6 +42,14 @@ namespace CERP.EntityFrameworkCore
                     .IsRequired(false);
                 b.Property(p => p.AccountName)
                     .IsRequired();
+
+                b.Property(p => p.AccountSubCat2Id)
+                .IsRequired(false);
+                b.Property(p => p.AccountSubCat3Id)
+                .IsRequired(false);
+                b.Property(p => p.AccountSubCat4Id)
+                .IsRequired(false);
+
                 b.Property(p => p.AllowPosting)
                     .IsRequired();
                 b.Property(p => p.AllowPayment)
@@ -50,9 +58,6 @@ namespace CERP.EntityFrameworkCore
                     .IsRequired();
                 b.Property(p => p.ActiveStatus)
                     .IsRequired(false);
-
-                b.HasMany(p => p.SubLedgerRequirements)
-                    .WithOne();
             });
 
             builder.Entity<COA_AccountSubCategory>(b =>
@@ -102,6 +107,9 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureAudited();
                 b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
+
+                b.Property(p => p.CompanyCode)
+                 .UseIdentityColumn();
 
                 b.Property(p => p.Name)
                     .IsRequired();
@@ -174,6 +182,7 @@ namespace CERP.EntityFrameworkCore
 
                 b.Property(p => p.Title)
                     .IsRequired();
+
             });
 
             builder.Entity<DictionaryValueType>(b =>
@@ -210,6 +219,26 @@ namespace CERP.EntityFrameworkCore
                 b.HasOne(p => p.Company).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.Branch).WithMany().OnDelete(DeleteBehavior.Restrict);
             });
+
+            builder.Entity<COA_SubLedgerRequirement_Account>(b =>
+            {
+                b.ToTable(CERPConsts.FMDbTablePrefix + "SubLedgerRequirement_Account", CERPConsts.FMDbSchema);
+
+                b.ConfigureAudited();
+                b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+            });
+
+            builder.Entity<COA_SubLedgerRequirement_Account>()
+                .HasKey(bc => new { bc.AccountId, bc.SubLedgerRequirementId });
+            builder.Entity<COA_SubLedgerRequirement_Account>()
+                .HasOne(bc => bc.SubLedgerRequirement)
+                .WithMany(b => b.SubLedgerRequirementAccounts)
+                .HasForeignKey(bc => bc.SubLedgerRequirementId);
+            builder.Entity<COA_SubLedgerRequirement_Account>()
+                .HasOne(bc => bc.Account)
+                .WithMany(c => c.SubLedgerRequirementAccounts)
+                .HasForeignKey(bc => bc.AccountId);
         }
 
         public static void ConfigureCustomUserProperties<TUser>(this EntityTypeBuilder<TUser> b)

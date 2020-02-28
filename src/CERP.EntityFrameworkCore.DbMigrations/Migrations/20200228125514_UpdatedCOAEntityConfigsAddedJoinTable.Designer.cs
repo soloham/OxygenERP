@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200228125514_UpdatedCOAEntityConfigsAddedJoinTable")]
+    partial class UpdatedCOAEntityConfigsAddedJoinTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -622,39 +624,11 @@ namespace CERP.Migrations
                     b.Property<Guid>("SubLedgerRequirementId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnName("ConcurrencyStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnName("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnName("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnName("ExtraProperties")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnName("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnName("LastModifierId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("AccountId", "SubLedgerRequirementId");
 
                     b.HasIndex("SubLedgerRequirementId");
 
-                    b.ToTable("SubLedgerRequirement_Account","FM");
+                    b.ToTable("COA_SubLedgerRequirement_Account");
                 });
 
             modelBuilder.Entity("CERP.FM.Company", b =>

@@ -10,6 +10,7 @@ namespace CERP.FM.UV_DTOs
 {
     public class Company_UV_Dto : AuditedEntityDto<Guid> 
     {
+        public int CompanyCode { get; set; }
         [Required]
         public string Name { get; set; }
         public string NameLocalizationKey { get; set; }

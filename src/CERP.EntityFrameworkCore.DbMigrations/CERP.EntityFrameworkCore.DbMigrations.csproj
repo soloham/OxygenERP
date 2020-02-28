@@ -18,6 +18,18 @@
     <Compile Remove="Migrations\20200228041219_CreatedCOAEntites.Designer.cs" />
     <Compile Remove="Migrations\20200228045123_UpdatedCOAEntitesCOASubCategory.cs" />
     <Compile Remove="Migrations\20200228045123_UpdatedCOAEntitesCOASubCategory.Designer.cs" />
+    <Compile Remove="Migrations\20200228105918_UpdatedCOAEntityConfigs.cs" />
+    <Compile Remove="Migrations\20200228105918_UpdatedCOAEntityConfigs.Designer.cs" />
+    <Compile Remove="Migrations\20200228121206_UpdatedCOAEntityConfigs1.cs" />
+    <Compile Remove="Migrations\20200228121206_UpdatedCOAEntityConfigs1.Designer.cs" />
+    <Compile Remove="Migrations\20200228122009_UpdatedCOAEntityConfigs1.cs" />
+    <Compile Remove="Migrations\20200228122009_UpdatedCOAEntityConfigs1.Designer.cs" />
+    <Compile Remove="Migrations\20200228122328_UpdatedCOAEntityConfigs2.cs" />
+    <Compile Remove="Migrations\20200228122328_UpdatedCOAEntityConfigs2.Designer.cs" />
+    <Compile Remove="Migrations\20200228124449_UpdatedCOAEntityConfigsAddedJoinTable.cs" />
+    <Compile Remove="Migrations\20200228124449_UpdatedCOAEntityConfigsAddedJoinTable.Designer.cs" />
+    <Compile Remove="Migrations\20200228125103_UpdatedCOAEntityConfigsAddedJoinTable.cs" />
+    <Compile Remove="Migrations\20200228125103_UpdatedCOAEntityConfigsAddedJoinTable.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

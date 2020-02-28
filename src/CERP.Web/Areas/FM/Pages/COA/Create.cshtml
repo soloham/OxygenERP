@@ -12,6 +12,7 @@
     var headAccounts = Model.HeadAccounts.OrderBy(x => x.HeadCode).ToList();
     var subCategories = Model.SubCategories.OrderBy(x => x.SubCategoryId).ToList();
     var companies = Model.Companies.OrderBy(x => x.CreationTime).ToList();
+    var branches = Model.Branches.OrderBy(x => x.CreationTime).ToList();
     var subledgerAccounts = Model.SubLedgerAccounts.OrderBy(x => x.CreationTime).ToList();
 
     var subLedgerRequirements = Model.SubLedgerRequirements;
@@ -71,6 +72,19 @@
                 e.preventDefault();
 
                 var params = $('#coaForm').serialize();
+
+                var companyCode = $('option:selected', $('#company')).attr('data-companyCode');
+                console.log(companyCode);
+                params += "&companyCode=" + companyCode;
+
+                var headAccCode = $('option:selected', $('#headAccount')).attr('data-headAccCode');
+                console.log(headAccCode);
+                params += "&headAccCode=" + headAccCode;
+
+                var subCat1Code = $('option:selected', $('#subCat1')).attr('data-categoryCode');
+                console.log(subCat1Code);
+                params += "&subCat1Code=" + subCat1Code;
+
                 console.log(params);
                 $.ajax({
                     url: "@Url.Content("~")/COA/Create",
@@ -78,7 +92,10 @@
                     type: "POST",
                     data: params,
                     success: function (data) {
-
+                        console.log(data);
+                    },
+                    error: function (err) {
+                        console.log(err);
                     }
                 })
 
@@ -210,13 +227,12 @@
             //$("#theme_selector").change();
 
             $("#headAccount").on("change", function () {
-                console.log($('option:selected', this).attr("data-headId"));
-                var headAccount = $('option:selected', this).attr("data-headId");
-                $("#subCategory").empty();
-                $("#subCategory").append("<option value=''>Select Account Sub Category</option>");
+                var headAccount = $('option:selected', this).val();
+                $("#subCat1").empty();
+                $("#subCat1").append("<option value=''>Select Account Sub Category</option>");
                 $.getJSON(`?handler=SubCategories&headAccount=${headAccount}`, (data) => {
                     $.each(data, function (i, item) {
-                        $("#subCategory").append(`<option  value="${item.id}">${item.title}</option>`);
+                        $("#subCat1").append(`<option value="${item.id}" data-categoryCode="${item.subCategoryId}">${item.subCategoryId} - ${item.title}</option>`);
                     });
                 });
             });
@@ -289,14 +305,27 @@
                                     </div>
                                     <hr />
                                     <div class="row m-b-15">
-                                        <div class="col-xs-12">
+                                        <div class="col-xs-6">
                                             <div class="form-group">
                                                 <label for="company" class="control-label">Choose Company</label>
                                                 <select name="companyId" id="company" class="custom-select" data-error="Please select a company to associate with this account" required>
                                                     <option value="" selected="selected">Choose Company</option>
                                                     @for (int i = 0; i < companies.Count; i++)
                                                     {
-                                                        <option value="@companies[i].Id">@companies[i].Name</option>
+                                                        <option value="@companies[i].Id" data-companyCode="@companies[i].CompanyCode">@companies[i].CompanyCode - @companies[i].Name</option>
+                                                    }
+                                                </select>
+                                                <div class="help-block with-errors"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <div class="form-group">
+                                                <label for="branch" class="control-label">Choose Company</label>
+                                                <select name="branchId" id="branch" class="custom-select" data-error="Please select a company branch to associate with this account">
+                                                    <option value="" selected="selected">Choose Company</option>
+                                                    @for (int i = 0; i < branches.Count; i++)
+                                                    {
+                                                        <option value="@branches[i].Id" data-branchCode="@branches[i].BranchCode">@branches[i].BranchCode - @branches[i].Name</option>
                                                     }
                                                 </select>
                                                 <div class="help-block with-errors"></div>
@@ -311,7 +340,7 @@
                                                     <option value="" selected="selected">Choose Head Account</option>
                                                     @for (int i = 0; i < headAccounts.Count; i++)
                                                     {
-                                                        <option value="@headAccounts[i].Id" data-headId="@headAccounts[i].Id">@($"{(int)headAccounts[i].HeadCode} - {headAccounts[i].AccountName}")</option>
+                                                        <option value="@headAccounts[i].Id" data-headAccCode="@((int)headAccounts[i].HeadCode)">@($"{(int)headAccounts[i].HeadCode} - {headAccounts[i].AccountName}")</option>
 
                                                     }
                                                 </select>
@@ -321,7 +350,7 @@
                                         <div class="col-xs-4">
                                             <div class="form-group">
                                                 <label for="subCategory" class="control-label">Choose Sub Category</label>
-                                                <select name="subAccountId" id="subCategory" class="custom-select" data-error="Please select a sub category for this account" required>
+                                                <select name="accountSubCat1Id" id="subCat1" class="custom-select" data-error="Please select a sub category for this account" required>
                                                 </select>
                                                 <div class="help-block with-errors"></div>
                                             </div>
@@ -335,7 +364,7 @@
                                                     {
                                                         for (int i = 0; i < subledgerAccounts.Count; i++)
                                                         {
-                                                            <option value="@subledgerAccounts[i].Id">@subledgerAccounts[i].AccountName</option>
+                                                            <option value="@subledgerAccounts[i].Id">@subledgerAccounts[i].AccountCode - @subledgerAccounts[i].AccountName</option>
                                                         }
                                                     }
                                                 </select>

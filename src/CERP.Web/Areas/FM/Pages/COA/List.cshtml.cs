@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CERP.FM.COA;
 using CERP.FM.COA.DTOs;
@@ -78,6 +79,7 @@ namespace CERP.Web.Areas.FM.COA
                 COA_Account_Dto curDto = result.Items[i];
                 Console.WriteLine(curDto.AccountName);
             }
+            accounts = result.Items.ToList();
             //int code = 10000;
             //for (int i = 1; i < 10; i++)
             //{

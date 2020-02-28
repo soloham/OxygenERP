@@ -1,4 +1,5 @@
-﻿using CERP.FM.COA;
+﻿using CERP.App;
+using CERP.FM.COA;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,16 +17,18 @@ namespace CERP.FM
     {
         private readonly IRepository<Company, Guid> _CompanyRepo;
         private readonly IRepository<Branch, Guid> _BrachRepo;
+        private readonly IRepository<COA_Account, Guid> _COAsRepo;
         private readonly IRepository<COA_HeadAccount, Guid> _COAHeadAccountRepo;
         private readonly IRepository<AccountStatementType, Guid> _AccountStatementTypeRepo;
         //private readonly IRepository<CashFlowStatementType, Guid> _CashFlowStatementTypeRepo;
         private readonly IRepository<COA_AccountSubCategory, Guid> _COASubCategoriesRepo;
 
         private readonly IRepository<COA_SubLedgerRequirement, Guid> _SubLedgerRequirements;
+        private readonly IRepository<DictionaryValue, Guid> _DicValueRepo;
 
         private readonly IGuidGenerator _guidGenerator;
 
-        public CERP_FM_DataSeedContributor(IRepository<COA_HeadAccount, Guid> cOAHeadAccountRepo, IGuidGenerator guidGenerator, IRepository<AccountStatementType, Guid> accountStatementTypeRepo, IRepository<COA_SubLedgerRequirement, Guid> subLedgerRequirements, IRepository<COA_AccountSubCategory, Guid> cOASubCategories, IRepository<Company, Guid> companyRepo, IRepository<Branch, Guid> brachRepo)
+        public CERP_FM_DataSeedContributor(IRepository<COA_HeadAccount, Guid> cOAHeadAccountRepo, IGuidGenerator guidGenerator, IRepository<AccountStatementType, Guid> accountStatementTypeRepo, IRepository<COA_SubLedgerRequirement, Guid> subLedgerRequirements, IRepository<COA_AccountSubCategory, Guid> cOASubCategories, IRepository<Company, Guid> companyRepo, IRepository<Branch, Guid> brachRepo, IRepository<COA_Account, Guid> cOAsRepo, IRepository<DictionaryValue, Guid> dicValueRepo)
         {
             _CompanyRepo = companyRepo;
 
@@ -38,6 +41,8 @@ namespace CERP.FM
 
             _guidGenerator = guidGenerator;
             _BrachRepo = brachRepo;
+            _COAsRepo = cOAsRepo;
+            _DicValueRepo = dicValueRepo;
         }
 
         [UnitOfWork]
@@ -183,7 +188,8 @@ namespace CERP.FM
                         Branch = curBranches.First(x => x.Name == "Head"),
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "101",
-                        LocalizationKey = "FM:COA:SubCategory:101"
+                        LocalizationKey = "FM:COA:SubCategory:101",
+                        IsDeleted = false
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Fixed Assets"))
@@ -197,7 +203,8 @@ namespace CERP.FM
                         Branch = curBranches.First(x => x.Name == "Head"),
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "102",
-                        LocalizationKey = "FM:COA:SubCategory:102"
+                        LocalizationKey = "FM:COA:SubCategory:102",
+                        IsDeleted = false
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Current Liabilities"))
@@ -211,7 +218,8 @@ namespace CERP.FM
                         Branch = curBranches.First(x => x.Name == "Head"),
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "201",
-                        LocalizationKey = "FM:COA:SubCategory:201"
+                        LocalizationKey = "FM:COA:SubCategory:201",
+                        IsDeleted = false
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Liabilities"))
@@ -225,7 +233,8 @@ namespace CERP.FM
                         Branch = curBranches.First(x => x.Name == "Head"),
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "202",
-                        LocalizationKey = "FM:COA:SubCategory:202"
+                        LocalizationKey = "FM:COA:SubCategory:202",
+                        IsDeleted = false
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Equity"))
@@ -239,7 +248,8 @@ namespace CERP.FM
                         Branch = curBranches.First(x => x.Name == "Head"),
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "401",
-                        LocalizationKey = "FM:COA:SubCategory:401"
+                        LocalizationKey = "FM:COA:SubCategory:401",
+                        IsDeleted = false
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Revenue"))
@@ -253,7 +263,8 @@ namespace CERP.FM
                         Branch = curBranches.First(x => x.Name == "Head"),
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "501",
-                        LocalizationKey = "FM:COA:SubCategory:501"
+                        LocalizationKey = "FM:COA:SubCategory:501",
+                        IsDeleted = false
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Direct Cost"))
@@ -267,7 +278,8 @@ namespace CERP.FM
                         Branch = curBranches.First(x => x.Name == "Head"),
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "601",
-                        LocalizationKey = "FM:COA:SubCategory:601"
+                        LocalizationKey = "FM:COA:SubCategory:601",
+                        IsDeleted = false
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "G&A"))
@@ -281,7 +293,8 @@ namespace CERP.FM
                         Branch = curBranches.First(x => x.Name == "Head"),
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "701",
-                        LocalizationKey = "FM:COA:SubCategory:701"
+                        LocalizationKey = "FM:COA:SubCategory:701",
+                        IsDeleted = false
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Other Income"))
@@ -295,7 +308,8 @@ namespace CERP.FM
                         Branch = curBranches.First(x => x.Name == "Head"),
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "801",
-                        LocalizationKey = "FM:COA:SubCategory:801"
+                        LocalizationKey = "FM:COA:SubCategory:801",
+                        IsDeleted = false
                     });
                 }
             }
@@ -568,6 +582,32 @@ namespace CERP.FM
 
                 });
             }
+
+            var coas = await _COAsRepo.GetListAsync();
+            
+            //if (!coas.Any(x => x.AccountName == "TestAccount"))
+            //{
+            //    await _COAsRepo.InsertAsync(new COA_Account(_guidGenerator.Create())
+            //    {
+            //        AccountName = "TestAccount",
+            //        AccountCode = "1-1100000",
+
+            //        //int maxCode = Convert.ToInt32(_COAsList.Count > 0 ? _COAsList.Where(c => c.HeadAccountId == dto.HeadAccountId && c.AccountSubCat1Id == dto.AccountSubCat1Id).Max(c => c.AccountId) : 0);
+            //        AccountId = 1,
+
+            //        HeadAccount = curCOAHAs[0],
+            //        HeadAccountId = curCOAHAs[0].Id,
+            //        AccountStatementType = curCOAASTs[0],
+            //        AccountStatementDetailTypeId = curCOAASTs[0].Id,
+            //        AccountSubCategory_1 = curCOASubCats[0],
+            //        AccountSubCat1Id = curCOASubCats[0].Id,
+            //        Company = curCompanies[0],
+            //        CompanyId = curCompanies[0].Id,
+            //        Branch = curBranches[0],
+            //        BranchId = curBranches[0].Id,
+            //        CashFlowStatementTypeId = _DicValueRepo.Where(x => x.Key == "01").First().Id
+            //    });;
+            //}
         }
     }
 }

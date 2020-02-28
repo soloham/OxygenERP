@@ -34,6 +34,7 @@ namespace CERP.EntityFrameworkCore
         public DbSet<COA_HeadAccount> COAHeadAccounts { get; set; }
         public DbSet<COA_AccountSubCategory> COASubCategories { get; set; }
         public DbSet<COA_SubLedgerRequirement> SubLedgerRequirements { get; set; }
+        public DbSet<COA_SubLedgerRequirement_Account> SubLedgerRequirementsAccounts { get; set; }
 
         public DbSet<AccountStatementType> AccountStatementTypes { get; set; }
 

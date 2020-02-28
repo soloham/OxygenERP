@@ -4,7 +4,9 @@ using CERP.FM.COA.DTOs;
 using CERP.FM.COA.UV_DTOs;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
@@ -19,5 +21,12 @@ namespace CERP
         }
 
         public IRepository<COA_AccountSubCategory, Guid> Repository { get; }
+
+        public List<COA_AccountSubCategory> GetSubCategories(Guid headAccount, int CLR, Guid empty)
+        {
+            var all = Repository.ToList();
+            var result = all.Where(x => x.HeadAccountId == headAccount).ToList();
+            return result;
+        }
     }
 }
