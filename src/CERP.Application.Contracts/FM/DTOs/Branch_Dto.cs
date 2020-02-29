@@ -17,7 +17,8 @@ namespace CERP.FM.DTOs
         {
             Id = id;
         }
-        public virtual Branch_Dto Company { get; set; }
+
+        public virtual Company_Dto Company { get; set; }
         public Guid CompanyId { get; set; }
 
         public string Name { get; set; }

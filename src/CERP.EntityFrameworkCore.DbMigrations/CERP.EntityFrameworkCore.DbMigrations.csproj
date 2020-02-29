@@ -30,6 +30,14 @@
     <Compile Remove="Migrations\20200228124449_UpdatedCOAEntityConfigsAddedJoinTable.Designer.cs" />
     <Compile Remove="Migrations\20200228125103_UpdatedCOAEntityConfigsAddedJoinTable.cs" />
     <Compile Remove="Migrations\20200228125103_UpdatedCOAEntityConfigsAddedJoinTable.Designer.cs" />
+    <Compile Remove="Migrations\20200228125514_UpdatedCOAEntityConfigsAddedJoinTable.cs" />
+    <Compile Remove="Migrations\20200228125514_UpdatedCOAEntityConfigsAddedJoinTable.Designer.cs" />
+    <Compile Remove="Migrations\20200228132823_SubLeaderRequirementsAccountsJoinTableUpdate.cs" />
+    <Compile Remove="Migrations\20200228132823_SubLeaderRequirementsAccountsJoinTableUpdate.Designer.cs" />
+    <Compile Remove="Migrations\20200228230421_SubLeaderRequirementsAccountsJoinTableUpdated.cs" />
+    <Compile Remove="Migrations\20200228230421_SubLeaderRequirementsAccountsJoinTableUpdated.Designer.cs" />
+    <Compile Remove="Migrations\20200228233730_CheckStateMG.cs" />
+    <Compile Remove="Migrations\20200228233730_CheckStateMG.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

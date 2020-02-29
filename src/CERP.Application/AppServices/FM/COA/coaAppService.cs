@@ -21,14 +21,18 @@ namespace CERP
             this.repository = repository;
         }
 
-        public List<COA_Account_Dto> GetNonSubLedgerAccounts()
+        public List<COA_Account_Dto> GetChartOfAccounts()
         {
             List<COA_Account_Dto> result = new List<COA_Account_Dto>();
-            var acnts = Repository.Where(x => x.SubLedgerTypeId == 0).ToArray();
-            for (int i = 0; i < acnts.Count(); i++)
-            {
-                result.Add(MapToGetOutputDto(acnts[i]));
-            }
+            var resultRaw = repository.WithDetails();
+            result = resultRaw.Select(MapToGetListOutputDto).ToList();
+
+            return result;
+        }
+
+        public List<COA_Account_Dto> GetNonSubLedgerAccounts()
+        {
+            List<COA_Account_Dto> result = Repository.Where(x => !x.SubLedgerAccountId.HasValue).Select(MapToGetOutputDto).ToList();
             return result;
         }
 

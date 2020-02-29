@@ -33,6 +33,7 @@ namespace CERP
                 options.FileSets.AddEmbedded<CERPDomainSharedModule>("CERP");
             });
 
+
             Configure<AbpLocalizationOptions>(options =>
             {
                 options.Resources

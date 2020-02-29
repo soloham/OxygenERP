@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
+using Volo.Abp.Json;
 
 namespace CERP.Web
 {
@@ -28,10 +31,14 @@ namespace CERP.Web
 
                     options.Conventions.AddAreaPageRoute("FM", "/COA/List", "/COA");
                     options.Conventions.AddAreaPageRoute("FM", "/COA/Create", "/COA/Create");
+                    options.Conventions.AddAreaPageRoute("FM", "/COA/Edit", "/COA/Edit");
 
                     options.Conventions.AddAreaPageRoute("Main", "/Dashboard", "/Dashboard");
 
                     //options.Conventions.AddPageRoute("/index", "{*url}");
+                })
+                .AddNewtonsoftJson(options => {
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
             services.ConfigureApplicationCookie(options =>
             {

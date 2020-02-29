@@ -18,24 +18,32 @@ namespace CERP.Migrations
                 table: "SubLedgerRequirements");
 
             migrationBuilder.CreateTable(
-                name: "COA_SubLedgerRequirement_Account",
+                name: "SubLedgerRequirement_Account",
+                schema: "FM",
                 columns: table => new
                 {
                     SubLedgerRequirementId = table.Column<Guid>(nullable: false),
-                    AccountId = table.Column<Guid>(nullable: false)
+                    AccountId = table.Column<Guid>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
+                    ExtraProperties = table.Column<string>(nullable: true),
+                    ConcurrencyStamp = table.Column<string>(nullable: true),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorId = table.Column<Guid>(nullable: true),
+                    LastModificationTime = table.Column<DateTime>(nullable: true),
+                    LastModifierId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_COA_SubLedgerRequirement_Account", x => new { x.AccountId, x.SubLedgerRequirementId });
+                    table.PrimaryKey("PK_SubLedgerRequirement_Account", x => new { x.AccountId, x.SubLedgerRequirementId });
                     table.ForeignKey(
-                        name: "FK_COA_SubLedgerRequirement_Account_COAs_AccountId",
+                        name: "FK_SubLedgerRequirement_Account_COAs_AccountId",
                         column: x => x.AccountId,
                         principalSchema: "FM",
                         principalTable: "COAs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_COA_SubLedgerRequirement_Account_SubLedgerRequirements_SubLedgerRequirementId",
+                        name: "FK_SubLedgerRequirement_Account_SubLedgerRequirements_SubLedgerRequirementId",
                         column: x => x.SubLedgerRequirementId,
                         principalSchema: "FM",
                         principalTable: "SubLedgerRequirements",
@@ -44,15 +52,17 @@ namespace CERP.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_COA_SubLedgerRequirement_Account_SubLedgerRequirementId",
-                table: "COA_SubLedgerRequirement_Account",
+                name: "IX_SubLedgerRequirement_Account_SubLedgerRequirementId",
+                schema: "FM",
+                table: "SubLedgerRequirement_Account",
                 column: "SubLedgerRequirementId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "COA_SubLedgerRequirement_Account");
+                name: "SubLedgerRequirement_Account",
+                schema: "FM");
 
             migrationBuilder.AddColumn<Guid>(
                 name: "COA_AccountId",

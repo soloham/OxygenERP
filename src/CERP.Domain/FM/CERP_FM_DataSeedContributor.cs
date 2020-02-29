@@ -222,11 +222,11 @@ namespace CERP.FM
                         IsDeleted = false
                     });
                 }
-                if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Liabilities"))
+                if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Long Term Liabilities"))
                 {
                     await _COASubCategoriesRepo.InsertAsync(new COA_AccountSubCategory(_guidGenerator.Create())
                     {
-                        Title = "Liabilities",
+                        Title = "Long Term Liabilities",
                         HeadAccount = curCOAHAs.First(x => x.AccountName == "Liabilities"),
                         CLI = 2,
                         SubCategoryId = 02,
@@ -234,6 +234,51 @@ namespace CERP.FM
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "202",
                         LocalizationKey = "FM:COA:SubCategory:202",
+                        IsDeleted = false
+                    });
+                }
+                if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Share Capital"))
+                {
+                    await _COASubCategoriesRepo.InsertAsync(new COA_AccountSubCategory(_guidGenerator.Create())
+                    {
+                        Title = "Share Capital",
+                        HeadAccount = curCOAHAs.First(x => x.AccountName == "Capital"),
+                        CLI = 2,
+                        SubCategoryId = 01,
+                        Branch = curBranches.First(x => x.Name == "Head"),
+                        Company = curCompanies.First(x => x.Name == "TestCorp"),
+                        SubCategoryCode = "301",
+                        LocalizationKey = "FM:COA:SubCategory:301",
+                        IsDeleted = false
+                    });
+                }
+                if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Partner's Current Account"))
+                {
+                    await _COASubCategoriesRepo.InsertAsync(new COA_AccountSubCategory(_guidGenerator.Create())
+                    {
+                        Title = "Partner's Current Account",
+                        HeadAccount = curCOAHAs.First(x => x.AccountName == "Capital"),
+                        CLI = 2,
+                        SubCategoryId = 02,
+                        Branch = curBranches.First(x => x.Name == "Head"),
+                        Company = curCompanies.First(x => x.Name == "TestCorp"),
+                        SubCategoryCode = "302",
+                        LocalizationKey = "FM:COA:SubCategory:302",
+                        IsDeleted = false
+                    });
+                }
+                if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Retained Earning"))
+                {
+                    await _COASubCategoriesRepo.InsertAsync(new COA_AccountSubCategory(_guidGenerator.Create())
+                    {
+                        Title = "Retained Earning",
+                        HeadAccount = curCOAHAs.First(x => x.AccountName == "Capital"),
+                        CLI = 2,
+                        SubCategoryId = 03,
+                        Branch = curBranches.First(x => x.Name == "Head"),
+                        Company = curCompanies.First(x => x.Name == "TestCorp"),
+                        SubCategoryCode = "303",
+                        LocalizationKey = "FM:COA:SubCategory:303",
                         IsDeleted = false
                     });
                 }
@@ -267,11 +312,11 @@ namespace CERP.FM
                         IsDeleted = false
                     });
                 }
-                if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Direct Cost"))
+                if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Direct Cost Items"))
                 {
                     await _COASubCategoriesRepo.InsertAsync(new COA_AccountSubCategory(_guidGenerator.Create())
                     {
-                        Title = "Direct Cost",
+                        Title = "Direct Cost Items",
                         HeadAccount = curCOAHAs.First(x => x.AccountName == "Direct Costs"),
                         CLI = 2,
                         SubCategoryId = 01,
@@ -279,6 +324,22 @@ namespace CERP.FM
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "601",
                         LocalizationKey = "FM:COA:SubCategory:601",
+                        IsDeleted = false
+                    });
+                }
+
+                if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Direct Cost Others"))
+                {
+                    await _COASubCategoriesRepo.InsertAsync(new COA_AccountSubCategory(_guidGenerator.Create())
+                    {
+                        Title = "Direct Cost Others",
+                        HeadAccount = curCOAHAs.First(x => x.AccountName == "Direct Costs"),
+                        CLI = 2,
+                        SubCategoryId = 02,
+                        Branch = curBranches.First(x => x.Name == "Head"),
+                        Company = curCompanies.First(x => x.Name == "TestCorp"),
+                        SubCategoryCode = "602",
+                        LocalizationKey = "FM:COA:SubCategory:602",
                         IsDeleted = false
                     });
                 }
@@ -510,33 +571,33 @@ namespace CERP.FM
 
 
             var curSLR = await _SubLedgerRequirements.GetListAsync();
-            if (curSLR == null || !curSLR.Any(x => x.Title == "Employee"))
+            //if (curSLR == null || !curSLR.Any(x => x.Title == "Employee"))
+            //{
+            //    await _SubLedgerRequirements.InsertAsync(new COA_SubLedgerRequirement(_guidGenerator.Create())
+            //    {
+            //        Title = "Employee",
+            //        TitleLocalizationKey = "FM:SubLedgerRequirements:Employee"
+
+            //    });
+            //}
+            if (curSLR == null || !curSLR.Any(x => x.Title == "Address Book"))
             {
                 await _SubLedgerRequirements.InsertAsync(new COA_SubLedgerRequirement(_guidGenerator.Create())
                 {
-                    Title = "Employee",
-                    TitleLocalizationKey = "FM:SubLedgerRequirements:Employee"
+                    Title = "Address Book",
+                    TitleLocalizationKey = "FM:SubLedgerRequirements:AddressBook"
 
                 });
             }
-            if (curSLR == null || !curSLR.Any(x => x.Title == "Department"))
-            {
-                await _SubLedgerRequirements.InsertAsync(new COA_SubLedgerRequirement(_guidGenerator.Create())
-                {
-                    Title = "Department",
-                    TitleLocalizationKey = "FM:SubLedgerRequirements:Department"
+            //if (curSLR == null || !curSLR.Any(x => x.Title == "Project"))
+            //{
+            //    await _SubLedgerRequirements.InsertAsync(new COA_SubLedgerRequirement(_guidGenerator.Create())
+            //    {
+            //        Title = "Project",
+            //        TitleLocalizationKey = "FM:SubLedgerRequirements:Project"
 
-                });
-            }
-            if (curSLR == null || !curSLR.Any(x => x.Title == "Project"))
-            {
-                await _SubLedgerRequirements.InsertAsync(new COA_SubLedgerRequirement(_guidGenerator.Create())
-                {
-                    Title = "Project",
-                    TitleLocalizationKey = "FM:SubLedgerRequirements:Project"
-
-                });
-            }
+            //    });
+            //}
             if (curSLR == null || !curSLR.Any(x => x.Title == "Fixed Assets"))
             {
                 await _SubLedgerRequirements.InsertAsync(new COA_SubLedgerRequirement(_guidGenerator.Create())
@@ -546,15 +607,15 @@ namespace CERP.FM
 
                 });
             }
-            if (curSLR == null || !curSLR.Any(x => x.Title == "Vendor"))
-            {
-                await _SubLedgerRequirements.InsertAsync(new COA_SubLedgerRequirement(_guidGenerator.Create())
-                {
-                    Title = "Vendor",
-                    TitleLocalizationKey = "FM:SubLedgerRequirements:Vendor"
+            //if (curSLR == null || !curSLR.Any(x => x.Title == "Vendor"))
+            //{
+            //    await _SubLedgerRequirements.InsertAsync(new COA_SubLedgerRequirement(_guidGenerator.Create())
+            //    {
+            //        Title = "Vendor",
+            //        TitleLocalizationKey = "FM:SubLedgerRequirements:Vendor"
 
-                });
-            }
+            //    });
+            //}
             if (curSLR == null || !curSLR.Any(x => x.Title == "Customer"))
             {
                 await _SubLedgerRequirements.InsertAsync(new COA_SubLedgerRequirement(_guidGenerator.Create())
@@ -564,24 +625,24 @@ namespace CERP.FM
 
                 });
             }
-            if (curSLR == null || !curSLR.Any(x => x.Title == "Item"))
-            {
-                await _SubLedgerRequirements.InsertAsync(new COA_SubLedgerRequirement(_guidGenerator.Create())
-                {
-                    Title = "Item",
-                    TitleLocalizationKey = "FM:SubLedgerRequirements:Item"
+            //if (curSLR == null || !curSLR.Any(x => x.Title == "Item"))
+            //{
+            //    await _SubLedgerRequirements.InsertAsync(new COA_SubLedgerRequirement(_guidGenerator.Create())
+            //    {
+            //        Title = "Item",
+            //        TitleLocalizationKey = "FM:SubLedgerRequirements:Item"
 
-                });
-            }
-            if (curSLR == null || !curSLR.Any(x => x.Title == "Location"))
-            {
-                await _SubLedgerRequirements.InsertAsync(new COA_SubLedgerRequirement(_guidGenerator.Create())
-                {
-                    Title = "Location",
-                    TitleLocalizationKey = "FM:SubLedgerRequirements:Location"
+            //    });
+            //}
+            //if (curSLR == null || !curSLR.Any(x => x.Title == "Location"))
+            //{
+            //    await _SubLedgerRequirements.InsertAsync(new COA_SubLedgerRequirement(_guidGenerator.Create())
+            //    {
+            //        Title = "Location",
+            //        TitleLocalizationKey = "FM:SubLedgerRequirements:Location"
 
-                });
-            }
+            //    });
+            //}
 
             var coas = await _COAsRepo.GetListAsync();
             

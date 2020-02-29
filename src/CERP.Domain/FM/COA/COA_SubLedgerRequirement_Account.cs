@@ -15,7 +15,7 @@ namespace CERP.FM.COA
         public Guid SubLedgerRequirementId { get; set; }
         public Guid AccountId { get; set; }
 
-        public COA_SubLedgerRequirement SubLedgerRequirement { get; set; }
-        public COA_Account Account { get; set; }
+        public virtual COA_SubLedgerRequirement SubLedgerRequirement { get; set; }
+        public virtual COA_Account Account { get; set; }
     }
 }

@@ -22,11 +22,13 @@ namespace CERP
 
         public IRepository<COA_AccountSubCategory, Guid> Repository { get; }
 
-        public List<COA_AccountSubCategory> GetSubCategories(Guid headAccount, int CLR, Guid empty)
+        public List<COA_AccountSubCategory_Dto> GetSubCategories(Guid headAccount, int CLR, Guid empty)
         {
             var all = Repository.ToList();
             var result = all.Where(x => x.HeadAccountId == headAccount).ToList();
-            return result;
+            var resultDtos = result.Select(MapToGetOutputDto).ToList();
+
+            return resultDtos;
         }
     }
 }

@@ -19,6 +19,7 @@ namespace CERP
 
             CreateMap<COA_Account, COA_Account_Dto>();
             CreateMap<COA_Account_Dto, COA_Account>();
+            CreateMap<COA_Account_Dto, COA_Account_UV_Dto>();
             CreateMap<COA_Account_UV_Dto, COA_Account>();
 
             CreateMap<COA_AccountSubCategory, COA_AccountSubCategory_Dto>();
@@ -37,20 +38,21 @@ namespace CERP
             CreateMap<Branch_Dto, Branch>();
             CreateMap<Branch_UV_Dto, Branch>();
 
-            CreateMap<COA_SubLedgerRequirement, COA_SubLedgerRequirement_Dto>();
-            CreateMap<COA_SubLedgerRequirement_Dto, COA_SubLedgerRequirement>();
-            CreateMap<COA_SubLedgerRequirement_UV_Dto, COA_SubLedgerRequirement>();
+            CreateMap<COA_SubLedgerRequirement, COA_SubLedgerRequirement_Dto>().ForMember(d => d.SubLedgerRequirementAccounts, opt => opt.Ignore());
+            CreateMap<COA_SubLedgerRequirement_Dto, COA_SubLedgerRequirement>().ForMember(d => d.SubLedgerRequirementAccounts, opt => opt.Ignore());
+            CreateMap<COA_SubLedgerRequirement_UV_Dto, COA_SubLedgerRequirement>().ForMember(d => d.SubLedgerRequirementAccounts, opt => opt.Ignore());
 
-            CreateMap<COA_SubLedgerRequirement_Account, COA_SubLedgerRequirement_Account_Dto>();
-            CreateMap<COA_SubLedgerRequirement_Account_Dto, COA_SubLedgerRequirement_Account>();
-            CreateMap<COA_SubLedgerRequirement_Account_UV_Dto, COA_SubLedgerRequirement_Account>();
+            CreateMap<COA_SubLedgerRequirement_Account, COA_SubLedgerRequirement_Account_Dto>().ForMember(d => d.Account, opt => opt.Ignore());
+            CreateMap<COA_SubLedgerRequirement_Account_Dto, COA_SubLedgerRequirement_Account>().ForMember(d => d.Account, opt => opt.Ignore());
+            CreateMap<COA_SubLedgerRequirement_Account_UV_Dto, COA_SubLedgerRequirement_Account>().ForMember(d => d.Account, opt => opt.Ignore());
 
             CreateMap<AccountStatementType, AccountStatementType_Dto>();
             CreateMap<AccountStatementType_Dto, AccountStatementType>();
             CreateMap<AccountStatementType_UV_Dto, AccountStatementType>();
 
-            CreateMap<DictionaryValue_Dto, DictionaryValue>();
             CreateMap<DictionaryValue, DictionaryValue_Dto>();
+            CreateMap<DictionaryValue_Dto, DictionaryValue>();
+
             //CreateMap<DictionaryValue_UV_Dto, DictionaryValue>();
 
         }

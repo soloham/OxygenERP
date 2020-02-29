@@ -12,14 +12,69 @@ namespace CERP.Web.Areas.FM.COA
     public class ListModel : CERPPageModel
     {
         private readonly coaAppService _coaAppService;
+        public Grid PrimaryDetailsGrid = new Grid();
+        public Grid SecondaryDetailsGrid = new Grid();
         public ListModel(coaAppService coaAppService)
         {
             _coaAppService = coaAppService;
         }
 
-        public async void OnGet()
+        public async Task OnGetEditAccount(string Guid_)
         {
-            List<COA_Account_Dto> COAs = await GetListOfAccountsAsync();
+            Guid id = Guid.Parse(Guid_);
+        }
+        public void OnGet()
+        {
+            List<COA_Account_Dto> COAs = _coaAppService.GetChartOfAccounts();
+
+            //TempData["AGUID"] = COAs.First().Id;
+
+            PrimaryDetailsGrid = new Grid()
+            {
+                DataSource = COAs,
+                QueryString = "Id",
+                EditSettings = new Syncfusion.EJ2.Grids.GridEditSettings() { },
+                Toolbar = new List<string>() { "Add", "Edit", "Delete", "Update", "Delete", "Group" },
+                Columns = GetPrimaryGridColumns()
+
+            };
+            SecondaryDetailsGrid = new Grid()
+            {
+                DataSource = COAs,
+                QueryString = "Id",
+                EditSettings = new Syncfusion.EJ2.Grids.GridEditSettings() {},
+                AllowExcelExport = true,
+                //AllowGrouping = true,
+                AllowPdfExport = true,
+                HierarchyPrintMode = HierarchyGridPrintMode.All, 
+                AllowSelection = true,
+                AllowFiltering = false,
+                AllowSorting = true,
+                AllowMultiSorting = true,
+                AllowResizing = true,
+                GridLines = GridLine.Both,
+                SearchSettings = new GridSearchSettings() { },
+                //Toolbar = new List<object>() { "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } },
+                ContextMenuItems = new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending", "Copy", "Edit", "Delete", "Save", "Cancel", "PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage", "LastPage", "NextPage" },
+                Columns = GetSecondaryGridColumns()
+
+            };
+            //List<COA_Account_Dto> COAs = (await _coaAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
+
+            foreach (var item in COAs)
+            {
+                bool AddressBook = false;
+                bool FA = false;
+                bool Customer = false;
+
+                AddressBook = item.SubLedgerRequirementAccounts.Any(x => x.SubLedgerRequirement.Title == "Address Book");
+                Customer = item.SubLedgerRequirementAccounts.Any(x => x.SubLedgerRequirement.Title == "Customer");
+                FA = item.SubLedgerRequirementAccounts.Any(x => x.SubLedgerRequirement.Title == "Fixed Assets");
+
+                item.AddressBook = AddressBook;
+                item.FA = FA;
+                item.Customer = Customer;
+            }
 
             ViewData["COAs_DS"] = COAs;
             ViewData["alertbutton"] = new
@@ -32,41 +87,165 @@ namespace CERP.Web.Areas.FM.COA
         public List<GridColumn> GetAccountColumns()
         {
             return new List<GridColumn>()
-           {
-               new GridColumn { Field = "AccountCode", Width = "130", HeaderText = "Account Code", TextAlign= TextAlign.Center, MinWidth="10"  },
-               new GridColumn { Field = "AccountName", Width = "135", HeaderText = "Account Name",  TextAlign= TextAlign.Center,  MinWidth="10"  }
-           };
+            {
+                new GridColumn { Width = "150", HeaderText = "Account",  TextAlign= TextAlign.Center,  MinWidth="10",
+                    Columns = new List<GridColumn>(){
+                        new GridColumn { Field = "AccountCode", Width = "130", HeaderText = "Account Code",  TextAlign= TextAlign.Center,  MinWidth="10"  },
+                        new GridColumn { Field = "AccountName", Width = "135", HeaderText = "Account Name",  TextAlign= TextAlign.Center,  MinWidth="10"  }
+                    }
+                }
+            };
         }
         public List<GridColumn> GetClassificationColumns()
         {
             return new List<GridColumn>()
             {
-                new GridColumn { Field = "CompanyCode", Width = "80", HeaderText = "Company Code", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "HeadAccount", Width = "150", HeaderText = "Head Account", TextAlign=TextAlign.Center, MinWidth="10"  },
-                new GridColumn { Field = "SubCategory", Width = "150", HeaderText = "Sub Category", TextAlign=TextAlign.Center, MinWidth="10"  },
-                new GridColumn { Field = "CashflowStatement", Width = "150", HeaderText = "Cashflow Statement", TextAlign=TextAlign.Center, MinWidth="10"  }
+                new GridColumn { HeaderText = "Classification", TextAlign= TextAlign.Center, MinWidth="10", 
+                    Columns = new List<GridColumn>() {
+                        new GridColumn { HeaderText = "Company", TextAlign= TextAlign.Center, MinWidth="10",
+                            Columns = new List<GridColumn>()
+                            {
+                                new GridColumn { Field = "Company.CompanyCode", Width = "80", HeaderText = "Code", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                                new GridColumn { Field = "Company.Name", HeaderText = "Name",  TextAlign= TextAlign.Center,  MinWidth="10"  }
+                            }
+                        },
+                        new GridColumn { HeaderText = "Head Account", TextAlign= TextAlign.Center, MinWidth="10",
+                            Columns = new List<GridColumn>()
+                            {
+                                new GridColumn { Field = "HeadAccount.HeadCode", Width = "80", HeaderText = "Code", TextAlign=TextAlign.Center, MinWidth="10"  },
+                                new GridColumn { Field = "HeadAccount.AccountName", HeaderText = "Name", TextAlign=TextAlign.Center, MinWidth="10"  },
+                            }
+                        },
+                        new GridColumn { HeaderText = "Primary Sub Account", TextAlign= TextAlign.Center, MinWidth="10",
+                            Columns = new List<GridColumn>()
+                            {
+                                new GridColumn { Field = "AccountSubCategory_1.SubCategoryId", Width = "80", HeaderText = "Code", TextAlign=TextAlign.Center, MinWidth="10"  },
+                                new GridColumn { Field = "AccountSubCategory_1.Title", HeaderText = "Name", TextAlign=TextAlign.Center, MinWidth="10"  },
+                            }
+                        },
+                        new GridColumn { HeaderText = "Secondary Sub Account", TextAlign= TextAlign.Center, MinWidth="10",
+                            Columns = new List<GridColumn>()
+                            {
+                                new GridColumn { Field = "AccountSubCategory_2.SubCategoryId", Width = "80", HeaderText = "Code", TextAlign=TextAlign.Center, MinWidth="10"  },
+                                new GridColumn { Field = "AccountSubCategory_2.Title", HeaderText = "Name", TextAlign=TextAlign.Center, MinWidth="10"  },
+                            }
+                        },
+                        new GridColumn { HeaderText = "Tertiary Sub Account", TextAlign= TextAlign.Center, MinWidth="10",
+                            Columns = new List<GridColumn>()
+                            {
+                                new GridColumn { Field = "AccountSubCategory_3.SubCategoryId", Width = "80", HeaderText = "Code", TextAlign=TextAlign.Center, MinWidth="10"  },
+                                new GridColumn { Field = "AccountSubCategory_3.Title", HeaderText = "Name", TextAlign=TextAlign.Center, MinWidth="10"  },
+                            }
+                        },
+                        new GridColumn { HeaderText = "Quaternary Sub Account", TextAlign= TextAlign.Center, MinWidth="10",
+                            Columns = new List<GridColumn>()
+                            {
+                                new GridColumn { Field = "AccountSubCategory_4.SubCategoryId", Width = "80", HeaderText = "Code", TextAlign=TextAlign.Center, MinWidth="10"  },
+                                new GridColumn { Field = "AccountSubCategory_4.Title", HeaderText = "Name", TextAlign=TextAlign.Center, MinWidth="10"  },
+                            }
+                        }
+                    }
+                }
             };
         }
-        public List<GridColumn> GetAttributesColumns()
+        public List<GridColumn> GetReportingColumns()
         {
             return new List<GridColumn>()
             {
-                new GridColumn { DisplayAsCheckBox = true, Field = "Posting", Width = "80", HeaderText = "Posting", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { DisplayAsCheckBox = true, Field = "Payment", Width = "150", HeaderText = "Payment", TextAlign=TextAlign.Center, MinWidth="10"  },
-                new GridColumn { DisplayAsCheckBox = true, Field = "Receipt", Width = "150", HeaderText = "Receipt", TextAlign=TextAlign.Center, MinWidth="10"  },
+                new GridColumn { HeaderText = "Reporting", TextAlign = TextAlign.Center,  MinWidth="10",
+                    Columns = new List<GridColumn>()
+                    {
+                        new GridColumn { HeaderText = "BS & PNL", TextAlign = TextAlign.Center,  MinWidth="10",
+                            Columns = new List<GridColumn>()
+                            {
+                                new GridColumn { Field = "AccountStatementType.Title", HeaderText = "Type", TextAlign = TextAlign.Center,  MinWidth="10" },
+                                new GridColumn { Field = "AccountStatementDetailType.Title", HeaderText = "Detail", TextAlign = TextAlign.Center,  MinWidth="10" },
+                            }
+                        },
+                        new GridColumn { HeaderText = "Cash Flow", TextAlign = TextAlign.Center,  MinWidth="10",
+                            Columns = new List<GridColumn>()
+                            {
+                                new GridColumn { Field = "CashFlowStatementType.Value", HeaderText = "Main", TextAlign = TextAlign.Center,  MinWidth="10" },
+                                new GridColumn { Field = "", HeaderText = "Detail", TextAlign = TextAlign.Center,  MinWidth="10" },
+                            }
+                        }
+                    }
+                },
             };
         }
-        public List<GridColumn> GetSubLedgersColumns()
+        public List<GridColumn> GetAccountAttributesColumns()
         {
             return new List<GridColumn>()
             {
-                new GridColumn { Field = "Employee", Width = "80", HeaderText = "Emp.", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "Dept.", Width = "150", HeaderText = "Dept.", TextAlign=TextAlign.Center, MinWidth="10"  },
-                new GridColumn { Field = "Project", Width = "150", HeaderText = "Project", TextAlign=TextAlign.Center, MinWidth="10"  },
-                new GridColumn { Field = "FA", Width = "150", HeaderText = "FA", TextAlign=TextAlign.Center, MinWidth="10"  },
-                new GridColumn { Field = "Vendor", Width = "150", HeaderText = "Vendor", TextAlign=TextAlign.Center, MinWidth="10"  },
-                new GridColumn { Field = "Customer", Width = "150", HeaderText = "Customer", TextAlign=TextAlign.Center, MinWidth="10"  }
+                new GridColumn { HeaderText = "Account Attributes", TextAlign=TextAlign.Center, MinWidth="10",
+                    Columns = new List<GridColumn>(){
+                        new GridColumn { DisplayAsCheckBox = true, Field = "AllowPosting", Width = "80", HeaderText = "Posting", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                        new GridColumn { DisplayAsCheckBox = true, Field = "AllowPayment", Width = "80", HeaderText = "Payment", TextAlign=TextAlign.Center, MinWidth="10"  },
+                        new GridColumn { DisplayAsCheckBox = true, Field = "AllowReceipt", Width = "80", HeaderText = "Receipt", TextAlign=TextAlign.Center, MinWidth="10"  },
+                    }
+                }
             };
+        }
+        public List<GridColumn> GetPostingAttributesColumns()
+        {
+            return new List<GridColumn>()
+            {
+                new GridColumn { HeaderText = "Posting Attributes", TextAlign=TextAlign.Center, MinWidth="10",
+                    Columns = new List<GridColumn>(){
+                        new GridColumn { DisplayAsCheckBox = true, Field = "AddressBook", Width = "80", HeaderText = "Address Book", TextAlign=TextAlign.Center, MinWidth="10"  },
+                        new GridColumn { DisplayAsCheckBox = true, Field = "FA", Width = "80", HeaderText = "Fixed Assets", TextAlign=TextAlign.Center, MinWidth="10"  },
+                        new GridColumn { DisplayAsCheckBox = true, Field = "Customer", Width = "80", HeaderText = "Customer", TextAlign=TextAlign.Center, MinWidth="10"  }
+                    }
+                }
+            };
+        }
+        public List<GridColumn> GetSubLedgerAccountColumns()
+        {
+            return new List<GridColumn>()
+            {
+                new GridColumn { Width = "200", HeaderText = "Subledger Account", TextAlign=TextAlign.Center, MinWidth="10",
+                    Columns = new List<GridColumn>(){
+                        new GridColumn { Field = "SubLedgerAccount.AccountCode", Width = "80", HeaderText = "Code", TextAlign=TextAlign.Center, MinWidth="10"  },
+                        new GridColumn { Field = "SubLedgerAccount.AccountName", Width = "150", HeaderText = "Name", TextAlign=TextAlign.Center, MinWidth="10"  }
+                    }
+                }
+            };
+        }
+        public List<GridColumn> GetCommandsColumns()
+        {
+            List<object> commands = new List<object>();
+            commands.Add(new { type = "Copy", buttonOption = new { iconCss = "e-icons e-copy", cssClass = "e-flat" } });
+            commands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
+            commands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+            commands.Add(new { type = "Save", buttonOption = new { iconCss = "e-icons e-update", cssClass = "e-flat" } });
+            commands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
+
+            return new List<GridColumn>()
+            {
+                new GridColumn { Width = "200", HeaderText = "Commands", TextAlign=TextAlign.Center, MinWidth="10", Commands = commands }
+            };
+        }
+
+        public List<GridColumn> GetPrimaryGridColumns()
+        {
+            List<GridColumn> gridColumns = new List<GridColumn>();
+
+            gridColumns.AddRange(GetAccountColumns());
+            gridColumns.AddRange(GetReportingColumns());
+            gridColumns.AddRange(GetAccountAttributesColumns());
+            gridColumns.AddRange(GetPostingAttributesColumns());
+            gridColumns.AddRange(GetCommandsColumns());
+
+            return gridColumns;
+        }
+        public List<GridColumn> GetSecondaryGridColumns()
+        {
+            List<GridColumn> gridColumns = new List<GridColumn>();
+
+            gridColumns.AddRange(GetClassificationColumns());
+            gridColumns.AddRange(GetSubLedgerAccountColumns());
+
+            return gridColumns;
         }
 
 

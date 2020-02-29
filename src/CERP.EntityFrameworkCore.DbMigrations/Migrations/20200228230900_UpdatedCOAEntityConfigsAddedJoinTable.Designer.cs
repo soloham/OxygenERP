@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    [Migration("20200228125514_UpdatedCOAEntityConfigsAddedJoinTable")]
+    [Migration("20200228230900_UpdatedCOAEntityConfigsAddedJoinTable")]
     partial class UpdatedCOAEntityConfigsAddedJoinTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -624,11 +624,39 @@ namespace CERP.Migrations
                     b.Property<Guid>("SubLedgerRequirementId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnName("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnName("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnName("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnName("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("AccountId", "SubLedgerRequirementId");
 
                     b.HasIndex("SubLedgerRequirementId");
 
-                    b.ToTable("COA_SubLedgerRequirement_Account");
+                    b.ToTable("SubLedgerRequirement_Account","FM");
                 });
 
             modelBuilder.Entity("CERP.FM.Company", b =>

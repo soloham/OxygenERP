@@ -36,6 +36,9 @@ using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.UI;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.VirtualFileSystem;
+using System.Collections.Specialized;
+using Microsoft.AspNetCore.Http;
+using System.Text;
 
 namespace CERP.Web
 {
@@ -208,6 +211,17 @@ namespace CERP.Web
             app.UseAuditing();
             app.UseAbpSerilogEnrichers();
             app.UseMvcWithDefaultRouteAndArea();
+        }
+    }
+
+    public static class WebExtensions
+    {
+        public static void RedirectWithData(string data, string url, HttpContext context)
+        {
+            context.Response.Clear();
+
+            
+            context.Response.WriteAsync(data);
         }
     }
 }

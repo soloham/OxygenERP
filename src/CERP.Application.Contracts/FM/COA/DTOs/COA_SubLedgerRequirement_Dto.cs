@@ -19,5 +19,7 @@ namespace CERP.FM.COA.DTOs
         }
         public string Title { get; set; }
         public string TitleLocalizationKey { get; set; }
+
+        public virtual ICollection<COA_SubLedgerRequirement_Account_Dto> SubLedgerRequirementAccounts { get; set; }
     }
 }

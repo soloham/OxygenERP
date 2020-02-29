@@ -8,7 +8,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace CERP.FM.COA.DTOs
 {
-    public class COA_AccountSubCategory_Dto : AuditedEntityDto<Guid> 
+    public class COA_AccountSubCategory_Dto : FullAuditedEntityDto<Guid> 
     {
         public COA_AccountSubCategory_Dto()
         {

@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using CERP.FM.COA;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -34,6 +36,20 @@ namespace CERP.EntityFrameworkCore
                 /* Remove "includeAllEntities: true" to create
                  * default repositories only for aggregate roots */
                 options.AddDefaultRepositories(includeAllEntities: true);
+
+                options.Entity<COA_Account>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.Company)
+                                                       .Include(p => p.Branch)
+                                                       .Include(p => p.HeadAccount)
+                                                       .Include(p => p.AccountSubCategory_1)
+                                                       .Include(p => p.AccountStatementType)
+                                                       .Include(p => p.AccountStatementDetailType)
+                                                       .Include(p => p.CashFlowStatementType)
+                                                       .Include(p => p.SubLedgerAccount)
+                                                       .Include(p => p.SubLedgerRequirementAccounts)
+                                                       .ThenInclude(y => (y as COA_SubLedgerRequirement_Account).SubLedgerRequirement);
+                });
             });
 
             Configure<AbpDbContextOptions>(options =>

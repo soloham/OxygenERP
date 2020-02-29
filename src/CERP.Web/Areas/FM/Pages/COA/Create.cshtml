@@ -30,32 +30,7 @@
     <link href="~/libs/smartwizard/dist/css/smart_wizard.min.css" rel="stylesheet" />
 
     <style>
-        #tblLines thead tr th {
-            text-align: center;
-            font-size: 10px !important;
-        }
-
-        #tblLines tbody tr td, #tblLines tfoot tr td {
-            padding: 0px 15px 0px 5px;
-            max-width: 150px;
-        }
-
-            #tblLines tbody tr td input, #tblLines tbody tr td select,
-            #tblLines tfoot tr td input, #tblLines tfoot tr td select {
-                border: 0px !important;
-                width: 100% !important;
-                padding: 5px;
-                background-color: transparent;
-                font-size: 12px;
-            }
-
-                #tblLines tbody tr td input[type=number] {
-                    text-align: right !important;
-                }
-
-        .smart-form #tblLines .checkbox:last-child, .smart-form #tblLines .radio:last-child {
-            margin-left: 0px !important;
-        }
+        
     </style>
 }
 @section scripts {
@@ -67,6 +42,30 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
+
+            var curStepNumber = 0;
+            function GetFormValidated() {
+                for (var i = 0; i < 4; i++) {
+
+                    var elmForm = $("#form-step-" + i);
+                    // stepDirection === 'forward' :- this condition allows to do the form validation
+                    // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
+                    var valid = true;
+                    elmForm.validator('validate');
+                    var elmErr = elmForm.find('.has-error');
+                    if (elmErr) {
+                        if (elmErr.length > 0) {
+                            // Form validation failed
+                            valid = false;
+                        }
+                        else {
+                            valid = true;
+                        }
+                    }
+                }
+                return valid;
+            }
+
             $('#coaForm').on('submit', function (e) {
             
                 e.preventDefault();
@@ -85,20 +84,25 @@
                 console.log(subCat1Code);
                 params += "&subCat1Code=" + subCat1Code;
 
-                console.log(params);
-                $.ajax({
-                    url: "@Url.Content("~")/COA/Create",
-                    async: false,
-                    type: "POST",
-                    data: params,
-                    success: function (data) {
-                        console.log(data);
-                    },
-                    error: function (err) {
-                        console.log(err);
-                    }
-                })
+                if (GetFormValidated() === true) {
 
+                    console.log(params);
+                    $.ajax({
+                        url: "@Url.Content("~")/COA/Create",
+                        async: false,
+                        type: "POST",
+                        data: params,
+                        success: function (data) {
+                            window.location = "@Url.Content("~")/COA";
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+                    })
+                }
+                else {
+                    console.log("Invalid Form");
+                }
             });
             //$(function () {
             //    $('#submitCOA').on('click', function (evt) {
@@ -145,6 +149,7 @@
             });
 
             $("#smartwizard").on("leaveStep", function (e, anchorObject, stepNumber, stepDirection) {
+                curStepNumber = stepNumber;
                 var elmForm = $("#form-step-" + stepNumber);
                 // stepDirection === 'forward' :- this condition allows to do the form validation
                 // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
@@ -156,7 +161,7 @@
                     if (elmErr) {
                         if (elmErr.length > 0) {
                             // Form validation failed
-                            valid = true;
+                            valid = false;
                         }
                         else {
                             valid = true;
@@ -229,10 +234,43 @@
             $("#headAccount").on("change", function () {
                 var headAccount = $('option:selected', this).val();
                 $("#subCat1").empty();
-                $("#subCat1").append("<option value=''>Select Account Sub Category</option>");
-                $.getJSON(`?handler=SubCategories&headAccount=${headAccount}`, (data) => {
+                $("#subCat1").append("<option value=''>Select Primary Sub Account</option>");
+                $.getJSON(`?handler=SubCategories&headAccount=${headAccount}&parentId=@Guid.Empty&CLR=2`, (data) => {
                     $.each(data, function (i, item) {
                         $("#subCat1").append(`<option value="${item.id}" data-categoryCode="${item.subCategoryId}">${item.subCategoryId} - ${item.title}</option>`);
+                    });
+                });
+            });
+
+            $("#subCat1").on("change", function () {
+                var subCat1 = $('option:selected', this).val();
+                $("#subCat2").empty();
+                $("#subCat2").append("<option value=''>Select Secondary Sub Account</option>");
+                $.getJSON(`?handler=SubCategories&headAccount=${headAccount}&parentID=${subCat1}&CLR=3`, (data) => {
+                    $.each(data, function (i, item) {
+                        $("#subCat2").append(`<option value="${item.id}" data-categoryCode="${item.subCategoryId}">${item.subCategoryId} - ${item.title}</option>`);
+                    });
+                });
+            });
+            
+            $("#subCat2").on("change", function () {
+                var subCat2 = $('option:selected', this).val();
+                $("#subCat3").empty();
+                $("#subCat3").append("<option value=''>Select Tertiary Sub Account</option>");
+                $.getJSON(`?handler=SubCategories&headAccount=${headAccount}&parentID=${subCat2}&CLR=4`, (data) => {
+                    $.each(data, function (i, item) {
+                        $("#subCat3").append(`<option value="${item.id}" data-categoryCode="${item.subCategoryId}">${item.subCategoryId} - ${item.title}</option>`);
+                    });
+                });
+            });
+            
+            $("#subCat3").on("change", function () {
+                var subCat3 = $('option:selected', this).val();
+                $("#subCat4").empty();
+                $("#subCat4").append("<option value=''>Select Quaternary Sub Account</option>");
+                $.getJSON(`?handler=SubCategories&headAccount=${headAccount}&parentID=${subCat3}&CLR=5`, (data) => {
+                    $.each(data, function (i, item) {
+                        $("#subCat4").append(`<option value="${item.id}" data-categoryCode="${item.subCategoryId}">${item.subCategoryId} - ${item.title}</option>`);
                     });
                 });
             });
@@ -256,7 +294,7 @@
 </div>
 
 <div class="site-content" style="background-color: rgb(253,253,253);">
-    <form id="coaForm" role="form" data-toggle="validator" method="post" accept-charset="utf-8">
+    <form id="coaForm" role="form" method="post" accept-charset="utf-8">
 
         <div id="smartwizard">
             <ul>
@@ -320,9 +358,9 @@
                                         </div>
                                         <div class="col-xs-6">
                                             <div class="form-group">
-                                                <label for="branch" class="control-label">Choose Company</label>
+                                                <label for="branch" class="control-label">Choose Branch</label>
                                                 <select name="branchId" id="branch" class="custom-select" data-error="Please select a company branch to associate with this account">
-                                                    <option value="" selected="selected">Choose Company</option>
+                                                    <option value="" selected="selected">Choose Branch</option>
                                                     @for (int i = 0; i < branches.Count; i++)
                                                     {
                                                         <option value="@branches[i].Id" data-branchCode="@branches[i].BranchCode">@branches[i].BranchCode - @branches[i].Name</option>
@@ -333,7 +371,7 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-xs-4">
+                                        <div class="col-xs-6">
                                             <div class="form-group">
                                                 <label for="headAccount" class="control-label">Choose Head Account</label>
                                                 <select name="headAccountId" id="headAccount" class="custom-select" data-error="Please select a head account for this account" required>
@@ -347,15 +385,7 @@
                                                 <div class="help-block with-errors"></div>
                                             </div>
                                         </div>
-                                        <div class="col-xs-4">
-                                            <div class="form-group">
-                                                <label for="subCategory" class="control-label">Choose Sub Category</label>
-                                                <select name="accountSubCat1Id" id="subCat1" class="custom-select" data-error="Please select a sub category for this account" required>
-                                                </select>
-                                                <div class="help-block with-errors"></div>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-4">
+                                        <div class="col-xs-6">
                                             <div class="form-group">
                                                 <label for="subLedgerAccount" class="control-label">Choose Sub Ledger Account</label>
                                                 <select name="subLedgerAccountId" id="subLedgerAccount" class="custom-select" data-error="Please select a sub ledger account to associate this account with">
@@ -367,6 +397,40 @@
                                                             <option value="@subledgerAccounts[i].Id">@subledgerAccounts[i].AccountCode - @subledgerAccounts[i].AccountName</option>
                                                         }
                                                     }
+                                                </select>
+                                                <div class="help-block with-errors"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <div class="form-group">
+                                                <label for="subCat1" class="control-label">Choose Primary Sub Account</label>
+                                                <select name="accountSubCat1Id" id="subCat1" class="custom-select" data-error="Please select a Primary Sub Account for this account" required>
+                                                </select>
+                                                <div class="help-block with-errors"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-3">
+                                            <div class="form-group">
+                                                <label for="subCat2" class="control-label">Choose Secondary Sub Account</label>
+                                                <select name="accountSubCat2Id" id="subCat2" class="custom-select" data-error="Please select a Secondary Sub Account for this account">
+                                                </select>
+                                                <div class="help-block with-errors"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-3">
+                                            <div class="form-group">
+                                                <label for="subCat1" class="control-label">Choose Tertiary Sub Account</label>
+                                                <select name="accountSubCat1Id" id="subCat1" class="custom-select" data-error="Please select a Tertiary Sub Account for this account">
+                                                </select>
+                                                <div class="help-block with-errors"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-3">
+                                            <div class="form-group">
+                                                <label for="subCat2" class="control-label">Choose Quaternary Sub Account</label>
+                                                <select name="accountSubCat2Id" id="subCat2" class="custom-select" data-error="Please select a Quaternary Sub Account for this account">
                                                 </select>
                                                 <div class="help-block with-errors"></div>
                                             </div>
@@ -525,10 +589,11 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <hr />
                                     <div class="row">
-                                        <div class="col-sm-12 col-sm-10">
+                                        <div class="col-sm-12">
                                             <div class="form-group">
-                                                <button id="submitCOA" type="submit" class="btn btn-default">Submit</button>
+                                                <button id="submitCOA" type="submit" class="btn btn-outline-success btn-block">Submit</button>
                                             </div>
                                         </div>
                                     </div>
