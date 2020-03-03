@@ -30,5 +30,16 @@ namespace CERP
 
             return resultDtos;
         }
+
+        public List<COA_AccountSubCategory_Dto> GetDetailedList()
+        {
+            return Repository.WithDetails().Select(MapToGetListOutputDto).ToList();
+        }
+
+        public async Task<COA_AccountSubCategory_Dto> CreateCategory(COA_AccountSubCategory_UV_Dto dto)
+        {
+            COA_AccountSubCategory entity = MapToEntity(dto);
+            return MapToGetOutputDto(await Repository.InsertAsync(entity));
+        }
     }
 }

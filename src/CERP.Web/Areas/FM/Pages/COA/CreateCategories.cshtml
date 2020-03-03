@@ -1,0 +1,203 @@
+﻿@page "/COA/Category/Create"
+@model CERP.Web.Areas.FM.Pages.COA.CreateCategoryModel
+@{
+    ViewData["Title"] = "Create Category";
+    ViewData["HeaderTitle"] = "Account Categories";
+    ViewData["SubTitle"] = "Create New Category";
+    
+    ViewData["IsList"] = false;
+    ViewData["IsCreate"] = false;
+
+    var coaInput = Model.COASubCatInput;
+
+    
+    ViewData["headAccounts"] = Model.HeadAccounts.OrderBy(x => x.HeadCode).ToList();
+    ViewData["subCategories"] = Model.SubCategories.OrderBy(x => x.SubCategoryId).ToList();
+    ViewData["companies"] = Model.Companies.OrderBy(x => x.CreationTime).ToList();
+}
+@section styles {
+    <link href="~/libs/smartwizard/dist/css/smart_wizard_theme_arrows.min.css" rel="stylesheet" />
+    <link href="~/libs/smartwizard/dist/css/smart_wizard.min.css" rel="stylesheet" />
+    @*<link href="~/libs/syncfusion/ej2-according/styles/fabric.css" rel="stylesheet" />*@
+
+    <style>
+        
+    </style>
+}
+@section scripts {
+    <script src="~/libs/smartwizard/dist/js/jquery.smartWizard.min.js"></script>
+    @*<script src="~/libs/syncfusion/ej2-according/scripts/ej2-according.min.js"></script>*@
+    <script type="text/javascript">
+        $(document).ready(function () {
+            
+
+            function UpdateSubCatCodeField() {
+                var companyCode = $('option:selected', $('#company')).attr('data-companyCode');
+                var cliCode = $('option:selected', $('#cli')).attr('data-cli');
+                var headAccCode = $('option:selected', $('#headAccount')).attr('data-headAccCode');
+                var parentCatCode = $('option:selected', $('#parentCat')).attr('data-categoryCode');
+
+                var subCatCode = "";
+                if (companyCode != null && companyCode != "") {
+                    subCatCode = companyCode;
+
+                    if (headAccCode != null && headAccCode != "") {
+                        subCatCode += "." + headAccCode;
+
+                        if (cliCode != null && cliCode != "") {
+                            subCatCode += cliCode;
+
+                            if (parentCatCode != null && parentCatCode != "") {
+                                subCatCode += parentCatCode;
+                            }
+                            else {
+                                subCatCode += "0";
+                            }
+                        }
+                        else {
+                            subCatCode += "00";
+                        }
+                    }
+                    else {
+                        subCatCode += "000";
+                    }
+
+                    subCatCode += " [Auto Generated]"
+                }
+                $("#subCatCode").attr("placeholder", subCatCode);
+
+                //console.log(subCatCode);
+            }
+
+            var curStepNumber = 0;
+            function GetFormValidated() {
+                for (var i = 0; i < 4; i++) {
+
+                    var elmForm = $("#form-step-" + i);
+                    // stepDirection === 'forward' :- this condition allows to do the form validation
+                    // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
+                    var valid = true;
+                    elmForm.validator('validate');
+                    var elmErr = elmForm.find('.has-error');
+                    if (elmErr) {
+                        if (elmErr.length > 0) {
+                            // Form validation failed
+                            valid = false;
+                        }
+                        else {
+                            valid = true;
+                        }
+                    }
+                }
+                return valid;
+            }
+
+            $('#subCatForm').on('submit', function (e) {
+
+                e.preventDefault();
+
+                var params = $('#subCatForm').serialize();
+
+                var companyCode = $('option:selected', $('#company')).attr('data-companyCode');
+                console.log(companyCode);
+                params += "&companyCode=" + companyCode;
+
+                var headAccCode = $('option:selected', $('#headAccount')).attr('data-headAccCode');
+                console.log(headAccCode);
+                params += "&headAccCode=" + headAccCode;
+                
+                var groupCatCode = $('option:selected', $('#parentCat')).attr('data-categoryCode');
+                console.log(groupCatCode);
+                params += "&parentCatId=" + groupCatCode;
+
+                if (GetFormValidated() === true) {
+
+                    console.log(params);
+                    $.ajax({
+                        url: "@Url.Content("~")/COA/Category/Create",
+                        async: false,
+                        type: "POST",
+                        data: params,
+                        success: function (data) {
+                            window.location = "@Url.Content("~")/COA/Categories";
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+                    })
+                }
+                else {
+                    console.log("Invalid Form");
+                }
+            });
+            
+            $("#company").on("change", function () {
+                UpdateSubCatCodeField()
+            });
+            $("#headAccount").on("change", function () {
+                
+                //$("#subCat1").empty();
+                //$("#subCat1").append("<option value=''>Select Sub Header Account</option>");
+                $.each($("#cli > option"), function (i, item) {
+                    $(this).show();
+                });
+                $("#cli").trigger('change');
+                UpdateSubCatCodeField();
+            });
+            $("#cli").on("change", function () {
+                var cli = $('option:selected', this).val();
+                
+                if (cli > 2) {
+                    $("#parentCatRow").show();
+                    if (!$("#parentCat > option#desc").length)
+                        $("#parentCat").prepend("<option value='' id='desc'>Select a Parent Sub Header Category</option>");
+
+                    var headerAccountId = $('option:selected', $("#headAccount")).val();
+                    $.each($("#parentCat > option"), function (i, item) {
+                        $(this).hide();
+
+                        var curCli = $(this).attr('data-cli');
+                        var headerId = $(this).attr('data-headerid');
+                        console.log(cli + " = " + curCli + " - " + headerId);
+                        if (curCli == cli-1 && headerId == headerAccountId) {
+                            $('#parentCat').val('');
+                            $(this).show();
+                        }
+                    });
+                    $("#parentCat").removeAttr("disabled")
+                }
+                else {
+                    $("#parentCat").val('');
+                    $("#parentCat").attr("disabled", "disabled")
+                    $("#parentCatRow").hide();
+                }
+                if (cli > 0) {
+                    $("#formContainer").show();
+                } else 
+                    $("#formContainer").hide();
+
+                UpdateSubCatCodeField();
+            });
+
+            
+        });
+    </script>
+}
+
+<div class="site-content" style="padding:0; background-color: rgb(253,253,253);">
+    <partial name="_DefaultPageHeader" />
+</div>
+
+<div class="site-content" style="background-color: rgb(253,253,253);">
+    <form id="subCatForm" role="form" method="post" accept-charset="utf-8">
+        <partial name="_AccCategoryFormPartial" />
+
+        <div class="panel-body">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <button id="submitCOA" type="submit" class="btn btn-outline-success btn-block">Create Category</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

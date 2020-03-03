@@ -1,0 +1,159 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    string catName = (string)ViewData["catName"];
+    string catNameLocalized = (string)ViewData["catNameLocalized"];
+    string categoryCode = (string)ViewData["catCode"];
+
+    var headAccounts = ViewData["headAccounts"] as List<CERP.FM.COA.DTOs.COA_HeadAccount_Dto>;
+    var subCategories = ViewData["subCategories"] as List<CERP.FM.COA.DTOs.COA_AccountSubCategory_Dto>;
+    var companies = ViewData["companies"] as List<CERP.FM.DTOs.Company_Dto>;
+
+    Guid? companyId = (Guid?)ViewData["companyId"];
+    Guid? headerAccountId = (Guid?)ViewData["headerAccountId"];
+    Guid? subHeaderAccountId = (Guid?)ViewData["subHeaderAccountId"];
+    Guid? accountGroupId = (Guid?)ViewData["accountGroupId"];
+}
+
+@section scripts{ 
+    <script>
+        
+    </script>
+}
+
+<div class="m-l-20 m-t-0">
+    <h2>Category Details</h2>
+    <p>
+        Provide details regarding the new category
+    </p>
+</div>
+<div class="panel-body" style="padding-bottom:0">
+    <div class="col-sm-12">
+        <div class="row m-b-15">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label for="cli" class="control-label">Choose Category Type</label>
+                    <select name="cli" id="cli" class="custom-select" data-error="Please select the type of category" required>
+                        <option value="">Select a Category Type</option>
+                        <option value="2">Sub Header Category</option>
+                        <option value="3">Group Category</option>
+                    </select>
+                    <div class="help-block with-errors"></div>
+                </div>
+            </div>
+        </div>
+        <div id="formContainer" style="display:none">
+            <hr />
+            <div class="row m-b-15">
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <label for="catName" class="control-label">Category Name</label>
+                        @if (!string.IsNullOrEmpty(catName))
+                        {
+                            <input name="Title" value="@catName" type="text" maxlength="15" class="form-control" id="catName" placeholder="Your Category Name" data-error="Please provide the name for this category" required>
+                        }
+                        else
+                        {
+                            <input name="Title" type="text" maxlength="15" class="form-control" id="catName" placeholder="Your Category Name" data-error="Please provide the name for this category" required>
+                        }
+                        <div class="help-block with-errors"></div>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <label class="control-label col-sm-12" style="text-align:right; padding:0;">Category Name in Arabic</label>
+
+                        @if (!string.IsNullOrEmpty(catNameLocalized))
+                        {
+                            <input name="LocalizationKey" dir="rtl" value="@catNameLocalized" type="text" maxlength="15" class="form-control" id="catNameLocalized" placeholder="Provide Category Name in Arabic" data-error="Please provide the name for this category">
+                        }
+                        else
+                        {
+                            <input name="LocalizationKey" dir="rtl" type="text" maxlength="15" class="form-control" id="catNameLocalized" placeholder="Provide Category Name in Arabic" data-error="Please provide the name for this category in arabic">
+                        }
+                        <div class="help-block with-errors"></div>
+                    </div>
+                </div>
+                @*<div class="col-xs-6">
+                        <div class="form-group">
+                            <label for="subCatCode" class="control-label">Category Code</label>
+                            @if (!string.IsNullOrEmpty(categoryCode))
+                            {
+                                <input name="subCatCode" pattern="^[_A-z0-9]{1,}$" maxlength="15" class="form-control" id="categoryCode" placeholder="@categoryCode [Auto Generated]" readonly="readonly" data-error="Please provide the code for this category">
+                            }
+                            else
+                            {
+                                <input type="text" pattern="^[_A-z0-9]{1,}$" class="form-control" id="categoryCode" placeholder="0.000 [Auto Generated]" readonly="readonly" data-error="Please provide the code for this category">
+                            }
+                        </div>
+                    </div>*@
+            </div>
+            <div class="row m-b-15">
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <label for="company" class="control-label">Choose Company</label>
+                        <select name="companyId" id="company" class="custom-select" data-error="Please select a company to associate with this category" required>
+                            <option value="" selected="selected">Choose Company</option>
+                            @for (int i = 0; i < companies.Count; i++)
+                            {
+                                @if (companyId != Guid.Empty && companies[i].Id == companyId)
+                                {
+                                    <option value="@companies[i].Id" data-companyCode="@companies[i].CompanyCode" selected>@companies[i].CompanyCode - @companies[i].Name</option>
+                                }
+                                else
+                                {
+                                    <option value="@companies[i].Id" data-companyCode="@companies[i].CompanyCode">@companies[i].CompanyCode - @companies[i].Name</option>
+                                }
+                            }
+                        </select>
+                        <div class="help-block with-errors"></div>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <label for="headAccount" class="control-label">Choose Header Account</label>
+                        <select name="headAccountId" id="headAccount" class="custom-select" data-error="Please select a Header Account for this category" required>
+                            <option value="" selected="selected">Choose Header Account</option>
+                            @for (int i = 0; i < headAccounts.Count; i++)
+                            {
+                                @if (headerAccountId != Guid.Empty && headAccounts[i].Id == headerAccountId)
+                                {
+                                    <option value="@headAccounts[i].Id" data-headAccCode="@((int)headAccounts[i].HeadCode)" data-headName="@(headAccounts[i].AccountName)" selected>@($"{(int)headAccounts[i].HeadCode} - {headAccounts[i].AccountName}")</option>
+                                }
+                                else
+                                {
+                                    <option value="@headAccounts[i].Id" data-headAccCode="@((int)headAccounts[i].HeadCode)" data-headName="@(headAccounts[i].AccountName)">@($"{(int)headAccounts[i].HeadCode} - {headAccounts[i].AccountName}")</option>
+                                }
+                            }
+                        </select>
+                        <div class="help-block with-errors"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="parentCatRow" style="display:none">
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label for="parentCat" class="control-label">Choose Group Parent Category</label>
+                        <select name="parentId" id="parentCat" class="custom-select" data-error="Please select a Group Parent Sub Header Category for this category" required>
+                            <option value="">Select a Group Parent Category</option>
+                            @for (int i = 0; i < subCategories.Count; i++)
+                            {
+                                @if (subHeaderAccountId != Guid.Empty && subCategories[i].Id == subHeaderAccountId)
+                                {
+                                    <option value="@subCategories[i].Id" data-cli="@((int)subCategories[i].CLI)" data-headerId="@(subCategories[i].HeadAccountId)" data-categoryCode="@(subCategories[i].SubCategoryId)" selected>@($"{(int)subCategories[i].SubCategoryId} - {subCategories[i].Title}")</option>
+                                }
+                                else
+                                {
+                                    <option value="@subCategories[i].Id" data-cli="@((int)subCategories[i].CLI)" data-headerId="@(subCategories[i].HeadAccountId)" data-categoryCode="@(subCategories[i].SubCategoryId)" hidden>@($"{(int)subCategories[i].SubCategoryId} - {subCategories[i].Title}")</option>
+                                }
+                            }
+                        </select>
+                        <div class="help-block with-errors"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr />
+    </div>
+</div>

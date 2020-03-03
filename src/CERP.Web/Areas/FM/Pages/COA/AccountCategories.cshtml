@@ -1,40 +1,32 @@
-﻿@page
+﻿@page "/COA/Categories"
 @addTagHelper *, Syncfusion.EJ2
-@model CERP.Web.Areas.FM.COA.ListModel
+@model CERP.Web.Areas.FM.Pages.COA.Categories.AccountCategoriesModel
 @{
-    ViewData["Title"] = "Chart of Accounts";
-    ViewData["HeaderTitle"] = "Chart of Accounts";
-    ViewData["SubTitle"] = "List of Accounts";
+    ViewData["Title"] = "Account Categories List";
+    ViewData["HeaderTitle"] = "Account Categories";
+    ViewData["SubTitle"] = "List of Account Categories";
     
     ViewData["IsList"] = false;
     ViewData["IsCreate"] = true;
-    ViewData["CreateNewLink"] = "/COA/Create";
+    ViewData["CreateNewLink"] = "/COA/CreateCategories";
 
     var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
 
 }
-
-@*<script>
-        var old = ejs.grids.Data.prototype.generateQuery;
-        ej.grids.Data.prototype.generateQuery = function () {
-            var query = old.call(this, true);
-            this.pageQuery(query);
-            return query;
-        };
-</script>*@
 @section styles {
     <link href="~/libs/syncfusion/ej2-grid/styles/fabric.css" rel="stylesheet" />
 
     <style>
-        .e-grid .e-headercell{  
+        .e-grid .e-headercell {
             background-color: #f5f5f5;
             /*font-size: 18px;*/
         }
-        /*.e-grid .e-rowcell{  
+        /*.e-grid .e-rowcell{
             background-color: #fcfcfc;
             /*font-size: 18px;*/
-        }*/
-    </style>    
+        }
+        */
+    </style>
     @*<link rel="stylesheet" href="~/styles/fabricUI/fabric.min.css"  />*@
     @*<link rel="stylesheet" href="~/styles/fabricUI/fabric-11.0.0.scoped.min.css" />*@
 }
@@ -43,19 +35,21 @@
     <script src="~/libs/syncfusion/ej2-grid/scripts/ej2.min.js"></script>
     <ejs-scripts></ejs-scripts>
 }
+
 <div class="site-content" style="padding:0; background-color: rgb(253,253,253);">
     <partial name="_DefaultPageHeader" />
 </div>
+
 <div class="site-content" style="padding-top:0; background-color: rgb(253,253,253);">
 
     <div class="control-section">
-        <ejs-grid id="Grid" dataSource="@ViewData["COAs_DS"]" enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()" 
-                  childGrid="@Model.SecondaryDetailsGrid" dataBound="dataBound" commandClick="commandClick" 
-                  allowExcelExport="true" allowGrouping="true" allowPdfExport="true" 
-                  hierarchyPrintMode="All" allowSelection="true" allowFiltering="true" 
-                  allowSorting="true" allowMultiSorting="true" gridLines="Both" 
-                  toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })" 
-                  contextMenuItems="@(new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending","Copy", "Edit", "Delete", "Save", "Cancel","PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage","LastPage", "NextPage"})" 
+        <ejs-grid id="Grid" dataSource="@ViewData["Categories_DS"]" enableAutoFill="true" columns="@Model.GetGridColumns()"
+                  dataBound="dataBound" commandClick="commandClick"
+                  allowExcelExport="true" allowGrouping="true" allowPdfExport="true"
+                  hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"
+                  allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                  toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
+                  contextMenuItems="@(new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending","Copy", "Edit", "Delete", "Save", "Cancel","PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage","LastPage", "NextPage"})"
                   allowPaging="true" allowResizing="true">
 
             <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
@@ -123,10 +117,9 @@
     }
 
     function commandClick(args) {
-        console.log(args);
         if (args.commandColumn.type == "Edit") {
             var params_ = JSON.stringify(args.rowData);  // display row data
-            window.location = "@Url.Content("~")/COA/Edit?AccountGuid=" + args.rowData.Id;
+            window.location = "@Url.Content("~")/COA/EditCategories?Id=" + args.rowData.Id;
             @*$.ajax({
                 url: "/?handler=EditAccountkj&Guid_=" + params_.Id,
                 async: true,

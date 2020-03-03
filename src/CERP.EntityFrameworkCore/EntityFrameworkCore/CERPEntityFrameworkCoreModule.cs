@@ -42,13 +42,20 @@ namespace CERP.EntityFrameworkCore
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.Company)
                                                        .Include(p => p.Branch)
                                                        .Include(p => p.HeadAccount)
-                                                       .Include(p => p.AccountSubCategory_1)
+                                                       .Include(p => p.AccountSubCategory)
+                                                       .Include(p => p.AccountGroupCategory)
                                                        .Include(p => p.AccountStatementType)
                                                        .Include(p => p.AccountStatementDetailType)
                                                        .Include(p => p.CashFlowStatementType)
                                                        .Include(p => p.SubLedgerAccount)
                                                        .Include(p => p.SubLedgerRequirementAccounts)
                                                        .ThenInclude(y => (y as COA_SubLedgerRequirement_Account).SubLedgerRequirement);
+                });
+
+                options.Entity<COA_AccountSubCategory>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.Company)
+                                                       .Include(p => p.HeadAccount);
                 });
             });
 

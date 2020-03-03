@@ -1,7 +1,4 @@
 ﻿@page
-@*@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers*@
-@*@addTagHelper *, Volo.Abp.AspNetCore.Mvc.UI*@
-@*@addTagHelper *, Volo.Abp.AspNetCore.Mvc.UI.Bootstrap*@
 @using CERP;
 @model CERP.Web.Areas.FM.Pages.COA.CreateModel
 @{
@@ -9,17 +6,26 @@
     ViewData["HeaderTitle"] = "Chart of Accounts";
     ViewData["SubTitle"] = "Create New Account";
 
-    var headAccounts = Model.HeadAccounts.OrderBy(x => x.HeadCode).ToList();
-    var subCategories = Model.SubCategories.OrderBy(x => x.SubCategoryId).ToList();
-    var companies = Model.Companies.OrderBy(x => x.CreationTime).ToList();
-    var branches = Model.Branches.OrderBy(x => x.CreationTime).ToList();
-    var subledgerAccounts = Model.SubLedgerAccounts.OrderBy(x => x.CreationTime).ToList();
+    ViewData["IsList"] = false;
+    ViewData["IsCreate"] = false;
+    
 
-    var subLedgerRequirements = Model.SubLedgerRequirements;
+    ViewData["headAccounts"] = Model.HeadAccounts.OrderBy(x => x.HeadCode).ToList();
+    ViewData["subCategories"] = Model.SubCategories.OrderBy(x => x.SubCategoryId).ToList();
+    ViewData["companies"] = Model.Companies.OrderBy(x => x.CreationTime).ToList();
+    ViewData["branches"] = Model.Branches.OrderBy(x => x.CreationTime).ToList();
+    ViewData["subledgerAccounts"] = Model.SubLedgerAccounts.OrderBy(x => x.CreationTime).ToList();
 
-    var accountStatementTypes = Model._accStatementTypeRepo.Where(x => x.ParentId == null).ToList();
-    var accountStatementDetails = Model._accStatementTypeRepo.Where(x => x.ParentId != null).ToList();
-    var cashflowStatementTypes = Model._dictionaryValuesRepo.Where(x => x.Key == AppSettings.CashflowStatementTypesKey).ToList();
+    ViewData["subLedgerRequirements"] = Model.SubLedgerRequirements;
+
+    ViewData["accountStatementTypes"] = Model._accStatementTypeRepo.Where(x => x.ParentId == null).ToList();
+    ViewData["accountStatementDetails"] = Model._accStatementTypeRepo.Where(x => x.ParentId != null).ToList();
+
+    ViewData["cashflowStatementTypes"] = Model._dictionaryValuesRepo.Where(x => x.Key == AppSettings.CashflowStatementTypesKey).ToList();
+    ViewData["cashflowStatementDetails"] = Model._dictionaryValuesRepo.Where(x => x.Key == AppSettings.CashflowStatementTypesKey).ToList();
+
+    ViewData["revenueStatementTypes"] = Model._dictionaryValuesRepo.Where(x => x.Key == AppSettings.CashflowStatementTypesKey).ToList();
+    ViewData["revenueStatementDetails"] = Model._dictionaryValuesRepo.Where(x => x.Key == AppSettings.CashflowStatementTypesKey).ToList();
 
     var accountNameAR = "";
 
@@ -28,20 +34,66 @@
 @section styles {
     <link href="~/libs/smartwizard/dist/css/smart_wizard_theme_arrows.min.css" rel="stylesheet" />
     <link href="~/libs/smartwizard/dist/css/smart_wizard.min.css" rel="stylesheet" />
+    @*<link href="~/libs/syncfusion/ej2-according/styles/fabric.css" rel="stylesheet" />*@
 
     <style>
-        
     </style>
 }
 @section scripts {
-    <!-- Syncfusion Essential JS 2 Scripts -->
-    <!-- Include SmartWizard JavaScript source -->
     <script src="~/libs/smartwizard/dist/js/jquery.smartWizard.min.js"></script>
-
-    @*<ejs-scripts></ejs-scripts>*@
-
+    @*<script src="~/libs/syncfusion/ej2-according/scripts/ej2-according.min.js"></script>*@
     <script type="text/javascript">
         $(document).ready(function () {
+
+            $.each($("#groupCat > option"), function (i, item) {
+                $(this).hide();
+            });
+            function UpdateAccountCodeField() {
+                var companyCode = $('option:selected', $('#company')).attr('data-companyCode');
+                var headAccCode = $('option:selected', $('#headAccount')).attr('data-headAccCode');
+                var subCatCode = $('option:selected', $('#subCat')).attr('data-categoryCode');
+                var groupCatCode = $('option:selected', $('#groupCat')).attr('data-categoryCode');
+                var subCat3Code = $('option:selected', $('#subCat3')).attr('data-categoryCode');
+                var subLedgerCode = $('option:selected', $('#subLedger')).attr('data-subLedgerCode');
+
+                var accountCode = "";
+                if (companyCode != null && companyCode != "") {
+                    accountCode = companyCode;
+
+                    if (headAccCode != null && headAccCode != "") {
+                        accountCode += "." + headAccCode;
+
+                        if (subCatCode != null && subCatCode != "") {
+                            accountCode += subCatCode.padStart(2, '0');
+
+                            if (groupCatCode != null && groupCatCode != "") {
+                                accountCode += groupCatCode.padStart(2, '0');
+                            }
+                            else {
+                                accountCode += "00";
+                            }
+
+                            if (subLedgerCode != null && subLedgerCode != "") {
+                                accountCode += "." + subLedgerCode;
+                            }
+                            else {
+                                accountCode += ".000";
+                            }
+                        }
+                        else {
+                            accountCode += "0000.000";
+                        }
+                    }
+                    else {
+                        accountCode += ".00000.000";
+                    }
+
+                    accountCode += " [Auto Generated]"
+                }
+                $("#accountCode").attr("placeholder", accountCode);
+
+                //console.log(accountCode);
+            }
 
             var curStepNumber = 0;
             function GetFormValidated() {
@@ -65,9 +117,25 @@
                 }
                 return valid;
             }
+            $("#allowGLPosting").change(function (e) {
+                if (!$(this)[0].checked) {
+                    $("#allowPayment").attr("disabled", "disabled");
+                    $("#allowPaymentRow").hide();
+                    $("#allowReceipt").attr("disabled", "disabled");
+                    $("#allowReceiptRow").hide();
+                    $("#postingAttr").hide();
+                } else {
+                    $("#allowPaymentRow").show();
+                    $("#allowPayment").removeAttr("disabled");
+                    $("#allowReceiptRow").show();
+                    $("#allowReceipt").removeAttr("disabled");
+                    $("#postingAttr").show();
+                }
+            });
+            $("#allowGLPosting").prop('checked', true);
 
             $('#coaForm').on('submit', function (e) {
-            
+
                 e.preventDefault();
 
                 var params = $('#coaForm').serialize();
@@ -80,9 +148,17 @@
                 console.log(headAccCode);
                 params += "&headAccCode=" + headAccCode;
 
-                var subCat1Code = $('option:selected', $('#subCat1')).attr('data-categoryCode');
-                console.log(subCat1Code);
-                params += "&subCat1Code=" + subCat1Code;
+                var subCatCode = $('option:selected', $('#subCat')).attr('data-categoryCode');
+                console.log(subCatCode);
+                params += "&subCatCode=" + subCatCode;
+                
+                var groupCatCode = $('option:selected', $('#groupCat')).attr('data-categoryCode');
+                console.log(groupCatCode);
+                params += "&groupCatCode=" + groupCatCode;
+
+                var accStatementTypeId = $('option:selected', $('#statementType')).val();
+                console.log(accStatementTypeId + " dsddsdfds");
+                params += "&accStatementTypeId=" + accStatementTypeId;
 
                 if (GetFormValidated() === true) {
 
@@ -114,10 +190,10 @@
             //            companyId: $("#company").val()
             //        };
 
-                    
+
             //        $.post('', $("#coaForm").serialize(), function () {
-            //            console.log($("#coaForm").serialize());    
-                        
+            //            console.log($("#coaForm").serialize());
+
             //        });
             //    });
             //});
@@ -129,13 +205,32 @@
             //            companyId: $("#company").val()
             //    };
             //    console.log(formData);
-            //    console.log(data);    
+            //    console.log(data);
             //    $.post('', data, function () {
-            //        console.log(data);    
+            //        console.log(data);
             //    });
             //    return false;
             //};
             // Step show event
+
+            // Smart Wizard
+            $('#smartwizard').smartWizard({
+                selected: 0,
+                theme: 'arrows',
+                transitionEffect: 'slide',
+                showStepURLhash: false,
+                toolbarSettings: {
+                    showNextButton: false, // show/hide a Next button
+                    showPreviousButton: false, // show/hide a Previous button
+                },
+                anchorSettings: {
+                    anchorClickable: true, // Enable/Disable anchor navigation
+                    markDoneStep: true, // add done css
+                    markAllPreviousStepsAsDone: false, // When a step selected by url hash, all previous steps are marked done
+                    removeDoneStepOnNavigateBack: true, // While navigate back done step after active step will be cleared
+                    enableAnchorOnDoneStep: true, // Enable/Disable the done steps navigation
+                }
+            });
             $("#smartwizard").on("showStep", function (e, anchorObject, stepNumber, stepDirection, stepPosition) {
                 //alert("You are on step "+stepNumber+" now");
                 if (stepPosition === 'first') {
@@ -147,7 +242,6 @@
                     $("#next-btn").removeClass('disabled');
                 }
             });
-
             $("#smartwizard").on("leaveStep", function (e, anchorObject, stepNumber, stepDirection) {
                 curStepNumber = stepNumber;
                 var elmForm = $("#form-step-" + stepNumber);
@@ -170,8 +264,6 @@
                 }
                 return valid;
             });
-
-
             $("#smartwizard").on("endReset", function () {
                 $("#next-btn").removeClass('disabled');
             });
@@ -184,24 +276,6 @@
                 .addClass('btn btn-danger')
                 .on('click', function () { $('#smartwizard').smartWizard("reset"); });
 
-
-            // Smart Wizard
-            $('#smartwizard').smartWizard({
-                selected: 0,
-                theme: 'arrows',
-                transitionEffect: 'slide',
-                showStepURLhash: false,
-                toolbarSettings: {
-                },
-                anchorSettings: {
-                    markDoneStep: true, // add done css
-                    markAllPreviousStepsAsDone: false, // When a step selected by url hash, all previous steps are marked done
-                    removeDoneStepOnNavigateBack: true, // While navigate back done step after active step will be cleared
-                    enableAnchorOnDoneStep: false, // Enable/Disable the done steps navigation
-                }
-            });
-
-
             // External Button Events
             $("#reset-btn").on("click", function () {
                 // Reset wizard
@@ -209,18 +283,20 @@
                 $("#next-btn").removeClass('disabled');
                 return true;
             });
-
             $("#prev-btn").on("click", function () {
                 // Navigate previous
                 $('#smartwizard').smartWizard("prev");
                 return true;
             });
-
             $("#next-btn").on("click", function () {
                 // Navigate next
                 $('#smartwizard').smartWizard("next");
                 return true;
             });
+
+            $("#customToolbar").removeClass("tab-pane");
+            $("#customToolbar").removeClass("step-content");
+            $("#customToolbar").addClass("col-sm-12");
 
             //$("#theme_selector").on("change", function () {
             //    // Change theme
@@ -231,52 +307,89 @@
             //// Set selected theme on page refresh
             //$("#theme_selector").change();
 
+            $("#company").on("change", function () {
+                UpdateAccountCodeField()
+            });
             $("#headAccount").on("change", function () {
                 var headAccount = $('option:selected', this).val();
-                $("#subCat1").empty();
-                $("#subCat1").append("<option value=''>Select Primary Sub Account</option>");
-                $.getJSON(`?handler=SubCategories&headAccount=${headAccount}&parentId=@Guid.Empty&CLR=2`, (data) => {
-                    $.each(data, function (i, item) {
-                        $("#subCat1").append(`<option value="${item.id}" data-categoryCode="${item.subCategoryId}">${item.subCategoryId} - ${item.title}</option>`);
-                    });
-                });
-            });
+                var headAccountName = $('option:selected', this).attr("data-headName");
+                //$("#subCat").empty();
+                //$("#subCat").append("<option value=''>Select Sub Header Account</option>");
+                $.each($("#subCat > option"), function (i, item) {
+                    $(this).hide();
 
-            $("#subCat1").on("change", function () {
-                var subCat1 = $('option:selected', this).val();
-                $("#subCat2").empty();
-                $("#subCat2").append("<option value=''>Select Secondary Sub Account</option>");
-                $.getJSON(`?handler=SubCategories&headAccount=${headAccount}&parentID=${subCat1}&CLR=3`, (data) => {
-                    $.each(data, function (i, item) {
-                        $("#subCat2").append(`<option value="${item.id}" data-categoryCode="${item.subCategoryId}">${item.subCategoryId} - ${item.title}</option>`);
-                    });
+                    var optionType = $(this).attr('data-headId');
+                    if (optionType == headAccount || optionType == '') {
+                        $('#subCat').val('');
+                        $(this).show();
+                    }
                 });
-            });
-            
-            $("#subCat2").on("change", function () {
-                var subCat2 = $('option:selected', this).val();
-                $("#subCat3").empty();
-                $("#subCat3").append("<option value=''>Select Tertiary Sub Account</option>");
-                $.getJSON(`?handler=SubCategories&headAccount=${headAccount}&parentID=${subCat2}&CLR=4`, (data) => {
-                    $.each(data, function (i, item) {
-                        $("#subCat3").append(`<option value="${item.id}" data-categoryCode="${item.subCategoryId}">${item.subCategoryId} - ${item.title}</option>`);
-                    });
+                $.getJSON(`?handler=SubCategoriesAndStatementType&headAccount=${headAccount}&headAccountName=${headAccountName}&parentId=@Guid.Empty&CLR=2`, (data) => {           
+                    $("#statementType").val(data.item2);
+                    SelectStatementDetail();
                 });
+
+                UpdateAccountCodeField();
             });
-            
+            $("#subCat").on("change", function () {
+               var subCat = $('option:selected', this).val();
+
+                if (!$("#groupCat > option#desc").length)
+                    $("#groupCat").prepend("<option value='' id='desc'>Select a Sub Header Group Category</option>");
+
+                $.each($("#groupCat > option"), function (i, item) {
+                    $(this).hide();
+
+                    var optionType = $(this).attr('data-parentId');
+                    if (optionType == subCat || optionType == '') {
+                        $('#groupCat').val('');
+                        $(this).show();
+                    }
+                });
+
+                UpdateAccountCodeField();
+            });
+            $("#groupCat").on("change", function () {
+                var groupCat = $('option:selected', this).val();
+
+                if (!$("#subCat3 > option#desc").length)
+                    $("#subCat3").prepend("<option value='' id='desc'>Select Account Group</option>");
+                $.each($("#subCat3 > option"), function (i, item) {
+                    $(this).hide();
+
+                    var optionType = $(this).attr('data-parentId');
+                    if (optionType == groupCat || optionType == '') {
+                        $('#subCat3').val('');
+                        $(this).show();
+                    }
+                });
+
+                UpdateAccountCodeField();
+            });
             $("#subCat3").on("change", function () {
                 var subCat3 = $('option:selected', this).val();
-                $("#subCat4").empty();
-                $("#subCat4").append("<option value=''>Select Quaternary Sub Account</option>");
-                $.getJSON(`?handler=SubCategories&headAccount=${headAccount}&parentID=${subCat3}&CLR=5`, (data) => {
-                    $.each(data, function (i, item) {
-                        $("#subCat4").append(`<option value="${item.id}" data-categoryCode="${item.subCategoryId}">${item.subCategoryId} - ${item.title}</option>`);
-                    });
+                
+                if (!$("#subCat4 > option#desc").length)
+                    $("#subCat4").prepend("<option value='' id='desc'>Select Tertiary Sub Account</option>");
+                $.each($("#subCat4 > option"), function (i, item) {
+                    $(this).hide();
+
+                    var optionType = $(this).attr('data-parentId');
+                    if (optionType == subCat3 || optionType == '') {
+                        $('#subCat4').val('');
+                        $(this).show();
+                    }
                 });
+
+                UpdateAccountCodeField();
             });
 
             $("#statementType").on("change", function () {
-                var statementType = $(this).val();
+                SelectStatementDetail();
+            });
+
+           function SelectStatementDetail() {
+               var statementType = $("#statementType").val();
                 $("#statementDetails").empty();
                 $("#statementDetails").append("<option value=''>Select Statement Details</option>");
                 $.getJSON(`?handler=StatementDetails&statementType=${statementType}`, (data) => {
@@ -284,9 +397,10 @@
                         $("#statementDetails").append(`<option value="${item.id}">${item.title}</option>`);
                     });
                 });
-            });
+           }
         });
     </script>
+    <ejs-scripts></ejs-scripts>
 }
 
 <div class="site-content" style="padding:0; background-color: rgb(253,253,253);">
@@ -300,311 +414,45 @@
             <ul>
                 <li><a href="#step-1">Step 1<br /><p style="font-size: 15px">Account Details</p></a></li>
                 <li><a href="#step-2">Step 2<br /><p style="font-size: 15px">Required Information</p></a></li>
-                <li><a href="#step-3">Step 3<br /><p style="font-size: 15px">Account Nature</p></a></li>
-                <li><a href="#step-4">Step 4<br /><p style="font-size: 15px">Reporting Details</p></a></li>
+                <li><a href="#step-3">Step 3<br /><p style="font-size: 15px">Reporting Details</p></a></li>
             </ul>
 
             <div>
                 <div id="step-1">
-                    <div class="m-l-20">
-                        <h2>Account Details</h2>
-                        <p>
-                            Provide generic details regarding your account
-                        </p>
-                    </div>
-
                     <div id="form-step-0" role="form" data-toggle="validator">
-                        <div class="panel-body" style="padding-bottom:0">
-                            <div class="row" style="margin-bottom:0">
-                                <div class="col-sm-12">
-
-                                    <div class="row m-b-15">
-                                        <div class="col-xs-12">
-                                            <div class="form-group">
-                                                <label for="accountCode" class="control-label">Account Code</label>
-                                                <input type="text" pattern="^[_A-z0-9]{1,}$" class="form-control" id="accountCode" placeholder="Auto Generated" readonly="readonly" data-error="Please provide the code for this account" required>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row m-b-15">
-                                        <div class="col-xs-6">
-                                            <div class="form-group">
-                                                <label for="accountName" class="control-label">Account Name in English</label>
-                                                <input name="accountName" type="text" maxlength="15" class="form-control" id="accountName" placeholder="Your Account Name" data-error="Please provide the name for this account" required>
-                                                <div class="help-block with-errors"></div>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-6">
-                                            <div class="form-group">
-                                                <label class="control-label col-sm-12" style="text-align:right; padding:0;">Account Name in Arabic</label>
-                                                <input name="accountNameLocalizationKey" type="text" class="form-control arabicFont" dir="rtl" id="accountNameAR" placeholder="Your Account Name in Arabic">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <hr />
-                                    <div class="row m-b-15">
-                                        <div class="col-xs-6">
-                                            <div class="form-group">
-                                                <label for="company" class="control-label">Choose Company</label>
-                                                <select name="companyId" id="company" class="custom-select" data-error="Please select a company to associate with this account" required>
-                                                    <option value="" selected="selected">Choose Company</option>
-                                                    @for (int i = 0; i < companies.Count; i++)
-                                                    {
-                                                        <option value="@companies[i].Id" data-companyCode="@companies[i].CompanyCode">@companies[i].CompanyCode - @companies[i].Name</option>
-                                                    }
-                                                </select>
-                                                <div class="help-block with-errors"></div>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-6">
-                                            <div class="form-group">
-                                                <label for="branch" class="control-label">Choose Branch</label>
-                                                <select name="branchId" id="branch" class="custom-select" data-error="Please select a company branch to associate with this account">
-                                                    <option value="" selected="selected">Choose Branch</option>
-                                                    @for (int i = 0; i < branches.Count; i++)
-                                                    {
-                                                        <option value="@branches[i].Id" data-branchCode="@branches[i].BranchCode">@branches[i].BranchCode - @branches[i].Name</option>
-                                                    }
-                                                </select>
-                                                <div class="help-block with-errors"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-xs-6">
-                                            <div class="form-group">
-                                                <label for="headAccount" class="control-label">Choose Head Account</label>
-                                                <select name="headAccountId" id="headAccount" class="custom-select" data-error="Please select a head account for this account" required>
-                                                    <option value="" selected="selected">Choose Head Account</option>
-                                                    @for (int i = 0; i < headAccounts.Count; i++)
-                                                    {
-                                                        <option value="@headAccounts[i].Id" data-headAccCode="@((int)headAccounts[i].HeadCode)">@($"{(int)headAccounts[i].HeadCode} - {headAccounts[i].AccountName}")</option>
-
-                                                    }
-                                                </select>
-                                                <div class="help-block with-errors"></div>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-6">
-                                            <div class="form-group">
-                                                <label for="subLedgerAccount" class="control-label">Choose Sub Ledger Account</label>
-                                                <select name="subLedgerAccountId" id="subLedgerAccount" class="custom-select" data-error="Please select a sub ledger account to associate this account with">
-                                                    <option value="" selected="selected">Choose Sub Ledger Account</option>
-                                                    @if (Model.SubLedgerAccounts != null)
-                                                    {
-                                                        for (int i = 0; i < subledgerAccounts.Count; i++)
-                                                        {
-                                                            <option value="@subledgerAccounts[i].Id">@subledgerAccounts[i].AccountCode - @subledgerAccounts[i].AccountName</option>
-                                                        }
-                                                    }
-                                                </select>
-                                                <div class="help-block with-errors"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-xs-3">
-                                            <div class="form-group">
-                                                <label for="subCat1" class="control-label">Choose Primary Sub Account</label>
-                                                <select name="accountSubCat1Id" id="subCat1" class="custom-select" data-error="Please select a Primary Sub Account for this account" required>
-                                                </select>
-                                                <div class="help-block with-errors"></div>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-3">
-                                            <div class="form-group">
-                                                <label for="subCat2" class="control-label">Choose Secondary Sub Account</label>
-                                                <select name="accountSubCat2Id" id="subCat2" class="custom-select" data-error="Please select a Secondary Sub Account for this account">
-                                                </select>
-                                                <div class="help-block with-errors"></div>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-3">
-                                            <div class="form-group">
-                                                <label for="subCat1" class="control-label">Choose Tertiary Sub Account</label>
-                                                <select name="accountSubCat1Id" id="subCat1" class="custom-select" data-error="Please select a Tertiary Sub Account for this account">
-                                                </select>
-                                                <div class="help-block with-errors"></div>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-3">
-                                            <div class="form-group">
-                                                <label for="subCat2" class="control-label">Choose Quaternary Sub Account</label>
-                                                <select name="accountSubCat2Id" id="subCat2" class="custom-select" data-error="Please select a Quaternary Sub Account for this account">
-                                                </select>
-                                                <div class="help-block with-errors"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <partial name="_AccountDetailsStepPartial" />
                     </div>
                 </div>
                 <div id="step-2">
-                    <div class="m-l-20">
-                        <h2>Required Information</h2>
-                        <p>
-                            Provide specific details regarding your account
-                        </p>
-                    </div>
                     <div id="form-step-1" role="form" data-toggle="validator">
-                        <div class="panel-body" style="padding-bottom:0">
-                            <div class="row" style="margin-bottom:0">
-                                <div class="col-sm-12">
-                                    <div class="smart-form">
-                                        <table class="table table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th style="width: 32px"></th>
-                                                    <th style="width: 100%; text-align:center">Sub Ledger Type</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @for (int i =0; i < subLedgerRequirements.Count; i++)
-                                                {
-                                                    <tr>
-                                                        <td style="background-color: whitesmoke;">
-                                                            <label class="custom-control custom-control-primary custom-checkbox active m-l-5">
-                                                                <input name="requirement:@i" class="custom-control-input" type="checkbox" data-requirementId="@subLedgerRequirements[i].Id">
-                                                                <span class="custom-control-indicator"></span>
-                                                            </label>
-                                                        </td>
-                                                        <td>@subLedgerRequirements[i].Title</td>
-                                                    </tr>
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <partial name="_RequiredInfoStepPartial" />
                     </div>
                 </div>
-                <div id="step-3">
-                    <div class="m-l-20">
-                        <h2>Account Nature</h2>
-                        <p>
-                            Specify the nature of your account
-                        </p>
-                    </div>
-                    <div id="form-step-2" role="form" data-toggle="validator">
-                        <div class="panel-body" style="padding-bottom:0">
-                            <div class="row" style="margin-bottom:0">
-                                <div class="col-sm-12">
-                                    <div class="smart-form">
-                                        <table class="table table-hover">
-                                            <tbody>
-                                                <tr>
-                                                    <td style="background-color: whitesmoke; width:10px;">
-                                                        <label class="custom-control custom-control-primary custom-checkbox active m-l-5">
-                                                            <input name="allowPosting" class="custom-control-input" type="checkbox">
-                                                            <span class="custom-control-indicator"></span>
-                                                        </label>
-                                                    </td>
-                                                    <td>Allow GL Posting</td>
-                                                </tr>
-                                                @*<tr>
-                                                    <td style="background-color: whitesmoke">
-                                                        <label class="custom-control custom-control-primary custom-checkbox active m-l-5">
-                                                            <input name="allowAutomatedPosting" class="custom-control-input" type="checkbox">
-                                                            <span class="custom-control-indicator"></span>
-                                                        </label>
-                                                    </td>
-                                                    <td>Allow Automated Posting</td>
-                                                </tr>*@
-                                                <tr>
-                                                    <td style="background-color: whitesmoke">
-                                                        <label class="custom-control custom-control-primary custom-checkbox active m-l-5">
-                                                            <input name="allowPayment" class="custom-control-input" type="checkbox">
-                                                            <span class="custom-control-indicator"></span>
-                                                        </label>
-                                                    </td>
-                                                    <td>Allow Payment</td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="background-color: whitesmoke">
-                                                        <label class="custom-control custom-control-primary custom-checkbox active m-l-5">
-                                                            <input name="allowReceipt" class="custom-control-input" type="checkbox">
-                                                            <span class="custom-control-indicator"></span>
-                                                        </label>
-                                                    </td>
-                                                    <td>Allow Receipt</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="step-4" class="">
-                    <div class="m-l-20">
-                        <h2>Reporting Details</h2>
-                        <p>
-                            Provide the types of reports you want from this account
-                        </p>
-                    </div>
-
+                <div id="step-3" class="">
                     <div id="form-step-0" role="form" data-toggle="validator">
-                        <div class="panel-body" style="padding-bottom:0">
-                            <div class="row" style="margin-bottom:0">
-                                <div class="col-sm-12">
-                                    <div class="row m-b-15">
-                                        <div class="col-xs-12">
-                                            <div class="form-group">
-                                                <label for="statementType" class="control-label">Choose Statement Type</label>
-                                                <select name="accountStatementTypeId" id="statementType" class="custom-select" data-error="Please select the type of statement from this account" required>
-                                                    <option value="" selected="selected">Choose Statement Type</option>
-                                                    @for (int i = 0; i < accountStatementTypes.Count; i++)
-                                                    {
-                                                        <option value="@accountStatementTypes[i].Id">@accountStatementTypes[i].Title</option>
-                                                    }
-                                                </select>
-                                                <div class="help-block with-errors"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-xs-6">
-                                            <div class="form-group">
-                                                <label for="statementDetails" class="control-label">Choose Statement Detail</label>
-                                                <select name="accountStatementDetailTypeId" id="statementDetails" class="custom-select" data-error="Please select statement detail for this account" required>
-                                                </select>
-                                                <div class="help-block with-errors"></div>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-6">
-                                            <div class="form-group">
-                                                <label for="cashflowStatementType" class="control-label">Choose Cashflow Statement Type</label>
-                                                <select name="cashFlowStatementTypeId" id="cashflowStatementType" class="custom-select" data-error="Please select cashflow statement type for this account" required>
-                                                    <option value="" selected="selected">Choose Cashflow Statement Type</option>
-                                                    @for (int i = 0; i < cashflowStatementTypes.Count; i++)
-                                                    {
-                                                        <option value="@cashflowStatementTypes[i].Id">@cashflowStatementTypes[i].Value</option>
-                                                    }
-                                                </select>
-                                                <div class="help-block with-errors"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <hr />
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <div class="form-group">
-                                                <button id="submitCOA" type="submit" class="btn btn-outline-success btn-block">Submit</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                        <partial name="_ReportingDetailsStepPartial" />
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <button id="submitCOA" type="submit" class="btn btn-outline-success btn-block">Create Account</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <div id="customToolbar">
+                    <hr />
+                    <div class="col-sm-6">
+                        <button class="btn btn-outline-light btn-block disabled" id="prev-btn">Previous</button>
+                    </div>
+                    <div class="col-sm-6">
+                        <button class="btn btn-primary btn-block" id="next-btn">Next</button>
+                    </div>
+                </div>
             </div>
+
+
         </div>
+
 
     </form>
 </div>

@@ -43,12 +43,7 @@ namespace CERP.EntityFrameworkCore
                 b.Property(p => p.AccountName)
                     .IsRequired();
 
-                b.Property(p => p.AccountSubCat2Id)
-                .IsRequired(false);
-                b.Property(p => p.AccountSubCat3Id)
-                .IsRequired(false);
-                b.Property(p => p.AccountSubCat4Id)
-                .IsRequired(false);
+                b.Property(p => p.AccountGroupCatId);
 
                 b.Property(p => p.AllowPosting)
                     .IsRequired();

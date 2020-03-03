@@ -23,18 +23,12 @@ namespace CERP.FM.COA
         public virtual COA_HeadAccount HeadAccount { get; set; }
         public Guid HeadAccountId { get; set; }
 
-        [ForeignKey("AccountSubCat1Id")]
-        public virtual COA_AccountSubCategory AccountSubCategory_1 { get; set; }
-        public Guid AccountSubCat1Id { get; set; }
-        [ForeignKey("AccountSubCat2Id")]
-        public virtual COA_AccountSubCategory AccountSubCategory_2 { get; set; }
-        public Guid? AccountSubCat2Id { get; set; }
-        [ForeignKey("AccountSubCat3Id")]
-        public virtual COA_AccountSubCategory AccountSubCategory_3 { get; set; }
-        public Guid? AccountSubCat3Id { get; set; }
-        [ForeignKey("AccountSubCat4Id")]
-        public virtual COA_AccountSubCategory AccountSubCategory_4 { get; set; }
-        public Guid? AccountSubCat4Id { get; set; }
+        [ForeignKey("AccountSubCatId")]
+        public virtual COA_AccountSubCategory AccountSubCategory { get; set; }
+        public Guid AccountSubCatId { get; set; }
+        [ForeignKey("AccountGroupCatId")]
+        public virtual COA_AccountSubCategory? AccountGroupCategory { get; set; }
+        public Guid? AccountGroupCatId { get; set; }
 
         public int AccountId { get; set; }
 

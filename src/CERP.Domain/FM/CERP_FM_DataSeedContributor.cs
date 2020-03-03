@@ -183,7 +183,7 @@ namespace CERP.FM
                     {
                         Title = "Current Assets",
                         HeadAccount = curCOAHAs.First(x => x.AccountName == "Assets"),
-                        CLI = 2,
+                        CLI = AccountCLI.SubHeader,
                         SubCategoryId = 01,
                         Branch = curBranches.First(x => x.Name == "Head"),
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
@@ -198,7 +198,7 @@ namespace CERP.FM
                     {
                         Title = "Fixed Assets",
                         HeadAccount = curCOAHAs.First(x => x.AccountName == "Assets"),
-                        CLI = 2,
+                        CLI = AccountCLI.SubHeader,
                         SubCategoryId = 02,
                         Branch = curBranches.First(x => x.Name == "Head"),
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
@@ -213,7 +213,7 @@ namespace CERP.FM
                     {
                         Title = "Current Liabilities",
                         HeadAccount = curCOAHAs.First(x => x.AccountName == "Liabilities"),
-                        CLI = 2,
+                        CLI = AccountCLI.SubHeader,
                         SubCategoryId = 01,
                         Branch = curBranches.First(x => x.Name == "Head"),
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
@@ -228,7 +228,7 @@ namespace CERP.FM
                     {
                         Title = "Long Term Liabilities",
                         HeadAccount = curCOAHAs.First(x => x.AccountName == "Liabilities"),
-                        CLI = 2,
+                        CLI = AccountCLI.SubHeader,
                         SubCategoryId = 02,
                         Branch = curBranches.First(x => x.Name == "Head"),
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
@@ -243,7 +243,7 @@ namespace CERP.FM
                     {
                         Title = "Share Capital",
                         HeadAccount = curCOAHAs.First(x => x.AccountName == "Capital"),
-                        CLI = 2,
+                        CLI = AccountCLI.SubHeader,
                         SubCategoryId = 01,
                         Branch = curBranches.First(x => x.Name == "Head"),
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
@@ -258,7 +258,7 @@ namespace CERP.FM
                     {
                         Title = "Partner's Current Account",
                         HeadAccount = curCOAHAs.First(x => x.AccountName == "Capital"),
-                        CLI = 2,
+                        CLI = AccountCLI.SubHeader,
                         SubCategoryId = 02,
                         Branch = curBranches.First(x => x.Name == "Head"),
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
@@ -273,7 +273,7 @@ namespace CERP.FM
                     {
                         Title = "Retained Earning",
                         HeadAccount = curCOAHAs.First(x => x.AccountName == "Capital"),
-                        CLI = 2,
+                        CLI = AccountCLI.SubHeader,
                         SubCategoryId = 03,
                         Branch = curBranches.First(x => x.Name == "Head"),
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
@@ -288,7 +288,7 @@ namespace CERP.FM
                     {
                         Title = "Equity",
                         HeadAccount = curCOAHAs.First(x => x.AccountName == "Equity"),
-                        CLI = 2,
+                        CLI = AccountCLI.SubHeader,
                         SubCategoryId = 01,
                         Branch = curBranches.First(x => x.Name == "Head"),
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
@@ -303,7 +303,7 @@ namespace CERP.FM
                     {
                         Title = "Revenue",
                         HeadAccount = curCOAHAs.First(x => x.AccountName == "Revenues"),
-                        CLI = 2,
+                        CLI = AccountCLI.SubHeader,
                         SubCategoryId = 01,
                         Branch = curBranches.First(x => x.Name == "Head"),
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
@@ -318,7 +318,7 @@ namespace CERP.FM
                     {
                         Title = "Direct Cost Items",
                         HeadAccount = curCOAHAs.First(x => x.AccountName == "Direct Costs"),
-                        CLI = 2,
+                        CLI = AccountCLI.SubHeader,
                         SubCategoryId = 01,
                         Branch = curBranches.First(x => x.Name == "Head"),
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
@@ -334,7 +334,7 @@ namespace CERP.FM
                     {
                         Title = "Direct Cost Others",
                         HeadAccount = curCOAHAs.First(x => x.AccountName == "Direct Costs"),
-                        CLI = 2,
+                        CLI = AccountCLI.SubHeader,
                         SubCategoryId = 02,
                         Branch = curBranches.First(x => x.Name == "Head"),
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
@@ -349,7 +349,7 @@ namespace CERP.FM
                     {
                         Title = "G&A",
                         HeadAccount = curCOAHAs.First(x => x.AccountName == "Expenses"),
-                        CLI = 2,
+                        CLI = AccountCLI.SubHeader,
                         SubCategoryId = 01,
                         Branch = curBranches.First(x => x.Name == "Head"),
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
@@ -364,7 +364,7 @@ namespace CERP.FM
                     {
                         Title = "Other Income",
                         HeadAccount = curCOAHAs.First(x => x.AccountName == "Other Income"),
-                        CLI = 2,
+                        CLI = AccountCLI.SubHeader,
                         SubCategoryId = 01,
                         Branch = curBranches.First(x => x.Name == "Head"),
                         Company = curCompanies.First(x => x.Name == "TestCorp"),

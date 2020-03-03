@@ -1,0 +1,124 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    bool? allowPosting = (bool?)ViewData["allowGLPosting"];
+    bool? allowPayment = (bool?)ViewData["allowPayment"];
+    bool? allowReceipt = (bool?)ViewData["allowReceipt"];
+
+    var subLedgerRequirements = ViewData["subLedgerRequirements"] as List<CERP.FM.COA.DTOs.COA_SubLedgerRequirement_Dto>;
+    var accSubLedgerRequirements = ViewData["accSubLedgerRequirements"] as List<CERP.FM.COA.DTOs.COA_SubLedgerRequirement_Dto>;
+}
+
+<div class="m-l-20">
+    <h2>Required Information</h2>
+    <p>
+        Provide specific details regarding your account
+    </p>
+</div>
+<div class="panel-body" style="padding-bottom:0">
+    <div class="row" style="margin-bottom:0">
+        <div class="col-sm-12">
+            <div class="smart-form">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 32px"></th>
+                            <th style="width: 100%; text-align:center">Account Attributes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="background-color: whitesmoke; width:10px;">
+                                <label class="custom-control custom-control-primary custom-checkbox active m-l-5">
+                                    @if (allowPosting.HasValue && allowPosting.Value)
+                                    {
+                                        <input name="allowPosting" id="allowGLPosting" class="custom-control-input" type="checkbox" checked="checked">
+                                    }
+                                    else
+                                    {
+                                        <input name="allowPosting" id="allowGLPosting" class="custom-control-input" type="checkbox">
+                                    }
+                                    <span class="custom-control-indicator"></span>
+                                </label>
+                            </td>
+                            <td>Allow GL Posting</td>
+                        </tr>
+                        @*<tr>
+                                <td style="background-color: whitesmoke">
+                                    <label class="custom-control custom-control-primary custom-checkbox active m-l-5">
+                                        <input name="allowAutomatedPosting" class="custom-control-input" type="checkbox">
+                                        <span class="custom-control-indicator"></span>
+                                    </label>
+                                </td>
+                                <td>Allow Automated Posting</td>
+                            </tr>*@
+                        <tr id="allowPaymentRow">
+                            <td style="background-color: whitesmoke">
+                                <label class="custom-control custom-control-primary custom-checkbox active m-l-5">
+                                    @if (allowPayment.HasValue && allowPayment.Value)
+                                    {
+                                        <input name="allowPayment" id="allowPayment" class="custom-control-input" type="checkbox" checked>                                    
+                                    }
+                                    else
+                                    {
+                                        <input name="allowPayment" id="allowPayment" class="custom-control-input" type="checkbox">                                    
+                                    }
+                                    <span class="custom-control-indicator"></span>
+                                </label>
+                            </td>
+                            <td>Allow Payment</td>
+                        </tr>
+                        <tr id="allowReceiptRow">
+                            <td style="background-color: whitesmoke">
+                                <label class="custom-control custom-control-primary custom-checkbox active m-l-5">
+                                    @if (allowReceipt.HasValue && allowReceipt.Value)
+                                    {
+                                        <input name="allowReceipt" id="allowReceipt" class="custom-control-input" type="checkbox" checked> }
+                                    else
+                                    {
+                                        <input name="allowReceipt" id="allowReceipt" class="custom-control-input" type="checkbox">
+                                    } 
+                                    <span class="custom-control-indicator"></span>
+                                </label>
+                            </td>
+                            <td>Allow Receipt</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="smart-form">
+                    <table class="table table-hover" id="postingAttr">
+                        <thead>
+                            <tr>
+                                <th style="width: 32px"></th>
+                                <th style="width: 100%; text-align:center">Posting Attributes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < subLedgerRequirements.Count; i++)
+                            {
+                                <tr>
+                                    <td style="background-color: whitesmoke;">
+                                        <label class="custom-control custom-control-primary custom-checkbox active m-l-5">
+                                            @if (accSubLedgerRequirements != null && accSubLedgerRequirements.Any(x => x.Id == subLedgerRequirements[i].Id))
+                                            {
+                                                <input name="requirement:@i" class="custom-control-input" type="checkbox" data-requirementId="@subLedgerRequirements[i].Id" checked="checked">
+                                            }
+                                            else
+                                            {
+                                                <input name="requirement:@i" class="custom-control-input" type="checkbox" data-requirementId="@subLedgerRequirements[i].Id">
+                                            }
+                                            <span class="custom-control-indicator"></span>
+                                        </label>
+                                    </td>
+                                    <td>@subLedgerRequirements[i].Title</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            
+        </div>
+    </div>
+</div>

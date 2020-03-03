@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -33,6 +34,9 @@ namespace CERP.Web
                     options.Conventions.AddAreaPageRoute("FM", "/COA/Create", "/COA/Create");
                     options.Conventions.AddAreaPageRoute("FM", "/COA/Edit", "/COA/Edit");
 
+                    options.Conventions.AddAreaPageRoute("FM", "/COA/Categories", "/COA/Categories");
+                    options.Conventions.AddAreaPageRoute("FM", "/COA/Categories/CreateCategory", "/COA/Category/Create");
+
                     options.Conventions.AddAreaPageRoute("Main", "/Dashboard", "/Dashboard");
 
                     //options.Conventions.AddPageRoute("/index", "{*url}");
@@ -40,6 +44,7 @@ namespace CERP.Web
                 .AddNewtonsoftJson(options => {
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
+
             services.ConfigureApplicationCookie(options =>
             {
                 options.Cookie.Name = "cerpC";

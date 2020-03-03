@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200302144443_COASubCategoryUpdated")]
+    partial class COASubCategoryUpdated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -293,9 +295,6 @@ namespace CERP.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("AccountGroupCatId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("AccountId")
                         .HasColumnType("int");
 
@@ -312,7 +311,16 @@ namespace CERP.Migrations
                     b.Property<Guid>("AccountStatementTypeId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("AccountSubCatId")
+                    b.Property<Guid>("AccountSubCat1Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("AccountSubCat2Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("AccountSubCat3Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("AccountSubCat4Id")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool?>("ActiveStatus")
@@ -386,13 +394,17 @@ namespace CERP.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountGroupCatId");
-
                     b.HasIndex("AccountStatementDetailTypeId");
 
                     b.HasIndex("AccountStatementTypeId");
 
-                    b.HasIndex("AccountSubCatId");
+                    b.HasIndex("AccountSubCat1Id");
+
+                    b.HasIndex("AccountSubCat2Id");
+
+                    b.HasIndex("AccountSubCat3Id");
+
+                    b.HasIndex("AccountSubCat4Id");
 
                     b.HasIndex("BranchId");
 
@@ -2317,10 +2329,6 @@ namespace CERP.Migrations
 
             modelBuilder.Entity("CERP.FM.COA.COA_Account", b =>
                 {
-                    b.HasOne("CERP.FM.COA.COA_AccountSubCategory", "AccountGroupCategory")
-                        .WithMany()
-                        .HasForeignKey("AccountGroupCatId");
-
                     b.HasOne("CERP.FM.AccountStatementType", "AccountStatementDetailType")
                         .WithMany()
                         .HasForeignKey("AccountStatementDetailTypeId")
@@ -2333,11 +2341,23 @@ namespace CERP.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CERP.FM.COA.COA_AccountSubCategory", "AccountSubCategory")
+                    b.HasOne("CERP.FM.COA.COA_AccountSubCategory", "AccountSubCategory_1")
                         .WithMany()
-                        .HasForeignKey("AccountSubCatId")
+                        .HasForeignKey("AccountSubCat1Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("CERP.FM.COA.COA_AccountSubCategory", "AccountSubCategory_2")
+                        .WithMany()
+                        .HasForeignKey("AccountSubCat2Id");
+
+                    b.HasOne("CERP.FM.COA.COA_AccountSubCategory", "AccountSubCategory_3")
+                        .WithMany()
+                        .HasForeignKey("AccountSubCat3Id");
+
+                    b.HasOne("CERP.FM.COA.COA_AccountSubCategory", "AccountSubCategory_4")
+                        .WithMany()
+                        .HasForeignKey("AccountSubCat4Id");
 
                     b.HasOne("CERP.FM.Branch", "Branch")
                         .WithMany()

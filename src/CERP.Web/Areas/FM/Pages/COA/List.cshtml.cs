@@ -109,39 +109,25 @@ namespace CERP.Web.Areas.FM.COA
                                 new GridColumn { Field = "Company.Name", HeaderText = "Name",  TextAlign= TextAlign.Center,  MinWidth="10"  }
                             }
                         },
-                        new GridColumn { HeaderText = "Head Account", TextAlign= TextAlign.Center, MinWidth="10",
+                        new GridColumn { HeaderText = "Header Account", TextAlign= TextAlign.Center, MinWidth="10",
                             Columns = new List<GridColumn>()
                             {
                                 new GridColumn { Field = "HeadAccount.HeadCode", Width = "80", HeaderText = "Code", TextAlign=TextAlign.Center, MinWidth="10"  },
                                 new GridColumn { Field = "HeadAccount.AccountName", HeaderText = "Name", TextAlign=TextAlign.Center, MinWidth="10"  },
                             }
                         },
-                        new GridColumn { HeaderText = "Primary Sub Account", TextAlign= TextAlign.Center, MinWidth="10",
+                        new GridColumn { HeaderText = "Sub Header Account", TextAlign= TextAlign.Center, MinWidth="10",
                             Columns = new List<GridColumn>()
                             {
-                                new GridColumn { Field = "AccountSubCategory_1.SubCategoryId", Width = "80", HeaderText = "Code", TextAlign=TextAlign.Center, MinWidth="10"  },
-                                new GridColumn { Field = "AccountSubCategory_1.Title", HeaderText = "Name", TextAlign=TextAlign.Center, MinWidth="10"  },
+                                new GridColumn { Field = "AccountSubCategory.SubCategoryId", Width = "80", HeaderText = "Code", TextAlign=TextAlign.Center, MinWidth="10"  },
+                                new GridColumn { Field = "AccountSubCategory.Title", HeaderText = "Name", TextAlign=TextAlign.Center, MinWidth="10"  },
                             }
                         },
-                        new GridColumn { HeaderText = "Secondary Sub Account", TextAlign= TextAlign.Center, MinWidth="10",
+                        new GridColumn { HeaderText = "Account Group", TextAlign= TextAlign.Center, MinWidth="10",
                             Columns = new List<GridColumn>()
                             {
-                                new GridColumn { Field = "AccountSubCategory_2.SubCategoryId", Width = "80", HeaderText = "Code", TextAlign=TextAlign.Center, MinWidth="10"  },
-                                new GridColumn { Field = "AccountSubCategory_2.Title", HeaderText = "Name", TextAlign=TextAlign.Center, MinWidth="10"  },
-                            }
-                        },
-                        new GridColumn { HeaderText = "Tertiary Sub Account", TextAlign= TextAlign.Center, MinWidth="10",
-                            Columns = new List<GridColumn>()
-                            {
-                                new GridColumn { Field = "AccountSubCategory_3.SubCategoryId", Width = "80", HeaderText = "Code", TextAlign=TextAlign.Center, MinWidth="10"  },
-                                new GridColumn { Field = "AccountSubCategory_3.Title", HeaderText = "Name", TextAlign=TextAlign.Center, MinWidth="10"  },
-                            }
-                        },
-                        new GridColumn { HeaderText = "Quaternary Sub Account", TextAlign= TextAlign.Center, MinWidth="10",
-                            Columns = new List<GridColumn>()
-                            {
-                                new GridColumn { Field = "AccountSubCategory_4.SubCategoryId", Width = "80", HeaderText = "Code", TextAlign=TextAlign.Center, MinWidth="10"  },
-                                new GridColumn { Field = "AccountSubCategory_4.Title", HeaderText = "Name", TextAlign=TextAlign.Center, MinWidth="10"  },
+                                new GridColumn { Field = "AccountGroupCategory.SubCategoryId", Width = "80", HeaderText = "Code", TextAlign=TextAlign.Center, MinWidth="10"  },
+                                new GridColumn { Field = "AccountGroupCategory.Title", HeaderText = "Name", TextAlign=TextAlign.Center, MinWidth="10"  },
                             }
                         }
                     }
@@ -271,55 +257,6 @@ namespace CERP.Web.Areas.FM.COA
             //}
 
             return accounts;
-        }
-
-        public class AccountsDetails
-        {
-            public AccountsDetails()
-            {
-
-            }
-            public AccountsDetails(int accountID, string accountCode, string accountName, string companyCode, string headAccount, string subCategory, string cashflowStatement, bool posting, bool payment, bool receipt, string employee, string department, string project, string fA, string vendor, string customer)
-            {
-                AccountID = accountID;
-                AccountCode = accountCode;
-                AccountName = accountName;
-                CompanyCode = companyCode;
-                HeadAccount = headAccount;
-                SubCategory = subCategory;
-                CashflowStatement = cashflowStatement;
-                Posting = posting;
-                Payment = payment;
-                Receipt = receipt;
-                Employee = employee;
-                Department = department;
-                Project = project;
-                FA = fA;
-                Vendor = vendor;
-                Customer = customer;
-            }
-
-            
-
-            public int AccountID { get; set; }
-            public string AccountCode { get; set; }
-            public string AccountName { get; set; }
-
-            public string CompanyCode { get; set; }
-            public string HeadAccount { get; set; }
-            public string SubCategory { get; set; }
-            public string CashflowStatement { get; set; }
-
-            public bool Posting { get; set; }
-            public bool Payment { get; set; }
-            public bool Receipt { get; set; }
-
-            public string Employee { get; set; }
-            public string Department { get; set; }
-            public string Project { get; set; }
-            public string FA { get; set; }
-            public string Vendor { get; set; }
-            public string Customer { get; set; }
         }
     }
 }

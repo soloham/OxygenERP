@@ -1,0 +1,180 @@
+﻿@{
+    string accountCode = ViewData["accountCode"] as string;
+    string accountName = ViewData["accountName"] as string;
+    string accountNameLocalized = ViewData["accountNameLocalized"] as string;
+    Guid? companyId = (Guid?)ViewData["companyId"];
+    Guid? headerAccountId = (Guid?)ViewData["headerAccountId"];
+    Guid? subHeaderAccountId = (Guid?)ViewData["subHeaderAccountId"];
+    Guid? accountGroupId = (Guid?)ViewData["accountGroupId"];
+
+    var headAccounts = ViewData["headAccounts"] as List<CERP.FM.COA.DTOs.COA_HeadAccount_Dto>;
+    var subCategories = ViewData["subCategories"] as List<CERP.FM.COA.DTOs.COA_AccountSubCategory_Dto>;
+    var companies = ViewData["companies"] as List<CERP.FM.DTOs.Company_Dto>;
+    var subledgerAccounts = ViewData["subledgerAccounts"] as List<CERP.FM.COA.COA_Account>;
+}
+
+<div class="m-l-20">
+    <h2>Account Details</h2>
+    <p>
+        Provide generic details regarding your account
+    </p>
+</div>
+<div class="panel-body" style="padding-bottom:0">
+    <div class="row" style="margin-bottom:0">
+        <div class="col-sm-12">
+
+            <div class="row m-b-15">
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label for="accountCode" id="desc"  class="control-label">Account Code</label>
+                        @if (!string.IsNullOrEmpty(accountCode))
+                        {
+                            <input name="accountCode" pattern="^[_A-z0-9]{1,}$" maxlength="15" class="form-control" id="accountCode" placeholder="@accountCode [Auto Generated]" readonly="readonly" data-error="Please provide the code for this account">
+                        }
+                        else
+                        {
+                            <input type="text" pattern="^[_A-z0-9]{1,}$" class="form-control" id="accountCode" placeholder="0.00000.000 [Auto Generated]" readonly="readonly" data-error="Please provide the code for this account">
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="row m-b-15">
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <label for="accountName" id="desc"  class="control-label">Account Name in English</label>
+                        @if (!string.IsNullOrEmpty(accountName))
+                        {
+                            <input name="accountName" value="@accountName" type="text" maxlength="15" class="form-control" id="accountName" placeholder="Your Account Name" data-error="Please provide the name for this account" required>
+                        }
+                        else
+                        {
+                            <input name="accountName" type="text" maxlength="15" class="form-control" id="accountName" placeholder="Your Account Name" data-error="Please provide the name for this account" required>
+                        }
+                        <div class="help-block with-errors"></div>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <label id="desc"  class="control-label col-sm-12" style="text-align:right; padding:0;">Account Name in Arabic</label>
+                        @if (!string.IsNullOrEmpty(accountNameLocalized))
+                        {
+                            <input name="accountNameLocalizationKey" value="@accountNameLocalized" type="text" class="form-control arabicFont" dir="rtl" id="accountNameAR" placeholder="Your Account Name in Arabic">
+                        }
+                        else
+                        {
+                            <input name="accountNameLocalizationKey" type="text" class="form-control arabicFont" dir="rtl" id="accountNameAR" placeholder="Your Account Name in Arabic">
+                        }
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="row m-b-15">
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <label for="company" id="desc"  class="control-label">Choose Company</label>
+                        <select name="companyId" id="company" class="custom-select" data-error="Please select a company to associate with this account" required>
+                            <option value="" selected="selected">Choose Company</option>
+                            @for (int i = 0; i < companies.Count; i++)
+                            {
+                                @if (companyId != Guid.Empty && companies[i].Id == companyId)
+                                {
+                                    <option value="@companies[i].Id" data-companyCode="@companies[i].CompanyCode" selected>@companies[i].CompanyCode - @companies[i].Name</option>
+                                }
+                                else
+                                {
+                                    <option value="@companies[i].Id" data-companyCode="@companies[i].CompanyCode">@companies[i].CompanyCode - @companies[i].Name</option>
+                                }
+                            }
+                        </select>
+                        <div class="help-block with-errors"></div>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <label for="headAccount" id="desc"  class="control-label">Choose Header Account</label>
+                        <select name="headAccountId" id="headAccount" class="custom-select" data-error="Please select a Header Account for this account" required>
+                            <option value="" selected="selected">Choose Header Account</option>
+                            @for (int i = 0; i < headAccounts.Count; i++)
+                            {
+                                @if (headerAccountId != Guid.Empty && headAccounts[i].Id == headerAccountId)
+                                {
+                                    <option value="@headAccounts[i].Id" data-headAccCode="@((int)headAccounts[i].HeadCode)" data-headName="@(headAccounts[i].AccountName)" selected>@($"{(int)headAccounts[i].HeadCode} - {headAccounts[i].AccountName}")</option>
+                                }
+                                else
+                                {
+                                    <option value="@headAccounts[i].Id" data-headAccCode="@((int)headAccounts[i].HeadCode)" data-headName="@(headAccounts[i].AccountName)">@($"{(int)headAccounts[i].HeadCode} - {headAccounts[i].AccountName}")</option>
+                                }
+                            }
+                        </select>
+                        <div class="help-block with-errors"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <label for="subCat" id="desc" class="control-label">Choose Sub Header Account</label>
+                        <select name="AccountSubCatId" id="subCat" class="custom-select" data-error="Please select a Sub Header Account for this account" required>
+                            <option value="">Select a Sub Header Account</option>
+                            @for (int i = 0; i < subCategories.Count; i++)
+                            {
+                                @if (subCategories[i].CLI != CERP.FM.COA.AccountCLI.SubHeader)
+                                    continue;
+
+                                @if (subHeaderAccountId != Guid.Empty && subCategories[i].Id == subHeaderAccountId)
+                                {
+                                    <option value="@subCategories[i].Id" data-categoryCode="@((int)subCategories[i].SubCategoryId)" data-headId="@(subCategories[i].HeadAccountId)" selected>@($"{(int)subCategories[i].SubCategoryId} - {subCategories[i].Title}")</option>
+                                }
+                                else
+                                {
+                                    <option value="@subCategories[i].Id" data-categoryCode="@((int)subCategories[i].SubCategoryId)" data-headId="@(subCategories[i].HeadAccountId)" hidden>@($"{(int)subCategories[i].SubCategoryId} - {subCategories[i].Title}")</option>
+                                }
+                            }
+                        </select>
+                        <div class="help-block with-errors"></div>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <label for="groupCat" id="desc" class="control-label">Choose Account Group</label>
+                        <select name="AccountGroupCatId" id="groupCat" class="custom-select" data-error="Please select a Account Group for this account">
+                            <option value="">Select a Sub Header Group Category</option>
+                            @for (int i = 0; i < subCategories.Count; i++)
+                            {
+                                @if (subCategories[i].CLI != CERP.FM.COA.AccountCLI.Group)
+                                    continue;
+
+                                @if (accountGroupId != Guid.Empty && subCategories[i].Id == accountGroupId)
+                                {
+                                    <option value="@subCategories[i].Id" data-categoryCode="@((int)subCategories[i].GroupCategoryId)" data-headId="@(subCategories[i].HeadAccountId)" data-parentId="@(subCategories[i].ParentId)" selected>@($"{(int)subCategories[i].GroupCategoryId} - {subCategories[i].Title}")</option>
+                                }
+                                else
+                                {
+                                    <option value="@subCategories[i].Id" data-categoryCode="@((int)subCategories[i].GroupCategoryId)" data-headId="@(subCategories[i].HeadAccountId)" data-parentId="@(subCategories[i].ParentId)" hidden>@($"{(int)subCategories[i].GroupCategoryId} - {subCategories[i].Title}")</option>
+                                }
+                            }
+                        </select>
+                        <div class="help-block with-errors"></div>
+                    </div>
+                </div>
+                @*<div class="col-xs-6">
+                        <div class="form-group">
+                            <label for="subLedgerAccount" class="control-label">Choose Sub Ledger Account</label>
+                            <select name="subLedgerAccountId" id="subLedgerAccount" class="custom-select" data-error="Please select a sub ledger account to associate this account with">
+                                <option value="" selected="selected">Choose Sub Ledger Account</option>
+                                @if (Model.SubLedgerAccounts != null)
+                                {
+                                    for (int i = 0; i < subledgerAccounts.Count; i++)
+                                    {
+                                        <option value="@subledgerAccounts[i].Id" data-subLedgerCode="@subledgerAccounts[i].SubLederId">@subledgerAccounts[i].AccountCode - @subledgerAccounts[i].AccountName</option>
+                                    }
+                                }
+                            </select>
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>*@
+            </div>
+        </div>
+    </div>
+</div>

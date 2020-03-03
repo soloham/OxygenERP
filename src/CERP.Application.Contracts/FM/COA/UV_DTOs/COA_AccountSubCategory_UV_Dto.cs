@@ -25,12 +25,16 @@ namespace CERP.FM.COA.UV_DTOs
         public COA_HeadAccount_Dto HeadAccount { get; set; }
         public Guid HeadAccountId { get; set; }
         [Required]
+        public int GroupCategoryId { get; set; }    // Index Under Parent
+        [Required]
         public int SubCategoryId { get; set; }    // Index Under Parent
         [Required]
         public string SubCategoryCode { get; set; }    // Auto Generated Code
+        public string? ParentCategoryTitle { get; set; }
+        public COA_AccountSubCategory_Dto? ParentCategory { get; set; }
         public Guid? ParentId { get; set; }
         [Required]
-        public int CLI { get; set; }  // Classification Index
+        public AccountCLI CLI { get; set; }  // Classification Index
         [Required]
         public string Title { get; set; }
         public string LocalizationKey { get; set; }
@@ -39,6 +43,6 @@ namespace CERP.FM.COA.UV_DTOs
         [Required]
         public Company_UV_Dto Company { get; set; }
         public Guid CompanyId { get; set; }
-        public bool? IsDeleted { get; set; }
+        public bool? IsDeleted { get; set; } = false;
     }
 }

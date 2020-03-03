@@ -60,34 +60,24 @@ namespace CERP.Web.Areas.FM.Pages.COA
 
         public async Task<IActionResult> OnGetAsync()
         {
-            Companies = (await _companyAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
-            Branches = (await _branchAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
-            HeadAccounts = (await _headAccountsAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
-            SubCategories = (await _subCategoryAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
+            Companies = (await _companyAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto() { MaxResultCount = 100 })).Items.ToList();
+            Branches = (await _branchAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto() { MaxResultCount = 100 })).Items.ToList();
+            HeadAccounts = (await _headAccountsAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto() { MaxResultCount = 100 })).Items.ToList();
+            SubCategories = (await _subCategoryAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto() { MaxResultCount = 100 })).Items.ToList();
             SubLedgerAccounts = _coaAppService.GetNonSubLedgerAccounts();
-            SubLedgerRequirements = (await _subLedgerRequirementsAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
+            SubLedgerRequirements = (await _subLedgerRequirementsAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto() { MaxResultCount = 100 })).Items.ToList();
 
             COAInput = ObjectMapper.Map<COA_Account_Dto, COA_Account_UV_Dto>(await _coaAppService.GetAsync(AccountGuid));
 
             return Page();
         }
 
-        public IActionResult OnPost()
-        {
-            return Page();
-        }
-        public async Task<IActionResult> OnPost(int data)
-        {
-
-            return RedirectToRoute("/COA/Edit", data);
-        }
         public async Task<IActionResult> OnPostUpdate(COA_Account_UV_Dto dto)
         {
-            dto.Id = _guidGenerator.Create();
             try
             {
-                var _COAsList = (await _coaAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
-                SubLedgerRequirements = (await _subLedgerRequirementsAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
+                var _COAsList = (await _coaAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto() { MaxResultCount = 1000 })).Items.ToList();
+                SubLedgerRequirements = (await _subLedgerRequirementsAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto() { MaxResultCount = 1000 })).Items.ToList();
 
                 var form = Request.Form;
                 dto.SubLedgerRequirementAccounts = new List<COA_SubLedgerRequirement_Account_Dto>();
@@ -107,20 +97,24 @@ namespace CERP.Web.Areas.FM.Pages.COA
                     else
                         dto.AllowPosting = false;
                 }
-                if (form.TryGetValue("allowPayment", out StringValues isAPChecked))
+                if (dto.AllowPosting && form.TryGetValue("allowPayment", out StringValues isAPChecked))
                 {
                     if (isAPChecked == "on")
                         dto.AllowPayment = true;
                     else
                         dto.AllowPayment = false;
                 }
-                if (form.TryGetValue("allowReceipt", out StringValues isARChecked))
+                else
+                    dto.AllowReceipt = false;
+                if (dto.AllowPosting && form.TryGetValue("allowReceipt", out StringValues isARChecked))
                 {
                     if (isARChecked == "on")
                         dto.AllowReceipt = true;
                     else
                         dto.AllowReceipt = false;
                 }
+                else
+                    dto.AllowReceipt = false;
 
                 form.TryGetValue("companyCode", out StringValues companyCode);
                 companyCode = string.IsNullOrEmpty(companyCode) ? (StringValues)"00" : companyCode;
@@ -144,7 +138,7 @@ namespace CERP.Web.Areas.FM.Pages.COA
                 int maxCode = 0;
                 try
                 {
-                    Convert.ToInt32(_COAsList.Count > 0 ? _COAsList.Where(c => c.HeadAccountId == dto.HeadAccountId && c.AccountSubCat1Id == dto.AccountSubCat1Id).Max(c => c.AccountId) : 0);
+                    Convert.ToInt32(_COAsList.Count > 0 ? _COAsList.Where(c => c.HeadAccountId == dto.HeadAccountId && c.AccountSubCatId == dto.AccountSubCatId).Max(c => c.AccountId) : 0);
                 }
                 catch { }
                 dto.AccountId = maxCode + 1;
@@ -185,11 +179,17 @@ namespace CERP.Web.Areas.FM.Pages.COA
 
             return new JsonResult(result);
         }
-        public async Task<JsonResult> OnGetSubCategories(Guid headAccount, Guid parentId, int CLR)
+        public JsonResult OnGetSubCategoriesAndStatementType(Guid headAccount, string headAccountName, Guid parentId, int CLR)
         {
-            List<COA_AccountSubCategory_Dto> result = new List<COA_AccountSubCategory_Dto>();
+            (List<COA_AccountSubCategory_Dto> result, Guid statementTypeId) result = (new List<COA_AccountSubCategory_Dto>(), Guid.Empty);
+            result.result = _subCategoryAppService.GetSubCategories(headAccount, CLR, parentId);
 
-            result = _subCategoryAppService.GetSubCategories(headAccount, CLR, parentId);
+            if (headAccountName == "Assets" || headAccountName == "Liabilities" || headAccountName == "Capital")
+            {
+                result.statementTypeId = _accStatementTypeRepo.First(x => x.Title == "Balance Sheet").Id;
+            }
+            else
+                result.statementTypeId = _accStatementTypeRepo.First(x => x.Title == "Profit & Loss").Id;
 
             return new JsonResult(result);
         }

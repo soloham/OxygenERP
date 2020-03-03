@@ -15,13 +15,13 @@
             </div>
             <div class="col-sm-4  col-xs-12 text-right padding-right-0">
                 <div class="clearfix margin-15"></div>
-                @if (ViewContext.RouteData.Values["area"].ToString() == "FM" && ViewContext.RouteData.Values["page"].ToString() == "/COA/Create")
+                @if ((bool)ViewData["IsList"] == true)
                 {
 
                 }
-                else
+                else if ((bool)ViewData["IsCreate"] == true)
                 {
-                    <a asp-area="FM" asp-page="/COA/Create" class="btn btn-outline-dark" style="color: white"><i class="fa fa-plus fa-fw"></i> Create New</a>
+                    <a asp-area="FM" asp-page="@ViewData["CreateNewLink"]" class="btn btn-outline-dark" style="color: white"><i class="fa fa-plus fa-fw"></i> Create New</a>
                 }
             </div>
         </div>

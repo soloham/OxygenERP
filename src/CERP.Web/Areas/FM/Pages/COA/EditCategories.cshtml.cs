@@ -2,27 +2,25 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using CERP.App;
 using CERP.FM;
-using CERP.FM.COA;
 using CERP.FM.COA.DTOs;
 using CERP.FM.COA.UV_DTOs;
 using CERP.FM.DTOs;
-using CERP.FM.UV_DTOs;
 using CERP.Web.Pages;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Primitives;
-using Syncfusion.EJ2.Navigations;
-using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Guids;
 
 namespace CERP.Web.Areas.FM.Pages.COA
 {
-    public class CreateModel : CERPPageModel
+    public class EditCategoryModel : CERPPageModel
     {
+        [BindProperty(SupportsGet = true)]
+        public Guid AccountGuid { get; set; }
+
         [BindProperty]
         public COA_Account_UV_Dto COAInput { get; set; }
 
@@ -39,20 +37,19 @@ namespace CERP.Web.Areas.FM.Pages.COA
 
         private IGuidGenerator _guidGenerator;
 
-        public CreateModel(coaAppService coaAppService, companyAppService companyAppService, coaHeadAccountAppService headAccountsAppService, coaAccountSubCategoryAppService subCategoryAppService, IRepository<AccountStatementType, Guid> accStatementTypeRepo, IRepository<DictionaryValue, Guid> dictionaryValuesRepo, coaSubLedgerRequirementsAppService subLedgerRequirementsAppService, branchAppService branchAppService, IGuidGenerator guidGenerator)
+        public EditCategoryModel(coaAppService coaAppService, companyAppService companyAppService, branchAppService branchAppService, coaHeadAccountAppService headAccountsAppService, coaAccountSubCategoryAppService subCategoryAppService, coaSubLedgerRequirementsAppService subLedgerRequirementsAppService, IRepository<AccountStatementType, Guid> accStatementTypeRepo, IRepository<DictionaryValue, Guid> dictionaryValuesRepo, IGuidGenerator guidGenerator)
         {
             _coaAppService = coaAppService;
-            _subCategoryAppService = subCategoryAppService;
             _companyAppService = companyAppService;
+            _branchAppService = branchAppService;
             _headAccountsAppService = headAccountsAppService;
-
+            _subCategoryAppService = subCategoryAppService;
+            _subLedgerRequirementsAppService = subLedgerRequirementsAppService;
             _accStatementTypeRepo = accStatementTypeRepo;
             _dictionaryValuesRepo = dictionaryValuesRepo;
-            _subLedgerRequirementsAppService = subLedgerRequirementsAppService;
-            _branchAppService = branchAppService;
             _guidGenerator = guidGenerator;
-        }
 
+        }
         public List<Company_Dto> Companies = new List<Company_Dto>();
         public List<Branch_Dto> Branches = new List<Branch_Dto>();
         public List<COA_HeadAccount_Dto> HeadAccounts = new List<COA_HeadAccount_Dto>();
@@ -61,31 +58,34 @@ namespace CERP.Web.Areas.FM.Pages.COA
 
         public List<COA_SubLedgerRequirement_Dto> SubLedgerRequirements = new List<COA_SubLedgerRequirement_Dto>();
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
-            Companies = (await _companyAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto() { MaxResultCount = 1000 })).Items.ToList();
-            Branches = (await _branchAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto() { MaxResultCount = 1000 })).Items.ToList();
-            HeadAccounts = (await _headAccountsAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto() { MaxResultCount = 1000 })).Items.ToList();
-            SubCategories = (await _subCategoryAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto() { MaxResultCount = 1000 })).Items.ToList();
+            Companies = (await _companyAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto() { MaxResultCount = 100 })).Items.ToList();
+            Branches = (await _branchAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto() { MaxResultCount = 100 })).Items.ToList();
+            HeadAccounts = (await _headAccountsAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto() { MaxResultCount = 100 })).Items.ToList();
+            SubCategories = (await _subCategoryAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto() { MaxResultCount = 100 })).Items.ToList();
             SubLedgerAccounts = _coaAppService.GetNonSubLedgerAccounts();
-            SubLedgerRequirements = (await _subLedgerRequirementsAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto() { MaxResultCount = 1000 })).Items.ToList();
+            SubLedgerRequirements = (await _subLedgerRequirementsAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto() { MaxResultCount = 100 })).Items.ToList();
+
+            COAInput = ObjectMapper.Map<COA_Account_Dto, COA_Account_UV_Dto>(await _coaAppService.GetAsync(AccountGuid));
+
+            return Page();
         }
 
-        public async Task<IActionResult> OnPost(COA_Account_UV_Dto dto)
+        public async Task<IActionResult> OnPostUpdate(COA_Account_UV_Dto dto)
         {
-            dto.Id = _guidGenerator.Create();
             try
             {
-                var _COAsList = (await _coaAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
-                SubLedgerRequirements = (await _subLedgerRequirementsAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
-            
+                var _COAsList = (await _coaAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto() { MaxResultCount = 1000 })).Items.ToList();
+                SubLedgerRequirements = (await _subLedgerRequirementsAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto() { MaxResultCount = 1000 })).Items.ToList();
+
                 var form = Request.Form;
                 dto.SubLedgerRequirementAccounts = new List<COA_SubLedgerRequirement_Account_Dto>();
                 for (int i = 0; i < SubLedgerRequirements.Count; i++)
                 {
-                    if(form.TryGetValue("requirement:" + i, out StringValues isChecked))
+                    if (form.TryGetValue("requirement:" + i, out StringValues isChecked))
                     {
-                        if(isChecked == "on")
+                        if (isChecked == "on")
                             dto.SubLedgerRequirementAccounts.Add(new COA_SubLedgerRequirement_Account_Dto(_guidGenerator.Create()) { SubLedgerRequirementId = SubLedgerRequirements[i].Id, AccountId = dto.Id });
                     }
                 }
@@ -117,23 +117,23 @@ namespace CERP.Web.Areas.FM.Pages.COA
                     dto.AllowReceipt = false;
 
                 form.TryGetValue("companyCode", out StringValues companyCode);
-                companyCode = string.IsNullOrEmpty(companyCode) || companyCode == "undefined" ? (StringValues)"0" : companyCode;
+                companyCode = string.IsNullOrEmpty(companyCode) ? (StringValues)"00" : companyCode;
                 form.TryGetValue("headAccCode", out StringValues headAccCode);
-                headAccCode = string.IsNullOrEmpty(headAccCode) || headAccCode == "undefined" ? (StringValues)"0" : headAccCode;
-                form.TryGetValue("subCatCode", out StringValues subCatCode);
-                subCatCode = string.IsNullOrEmpty(subCatCode) || subCatCode == "undefined" ? (StringValues)"00" : (StringValues)subCatCode.ToString().PadLeft(2, '0');
-                form.TryGetValue("groupCatCode", out StringValues groupCatCode);
-                groupCatCode = string.IsNullOrEmpty(groupCatCode) || groupCatCode == "undefined" ? (StringValues)"00" : (StringValues)groupCatCode.ToString().PadLeft(2, '0');
-
-                form.TryGetValue("accStatementTypeId", out StringValues statementTypeId);
-                statementTypeId = string.IsNullOrEmpty(statementTypeId) ? StringValues.Empty : statementTypeId;
+                headAccCode = string.IsNullOrEmpty(headAccCode) ? (StringValues)"00" : headAccCode;
+                form.TryGetValue("subCat1Code", out StringValues subCat1Code);
+                subCat1Code = string.IsNullOrEmpty(subCat1Code) ? (StringValues)"00" : subCat1Code;
+                form.TryGetValue("subCat2Code", out StringValues subCat2Code);
+                subCat2Code = string.IsNullOrEmpty(subCat2Code) ? (StringValues)"00" : subCat2Code;
+                form.TryGetValue("subCat3Code", out StringValues subCat3Code);
+                subCat3Code = string.IsNullOrEmpty(subCat3Code) ? (StringValues)"00" : subCat3Code;
+                form.TryGetValue("subCat4Code", out StringValues subCat4Code);
+                subCat4Code = string.IsNullOrEmpty(subCat4Code) ? (StringValues)"00" : subCat4Code;
 
                 StringValues subLedgerAccountCode = "";
                 form.TryGetValue("subLedgerAccountCode", out subLedgerAccountCode);
                 subLedgerAccountCode = !string.IsNullOrEmpty(subLedgerAccountCode) ? "." + subLedgerAccountCode : "";
 
-                dto.AccountStatementTypeId = Guid.Parse(statementTypeId);
-                dto.AccountCode = $"{companyCode}.{headAccCode}{subCatCode}{groupCatCode}{subLedgerAccountCode}";
+                dto.AccountCode = $"{companyCode}-{headAccCode}{subCat1Code}{subCat2Code}{subCat3Code}{subCat4Code}{subLedgerAccountCode}";
 
                 int maxCode = 0;
                 try
@@ -154,13 +154,13 @@ namespace CERP.Web.Areas.FM.Pages.COA
                 {
                     result = await _coaAppService.CreateAccount(dto);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
                 }
                 if (result != null)
                 {
-                    return Redirect(Url.Content("~") + "/COA");
+                    return RedirectToPage("./COA");
                 }
                 else
                     return Page();

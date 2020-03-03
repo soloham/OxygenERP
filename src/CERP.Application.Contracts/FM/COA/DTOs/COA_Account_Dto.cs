@@ -23,14 +23,10 @@ namespace CERP.FM.COA.DTOs
         public virtual COA_HeadAccount_Dto HeadAccount { get; set; }
         public Guid HeadAccountId { get; set; }
 
-        public virtual COA_AccountSubCategory_Dto AccountSubCategory_1 { get; set; }
-        public Guid AccountSubCat1Id { get; set; }
-        public virtual COA_AccountSubCategory_Dto AccountSubCategory_2 { get; set; }
-        public Guid? AccountSubCat2Id { get; set; }
-        public virtual COA_AccountSubCategory_Dto AccountSubCategory_3 { get; set; }
-        public Guid? AccountSubCat3Id { get; set; }
-        public virtual COA_AccountSubCategory_Dto AccountSubCategory_4 { get; set; }
-        public Guid? AccountSubCat4Id { get; set; }
+        public virtual COA_AccountSubCategory_Dto AccountSubCategory { get; set; }
+        public Guid AccountSubCatId { get; set; }
+        public virtual COA_AccountSubCategory_Dto? AccountGroupCategory { get; set; }
+        public Guid? AccountGroupCatId { get; set; }
 
         public int AccountId { get; set; }
 

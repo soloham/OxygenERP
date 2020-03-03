@@ -1,6 +1,6 @@
 ﻿@page "{AccountGuid}"
 @using CERP;
-@model CERP.Web.Areas.FM.Pages.COA.EditModel
+@model CERP.Web.Areas.FM.Pages.COA.EditCategoryModel
 @{
     ViewData["Title"] = "Edit Account";
     ViewData["HeaderTitle"] = "Chart of Accounts";
@@ -325,14 +325,6 @@
             <hr />
 
             <partial name="_ReportingDetailsStepPartial" />
-
-            <div class="row" style="display:block !important">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        <button id="submitCOA" type="submit" class="btn btn-outline-success btn-block">Update Account</button>
-                    </div>
-                </div>
-            </div>
         </div>
     </form>
 </div>

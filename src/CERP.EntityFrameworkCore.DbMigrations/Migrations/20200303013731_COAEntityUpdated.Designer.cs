@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200303013731_COAEntityUpdated")]
+    partial class COAEntityUpdated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -312,6 +314,12 @@ namespace CERP.Migrations
                     b.Property<Guid>("AccountStatementTypeId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("AccountSubCat1Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("AccountSubCat2Id")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("AccountSubCatId")
                         .HasColumnType("uniqueidentifier");
 
@@ -386,13 +394,13 @@ namespace CERP.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountGroupCatId");
-
                     b.HasIndex("AccountStatementDetailTypeId");
 
                     b.HasIndex("AccountStatementTypeId");
 
-                    b.HasIndex("AccountSubCatId");
+                    b.HasIndex("AccountSubCat1Id");
+
+                    b.HasIndex("AccountSubCat2Id");
 
                     b.HasIndex("BranchId");
 
@@ -2317,10 +2325,6 @@ namespace CERP.Migrations
 
             modelBuilder.Entity("CERP.FM.COA.COA_Account", b =>
                 {
-                    b.HasOne("CERP.FM.COA.COA_AccountSubCategory", "AccountGroupCategory")
-                        .WithMany()
-                        .HasForeignKey("AccountGroupCatId");
-
                     b.HasOne("CERP.FM.AccountStatementType", "AccountStatementDetailType")
                         .WithMany()
                         .HasForeignKey("AccountStatementDetailTypeId")
@@ -2335,9 +2339,11 @@ namespace CERP.Migrations
 
                     b.HasOne("CERP.FM.COA.COA_AccountSubCategory", "AccountSubCategory")
                         .WithMany()
-                        .HasForeignKey("AccountSubCatId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AccountSubCat1Id");
+
+                    b.HasOne("CERP.FM.COA.COA_AccountSubCategory", "AccountGroupCategory")
+                        .WithMany()
+                        .HasForeignKey("AccountSubCat2Id");
 
                     b.HasOne("CERP.FM.Branch", "Branch")
                         .WithMany()
