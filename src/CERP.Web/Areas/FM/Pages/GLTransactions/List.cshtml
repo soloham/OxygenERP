@@ -1,31 +1,17 @@
-﻿@page
+﻿@page "/GL"
 @addTagHelper *, Syncfusion.EJ2
-@model CERP.Web.Areas.FM.COA.ListModel
+@model CERP.Web.Areas.FM.Pages.GLTransactions.ListModel
 @{
-    ViewData["Title"] = "Chart of Accounts";
-    ViewData["HeaderTitle"] = "CHART OF ACCOUNTS";
-    ViewData["IconClass"] = "fa fa-sitemap";
-    ViewData["SubTitle"] = "List of Accounts";
-    ViewData["Area"] = "FM";
+    ViewData["Title"] = "Journal Vouchers";
+    ViewData["HeaderTitle"] = "JOURNAL VOUCHERS";
+    ViewData["SubTitle"] = "Transaction History";
 
     ViewData["IsList"] = false;
     ViewData["IsCreate"] = true;
-
-    ViewData["CreateNewText"] = "Add Account";
-    ViewData["CreateNewLink"] = "/COA/Create";
+    ViewData["CreateNewLink"] = "/GL/Create";
 
     var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
-
 }
-
-@*<script>
-            var old = ejs.grids.Data.prototype.generateQuery;
-            ej.grids.Data.prototype.generateQuery = function () {
-                var query = old.call(this, true);
-                this.pageQuery(query);
-                return query;
-            };
-    </script>*@
 @section styles {
     <link href="~/libs/syncfusion/ej2-grid/styles/fabric.css" rel="stylesheet" />
 
@@ -34,14 +20,7 @@
             background-color: #f5f5f5;
             /*font-size: 18px;*/
         }
-        /*.e-grid .e-rowcell{
-            background-color: #fcfcfc;
-            /*font-size: 18px;*/
-        }
-        */
     </style>
-    @*<link rel="stylesheet" href="~/styles/fabricUI/fabric.min.css"  />*@
-    @*<link rel="stylesheet" href="~/styles/fabricUI/fabric-11.0.0.scoped.min.css" />*@
 }
 @section scripts {
     <!-- Syncfusion Essential JS 2 Scripts -->
@@ -52,7 +31,6 @@
     <partial name="_DefaultPageHeader" />
 </div>
 <div class="site-content" style="padding-top:0; background-color: rgb(253,253,253);">
-
     <div class="control-section">
         <ejs-grid id="Grid" dataSource="@ViewData["COAs_DS"]" enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()"
                   childGrid="@Model.SecondaryDetailsGrid" dataBound="dataBound" commandClick="commandClick"
@@ -131,7 +109,7 @@
         console.log(args);
         if (args.commandColumn.type == "Edit") {
             var params_ = JSON.stringify(args.rowData);  // display row data
-            window.location = "@Url.Content("~")/COA/Edit?AccountGuid=" + args.rowData.Id;
+            window.location = "@Url.Content("~")/GL/Edit?Id=" + args.rowData.Id;
             @*$.ajax({
                 url: "/?handler=EditAccountkj&Guid_=" + params_.Id,
                 async: true,

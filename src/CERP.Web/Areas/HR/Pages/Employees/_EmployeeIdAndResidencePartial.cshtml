@@ -1,0 +1,224 @@
+﻿@using CERP.App;
+@{
+    List<DictionaryValue> idTypes = (List<DictionaryValue>)ViewData["idTypes"];
+    List<DictionaryValue> idIssuers = (List<DictionaryValue>)ViewData["idIssuers"];
+    List<DictionaryValue> passportIssuers = (List<DictionaryValue>)ViewData["passportIssuers"];
+}
+
+@section scripts{
+    <script>
+
+    </script>
+}
+
+<div class="m-l-20 m-t-0">
+    <h2>ID & Residence</h2>
+    <p>
+        Provide identification details of the employee
+    </p>
+</div>
+<div class="panel-body" style="padding-bottom:0">
+    <div class="col-lg-12 padding-right-0">
+
+        <div class="row">
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="margin-bottom-5  control-label">ID Type:</label>
+                    <select id="idTypeId" name="IDTypeId" class="form-control" required>
+                        <option></option>
+                        @for (int i = 0; i < idTypes.Count; i++)
+                        {
+                            <option value="@idTypes[i].Key">@idTypes[i].Value</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="margin-bottom-5  control-label">ID No:</label>
+                    <input type="text" id="idNo" name="IDNo" @*value="@(empInfo!=null? empInfo.ID_NO : "")"*@ class="form-control" required>
+                </div>
+            </div>
+
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="margin-bottom-5  control-label">Issued From:</label>
+                    <select id="idIssuedFromId" name="IDIssuedFromId" class="form-control" required>
+                        <option></option>
+                        @for (int i = 0; i < idIssuers.Count; i++)
+                        {
+                            <option value="@idIssuers[i].Key">@idIssuers[i].Value</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="margin-bottom-5  control-label">Job Title on ID:</label>
+                    <input type="text" id="idJobTitle" name="IDJobTitle" @*value="@(empInfo!=null? empInfo.ID_JOB_TITLE_EN : "")"*@ class="form-control" required>
+                </div>
+            </div>
+
+            @*<div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <label class="margin-bottom-5  control-label">Job Title in ID (Arabic):</label>
+                    <div>
+                        <input type="text" id="ID_JOB_TITLE_EN_AR" name="ID_JOB_TITLE_EN_AR" value="@(empInfo!=null? empInfo.ID_JOB_TITLE_EN_AR : "")" class="form-control">
+                    </div>
+                </div>*@
+        </div>
+        <div class="clearfix margin-5"></div>
+        <div class="row">
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="margin-bottom-5  control-label">Sponsor:</label>
+                    <input type="text" id="idSponsorName" name="IDSponsorName" @*value="@(empInfo!=null? empInfo.ID_SPONSOR_NAME_EN : "")"*@ class="form-control" required>
+                </div>
+            </div>
+            @*<div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <label class="margin-bottom-5  control-label">Sponsor (Arabic):</label>
+                    <div>
+                        <input type="text" id="ID_SPONSOR_NAME_AR" name="ID_SPONSOR_NAME_AR" value="@(empInfo!=null? empInfo.ID_SPONSOR_NAME_AR : "")" class="form-control">
+                    </div>
+                </div>*@
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5">Issued Date:</label>
+                        <input type="text" id="idIssuedDate" name="IDIssueDate" @*value="@(empInfo!=null? empInfo.ID_ISSUED_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
+                    </div>
+                </div>
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5 pull-right ">Hijri date</label>
+                        <input type="text" id="idIssuedHDate" name="IDIssuedHDate" @*value="@(empInfo!=null? empInfo.ID_ISSUED_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline DatePickerHijri" required>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5">End Date:</label>
+                        <input type="text" id="idEndDate" name="IDEndDate" @*value="@(empInfo!=null? empInfo.ID_END_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
+                    </div>
+                </div>
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5 pull-right ">Hijri date</label>
+                        <input type="text" id="idEndHDate" name="IDEndHDate" @*value="@(empInfo!=null? empInfo.ID_END_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+
+                @*@if (empInfo != null && empInfo.ID_ATTACHMENT != null)
+                    {
+                        <a href='@(Url.Content("~")+"Files\\"+ Model.EMP_ID+"\\"+Convert.ToString(empInfo.ID_ATTACHMENT))' target="_blank" class="margin-bottom-5  pull-right text-right">
+                            View File
+                        </a>
+                    }*@
+                <div class="form-group">
+                    <label class="margin-bottom-5  control-label">Updated ID Copy:</label>
+                    <input type="file" id="idCard" name="IDCard" class="form-control "  required/>
+                </div>
+                <input type="hidden" id="idAttachment" name="IDAttachment" @*value="@(empInfo!=null? empInfo.ID_ATTACHMENT : "")"*@ class="form-control">
+
+
+
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="row">
+
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+
+                <div class="form-group">
+                    <label class="margin-bottom-5  control-label">Passport No:</label>
+                    <input type="text" id="passportNo" name="PassportNo" @*value="@(empInfo!=null? empInfo.PASSPORT_NO : "")"*@ class="form-control" required>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="margin-bottom-5  control-label">Issued From:</label>
+                    <select id="passportIssuedFrom" name="PassportIssuedFromId" class="form-control" required>
+                        <option></option>
+                        @for (int i = 0; i < passportIssuers.Count; i++)
+                        {
+                            <option value="@passportIssuers[i].Key">@passportIssuers[i].Value</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            @*<div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="margin-bottom-5  control-label">Job Title on Passport:</label>
+                    <input type="text" id="passportJobTitle" name="PassportJobTitle" value="@(empInfo!=null? empInfo.PASSPORT_JOB_TITLE_EN : "")" class="form-control" required>
+                </div>
+            </div>*@
+            @*<div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <label class="margin-bottom-5  control-label">Job Title in Passport (Arabic):</label>
+                    <div>
+                        <input type="text" id="PASSPORT_JOB_TITLE_AR" name="PASSPORT_JOB_TITLE_AR" value="@(empInfo!=null? empInfo.PASSPORT_JOB_TITLE_AR : "")" class="form-control">
+                    </div>
+                </div>*@
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                @*@if (empInfo != null && empInfo.PASSPORT_ATTACHMENT != null)
+                    {
+                        <a href='@(Url.Content("~")+"Files\\"+ Model.EMP_ID+"\\"+Convert.ToString(empInfo.PASSPORT_ATTACHMENT))' target="_blank" class="margin-bottom-5  pull-right text-right">
+                            View File
+                        </a>
+                    }*@
+                <div class="form-group">
+                    <label class="margin-bottom-5  control-label">Updated Passport Copy:</label>
+                    <input type="file" id="passport" name="Passport" class="form-control"  required/>
+                </div>
+                <input type="hidden" id="passportAttachment" name="PassportAttachment" @*value="@(empInfo!=null? empInfo.PASSPORT_ATTACHMENT : "")"*@ class="form-control">
+
+
+
+            </div>
+        </div>
+        <div class="clearfix margin-5"></div>
+        <div class="row">
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5">Issued Date:</label>
+                        <input type="text" id="passportIssuedDate" name="PassportIssuedDate" @*value="@(empInfo!=null? empInfo.PASSPORT_ISSUED_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
+                    </div>
+                </div>
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5 pull-right ">Hijri date</label>
+                        <input type="text" id="passportIssuedHDate" name="PassportIssuedHDate" @*value="@(empInfo!=null? empInfo.ID_ISSUED_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline DatePickerHijri" required>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5">End Date:</label>
+                        <input type="text" id="passportExpiryDate" name="PassportEndDate" @*value="@(empInfo!=null? empInfo.PASSPORT_EXPIRY_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
+                    </div>
+                </div>
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5 pull-right ">Hijri date</label>
+                        <input type="text" id="passportExpiryHDate" name="PassportExpiryHDate" @*value="@(empInfo!=null? empInfo.PASSPORT_EXPIRY_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri" required>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

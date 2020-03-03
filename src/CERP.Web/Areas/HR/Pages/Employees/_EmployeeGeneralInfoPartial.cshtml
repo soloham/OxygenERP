@@ -1,0 +1,228 @@
+﻿@using CERP.App;
+@{
+    List<DictionaryValue> birthPlaces = (List<DictionaryValue>)ViewData["birthPlaces"];
+    List<DictionaryValue> nationalities = (List<DictionaryValue>)ViewData["nationalities"];
+    List<DictionaryValue> genders = (List<DictionaryValue>)ViewData["genders"];
+
+    List<DictionaryValue> maritalStatuses = (List<DictionaryValue>)ViewData["maritalStatuses"];
+    List<DictionaryValue> booldGroups = (List<DictionaryValue>)ViewData["booldGroups"];
+    List<DictionaryValue> religions = (List<DictionaryValue>)ViewData["religions"];
+}
+
+@section scripts{
+    <script>
+
+    </script>
+}
+
+<div class="m-l-20 m-t-0">
+    <h2>General Information</h2>
+    <p>
+        Provide general details of the employee
+    </p>
+</div>
+<div class="panel-body" style="padding-bottom:0">
+    <div class="col-lg-2 padding-left-0 m-t-15">
+
+        <img id="EmpPhoto" src="~/img/noimage.jpg" class="img-responsive padding-5" style="cursor:pointer" />
+        @*@if (empInfo != null && empInfo.PHOTO != null)
+        {
+            <img id="EmpPhoto" src='@(Url.Content("~")+"Files\\"+ Model.EMP_ID+"\\"+Convert.ToString(empInfo.PHOTO)+"?v="+DateTime.Now.Second.ToString())' class="img-responsive padding-5" style="cursor:pointer" />
+        }
+        else
+        {
+            <img id="EmpPhoto" src="@Url.Content("~")assets/img/noimage.jpg" class="img-responsive padding-5" style="cursor:pointer" />
+        }*@
+
+        @*<input type="hidden" id="PHOTO" name="PHOTO" value="@(empInfo!=null? empInfo.PHOTO : "")" class="form-control">*@
+
+        <div id="divPhoto" style="display:none">
+            <input type="file" id="PIC" name="PIC" class="form-control" />
+        </div>
+
+    </div>
+    <div class="col-lg-10 padding-right-0">
+        <div class="row m-b-15 m-t-15">
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5">First Name:</label>
+                        <input type="text" id="firstName" name="FirstName" style="width:100% !important" class="text-left form-control inline pull-left" required="">
+                    </div>
+                </div>
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5 pull-right ">(Arabic)</label>
+                        <input type="text" id="firstNameLocalized" name="FirstNameLocalized" style="width:100% !important" class="text-right  form-control inline rtl text-right">
+                    </div>
+                </div>
+            </div>
+                
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5">Middle Name:</label> 
+                        <input type="text" id="fatherName" name="FatherName" style="width:100% !important;" class="text-left form-control inline pull-left" required>
+                    </div>
+                </div>
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5 pull-right ">(Arabic)</label>
+                        <input type="text" id="fatherNameLocalized" name="FatherNameLocalized" style="width:100% !important;" class="text-right  form-control inline rtl text-right">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5">Last Name:</label>
+                        <input type="text" id="grandName" name="grandName" style="width:100% !important" class="text-left form-control inline pull-left" required>
+                    </div>
+                </div>
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5 pull-right ">(Arabic)</label>
+                        <input type="text" id="grandNameAr" name="grandNameLocalized" style="width:100% !important" class="text-right  form-control inline rtl text-right">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5">Grand Name:</label>
+                        <input type="text" id="familyName" name="FamilyName" style="width:100% !important" class="text-left form-control inline pull-left" required="">
+                    </div>
+                </div>
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5 pull-right ">(Arabic)</label>
+                        <input type="text" id="familyNameLocalized" name="FamilyNameLocalized" style="width:100% !important" class="text-right  form-control inline rtl text-right">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="clearfix margin-5"></div>
+        <div class="row m-b-15">
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5">Birth Date:</label>
+                        <input type="text" id="dob" name="DOB" style="width: 100% !important; cursor: default;" class="text-left form-control inline pull-left DatePicker is-calendarsPicker" autocomplete="off" required>
+                    </div>
+                </div>
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5 pull-right ">(Hijri date)</label>
+                        <input type="text" id="dobH" name="DOB_H" style="width:100% !important" class="text-right form-control inline DatePickerHijri is-calendarsPicker" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="m-b-5  control-label">Birth Place:</label>
+                    <div>
+                        <select id="POB" name="POB" class="form-control" required>
+                            <option></option>
+                            @for (int i = 0; i < birthPlaces.Count; i++)
+                            {
+                                <option value="@birthPlaces[i].Key">@birthPlaces[i].Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="m-b-5  control-label">Nationality:</label>
+                    <div>
+                        <select id="nationality" name="Nationality" class="form-control" required="">
+                            <option></option>
+                            @for (int i = 0; i < nationalities.Count; i++)
+                            {
+                                <option value="@nationalities[i].Key">@nationalities[i].Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="m-b-5  control-label">Gender:</label>
+                    <div>
+                        <select id="genderId" name="GenderId" class="form-control" required>
+                            <option selected="" hidden=""></option>
+                            @for (int i = 0; i < genders.Count; i++)
+                            {
+                                <option value="@genders[i].Key">@genders[i].Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="clearfix margin-5"></div>
+        <div class="row m-b-15">
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="m-b-5 control-label">Marital Status:</label>
+                    <div>
+                        <select id="maritalStatusId" name="MaritalStatusId" class="form-control" required>
+                            <option selected="" hidden=""></option>
+                            @for (int i = 0; i < maritalStatuses.Count; i++)
+                            {
+                                <option value="@maritalStatuses[i].Key">@maritalStatuses[i].Value</option>
+                            }
+                        </select>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="m-b-5  control-label">No. of Dependents:</label>
+                    <div>
+                        <input type="number" min="0" id="noOfChildren" name="NoOfChildren" value="0" class="form-control" required>
+                    </div>
+                </div>
+            </div>
+
+            @*<div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="m-b-5 control-label">Blood Group:</label>
+                    <div>
+                        <select id="bloodGroups" name="BloodGroupId" class="form-control">
+                            <option></option>
+                            @for (int i = 0; i < booldGroups.Count; i++)
+                            {
+                                <option value="@booldGroups[i].Key">@booldGroups[i].Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>*@
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="m-b-5 control-label">Religion:</label>
+                    <div>
+                        <select id="religionId" name="ReligionId" class="form-control" required>
+                            <option></option>
+                            @for (int i = 0; i < religions.Count; i++)
+                            {
+                                <option value="@religions[i].Key">@religions[i].Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

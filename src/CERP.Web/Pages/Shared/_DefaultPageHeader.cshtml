@@ -8,9 +8,9 @@
         <div>
             <div class="col-sm-8 col-xs-12 padding-left-0">
                 <h1 class="">
-                    <span class="menu-icon"><i class="fa fa-sitemap"></i></span>
-                    <span class="menu-text">@ViewData["HeaderTitle"]</span>
-                    <span class="menu-text clearfix" style="font-size: 12px">@ViewData["SubTitle"]</span>
+                    <span class="menu-icon m-r-10"><i class="@ViewData["IconClass"]"></i></span>
+                    <span class="menu-text" style="font-size: 30px">@ViewData["HeaderTitle"]</span>
+                    <span class="menu-text clearfix" style="font-size: 15px">@ViewData["SubTitle"]</span>
                 </h1>
             </div>
             <div class="col-sm-4  col-xs-12 text-right padding-right-0">
@@ -21,7 +21,7 @@
                 }
                 else if ((bool)ViewData["IsCreate"] == true)
                 {
-                    <a asp-area="FM" asp-page="@ViewData["CreateNewLink"]" class="btn btn-outline-dark" style="color: white"><i class="fa fa-plus fa-fw"></i> Create New</a>
+                    <a asp-area="@ViewData["Area"]" asp-page="@ViewData["CreateNewLink"]" class="btn btn-outline-dark" style="color: white; font-size: 15px"><i class="fa fa-plus fa-fw"></i> @ViewData["CreateNewText"]</a>
                 }
             </div>
         </div>

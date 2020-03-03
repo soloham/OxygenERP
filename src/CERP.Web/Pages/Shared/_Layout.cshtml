@@ -540,12 +540,9 @@
                         </a>
                         <ul class="sidebar-submenu collapse">
                             <li class="menu-subtitle">Employees</li>
-                            <li class="">
-                                <a href="index-2.html">
-                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
-                                    <span class="menu-text">Employee List</span>
-                                </a>
-                            </li>
+                            <a asp-area="" asp-page="/COA/List" style="display: none"></a>
+
+                            <li class=""><a asp-area="HR" asp-page="/Employees/List"><span class="menu-icon"><i class="zmdi zmdi-minus"></i></span> <span class="menu-text">Employee List</span></a></li>
                             <li class="">
                                 <a href="index-2.html">
                                     <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>

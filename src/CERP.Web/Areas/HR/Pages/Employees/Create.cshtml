@@ -1,46 +1,99 @@
-﻿@page
+﻿@page "/HR/Employee/Create"
 @using CERP;
-@model CERP.Web.Areas.FM.Pages.COA.CreateModel
+@using Syncfusion.EJ2.Grids;
+@model CERP.Web.Areas.HR.Pages.Employees.CreateModel
 @{
-    ViewData["Title"] = "Create Accounts";
-    ViewData["HeaderTitle"] = "CHART OF ACCOUNTS";
-    ViewData["IconClass"] = "fa fa-sitemap";
-    ViewData["SubTitle"] = "Create New Account";
+    ViewData["Title"] = "Add Employee";
+    ViewData["IconClass"] = "fa fa-user-tie";
+    ViewData["HeaderTitle"] = "EMPLOYEES";
+    ViewData["SubTitle"] = "Add New Employee";
 
     ViewData["IsList"] = false;
     ViewData["IsCreate"] = false;
 
-    ViewData["headAccounts"] = Model.HeadAccounts.OrderBy(x => x.HeadCode).ToList();
-    ViewData["subCategories"] = Model.SubCategories.OrderBy(x => x.SubCategoryId).ToList();
-    ViewData["companies"] = Model.Companies.OrderBy(x => x.CreationTime).ToList();
-    ViewData["branches"] = Model.Branches.OrderBy(x => x.CreationTime).ToList();
-    ViewData["subledgerAccounts"] = Model.SubLedgerAccounts.OrderBy(x => x.CreationTime).ToList();
+    ViewData["birthPlaces"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
+    ViewData["nationalities"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Nationality).OrderBy(x => x.Key).ToList();
+    ViewData["genders"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Gender).OrderBy(x => x.Key).ToList();
+    ViewData["maritalStatuses"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.MaritalStatus).OrderBy(x => x.Key).ToList();
+    ViewData["booldGroups"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.BloodGroup).OrderBy(x => x.Key).ToList();
 
-    ViewData["subLedgerRequirements"] = Model.SubLedgerRequirements;
+    ViewData["religions"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Religion).OrderBy(x => x.Key).ToList();
 
-    ViewData["accountStatementTypes"] = Model._accStatementTypeRepo.Where(x => x.ParentId == null).ToList();
-    ViewData["accountStatementDetails"] = Model._accStatementTypeRepo.Where(x => x.ParentId != null).ToList();
 
-    ViewData["cashflowStatementTypes"] = Model._dictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.CashflowStatementTypesKey).ToList();
-    ViewData["cashflowStatementDetails"] = Model._dictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.CashflowStatementTypesKey).ToList();
+    ViewData["idTypes"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.IDType).OrderBy(x => x.Key).ToList();
+    ViewData["idIssuers"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
+    ViewData["passportIssuers"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
 
-    ViewData["revenueStatementTypes"] = Model._dictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.CashflowStatementTypesKey).ToList();
-    ViewData["revenueStatementDetails"] = Model._dictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.CashflowStatementTypesKey).ToList();
 
-    var accountNameAR = "";
+    ViewData["departments"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
+    ViewData["positions"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
+    ViewData["employeeStatuses"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
+    ViewData["contractTypes"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
+    ViewData["contractStatuses"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
 
-    var coaInput = Model.COAInput;
+
+    ViewData["banks"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
+    ViewData["allowancesColumns"] = new List<GridColumn>() {
+        new GridColumn { Field = "AllowanceType", Width = "110", HeaderText = "Allowance Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "PercBasicSalary", Width = "110", HeaderText = "% of Basic Salary", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "Amount", Width = "110", HeaderText = "Amount", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "From", Width = "80", HeaderText = "From", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "To", Width = "80", HeaderText = "To", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    };
+    ViewData["allowancesDS"] = null;
+
+
+    ViewData["countries"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
+    ViewData["cities"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.City).OrderBy(x => x.Key).ToList();
+
+
+    ViewData["degrees"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.City).OrderBy(x => x.Key).ToList();
+    ViewData["institues"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.City).OrderBy(x => x.Key).ToList();
+    ViewData["qualificationsColumns"] = new List<GridColumn>() {
+        new GridColumn { Field = "Degree", Width = "110", HeaderText = "Degree / Certificate", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "Institution", Width = "110", HeaderText = "Institution", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "From", Width = "80", HeaderText = "From", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "To", Width = "80", HeaderText = "To", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    };
+    ViewData["qualificationsDS"] = null;
+
+
+    ViewData["dependentRelationshipTypes"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.City).OrderBy(x => x.Key).ToList();
+    ViewData["dependentsColumns"] = new List<GridColumn>() {
+        new GridColumn { Field = "DependentName", Width = "110", HeaderText = "Dependent Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "DependentNameLocalized", Width = "110", HeaderText = "Dependent Name in AR", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "From", Width = "80", HeaderText = "From", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "To", Width = "80", HeaderText = "To", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    };
+    ViewData["dependentsDS"] = null;
+
+
+    ViewData["workShifts"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.City).OrderBy(x => x.Key).ToList();
+    ViewData["workShiftsColumns"] = new List<GridColumn>() {
+        new GridColumn { Field = "WorkShift", Width = "110", HeaderText = "Work Shift", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "From", Width = "80", HeaderText = "From", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "To", Width = "80", HeaderText = "To", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    };
+    ViewData["workShiftsDS"] = null;
+    //var coaInput = Model.COAInput;
 }
 @section styles {
     <link href="~/libs/smartwizard/dist/css/smart_wizard_theme_arrows.min.css" rel="stylesheet" />
     <link href="~/libs/smartwizard/dist/css/smart_wizard.min.css" rel="stylesheet" />
-    @*<link href="~/libs/syncfusion/ej2-according/styles/fabric.css" rel="stylesheet" />*@
+    <link href="~/libs/syncfusion/ej2-grid/styles/fabric.css" rel="stylesheet" />
 
     <style>
+        .e-grid .e-headercell {
+            background-color: #f5f5f5;
+            /*font-size: 18px;*/
+        }
     </style>
 }
 @section scripts {
+
     <script src="~/libs/smartwizard/dist/js/jquery.smartWizard.min.js"></script>
+    <script src="~/libs/syncfusion/ej2-grid/scripts/ej2.min.js"></script>
+
     @*<script src="~/libs/syncfusion/ej2-according/scripts/ej2-according.min.js"></script>*@
     <script type="text/javascript">
         $(document).ready(function () {
@@ -106,11 +159,14 @@
                     elmForm.validator('validate');
                     var elmErr = elmForm.find('.has-error');
                     if (elmErr) {
+                            console.log("Yup");
                         if (elmErr.length > 0) {
+                            console.log("Greater");
                             // Form validation failed
                             valid = false;
                         }
                         else {
+                            console.log("Lesser");
                             valid = true;
                         }
                     }
@@ -151,7 +207,7 @@
                 var subCatCode = $('option:selected', $('#subCat')).attr('data-categoryCode');
                 console.log(subCatCode);
                 params += "&subCatCode=" + subCatCode;
-                
+
                 var groupCatCode = $('option:selected', $('#groupCat')).attr('data-categoryCode');
                 console.log(groupCatCode);
                 params += "&groupCatCode=" + groupCatCode;
@@ -163,7 +219,7 @@
                 if (GetFormValidated() === true) {
 
                     console.log(params);
-                    $.ajax({
+                    @*$.ajax({
                         url: "@Url.Content("~")/COA/Create",
                         async: false,
                         type: "POST",
@@ -174,45 +230,12 @@
                         error: function (err) {
                             console.log(err);
                         }
-                    })
+                    })*@
                 }
                 else {
                     console.log("Invalid Form");
                 }
             });
-            //$(function () {
-            //    $('#submitCOA').on('click', function (evt) {
-            //        evt.preventDefault();
-
-            //        var data = {
-            //            accountName: $("#accountName").val(),
-            //            accountNameSL: $("#accountNameAR").val(),
-            //            companyId: $("#company").val()
-            //        };
-
-
-            //        $.post('', $("#coaForm").serialize(), function () {
-            //            console.log($("#coaForm").serialize());
-
-            //        });
-            //    });
-            //});
-            //document.forms[0].onsubmit = () => {
-            //    let formData = new FormData(document.forms[0]);
-            //    var data = {
-            //            accountName: $("#accountName").val(),
-            //            accountNameSL: $("#accountNameAR").val(),
-            //            companyId: $("#company").val()
-            //    };
-            //    console.log(formData);
-            //    console.log(data);
-            //    $.post('', data, function () {
-            //        console.log(data);
-            //    });
-            //    return false;
-            //};
-            // Step show event
-
             // Smart Wizard
             $('#smartwizard').smartWizard({
                 selected: 0,
@@ -245,21 +268,32 @@
             $("#smartwizard").on("leaveStep", function (e, anchorObject, stepNumber, stepDirection) {
                 curStepNumber = stepNumber;
                 var elmForm = $("#form-step-" + stepNumber);
+                console.log(curStepNumber);
                 // stepDirection === 'forward' :- this condition allows to do the form validation
                 // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
                 var valid = true;
+                elmForm.validator('validate');
                 if (stepDirection === 'forward' && elmForm) {
-                    elmForm.validator('validate');
-                    console.log(elmForm);
+                    //elmForm.validate({
+                    //    submitHandler: function (form) {
+                    //        console.log("Submit")
+                    //        valid = true;
+                    //    },
+                    //    invalidHandler: function (form) {
+                    //        console.log("Invalid")
+                    //        valid = false;
+                    //    }
+                    //})
                     var elmErr = elmForm.find('.has-error');
                     if (elmErr) {
                         if (elmErr.length > 0) {
                             // Form validation failed
-                            valid = false;
+                            valid = true;
                         }
                         else {
                             valid = true;
                         }
+                        console.log(elmErr.length);
                     }
                 }
                 return valid;
@@ -324,7 +358,7 @@
                         $(this).show();
                     }
                 });
-                $.getJSON(`?handler=SubCategoriesAndStatementType&headAccount=${headAccount}&headAccountName=${headAccountName}&parentId=@Guid.Empty&CLR=2`, (data) => {           
+                $.getJSON(`?handler=SubCategoriesAndStatementType&headAccount=${headAccount}&headAccountName=${headAccountName}&parentId=@Guid.Empty&CLR=2`, (data) => {
                     $("#statementType").val(data.item2);
                     SelectStatementDetail();
                 });
@@ -368,7 +402,7 @@
             });
             $("#subCat3").on("change", function () {
                 var subCat3 = $('option:selected', this).val();
-                
+
                 if (!$("#subCat4 > option#desc").length)
                     $("#subCat4").prepend("<option value='' id='desc'>Select Tertiary Sub Account</option>");
                 $.each($("#subCat4 > option"), function (i, item) {
@@ -408,29 +442,59 @@
 </div>
 
 <div class="site-content" style="background-color: rgb(253,253,253);">
-    <form id="coaForm" role="form" method="post" accept-charset="utf-8">
-
+    <form id="employeeForm" role="form" method="post" accept-charset="utf-8">
         <div id="smartwizard">
             <ul>
-                <li><a href="#step-1">Step 1<br /><p style="font-size: 15px">Account Details</p></a></li>
-                <li><a href="#step-2">Step 2<br /><p style="font-size: 15px">Required Information</p></a></li>
-                <li><a href="#step-3">Step 3<br /><p style="font-size: 15px">Reporting Details</p></a></li>
+                <li><a href="#step-1">Step 1<br /><p style="font-size: 15px">General Information</p></a></li>
+                <li><a href="#step-2">Step 2<br /><p style="font-size: 15px">ID & Residence</p></a></li>
+                <li><a href="#step-3">Step 3<br /><p style="font-size: 15px">Job Detail</p></a></li>
+                <li><a href="#step-4">Step 4<br /><p style="font-size: 15px">Financial Detail</p></a></li>
+                <li><a href="#step-5">Step 5<br /><p style="font-size: 15px">Contact Information</p></a></li>
+                <li><a href="#step-6">Step 6<br /><p style="font-size: 15px">Qualification</p></a></li>
+                <li><a href="#step-7">Step 7<br /><p style="font-size: 15px">Dependents</p></a></li>
+                <li><a href="#step-8">Step 8<br /><p style="font-size: 15px">Work Shifts</p></a></li>
             </ul>
+
 
             <div>
                 <div id="step-1">
                     <div id="form-step-0" role="form" data-toggle="validator">
-                        <partial name="_AccountDetailsStepPartial" />
+                        <partial name="_EmployeeGeneralInfoPartial" />
                     </div>
                 </div>
                 <div id="step-2">
                     <div id="form-step-1" role="form" data-toggle="validator">
-                        <partial name="_RequiredInfoStepPartial" />
+                        <partial name="_EmployeeIdAndResidencePartial" />
                     </div>
                 </div>
-                <div id="step-3" class="">
-                    <div id="form-step-0" role="form" data-toggle="validator">
-                        <partial name="_ReportingDetailsStepPartial" />
+                <div id="step-3">
+                    <div id="form-step-2" role="form" data-toggle="validator">
+                        <partial name="_EmployeeContractDetailsPartial" />
+                    </div>
+                </div>
+                <div id="step-4">
+                    <div id="form-step-3" role="form" data-toggle="validator">
+                        <partial name="_EmployeeFinancialDetailsPartial" />
+                    </div>
+                </div>
+                <div id="step-5">
+                    <div id="form-step-4" role="form" data-toggle="validator">
+                        <partial name="_EmployeeContactInfoPartial" />
+                    </div>
+                </div>
+                <div id="step-6">
+                    <div id="form-step-5" role="form" data-toggle="validator">
+                        <partial name="_EmployeeQualificationDetailsPartial" />
+                    </div>
+                </div>
+                <div id="step-7">
+                    <div id="form-step-6" role="form" data-toggle="validator">
+                        <partial name="_EmployeeDependentsDetailsPartial" />
+                    </div>
+                </div>
+                <div id="step-8">
+                    <div id="form-step-7" role="form" data-toggle="validator">
+                        <partial name="_EmployeeWorkShiftsDetailsPartial" />
                         <div class="col-sm-12">
                             <div class="form-group">
                                 <button id="submitCOA" type="submit" class="btn btn-outline-success btn-block">Create Account</button>

@@ -188,6 +188,8 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
+                b.Property(x => x.ValueTypeCode)
+                    .IsRequired();
                 b.Property(x => x.ValueTypeName)
                     .IsRequired();
                 b.Property(x => x.ActiveStatus)

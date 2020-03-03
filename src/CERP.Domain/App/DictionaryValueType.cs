@@ -17,6 +17,7 @@ namespace CERP.App
         {
             Id = guid;
         }
+        public string ValueTypeCode { get; set; }
         public string ValueTypeName { get; set; }
         public string ValueTypeNameLocalizationKey { get; set; }
         public bool ActiveStatus { get; set; }

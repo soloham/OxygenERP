@@ -1,0 +1,152 @@
+﻿@using CERP.App;
+@{
+    List<DictionaryValue> departments = (List<DictionaryValue>)ViewData["departments"];
+    List<DictionaryValue> positions = (List<DictionaryValue>)ViewData["positions"];
+    List<DictionaryValue> employeeStatuses = (List<DictionaryValue>)ViewData["employeeStatuses"];
+    List<DictionaryValue> contractStatuses = (List<DictionaryValue>)ViewData["contractStatuses"];
+    List<DictionaryValue> contractTypes = (List<DictionaryValue>)ViewData["contractTypes"];
+}
+
+@section scripts{
+    <script>
+
+    </script>
+}
+
+<div class="m-l-20 m-t-0">
+    <h2>Contract Details</h2>
+    <p>
+        Provide contract details of the employee
+    </p>
+</div>
+<div class="panel-body" style="padding-bottom:0">
+    <div class="col-lg-12 padding-right-0">
+
+        <div class="row">
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <label class="margin-bottom-5  control-label">Department:</label>
+                <div>
+                    <select id="departmentId" name="DepartmentId" class="form-control" required>
+                        <option></option>
+                        @for (int i = 0; i < departments.Count; i++)
+                        {
+                            <option value="@departments[i].Key">@departments[i].Value</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <label class="margin-bottom-5  control-label">Position:</label>
+                <div>
+                    <select id="positionId" name="PositionId" class="form-control" required>
+                        <option></option>
+                        @for (int i = 0; i < positions.Count; i++)
+                        {
+                            <option value="@positions[i].Key">@positions[i].Value</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5">Joining Date:</label>
+                        <input type="text" id="joiningDate" name="JoiningDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
+                    </div>
+                </div>
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5 pull-right ">Hijri Date</label>
+                        <input type="text" id="joiningHDate" name="JoiningHDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="margin-bottom-5  control-label">Employee Status:</label>
+                    <select id="activeStatus" name="ActiveStatus" class="form-control" required>
+                        <option selected hidden></option>
+                        @for (int i = 0; i < employeeStatuses.Count; i++)
+                        {
+                            <option value="@employeeStatuses[i].Key">@employeeStatuses[i].Value</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="clearfix margin-5"></div>
+        <div class="row">
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div>
+                    <label class="margin-bottom-5  control-label">Contract Type:</label>
+                    <select id="contractTypeId" name="ContractTypeId" class="form-control" required>
+                        <option selected hidden></option>
+                        @for (int i = 0; i < contractTypes.Count; i++)
+                        {
+                            <option value="@contractTypes[i].Key">@contractTypes[i].Value</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div>
+                    <label class="margin-bottom-5  control-label">Contract Status:</label>
+                    <select id="contractStatusId" name="ContractStatusId" class="form-control" required>
+                        <option selected hidden></option>
+                        @for (int i = 0; i < contractStatuses.Count; i++)
+                        {
+                            <option value="@contractStatuses[i].Key">@contractStatuses[i].Value</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5">Contract Start Date:</label>
+                        <input type="text" id="contractStartDate" name="ContractStartDate" @*value="@(empInfo!=null? empInfo.CONTRACT_START_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
+                    </div>
+                </div>
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5 pull-right ">Hijri Date</label>
+                        <input type="text" id="contractStartHDate" name="ContractStartHDate" @*value="@(empInfo!=null? empInfo.CONTRACT_START_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri" required>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5">Contract End Date:</label>
+                        <input type="text" id="contractEndDate" name="ContractEndDate" @*value="@(empInfo!=null? empInfo.CONTRACT_START_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
+                    </div>
+                </div>
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5 pull-right ">Hijri Date</label>
+                        <input type="text" id="contractEndHDate" name="ContractEndHDate" @*value="@(empInfo!=null? empInfo.CONTRACT_START_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri" required>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div>
+                    <label class="margin-bottom-5  control-label">Vacation Days (Annually):</label>
+                    <input type="number" id="vacationDays" name="VacationDays" min="0" @*value="@(empInfo!=null? empInfo.VACATION_DAYS :0)"*@ class="form-control" required>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
