@@ -38,6 +38,20 @@
     <Compile Remove="Migrations\20200228230421_SubLeaderRequirementsAccountsJoinTableUpdated.Designer.cs" />
     <Compile Remove="Migrations\20200228233730_CheckStateMG.cs" />
     <Compile Remove="Migrations\20200228233730_CheckStateMG.Designer.cs" />
+    <Compile Remove="Migrations\20200304030229_UpdatedHREmployeeEntityAdded.cs" />
+    <Compile Remove="Migrations\20200304030229_UpdatedHREmployeeEntityAdded.Designer.cs" />
+    <Compile Remove="Migrations\20200304035824_UpdatedHREmployeeEntityAddedIDProps.cs" />
+    <Compile Remove="Migrations\20200304035824_UpdatedHREmployeeEntityAddedIDProps.Designer.cs" />
+    <Compile Remove="Migrations\20200305093331_UpdatedDictionaryValuesRepo.cs" />
+    <Compile Remove="Migrations\20200305093331_UpdatedDictionaryValuesRepo.Designer.cs" />
+    <Compile Remove="Migrations\20200305094027_UpdatedDictionaryValuesRepo.cs" />
+    <Compile Remove="Migrations\20200305094027_UpdatedDictionaryValuesRepo.Designer.cs" />
+    <Compile Remove="Migrations\20200305094936_UpdatedDictionaryValuesRepo.cs" />
+    <Compile Remove="Migrations\20200305094936_UpdatedDictionaryValuesRepo.Designer.cs" />
+    <Compile Remove="Migrations\20200305100224_RemovedDicValueAndDicValueType.cs" />
+    <Compile Remove="Migrations\20200305100224_RemovedDicValueAndDicValueType.Designer.cs" />
+    <Compile Remove="Migrations\20200305170120_UpdatedDicValueType.cs" />
+    <Compile Remove="Migrations\20200305170120_UpdatedDicValueType.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

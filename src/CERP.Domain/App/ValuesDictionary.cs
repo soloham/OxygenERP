@@ -9,6 +9,10 @@ namespace CERP.App
 {
     public class DictionaryValue : AuditedAggregateRoot<Guid>
     {
+        public void SetId(Guid id)
+        {
+            Id = id;
+        }
         public DictionaryValue()
         {
 
@@ -32,7 +36,7 @@ namespace CERP.App
         public bool? ActiveStatus { get; set; }
 
         [ForeignKey("ValueTypeId")]
-        public DictionaryValueType ValueType { get; set; }
+        public DictionaryValueType ValueType { get; set; }  
         public Guid? ValueTypeId { get; set; }
 
         [ForeignKey("CompanyId")]

@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization;
+@using System.Web;
 @using CERP.Localization;
 @inject IHtmlLocalizer<CERPResource> L
 
@@ -18,14 +19,17 @@
 
     <link href="~/styles/cerp/cosmos.min.css" rel="stylesheet" />
     <link href="~/styles/cerp/application.min.css" rel="stylesheet" />
-    <link href="~/styles/cerp/site.css" rel="stylesheet" asp-append-version="true"/>
 
     <link href="~/libs/font-awesome/css/all.css" rel="stylesheet" />
 
     <link href="~/libs/fabricUI/fabric.min.css" rel="stylesheet" />
     <link href="~/libs/fabricUI/fabric-11.0.0.scoped.min.css" rel="stylesheet" />
+    <link href="~/libs/fabricUI/fabric-11.0.0.scoped.min.css" rel="stylesheet" />
 
+    @*<link href="~/libs/JqueryDatepicker/css/jquery.calendars.picker.css" />*@
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
+    <link href="~/styles/cerp/site.css" rel="stylesheet" asp-append-version="true" />
 </head>
 <body class="layout layout-header-fixed layout-left-sidebar-fixed">
     <div class="site-overlay"></div>
@@ -808,7 +812,7 @@
                                 </a>
                             </li>
                             <li class="">
-                                <a href="index-2.html">
+                                <a asp-area="Setup" asp-page="/Codes/List">
                                     <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
                                     <span class="menu-text">Lookup Setup</span>
                                 </a>
@@ -837,16 +841,48 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-
-    <script src="~/scripts/cerp/site.js" asp-append-version="true"></script>
     <script src="~/scripts/cerp/vendor.min.js"></script>
+    @*<script src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>*@
+    @*<script src="~/seed/js/libs/jquery-3.2.1.min.js"></script>*@
+
+
+    @*<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>*@
+    @*<script src="~/seed/js/libs/jquery-ui.min.js"></script>*@
+
+    <!-- IMPORTANT: APP CONFIG -->
+    @*<script src="~/seed/js/app.config.js"></script>*@
+    <!-- BOOTSTRAP JS -->
+    @*<script src="~/seed/js/bootstrap/bootstrap.min.js"></script>*@
+
+    <!--[if IE 8]>
+        <h1>Your browser is out of date, please update your browser by going to www.microsoft.com/download</h1>
+    <![endif]-->
+    <!-- MAIN APP JS FILE -->
+    @*<script src="~/seed/js/app.min.js"></script>*@
+
+
     <script src="~/scripts/cerp/cosmos.min.js"></script>
     <script src="~/scripts/cerp/application.min.js"></script>
     <script src="~/scripts/cerp/index.min.js"></script>
 
-    <script src="~/libs/font-awesome/js/fontawesome.min.js"></script>
+    @*<link href="~/libs/JqueryDatepicker/css/jquery.calendars.picker.css" />
+        <script src="~/libs/JqueryDatepicker/js/jquery.calendars.js"></script>
+        <script src="~/libs/JqueryDatepicker/js/jquery.calendars.plus.js"></script>
+        <script src="~/libs/JqueryDatepicker/js/jquery.plugin.js"></script>
+        <script src="~/libs/JqueryDatepicker/js/jquery.calendars.picker.js"></script>
+        <script src="~/libs/JqueryDatepicker/js/jquery.calendars.islamic.js"></script>*@
+
 
     @RenderSection("Scripts", required: false)
+    <script src="~/libs/font-awesome/js/fontawesome.min.js"></script>
+
+
+    <script src="~/scripts/cerp/site.js" asp-append-version="true"></script>
+
+    <style>
+        .calendars-popup {
+            z-index: 10000 !important;
+        }
+    </style>
 </body>
 </html>

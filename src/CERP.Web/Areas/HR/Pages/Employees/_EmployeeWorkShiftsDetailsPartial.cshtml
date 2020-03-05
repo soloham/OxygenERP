@@ -1,12 +1,10 @@
 ﻿@using CERP.App;
 @using Syncfusion.EJ2.Grids;
-@addTagHelper *, Syncfusion.EJ2
 @{
     List<GridColumn> workShiftsColumns = (List<GridColumn>)ViewData["workShiftsColumns"];
     object workShiftsDS = (object)ViewData["workShiftsDS"];
     List<DictionaryValue> workShifts = (List<DictionaryValue>)ViewData["workShifts"];
 
-    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
 }
 
 @section scripts{
@@ -21,18 +19,73 @@
         Provide work shifts of the employee
     </p>
 </div>
+<hr class="m-b-0"/>
 <div class="panel-body" style="padding-bottom:0">
     <div class="col-lg-12 padding-right-0">
 
-        <div class="control-section">
-            <ejs-grid id="Grid3" dataSource="@workShiftsDS" enableAutoFill="true" columns="@workShiftsColumns"
-                        dataBound="dataBound" commandClick="commandClick"
-                        allowExcelExport="true" allowGrouping="true" allowPdfExport="true"
-                        hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"
-                        allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                        toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
-                        contextMenuItems="@(new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending","Copy", "Edit", "Delete", "Save", "Cancel","PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage","LastPage", "NextPage"})"
-                        allowPaging="true" allowResizing="true">
+        <div id="form-step-6-1" role="form" data-toggle="validator">
+            <div class="row">
+                <div class="col-lg-4 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5  control-label">Work Shift:</label>
+                        <select id="workshiftId" name="WorkshiftId" class="form-control" required>
+                            <option></option>
+                            @for (int i = 0; i < workShifts.Count; i++)
+                            {
+                                <option value="@workShifts[i].Id" data-value="@workShifts[i].Value">@workShifts[i].Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6 col-12">
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5">From:</label>
+                            <input type="text" id="workshiftFromDate" name="WorkshiftFromDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
+                        </div>
+                    </div>
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 pull-right ">Hijri Date</label>
+                            <input type="text" id="fromHDate" name="FromHDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-sm-6 col-12">
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5">To:</label>
+                            <input type="text" id="workshiftToDate" name="WorkshiftToDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
+                        </div>
+                    </div>
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 pull-right ">Hijri Date</label>
+                            <input type="text" id="toHDate" name="ToHDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <button id="submitWorkShift" type="button" class="btn btn-primary btn-block">Add Work Shift</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="control-section m-t-20">
+            <ejs-grid id="WorkShiftsGrid" dataSource="@workShiftsDS" enableAutoFill="true" columns="@workShiftsColumns"
+                      dataBound="dataBound" commandClick="commandClick"
+                      allowExcelExport="true" allowGrouping="true" allowPdfExport="true"
+                      hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"
+                      allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                      toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
+                      contextMenuItems="@(new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending","Copy", "Edit", "Delete", "Save", "Cancel","PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage","LastPage", "NextPage"})"
+                      allowPaging="true" allowResizing="true">
 
                 <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
                 <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
@@ -40,23 +93,14 @@
             </ejs-grid>
         </div>
 
-        <ejs-dialog id="alert_dialog" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy with Header" content="Atleast one row should be selected to copy with header">
-            <e-dialog-buttons>
-                <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
-            </e-dialog-buttons>
-        </ejs-dialog>
-        <ejs-dialog id="alert_dialog_1" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy" content="Atleast one row should be selected to copy">
-            <e-dialog-buttons>
-                <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
-            </e-dialog-buttons>
-        </ejs-dialog>
+
     </div>
 </div>
 
 <script>
 
     function toolbarClick(args) {
-        var gridObj = document.getElementById("Grid").ej2_instances[0];
+        var gridObj = document.getElementById("WorkShiftsGrid").ej2_instances[0];
         if (args.item.id === 'Grid_pdfexport') {
             gridObj.pdfExport();
         }
@@ -91,7 +135,7 @@
     }
     var initial = true;
     function dataBound(args) {
-        this.autoFitColumns();
+        //this.autoFitColumns();
         //if (initial == true) {
         //    this.groupModule.collapseAll();
         //    initial = false;

@@ -1,4 +1,6 @@
-﻿using CERP.FM.COA;
+﻿using CERP.App;
+using CERP.FM.COA;
+using CERP.HR.Employees;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
@@ -56,6 +58,27 @@ namespace CERP.EntityFrameworkCore
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.Company)
                                                        .Include(p => p.HeadAccount);
+                });
+
+                options.Entity<Employee>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.Gender)
+                                                       .Include(p => p.BloodGroup)
+                                                       .Include(p => p.Nationality)
+                                                       .Include(p => p.Religion)
+                                                       .Include(p => p.POB)
+                                                       .Include(p => p.MaritalStatus);
+                });
+
+                options.Entity<PhysicalID>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.IssuedFrom)
+                                                       .Include(p => p.IDType);
+                });
+
+                options.Entity<DictionaryValueType>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.Values).ThenInclude(x => x.ValueType);
                 });
             });
 

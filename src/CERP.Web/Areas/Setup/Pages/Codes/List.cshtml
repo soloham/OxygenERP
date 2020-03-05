@@ -1,0 +1,482 @@
+﻿@page "/Setup/Codes"
+@addTagHelper *, Syncfusion.EJ2 
+@using Syncfusion.EJ2.Grids;
+@using CERP.App;
+@model CERP.Web.Areas.Setup.Codes.ListModel
+@{
+    ViewData["Title"] = "Lookup";
+    ViewData["IconClass"] = "fa fa-user-tie";
+    ViewData["HeaderTitle"] = "LOOKUP SETUPS";
+    ViewData["SubTitle"] = "List of Codes";
+
+    ViewData["IsList"] = false;
+    ViewData["IsCreate"] = true;
+
+    List<DictionaryValueType_Dto> dictionaryValueTypes = (await Model.dictionaryValueTypeAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToArray().Where(x => x.Locked == false).OrderBy(x => x.ValueTypeCode).ToList();
+    string CurValueTypeCode = (RouteData.Values["ValueType"] != null ? Convert.ToString(RouteData.Values["ValueType"]) : "");
+
+    List<object> commands = new List<object>();
+    commands.Add(new { type = "Copy", buttonOption = new { iconCss = "e-icons e-copy", cssClass = "e-flat" } });
+    commands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
+    commands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+    commands.Add(new { type = "Save", buttonOption = new { iconCss = "e-icons e-update", cssClass = "e-flat" } });
+    commands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
+
+    ViewData["DicValueGridColumns"] = new List<GridColumn>()
+{
+        //new GridColumn { Field = "Id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { AllowEditing = false, Field = "id", Visible = false, IsPrimaryKey = true, HeaderText = "Code", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { AllowEditing = false, Field = "key", HeaderText = "Code", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "value", HeaderText = "Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "valueLocalizationKey", HeaderText = "Name in Arabic", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { AllowEditing = false, Field = "valueType.valueTypeName", HeaderText = "Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Width = "150", HeaderText = "Commands", TextAlign=TextAlign.Center, MinWidth="10", Commands = commands }
+    };
+    ViewData["DicValueTypeGridColumns"] = new List<GridColumn>()
+{
+        //new GridColumn { Field = "Id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { AllowEditing = false, Field = "id", Visible = false, IsPrimaryKey = true, HeaderText = "Code", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { AllowEditing = false, Field = "valueTypeCode", HeaderText = "Code", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "valueTypeName", HeaderText = "Type Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "valueTypeNameLocalizationKey", HeaderText = "Name in Arabic", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        //new GridColumn { Field = "valueTypeFor", EditType='dropdownedit', Edit=Enum.GetValues(typeof(CERP.ValueTypeModules)), HeaderText = "Module", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Width = "150", HeaderText = "Commands",  TextAlign=TextAlign.Center, MinWidth="10", Commands = commands }
+    };
+
+    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+    ViewData["alertbutton"] = new
+    {
+        content = "OK",
+        isPrimary = true
+    };
+}
+@section styles {
+    <link href="~/libs/syncfusion/ej2-grid/styles/fabric.css" rel="stylesheet" />
+
+    <style>
+        .e-grid .e-headercell {
+            background-color: #f5f5f5;
+            /*font-size: 18px;*/
+        }
+
+        .site-main {
+            background-color: rgb(253,253,253);
+        }
+
+        .nav-item{
+            background-color: rgb(250,250,250);
+            margin-bottom: 8px !important;
+            cursor: pointer;
+        }
+        .nav-item:not(.active) .custom-nav-icon{
+            padding-top: 5px;
+            color: #787878;
+        }
+        .nav-item.active .custom-nav-icon{
+            font-size: 22px;
+            padding-top: 3.5px;
+            color: #efefef;
+        }
+        .nav>li>a {
+            font-size: 15px;
+            cursor: pointer;
+        }
+        
+        .nav-pills>li.active>a{
+            padding-top: 12.5px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        
+        
+    </style>
+}
+@section scripts {
+    <script src="~/libs/syncfusion/ej2-grid/scripts/ej2.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+        });
+    </script>
+    <ejs-scripts></ejs-scripts>
+}
+
+<div class="site-content" style="padding:0; background-color: rgb(253,253,253);">
+    <partial name="_DefaultPageHeader" />
+
+    <div class="panel-body" style="padding-bottom:0">
+        <div class="col-lg-3 m-b-20 p-r-5">
+            <ul id="valueTypes" class="nav nav-tabs nav-pills nav-stacked">
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" onclick="BindValueTypeGrid()">
+                        Item Types
+
+                        <i class="fa fa-arrow-right pull-right custom-nav-icon"></i>
+                    </a>
+                </li>
+                <hr />
+                @foreach (var item in dictionaryValueTypes)
+                {
+                    <li class="nav-item @(item.ValueTypeCode==CurValueTypeCode?"active":"")">
+                        <a class="nav-link" data-typeId="@item.Id" data-toggle="tab" onclick="BindGrid('@item.ValueTypeCode')">
+                            @item.ValueTypeName
+
+                            <i class="fa fa-search pull-right custom-nav-icon"></i>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="col-lg-9 p-b-20">
+            <div id="valueSection" class="well well-light" style="background-color: white; display: none">
+                <h1 id="codeListTitle" class="margin-top-0 semi-bold text-uppercase text-primary" style="color:#0078D6">Code List</h1>
+                <hr style="border-width:4px;" />
+                <div class="control-section ">
+                    <ejs-grid id="CodesItemGrid" dataSource="@ViewData["CurDicValueGridDS"]" enableAutoFill="true" columns="@ViewData["DicValueGridColumns"]"
+                              dataBound="dataBound" commandClick="commandClick"
+                              allowExcelExport="true" allowGrouping="true" allowPdfExport="true"
+                              hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"
+                              allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                              toolbarClick="toolbarClick" actionComplete="actionComplete" actionBegin="actionBegin"
+                              toolbar="@(new List<object>() {"Add", "Cancel", "Edit", "Delete", "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
+                              contextMenuItems="@(new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending","Copy", "Edit", "Delete", "Save", "Cancel","PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage","LastPage", "NextPage"})"
+                              allowPaging="true" allowResizing="true">
+
+                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                        <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                        <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                    </ejs-grid>
+                </div>
+
+                <div id="form-step-5-1" role="form" data-toggle="validator" hidden>
+
+                    <div class="clearfix margin-5"></div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <button id="submitAddDependant" type="button" class="btn btn-primary btn-block">Add Dependant</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div id="valueTypeSection" class="well well-light" style="background-color: white">
+                <h1 id="codeListTitle" class="margin-top-0 semi-bold text-uppercase text-primary" style="color:#0078D6">Types List</h1>
+                <hr style="border-width:4px;" />
+                <div class="control-section ">
+                    <ejs-grid id="CodesValueTypeItemGrid" dataSource="@ViewData["CurDicValueTypeGridDS"]" enableAutoFill="true" columns="@ViewData["DicValueTypeGridColumns"]"
+                              dataBound="dataBound" commandClick="commandClick"
+                              allowExcelExport="true" allowGrouping="true" allowPdfExport="true"
+                              hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"
+                              allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                              toolbarClick="toolbarClick" actionComplete="actionCompleteValueType" actionBegin="actionBeginValueType"
+                              toolbar="@(new List<object>() {"Add", "Cancel", "Edit", "Delete", "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
+                              contextMenuItems="@(new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending","Copy", "Edit", "Delete", "Save", "Cancel","PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage","LastPage", "NextPage"})"
+                              allowPaging="true" allowResizing="true">
+
+                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                        <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                        <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                    </ejs-grid>
+                </div>
+
+                <div id="form-step-5-1" role="form" data-toggle="validator" hidden>
+
+                    <div class="clearfix margin-5"></div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <button id="submitAddDependant" type="button" class="btn btn-primary btn-block">Add Dependant</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <form method="post" hidden>
+        <input type="text" value="" />
+    </form>
+</div>
+<ejs-dialog id="alert_dialog" animationSettings="alertanimation" visible="false" target=".panel-body" width="300px" header="Copy with Header" content="Atleast one row should be selected to copy with header">
+    <e-dialog-buttons>
+        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+    </e-dialog-buttons>
+</ejs-dialog>
+<ejs-dialog id="alert_dialog_1" animationSettings="alertanimation" visible="false" target=".panel-body" width="300px" header="Copy" content="Atleast one row should be selected to copy">
+    <e-dialog-buttons>
+        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+    </e-dialog-buttons>
+</ejs-dialog>
+
+
+
+<script>
+    function BindGrid(codeType) {
+        ValueTypeCode = codeType;
+        console.log(ValueTypeCode);
+        if (codeType != '') {
+
+            //$('#divList').html('<h5 class="margin-0"><p><i class="fa fa-spinner fa-spin fa-fw"></i> Please wait while data is loading...</p></h5>');
+            if ($("#valueSection").css('display') == 'none') {
+                $("#valueTypeSection").slideUp();
+                $("#valueSection").slideDown();
+            }
+            var grid = $("#CodesItemGrid")[0].ej2_instances[0];
+            var ajax = new ej.base.Ajax('@Url.Content("~")Codes?handler=UpdateGrid&valueTypeCode=' + ValueTypeCode, 'GET');
+            $("#CodesItemGrid").slideUp(100);
+            ajax.send();
+            ajax.onSuccess = function (data) {
+
+                grid.dataSource = JSON.parse(data);
+                //console.log(data);
+                $("#CodesItemGrid").slideDown();
+                $("#codeListTitle").text($("li.active > a", "#valueTypes").text());
+            };
+        }
+    };
+    function BindValueTypeGrid()
+    {
+        if ($("#valueTypeSection").css('display') == 'none') {
+            $("#valueSection").slideUp();
+            $("#valueTypeSection").slideDown();
+        }
+        var grid = $("#CodesValueTypeItemGrid")[0].ej2_instances[0];
+        var ajax = new ej.base.Ajax('@Url.Content("~")Codes?handler=UpdateVTGrid', 'GET');
+        $("#CodesValueTypeItemGrid").slideUp(100);
+        ajax.send();
+        ajax.onSuccess = function (data) {
+
+            grid.dataSource = JSON.parse(data);
+            //console.log(data);
+            $("#CodesValueTypeItemGrid").slideDown();
+        };
+    }
+    function toolbarClick(args) {
+        var gridObj = document.getElementById("CodesItemGrid").ej2_instances[0];
+        if (args.item.id === 'Grid_pdfexport') {
+            gridObj.pdfExport();
+        }
+        if (args.item.id === 'Grid_excelexport') {
+            gridObj.excelExport();
+        }
+        if (args.item.id === 'Grid_csvexport') {
+            gridObj.csvExport();
+        }
+        if (this.getSelectedRecords().length > 0) {
+            var withHeader = false;
+            if (args.item.id === 'copyHeader') {
+                withHeader = true;
+            }
+            this.copy(withHeader);
+        } else {
+            if (args.item.id === 'copyHeader') {
+                var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+                dialogObj.show();
+            }
+            else if (args.item.id === 'copy') {
+                var dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+                dialogObj.show();
+            }
+        }
+    }
+    function alertBtnClick() {
+        var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+        var dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
+        dialogObj.hide();
+        dialogObj1.hide();
+    }
+    var initial = true;
+    function dataBound(args) {
+        //this.autoFitColumns();
+        //if (initial == true) {
+        //    this.groupModule.collapseAll();
+        //    initial = false;
+        //}
+        //console.log(args);
+    }
+    function actionBegin(args) {
+        if (args.requestType == "save") {
+            if (typeof args.data.value === 'undefined') {
+                args.cancel = true;
+            }
+            else
+            {
+                var isAdd = typeof args.data.key === 'undefined';
+                var url = '';
+                if (isAdd)
+                    url = '@Url.Content("~")Codes?handler=NewDicValue';
+                else
+                    url = '@Url.Content("~")Codes?handler=DicValue';
+
+                $.ajax({
+                    url: url,
+                    async: false,
+                    type: "POST",
+                    data: {
+                        dicValue: args.data,
+                        valueTypeId: $("li.active > a", "#valueTypes").attr('data-typeId'),
+                        __RequestVerificationToken: $('input:hidden[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function (data) {
+                        if (isAdd) {
+                            args.data.id = data.id;
+                            args.data.key = data.key;
+                            args.data.valueType = data.valueType;
+
+
+                        }
+                        //BindGrid(data.body.key);
+                    },
+                    error: function (err) {
+                        console.log(err);
+
+                    }
+                });
+            }
+        }
+        else if (args.requestType == "delete")
+        {
+
+        }
+        else if (args.requestType == "add")
+        {
+
+        }
+    }
+    function actionBeginValueType(args) {
+        if (args.requestType == "save") {
+            if (typeof args.data.valueTypeName === 'undefined') {
+                args.cancel = true;
+            }
+            else
+            {
+                var isAdd = typeof args.data.valueTypeCode === 'undefined';
+                var url = '';
+                if (isAdd)
+                    url = '@Url.Content("~")Codes?handler=NewDicVT';
+                else
+                    url = '@Url.Content("~")Codes?handler=DicVT';
+
+                $.ajax({
+                    url: url,
+                    async: false,
+                    type: "POST",
+                    data: {
+                        dicValueType: args.data,
+                        __RequestVerificationToken: $('input:hidden[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function (data) {
+                        if (isAdd) {
+                            args.data.id = data.id;
+                            args.data.valueTypeCode = data.valueTypeCode;
+
+                            $('#valueTypes').append(`<li class="nav-item">
+                                                        <a class="nav-link" data-typeId="${args.data.id}" data-toggle="tab" onclick="BindGrid('${args.data.valueTypeCode}')">
+                                                            ${args.data.valueTypeName}
+                                                            <i class="fa fa-search pull-right custom-nav-icon"></i>
+                                                        </a>
+                                                    </li>`);
+                        }
+                        else {
+                            $(`li>a[data-typeId="${args.data.id}"]`, $('#valueTypes')).html(`${ args.data.valueTypeName } <i class="fa fa-search pull-right custom-nav-icon"></i>`);
+                        }
+                        //BindGrid(data.body.key);
+                    },
+                    error: function (err) {
+                        console.log(err);
+
+                    }
+                });
+            }
+        }
+        else if (args.requestType == "delete")
+        {
+
+        }
+        else if (args.requestType == "add")
+        {
+
+        }
+    }
+
+    function actionComplete(args) {
+        if (args.requestType == "save") {
+
+        }
+        else if (args.requestType == "delete")
+        {
+            $.ajax({
+                url: '@Url.Content("~")Codes?handler=DicValue',
+                async: false,
+                type: "DELETE",
+                data: {
+                    dicValues: args.data,
+                    __RequestVerificationToken: $('input:hidden[name="__RequestVerificationToken"]').val()
+                },
+                success: function (data) {
+                    //console.log(data.success);
+
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+    }
+    function actionCompleteValueType(args) {
+        if (args.requestType == "save") {
+
+        }
+        else if (args.requestType == "delete")
+        {
+            $.ajax({
+                url: '@Url.Content("~")Codes?handler=DicVT',
+                async: false,
+                type: "DELETE",
+                data: {
+                    dicValueTypes: args.data,
+                    __RequestVerificationToken: $('input:hidden[name="__RequestVerificationToken"]').val()
+                },
+                success: function (data) {
+                    //console.log(data.success);
+                    for (var i = 0; i < args.data.length; i++) {
+                        $(`li>a[data-typeId="${args.data[i].id}"]`, $('#valueTypes')).remove();
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+    }
+
+    function commandClick(args) {
+        //console.log(args);
+        if (args.commandColumn.type == "Edit") {
+            //var params_ = JSON.stringify(args.rowData);  // display row data
+            @*window.location = "@Url.Content("~")/GL/Edit?Id=" + args.rowData.Id;*@
+            @*$.ajax({
+                url: "/?handler=EditAccountkj&Guid_=" + params_.Id,
+                async: true,
+                type: "GET",
+                data: "",
+                success: function (data) {
+                    console.log(data);
+                    //window.location = "@Url.Content("~")/COA/Edit";
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            })*@
+        }
+        else if (args.commandColumn.type == "Copy") {
+            this.copy(false);
+        }
+    }
+</script>

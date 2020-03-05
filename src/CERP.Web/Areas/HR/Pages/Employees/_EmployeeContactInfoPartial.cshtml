@@ -1,7 +1,12 @@
 ﻿@using CERP.App;
+@using Syncfusion.EJ2.Grids;
 @{
     List<DictionaryValue> countries = (List<DictionaryValue>)ViewData["countries"];
     List<DictionaryValue> cities = (List<DictionaryValue>)ViewData["cities"];
+    List<DictionaryValue> contactRelations = (List<DictionaryValue>)ViewData["contactRelations"];
+
+    List<GridColumn> secondaryContactsColumns = (List<GridColumn>)ViewData["secondaryContactsColumns"];
+    object secondaryContactsDS = (object)ViewData["secondaryContactsDS"];
 }
 
 @section scripts{
@@ -16,15 +21,22 @@
         Provide contact information of the employee
     </p>
 </div>
-<div class="panel-body" style="padding-bottom:0">
+<hr />
+<div class="panel-body p-t-0" style="padding-bottom:0;">
     <div class="col-lg-12 padding-right-0">
+        <div class="m-l-0 m-t-0">
+            <h2>Primary Contact</h2>
+            <p>
+                Provide primary contact of the employee
+            </p>
+        </div>
         <div>
             <div class="row">
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="col-sm-3" style="padding:0">
                         <div class="form-group">
                             <label class="control-label m-b-5">Code:</label>
-                            <input type="number" id="phoneKey" name="PhoneKey" value="00966" style="width:100% !important" class="form-control inline pull-left">
+                            <input type="number" id="phoneKey" name="PhoneKey" style="width:100% !important" class="form-control inline pull-left">
                         </div>
                     </div>
                     <div class="col-sm-9" style="padding:0">
@@ -38,7 +50,7 @@
                     <div class="col-sm-3" style="padding:0">
                         <div class="form-group">
                             <label class="control-label m-b-5">Code:</label>
-                            <input type="number" id="mobileKey" name="MobileKey" value="00966" style="width:100% !important" class="form-control inline pull-left">
+                            <input type="number" id="mobileKey" name="MobileKey" style="width:100% !important" class="form-control inline pull-left">
                         </div>
                     </div>
                     <div class="col-sm-9" style="padding:0">
@@ -52,7 +64,7 @@
                     <div class="col-sm-3" style="padding:0">
                         <div class="form-group">
                             <label class="control-label m-b-5">Code:</label>
-                            <input type="number" id="faxKey" name="FaxKey" value="00966" style="width:100% !important" class="form-control inline pull-left">
+                            <input type="number" id="faxKey" name="FaxKey" style="width:100% !important" class="form-control inline pull-left">
                         </div>
                     </div>
                     <div class="col-sm-9" style="padding:0">
@@ -79,7 +91,7 @@
                             <option></option>
                             @for (int i = 0; i < countries.Count; i++)
                             {
-                                <option value="@countries[i].Key">@countries[i].Value</option>
+                                <option value="@countries[i].Id" data-value="@countries[i].Value">@countries[i].Value</option>
                             }
                         </select>
                     </div>
@@ -94,7 +106,7 @@
                             <option></option>
                             @for (int i = 0; i < cities.Count; i++)
                             {
-                                <option value="@cities[i].Key">@cities[i].Value</option>
+                                <option value="@cities[i].Id" data-value="@cities[i].Value">@cities[i].Value</option>
                             }
                         </select>
                     </div>
@@ -170,6 +182,126 @@
 
             </div>
 
+        </div>
+
+        <hr />
+
+        <div class="m-l-0 m-t-0">
+            <h2>Secondary Contacts</h2>
+            <p>
+                Provide secondary contacts of the employee
+            </p>
+        </div>
+
+        <ejs-grid id="SecondaryContactGrid" dataSource="@secondaryContactsDS" enableAutoFill="true" columns="@secondaryContactsColumns"
+                  dataBound="dataBound" commandClick="commandClick"
+                  allowExcelExport="true" allowGrouping="true" allowPdfExport="true"
+                  hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"
+                  allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                  toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
+                  allowPaging="true" allowResizing="true">
+
+            <e-grid-editSettings showDeleteConfirmDialog="true" mode="Dialog" showConfirmDialog="true" allowAdding="false" allowDeleting="true" allowEditing="false" newRowPosition="Bottom"></e-grid-editSettings>
+            <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+            <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+        </ejs-grid>
+
+        <div id="form-step-4-1" role="form" data-toggle="validator">
+            <div class="row m-t-20">
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5  control-label">Contact Relation:</label>
+                        <select id="contactRelationId" name="ContactRelationId" class="form-control" required>
+                            <option></option>
+                            @for (int i = 0; i < contactRelations.Count; i++)
+                            {
+                                <option value="@contactRelations[i].Id" data-value="@contactRelations[i].Value">@contactRelations[i].Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="col-sm-3" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5">Code:</label>
+                            <input type="number" id="secPhoneKey" name="SecPhoneKey" style="width:100% !important" class="form-control inline pull-left">
+                        </div>
+                    </div>
+                    <div class="col-sm-9" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 pull-right ">Phone:</label>
+                            <input type="number" id="secPhoneNo" name="SecPhoneNo" @*value="@(empInfo!=null? empInfo.PHONE_NO : "")"*@ style="width:100% !important" class="form-control inline">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="col-sm-3" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5">Code:</label>
+                            <input type="number" id="secMobileKey" name="SecMobileKey" style="width:100% !important" class="form-control inline pull-left">
+                        </div>
+                    </div>
+                    <div class="col-sm-9" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 pull-right ">Mobile:</label>
+                            <input type="number" id="secMobileNo" name="SecMobileNo" @*value="@(empInfo!=null? empInfo.PHONE_NO : "")"*@ style="width:100% !important" class="form-control inline">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="col-sm-3" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5">Code:</label>
+                            <input type="number" id="secFaxKey" name="SecFaxKey" style="width:100% !important" class="form-control inline pull-left">
+                        </div>
+                    </div>
+                    <div class="col-sm-9" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 pull-right ">Fax:</label>
+                            <input type="number" id="secFaxNo" name="SecFaxNo" @*value="@(empInfo!=null? empInfo.PHONE_NO : "")"*@ style="width:100% !important" class="form-control inline">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix margin-5"></div>
+
+            <div class="row">
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5  control-label">Email:</label>
+                        <input type="email" id="secEmail" name="SecEmail" @*value="@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <label class="margin-bottom-5  control-label">Country:</label>
+                    <div>
+                        <select id="secCountryId" name="SecCountryId" class="form-control">
+                            <option></option>
+                            @for (int i = 0; i < countries.Count; i++)
+                            {
+                                <option value="@countries[i].Id" data-value="@countries[i].Value">@countries[i].Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div>
+                        <label class="margin-bottom-5  control-label">City:</label>
+                    </div>
+                    <div>
+                        <select id="secCityId" name="SecCityId" class="form-control">
+                            <option></option>
+                            @for (int i = 0; i < cities.Count; i++)
+                            {
+                                <option value="@cities[i].Id" data-value="@cities[i].Value">@cities[i].Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <button id="submitSecondaryContact" type="button" class="btn btn-primary btn-block">Add Contact</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

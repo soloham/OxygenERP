@@ -1,0 +1,49 @@
+﻿@charset "utf-8";
+
+
+/* Light */
+@font-face {
+    font-family: "JF Flat Light";
+    src: url('../fonts/JF-Flat-light.eot');
+    src: url('../fonts/JF-Flat-light.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/JF-Flat-light.svg#JF Flat Light') format('svg'),
+    url('../fonts/JF-Flat-light.woff') format('woff'),
+    url('../fonts/JF-Flat-light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+
+
+/* Regular */
+@font-face {
+    font-family: "JF Flat Regular";
+    src: url('../fonts/JF-Flat-regular.eot');
+    src: url('../fonts/JF-Flat-regular.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/JF-Flat-regular.svg#JF Flat Regular') format('svg'),
+    url('../fonts/JF-Flat-regular.woff') format('woff'),
+    url('../fonts/JF-Flat-regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Medium */
+@font-face {
+    font-family: "JF Flat Medium";
+    src: url('../fonts/JF-Flat-medium.eot');
+    src: url('../fonts/JF-Flat-medium.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/JF-Flat-medium.svg#JF Flat Medium') format('svg'),
+    url('../fonts/JF-Flat-medium.woff') format('woff'),
+    url('../fonts/JF-Flat-medium.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+
+.arabicFont {
+    font-family: "JF Flat Light";
+}
+
+.rtl{
+    direction:rtl;
+}

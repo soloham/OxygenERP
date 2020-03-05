@@ -34,7 +34,7 @@
 </div>
 <div class="site-content" style="padding-top:0; background-color: rgb(253,253,253);">
     <div class="control-section">
-        <ejs-grid id="Grid" dataSource="@ViewData["COAs_DS"]" enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()"
+        <ejs-grid id="Grid" dataSource="@ViewData["Employees_DS"]" enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()"
                   childGrid="@Model.SecondaryDetailsGrid" dataBound="dataBound" commandClick="commandClick"
                   allowExcelExport="true" allowGrouping="true" allowPdfExport="true"
                   hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"
@@ -99,7 +99,7 @@
     }
     var initial = true;
     function dataBound(args) {
-        this.autoFitColumns();
+        //this.autoFitColumns();
         //if (initial == true) {
         //    this.groupModule.collapseAll();
         //    initial = false;

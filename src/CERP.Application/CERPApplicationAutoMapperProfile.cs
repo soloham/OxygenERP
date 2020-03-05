@@ -6,6 +6,9 @@ using CERP.FM.COA.DTOs;
 using CERP.FM.COA.UV_DTOs;
 using CERP.FM.DTOs;
 using CERP.FM.UV_DTOs;
+using CERP.HR.Employees;
+using CERP.HR.Employees.DTOs;
+using CERP.HR.Employees.UV_DTOs;
 
 namespace CERP
 {
@@ -53,6 +56,20 @@ namespace CERP
             CreateMap<DictionaryValue, DictionaryValue_Dto>();
             CreateMap<DictionaryValue_Dto, DictionaryValue>();
 
+            CreateMap<DictionaryValueType, DictionaryValueType_Dto>();
+            CreateMap<DictionaryValueType_Dto, DictionaryValueType>();
+
+            CreateMap<Employee, Employee_Dto>();
+            CreateMap<Employee_Dto, Employee>();
+            CreateMap<Employee_UV_Dto, Employee_Dto>();
+            CreateMap<Employee_Dto, Employee_UV_Dto>();
+            CreateMap<Employee_UV_Dto, Employee>();
+
+            CreateMap<PhysicalID, PhysicalID_Dto>();
+            CreateMap<PhysicalID_Dto, PhysicalID>();
+            CreateMap<PhysicalID_UV_Dto, PhysicalID_Dto>();
+            CreateMap<PhysicalID_Dto, PhysicalID_UV_Dto>();
+            CreateMap<PhysicalID_UV_Dto, PhysicalID>();
             //CreateMap<DictionaryValue_UV_Dto, DictionaryValue>();
 
         }

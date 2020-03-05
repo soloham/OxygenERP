@@ -1,14 +1,12 @@
 ﻿@using CERP.App;
 @using Syncfusion.EJ2.Grids;
-@addTagHelper *, Syncfusion.EJ2
 @{
     List<DictionaryValue> degrees = (List<DictionaryValue>)ViewData["degrees"];
     List<DictionaryValue> institues = (List<DictionaryValue>)ViewData["institues"];
 
     List<GridColumn> qualificationsColumns = (List<GridColumn>)ViewData["qualificationsColumns"];
     List<DictionaryValue> qualificationsDS = (List<DictionaryValue>)ViewData["qualificationDS"];
-
-    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+    qualificationsDS = new List<DictionaryValue>();
 }
 
 @section scripts{
@@ -23,104 +21,102 @@
         Provide qualification details of the employee
     </p>
 </div>
+<hr class="m-b-0"/>  
 <div class="panel-body" style="padding-bottom:0">
     <div class="col-lg-12 padding-right-0">
 
-        <div class="row">
-            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                <label class="margin-bottom-5  control-label">Degree / Certification:</label>
-                <div>
-                    <select id="degreeId" name="DegreeId" class="form-control" required>
-                        <option></option>
-                        @for (int i = 0; i < degrees.Count; i++)
-                        {
-                            <option value="@degrees[i].Key">@degrees[i].Value</option>
-                        }
-                    </select>
-                </div>
-            </div>
-
-
-            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                <label class="margin-bottom-5  control-label">Institution:</label>
-                <div>
-                    <select id="institutionId" name="InstitutionId" class="form-control" required>
-                        <option></option>
-                        @for (int i = 0; i < institues.Count; i++)
-                        {
-                            <option value="@institues[i].Key">@institues[i].Value</option>
-                        }
-                    </select>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                <div class="col-sm-6" style="padding:0">
+        <div id="form-step-4-2" role="form" data-toggle="validator">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
-                        <label class="control-label m-b-5">From:</label>
-                        <input type="text" id="fromDate" name="FromDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
+                        <label class="margin-bottom-5  control-label">Degree / Certification:</label>
+                        <select id="degreeId" name="DegreeId" class="form-control" required>
+                            <option></option>
+                            @for (int i = 0; i < degrees.Count; i++)
+                            {
+                                <option value="@degrees[i].Id" data-value="@degrees[i].Value">@degrees[i].Value</option>
+                            }
+                        </select>
                     </div>
                 </div>
-                <div class="col-sm-6" style="padding:0">
+
+
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
-                        <label class="control-label m-b-5 pull-right ">Hijri Date</label>
-                        <input type="text" id="fromHDate" name="FromHDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri" required>
+                        <label class="margin-bottom-5  control-label">Institution:</label>
+                        <select id="institutionId" name="InstitutionId" class="form-control" required>
+                            <option></option>
+                            @for (int i = 0; i < institues.Count; i++)
+                            {
+                                <option value="@institues[i].Id" data-value="@institues[i].Value">@institues[i].Value</option>
+                            }
+                        </select>
                     </div>
                 </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5">From:</label>
+                            <input type="text" id="fromDate" name="FromDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
+                        </div>
+                    </div>
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 pull-right ">Hijri Date</label>
+                            <input type="text" id="fromHDate" name="FromHDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5">To:</label>
+                            <input type="text" id="toDate" name="ToDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
+                        </div>
+                    </div>
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 pull-right ">Hijri Date</label>
+                            <input type="text" id="toHDate" name="ToHDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri">
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
-            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                <div class="col-sm-6" style="padding:0">
-                    <div class="form-group">
-                        <label class="control-label m-b-5">To:</label>
-                        <input type="text" id="toDate" name="ToDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
-                    </div>
-                </div>
-                <div class="col-sm-6" style="padding:0">
-                    <div class="form-group">
-                        <label class="control-label m-b-5 pull-right ">Hijri Date</label>
-                        <input type="text" id="toHDate" name="ToHDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri" required>
-                    </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <button id="submitQualification" type="button" class="btn btn-primary btn-block">Add Qualification</button>
                 </div>
             </div>
-
         </div>
 
         <div class="clearfix margin-5"></div>
 
-        <div class="control-section">
-            <ejs-grid id="Grid1" dataSource="@qualificationsDS" enableAutoFill="true" columns="@qualificationsColumns"
-                        dataBound="dataBound" commandClick="commandClick"
-                        allowExcelExport="true" allowGrouping="true" allowPdfExport="true"
-                        hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"
-                        allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                        toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
-                        contextMenuItems="@(new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending","Copy", "Edit", "Delete", "Save", "Cancel","PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage","LastPage", "NextPage"})"
-                        allowPaging="true" allowResizing="true">
+        <div class="control-section m-t-20">
+            <ejs-grid id="QualificationsGrid" dataSource="@qualificationsDS" enableAutoFill="true" columns="@qualificationsColumns"
+                      dataBound="dataBound" commandClick="commandClick"
+                      allowExcelExport="true" allowGrouping="true" allowPdfExport="true"
+                      hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"
+                      allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                      toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
+                      contextMenuItems="@(new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending","Copy", "Edit", "Delete", "Save", "Cancel","PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage","LastPage", "NextPage"})"
+                      allowPaging="true" allowResizing="true">
 
                 <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
                 <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
                 <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
             </ejs-grid>
         </div>
-
-        <ejs-dialog id="alert_dialog" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy with Header" content="Atleast one row should be selected to copy with header">
-            <e-dialog-buttons>
-                <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
-            </e-dialog-buttons>
-        </ejs-dialog>
-        <ejs-dialog id="alert_dialog_1" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy" content="Atleast one row should be selected to copy">
-            <e-dialog-buttons>
-                <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
-            </e-dialog-buttons>
-        </ejs-dialog>
-</div>
+    </div>
 </div>
 
 <script>
 
     function toolbarClick(args) {
-        var gridObj = document.getElementById("Grid").ej2_instances[0];
+        var gridObj = document.getElementById("QualificationsGrid").ej2_instances[0];
         if (args.item.id === 'Grid_pdfexport') {
             gridObj.pdfExport();
         }
@@ -155,7 +151,7 @@
     }
     var initial = true;
     function dataBound(args) {
-        this.autoFitColumns();
+        //this.autoFitColumns();
         //if (initial == true) {
         //    this.groupModule.collapseAll();
         //    initial = false;

@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CERP.Domain\CERP.Domain.csproj" />
     <ProjectReference Include="..\CERP.Application.Contracts\CERP.Application.Contracts.csproj" />
+    <ProjectReference Include="..\CERP.EntityFrameworkCore\CERP.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>

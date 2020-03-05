@@ -7,6 +7,7 @@ using Volo.Abp.Users.EntityFrameworkCore;
 using CERP.FM.COA;
 using CERP.FM;
 using CERP.App;
+using CERP.HR.Employees;
 
 namespace CERP.EntityFrameworkCore
 {
@@ -39,6 +40,10 @@ namespace CERP.EntityFrameworkCore
 
         public DbSet<DictionaryValue> ValuesDictionary { get; set; }
         public DbSet<DictionaryValueType> ValueTypesDictionary { get; set; }
+
+
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<PhysicalID> PhysicalIDs { get; set; }
 
         public CERPDbContext(DbContextOptions<CERPDbContext> options)
             : base(options)

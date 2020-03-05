@@ -43,7 +43,7 @@
 <div class="site-content" style="padding-top:0; background-color: rgb(253,253,253);">
 
     <div class="control-section">
-        <ejs-grid id="Grid" dataSource="@ViewData["Categories_DS"]" enableAutoFill="true" columns="@Model.GetGridColumns()"
+        <ejs-grid id="CategoriesGrid" dataSource="@ViewData["Categories_DS"]" enableAutoFill="true" columns="@Model.GetGridColumns()"
                   dataBound="dataBound" commandClick="commandClick"
                   allowExcelExport="true" allowGrouping="true" allowPdfExport="true"
                   hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"
@@ -73,7 +73,7 @@
 <script>
 
     function toolbarClick(args) {
-        var gridObj = document.getElementById("Grid").ej2_instances[0];
+        var gridObj = document.getElementById("CategoriesGrid").ej2_instances[0];
         if (args.item.id === 'Grid_pdfexport') {
             gridObj.pdfExport();
         }
@@ -108,7 +108,7 @@
     }
     var initial = true;
     function dataBound(args) {
-        this.autoFitColumns();
+        //this.autoFitColumns();
         //if (initial == true) {
         //    this.groupModule.collapseAll();
         //    initial = false;

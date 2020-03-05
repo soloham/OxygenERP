@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CERP.AppServices.HR.EmployeeService;
+using CERP.HR.Employees.DTOs;
 using CERP.Web.Pages;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -11,15 +13,16 @@ namespace CERP.Web.Areas.HR.Pages.Employees
 {
     public class ListModel : CERPPageModel
     {
-        private readonly coaAppService _coaAppService;
+        private readonly EmployeeAppService employeeAppService;
         public Grid SecondaryDetailsGrid = new Grid();
-        public ListModel(coaAppService coaAppService)
+        public ListModel(EmployeeAppService _employeeAppService)
         {
-            _coaAppService = coaAppService;
+            employeeAppService = _employeeAppService;
         }
 
         public void OnGet()
         {
+            List<Employee_Dto> Employees = employeeAppService.GetAllEmployees();
 
             SecondaryDetailsGrid = new Grid()
             {
@@ -44,7 +47,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
             };
             //List<COA_Account_Dto> COAs = (await _coaAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
 
-            ViewData["COAs_DS"] = null;
+            ViewData["Employees_DS"] = Employees;
             ViewData["alertbutton"] = new
             {
                 content = "OK",
@@ -70,7 +73,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
         public List<GridColumn> GetPrimaryGridColumns()
         {
             List<GridColumn> gridColumns = new List<GridColumn>() {
-                new GridColumn { Field = "Id", Width = "110", HeaderText = "Id", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "EmployeeId", Width = "110", HeaderText = "Id", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "Name", Width = "230", HeaderText = "Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "Department.Name", AutoFit = true, HeaderText = "Department", TextAlign=TextAlign.Center, },
                 new GridColumn { Field = "Position.Title", AutoFit = true, HeaderText = "Position", TextAlign=TextAlign.Center,  },

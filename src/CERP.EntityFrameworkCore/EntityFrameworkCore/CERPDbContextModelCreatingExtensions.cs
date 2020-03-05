@@ -1,6 +1,7 @@
 ﻿using CERP.App;
 using CERP.FM;
 using CERP.FM.COA;
+using CERP.HR.Employees;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Volo.Abp;
@@ -53,6 +54,8 @@ namespace CERP.EntityFrameworkCore
                     .IsRequired();
                 b.Property(p => p.ActiveStatus)
                     .IsRequired(false);
+
+                b.HasOne(p => p.CashFlowStatementType).WithMany().OnDelete(DeleteBehavior.Restrict);
             });
 
             builder.Entity<COA_AccountSubCategory>(b =>
@@ -199,6 +202,8 @@ namespace CERP.EntityFrameworkCore
 
                 b.HasOne(p => p.Company).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.Branch).WithMany().OnDelete(DeleteBehavior.Restrict);
+
+                //b.HasMany(p => p.Values).WithOne(p => p.ValueType);
             });
 
             builder.Entity<DictionaryValue>(b =>
@@ -212,7 +217,7 @@ namespace CERP.EntityFrameworkCore
                 b.Property(x => x.Key)
                     .IsRequired();
 
-                b.HasOne(p => p.ValueType).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(p => p.ValueType).WithMany(p => p.Values).OnDelete(DeleteBehavior.ClientCascade);
                 b.HasOne(p => p.Company).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.Branch).WithMany().OnDelete(DeleteBehavior.Restrict);
             });
@@ -236,6 +241,40 @@ namespace CERP.EntityFrameworkCore
                 .HasOne(bc => bc.Account)
                 .WithMany(c => c.SubLedgerRequirementAccounts)
                 .HasForeignKey(bc => bc.AccountId);
+
+            builder.Entity<Employee>(b =>
+            {
+                b.ToTable(CERPConsts.HRDbTablePrefix + "Employees", CERPConsts.HRDbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(p => p.POB).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(p => p.Nationality).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(p => p.Gender).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(p => p.MaritalStatus).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(p => p.BloodGroup).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(p => p.Religion).WithMany().OnDelete(DeleteBehavior.Restrict);
+
+            });
+
+            builder.Entity<PhysicalID>(b =>
+            {
+                b.ToTable(CERPConsts.HRDbTablePrefix + "EmpPhysicalIDs", CERPConsts.HRDbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.Property(p => p.Id).UseIdentityColumn(1, 1);
+
+                b.HasOne(p => p.IDType).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(p => p.IssuedFrom).WithMany().OnDelete(DeleteBehavior.Restrict);
+
+            });
+
+
         }
 
         public static void ConfigureCustomUserProperties<TUser>(this EntityTypeBuilder<TUser> b)

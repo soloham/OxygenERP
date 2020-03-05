@@ -19,13 +19,14 @@
         Provide contract details of the employee
     </p>
 </div>
+<hr class="mb-0"/>  
 <div class="panel-body" style="padding-bottom:0">
     <div class="col-lg-12 padding-right-0">
 
         <div class="row">
             <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                <label class="margin-bottom-5  control-label">Department:</label>
-                <div>
+                <div class="form-group">
+                    <label class="margin-bottom-5  control-label">Department:</label>
                     <select id="departmentId" name="DepartmentId" class="form-control" required>
                         <option></option>
                         @for (int i = 0; i < departments.Count; i++)
@@ -38,8 +39,8 @@
 
 
             <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                <label class="margin-bottom-5  control-label">Position:</label>
-                <div>
+                <div class="form-group">
+                    <label class="margin-bottom-5  control-label">Position:</label>
                     <select id="positionId" name="PositionId" class="form-control" required>
                         <option></option>
                         @for (int i = 0; i < positions.Count; i++)
@@ -60,7 +61,7 @@
                 <div class="col-sm-6" style="padding:0">
                     <div class="form-group">
                         <label class="control-label m-b-5 pull-right ">Hijri Date</label>
-                        <input type="text" id="joiningHDate" name="JoiningHDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri" required>
+                        <input type="text" id="joiningHDate" name="JoiningHDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri">
                     </div>
                 </div>
             </div>
@@ -83,7 +84,7 @@
         <div class="clearfix margin-5"></div>
         <div class="row">
             <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                <div>
+                <div class="form-group">
                     <label class="margin-bottom-5  control-label">Contract Type:</label>
                     <select id="contractTypeId" name="ContractTypeId" class="form-control" required>
                         <option selected hidden></option>
@@ -96,7 +97,7 @@
             </div>
 
             <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                <div>
+                <div class="form-group">
                     <label class="margin-bottom-5  control-label">Contract Status:</label>
                     <select id="contractStatusId" name="ContractStatusId" class="form-control" required>
                         <option selected hidden></option>
@@ -118,7 +119,7 @@
                 <div class="col-sm-6" style="padding:0">
                     <div class="form-group">
                         <label class="control-label m-b-5 pull-right ">Hijri Date</label>
-                        <input type="text" id="contractStartHDate" name="ContractStartHDate" @*value="@(empInfo!=null? empInfo.CONTRACT_START_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri" required>
+                        <input type="text" id="contractStartHDate" name="ContractStartHDate" @*value="@(empInfo!=null? empInfo.CONTRACT_START_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri">
                     </div>
                 </div>
             </div>
@@ -134,14 +135,14 @@
                 <div class="col-sm-6" style="padding:0">
                     <div class="form-group">
                         <label class="control-label m-b-5 pull-right ">Hijri Date</label>
-                        <input type="text" id="contractEndHDate" name="ContractEndHDate" @*value="@(empInfo!=null? empInfo.CONTRACT_START_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri" required>
+                        <input type="text" id="contractEndHDate" name="ContractEndHDate" @*value="@(empInfo!=null? empInfo.CONTRACT_START_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri">
                     </div>
                 </div>
             </div>
 
 
             <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                <div>
+                <div class="form-group">
                     <label class="margin-bottom-5  control-label">Vacation Days (Annually):</label>
                     <input type="number" id="vacationDays" name="VacationDays" min="0" @*value="@(empInfo!=null? empInfo.VACATION_DAYS :0)"*@ class="form-control" required>
                 </div>

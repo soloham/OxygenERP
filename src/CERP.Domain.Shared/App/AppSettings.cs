@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace CERP
@@ -12,16 +13,34 @@ namespace CERP
 
     public class DicValueTypeId
     {
-        public string CashflowStatementTypesKey = "0111";
+        public string CashflowStatementTypesKey = "01";
 
-        public string Location = "001";
-        public string City = "008";
-        public string Nationality = "002";
-        public string Gender = "003";
-        public string MaritalStatus = "004";
-        public string BloodGroup = "005";
-        public string Religion = "006";
+        public string Location = "02";
+        public string City = "03";
+        public string Nationality = "04";
+        public string Gender = "05";
+        public string MaritalStatus = "06";
+        public string BloodGroup = "07";
+        public string Religion = "08";
 
-        public string IDType = "007";
+        public string IDType = "09";
+    }
+
+    public enum ValueTypeModules
+    {
+        [Description("Country")]
+        Country,
+        [Description("Gender")]
+        Gender,
+        [Description("Marital Status")]
+        MaritalStatus,
+        [Description("Blood Group")]
+        BloodGroup,
+        [Description("Religion")]
+        Religion,
+        [Description("ID Type")]
+        IDType,
+        [Description("Cashflow Statement Type")]
+        CashflowStatementType,
     }
 }

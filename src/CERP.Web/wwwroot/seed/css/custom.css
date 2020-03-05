@@ -1,0 +1,446 @@
+﻿html, body {
+    background: none !important;
+}
+#main {
+    padding: 10px;
+}
+
+#logo-group > span {
+    COLOR: #efefef;
+    font-size: 16px;
+    padding-left: 15px;
+    padding-top: 3px;
+}
+
+#logo-group > span strong {
+    font-size: 26px !important;
+}
+
+.login-info {
+    display: block !important;
+}
+
+.smart-style-4:not(.minified) nav ul ul ul li a {
+    padding-left: 45px;
+}
+
+
+.smart-style-4 #header > :first-child {
+    background: #0f5796 !important;
+}
+
+.smart-style-4 aside .minifyme {
+    background: #0f5796 !important;
+}
+
+.smart-style-4 aside {
+    background: #313131 !important;
+}
+
+img.online {
+    border-left-color: #0f5796 !important;
+}
+
+#project-context > :first-child, .project-context > :first-child {
+    color: #ffffff !important;
+    font-size: 21px !important;
+    font-weight: 500 !important;
+    margin: 5px !important;
+}
+
+#logo {
+    margin-top: 4px !important;
+}
+
+    #logo img {
+        width: 129px !important;
+        padding-left: 23px !important;
+    }
+
+.smart-style-4 aside {
+    background: #313131 !important;
+}
+
+@media (max-width: 979px) {
+    .smart-style-4 #header {
+        background: #0f5796 !important;
+    }
+}
+
+
+
+.smart-style-4 nav ul li a {
+    border-bottom: 1PX SOLID #4c4c4c;
+    font-size: 14px;
+}
+
+.smart-style-4 nav ul li:last-child a {
+    border-bottom: 0PX SOLID #4c4c4c;
+}
+
+.smart-style-4 nav ul li.open > a, .smart-style-4 nav ul ul, .smart-style-4.minified nav li li, .smart-style-4.minified nav ul ul {
+    background-color: #020202 !important;
+}
+
+    .smart-style-4 nav ul ul ul {
+        background-color: #2b2b2b !important;
+    }
+
+
+.innerDiv {
+    background-color: white;
+    padding: 20px 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+}
+
+
+
+table.dataTable tbody tr {
+    /*background-color: #f9f6f6 !important;*/
+}
+
+
+table.dataTable tfoot th, table.dataTable tfoot td {
+    padding: 6px 2px !important;
+    border-top: 0px solid #111 !important;
+}
+
+table.dataTable, table.dataTable th, table.dataTable td {
+    /*border-right: 2px solid #fcfcfc;*/
+}
+    table.dataTable thead th, table.dataTable thead td {
+
+        border-bottom: 1px solid !important; 
+    }
+
+    table.dataTable tfoot th .form-control {
+        width: 98% !important;
+        border: 1px solid #dedede !important;
+    }
+
+button.dt-button, div.dt-button, a.dt-button {
+    border-radius: 5px !important;
+    border-color: silver !important;
+}
+
+
+
+
+
+.table-bordered {
+    border-color: #ddd !important;
+    border-width: 1px 0px 1px 0px !important;
+    border-style: solid !important;
+}
+
+
+div.dataTables_wrapper div.dataTables_filter input {
+    border-style: solid;
+    border-color: whitesmoke;
+    border-radius: 5px;
+}
+
+div.dt-buttons {
+    margin-bottom: 5px;
+}
+
+table.dataTable tbody th, table.dataTable tbody td {
+    padding: 4px 5px !important;
+    vertical-align: middle !important;
+}
+
+
+.card-user .image {
+    border-radius: 8px 8px 0 0;
+    height: 150px;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-user .author {
+    text-align: center;
+    text-transform: none;
+    margin-top: -65px;
+}
+
+.card-user .avatar.border-gray {
+    border: none !important;
+    padding: 5px !important;
+    background-color: white !important;
+}
+
+.card-user .avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.card img {
+    max-width: 100%;
+    height: auto;
+}
+
+
+.tblLines .input-sm {
+    font-size: 12px;
+    padding: 3px !important;
+}
+
+    .tblLines .input-sm:focus {
+        background-color: #eaeaf7;
+    }
+
+.tblLines thead tr th {
+    font-size: 12px !important;
+    white-space: nowrap;
+}
+
+.tblLines tbody tr td {
+    padding: 0px !important;
+}
+
+    .tblLines tbody tr td input, .tblLines tbody tr td select {
+        border: none !important;
+    }
+
+
+div.dt-buttons {
+    position: relative;
+    float: left;
+    margin-bottom: 5px;
+}
+
+.padding-15 {
+    padding: 15px !important;
+}
+
+.form-control {
+    border-radius: 5px !important;
+}
+
+.checkbox label, .radio label {
+    padding-left: 0px !important;
+}
+
+.checkbox, .radio {
+    margin-left: 23px !important;
+}
+
+
+/*.nav-tabs {
+    border-bottom: 1px solid #ddd;
+    background-color: #f1f1f1;
+}*/
+
+
+.pageHeader {
+    width: 100%;
+    background-color: #f5f5f5;
+    border-bottom: 4px solid #0f5796;
+    /*padding: 6px 16px;*/
+    margin-bottom: 10px;
+    background-color: white;
+}
+
+.pageTitle {
+    color: #0f5796;
+    font-size: 25px;
+    font-weight: 400;
+    text-transform: uppercase;
+}
+
+    .pageTitle .appIcon {
+        padding: 10px;
+        font-size: 35px;
+        color: white;
+        text-shadow: 1px 1px 1px grey;
+        border-radius: 10px;
+        margin-bottom: 5px;
+        box-shadow: 0px 0px 1px silver;
+        float: left;
+        width: 63px;
+        text-align: center;
+        margin-right: 15px;
+        background-color: #0f5796;
+    }
+
+    .pageTitle small {
+        /*font-size: 15px;*/
+        /*text-transform:capitalize;*/
+        font-family: Arial;
+        letter-spacing: 0.5px;
+        color: gray;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.form .form-control {
+    padding: .275rem .50rem !important;
+    /*border-bottom: 2px solid #e0e0e0 !important;*/
+    background-color: #717171;
+    background-color: #8795a5;
+    background-color: #8fa3b7;
+    background-color: #6189b3;
+    color: white;
+    font-weight: 500;
+    border: 1px solid whitesmoke;
+    font-size: 15px;
+    border-bottom: 2px solid #ececec !important;
+}
+
+.form label, .smart-form label {
+    font-weight: 600;
+    color: #6f6f6f;
+}
+
+
+.form .well {
+    margin: 5px 0px 10px 0px;
+    /*border-bottom: 3px solid #b3bfce;*/
+    border-radius: 5px;
+    padding: 15px;
+    background-color: white;
+}
+
+
+
+
+.panelHeading {
+    font-size: 18px;
+    font-weight: 600 !important;
+    color: #0f5796 !important;
+}
+
+.form .form-control, .dataView {
+    background-color: white;
+    border: 1px solid #d1d1d1;
+    color: #636363;
+}
+.form .select2-container--default .select2-selection--single {
+    /*background-color: #f5f5f5 !important;
+    border: none !important;
+    border-bottom: 2px solid #ececec !important;*/
+}
+.form .select2-container .select2-selection--single {
+    height: 33px !important;
+}
+
+    .form .select2-container .select2-selection--single .select2-selection__rendered {
+        padding-top: 3px !important;
+    }
+
+.nav-pills > li.active > a, .nav-pills > li.active > a:focus, .nav-pills > li.active > a:hover {
+    background-color: #0f5796;
+}
+
+.nav-tabs > li.active > a{
+    box-shadow:none !important;
+}
+
+.nav-tabs > li > a {
+    background-color: whitesmoke;
+    border-radius: 5px 5px 0px 0px;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+
+.btn-primary {
+    background-color: #0f5796 !important;
+    border-color: #0f5796 !important;
+}
+
+.text-primary {
+    color: #0f5796 !important;    
+}
+
+
+.smart-style-4:not(.menu-on-top) nav ul li.active:not(.open) > a:before, .smart-style-4:not(.menu-on-top) nav > ul > li.active:not(.open) > a:before {
+    border-left: 6px solid #0f5796 !important;
+    left: 0 !important;
+    height: 43px !important;
+    top: 0px !important;
+}
+
+nav ul ul {
+    padding: 0px 0 !important;
+}
+
+
+.WorkflowStatus {
+    font-size: 13px;
+    border: 2px solid;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+
+.smart-style-4 #header {
+    background: #1f7bcc !important;
+ 
+}
+
+.smart-style-4:not(.minified) nav ul ul li > a {
+    padding-left: 34px !important;
+    letter-spacing: 1px !important;
+    font-size: 12px !important;
+}
+
+.smart-style-4:not(.minified) nav ul ul ul li a {
+    padding-left: 41px !important;
+}
+
+.smart-style-4:not(.minified) nav ul ul ul ul li a {
+    padding-left: 45px !important;
+    font-size: 12px !important;
+    letter-spacing: 1px !important;
+    background-color: #404040 !important;
+}
+
+
+div.dt-buttons {
+    float: right;
+}
+
+
+div.dt-buttons {
+    float: right !important;
+}
+
+.dataTables_wrapper .dataTables_filter {
+    float: left !important;
+}
+
+#lnkNew{
+    display:none !important;
+}
+
+
+.letterSpacing1{
+    letter-spacing:1px;
+}
+
+
+.table tr th {
+    text-align: center ;
+    vertical-align: middle !important;
+    /*color: #0f5796 !important;*/
+}
+
+.swal2-container.swal2-shown {
+    background-color: white!important;
+}

@@ -1,0 +1,90 @@
+﻿
+
+body {
+    direction: rtl !important;
+}
+
+body, h1, h2, h3, h4, h5, input, select, table, .table, button, .smart-style-4 nav ul li a, .btn, #searchBox input {
+    /*font-family: Tahoma !important;*/
+    font-family: "JF Flat Light" !important;
+    font-weight: bold !important;
+}
+
+#left-panel {
+    right: 0 !important;
+    left: inherit !important;
+}
+
+
+#header > div {
+    float: right !important;
+}
+
+    #header > div:last-child {
+        float: left !important;
+    }
+
+
+.minified #main {
+    margin-left: initial !important;
+    margin-right: 45px !important;
+}
+
+
+#main {
+    margin-left: initial !important;
+    margin-right: 220px !important;
+}
+
+.pull-left {
+    float: right !important;
+}
+
+.pull-right {
+    float: left !important;
+}
+
+
+.text-left {
+    text-align: right !important;
+}
+
+.text-right {
+    text-align: left !important;
+}
+
+
+.margin-left-10 {
+    margin-right: 10px !important;
+    margin-left: initial !important;
+}
+
+#searchBox i {
+    right: initial !important;
+    left: 18px !important;
+}
+
+.smart-style-4:not(.minified) nav > ul > li > a > i {
+    margin-left: initial !important;
+    margin-right: 9px;
+}
+
+#logo-group > span {
+    padding-right: 30px;
+    padding-left: inherit !important;
+}
+
+nav > ul > li > a b {
+    left: 10px !important;
+    right: inherit !important;
+}
+
+
+.minified nav > ul > li > ul {
+    right: 40px !important;
+    left: initial !important;
+}
+
+#header {
+    padding: 0 0 0 13px !important;
+}
