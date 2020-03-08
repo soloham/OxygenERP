@@ -1,6 +1,7 @@
 ﻿using CERP.App;
 using CERP.FM.COA;
 using CERP.HR.Employees;
+using CERP.HR.Workshifts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
@@ -67,7 +68,9 @@ namespace CERP.EntityFrameworkCore
                                                        .Include(p => p.Nationality)
                                                        .Include(p => p.Religion)
                                                        .Include(p => p.POB)
-                                                       .Include(p => p.MaritalStatus);
+                                                       .Include(p => p.MaritalStatus)
+                                                       .Include(p => p.EmployeeStatus)
+                                                       .Include(p => p.Position).ThenInclude(x => x.Department);
                 });
 
                 options.Entity<PhysicalID>(opt =>
@@ -79,6 +82,15 @@ namespace CERP.EntityFrameworkCore
                 options.Entity<DictionaryValueType>(opt =>
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.Values).ThenInclude(x => x.ValueType);
+                });
+                options.Entity<DictionaryValue>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.ValueType);
+                });
+
+                options.Entity<WorkShift>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.Employees).ThenInclude(p => p.Position);
                 });
             });
 

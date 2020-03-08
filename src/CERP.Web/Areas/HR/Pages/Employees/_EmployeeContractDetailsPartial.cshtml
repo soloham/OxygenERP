@@ -1,7 +1,8 @@
 ﻿@using CERP.App;
+@using CERP.Setup.DTOs;
 @{
-    List<DictionaryValue> departments = (List<DictionaryValue>)ViewData["departments"];
-    List<DictionaryValue> positions = (List<DictionaryValue>)ViewData["positions"];
+    List<Department_Dto> departments = (List<Department_Dto>)ViewData["departments"];
+    
     List<DictionaryValue> employeeStatuses = (List<DictionaryValue>)ViewData["employeeStatuses"];
     List<DictionaryValue> contractStatuses = (List<DictionaryValue>)ViewData["contractStatuses"];
     List<DictionaryValue> contractTypes = (List<DictionaryValue>)ViewData["contractTypes"];
@@ -31,7 +32,7 @@
                         <option></option>
                         @for (int i = 0; i < departments.Count; i++)
                         {
-                            <option value="@departments[i].Key">@departments[i].Value</option>
+                            <option value="@departments[i].Id">@departments[i].Name</option>
                         }
                     </select>
                 </div>
@@ -43,10 +44,7 @@
                     <label class="margin-bottom-5  control-label">Position:</label>
                     <select id="positionId" name="PositionId" class="form-control" required>
                         <option></option>
-                        @for (int i = 0; i < positions.Count; i++)
-                        {
-                            <option value="@positions[i].Key">@positions[i].Value</option>
-                        }
+                        
                     </select>
                 </div>
             </div>
@@ -69,11 +67,11 @@
             <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                 <div class="form-group">
                     <label class="margin-bottom-5  control-label">Employee Status:</label>
-                    <select id="activeStatus" name="ActiveStatus" class="form-control" required>
+                    <select id="activeStatus" name="EmployeeStatusId" class="form-control" required>
                         <option selected hidden></option>
                         @for (int i = 0; i < employeeStatuses.Count; i++)
                         {
-                            <option value="@employeeStatuses[i].Key">@employeeStatuses[i].Value</option>
+                            <option value="@employeeStatuses[i].Id">@employeeStatuses[i].Value</option>
                         }
                     </select>
                 </div>
@@ -90,7 +88,7 @@
                         <option selected hidden></option>
                         @for (int i = 0; i < contractTypes.Count; i++)
                         {
-                            <option value="@contractTypes[i].Key">@contractTypes[i].Value</option>
+                            <option value="@contractTypes[i].Id">@contractTypes[i].Value</option>
                         }
                     </select>
                 </div>
@@ -103,7 +101,7 @@
                         <option selected hidden></option>
                         @for (int i = 0; i < contractStatuses.Count; i++)
                         {
-                            <option value="@contractStatuses[i].Key">@contractStatuses[i].Value</option>
+                            <option value="@contractStatuses[i].Id">@contractStatuses[i].Value</option>
                         }
                     </select>
                 </div>

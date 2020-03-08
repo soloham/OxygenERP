@@ -6,9 +6,13 @@ using CERP.FM.COA.DTOs;
 using CERP.FM.COA.UV_DTOs;
 using CERP.FM.DTOs;
 using CERP.FM.UV_DTOs;
+using CERP.HR.EMPLOYEE.DTOs;
 using CERP.HR.Employees;
 using CERP.HR.Employees.DTOs;
 using CERP.HR.Employees.UV_DTOs;
+using CERP.HR.Workshifts;
+using CERP.Setup;
+using CERP.Setup.DTOs;
 
 namespace CERP
 {
@@ -36,6 +40,23 @@ namespace CERP
             CreateMap<Company, Company_Dto>();
             CreateMap<Company_Dto, Company>();
             CreateMap<Company_UV_Dto, Company>();
+
+            CreateMap<Department, Department_Dto>()
+                .ForMember(d => d.Positions, opt => opt.Ignore());
+            CreateMap<Department_Dto, Department>()
+                .ForMember(d => d.Positions, opt => opt.Ignore());
+            CreateMap<Department_UV_Dto, Department>()
+                .ForMember(d => d.Positions, opt => opt.Ignore());
+
+            CreateMap<Position, Position_Dto>().MaxDepth(1)
+                .ForMember(d => d.Employee, opt => opt.Ignore());
+                //.ForMember(d => d.Department, opt => opt.Ignore());
+            CreateMap<Position_Dto, Position>().MaxDepth(1)
+                .ForMember(d => d.Employee, opt => opt.Ignore())
+                .ForMember(d => d.Department, opt => opt.Ignore());
+            CreateMap<Position_UV_Dto, Position>().MaxDepth(1)
+                .ForMember(d => d.Employee, opt => opt.Ignore())
+                .ForMember(d => d.Department, opt => opt.Ignore());
 
             CreateMap<Branch, Branch_Dto>();
             CreateMap<Branch_Dto, Branch>();
@@ -65,13 +86,15 @@ namespace CERP
             CreateMap<Employee_Dto, Employee_UV_Dto>();
             CreateMap<Employee_UV_Dto, Employee>();
 
-            CreateMap<PhysicalID, PhysicalID_Dto>();
-            CreateMap<PhysicalID_Dto, PhysicalID>();
-            CreateMap<PhysicalID_UV_Dto, PhysicalID_Dto>();
-            CreateMap<PhysicalID_Dto, PhysicalID_UV_Dto>();
-            CreateMap<PhysicalID_UV_Dto, PhysicalID>();
+            CreateMap<PhysicalID, PhysicalID_Dto>().ForMember(d => d.Employee, opt => opt.Ignore());
+            CreateMap<PhysicalID_Dto, PhysicalID>().ForMember(d => d.Employee, opt => opt.Ignore());
+            CreateMap<PhysicalID_UV_Dto, PhysicalID_Dto>().ForMember(d => d.Employee, opt => opt.Ignore());
+            CreateMap<PhysicalID_Dto, PhysicalID_UV_Dto>().ForMember(d => d.Employee, opt => opt.Ignore());
+            CreateMap<PhysicalID_UV_Dto, PhysicalID>().ForMember(d => d.Employee, opt => opt.Ignore());
             //CreateMap<DictionaryValue_UV_Dto, DictionaryValue>();
 
+            CreateMap<WorkShift, WorkShift_Dto>();
+            CreateMap<WorkShift_Dto, WorkShift>();
         }
     }
 }

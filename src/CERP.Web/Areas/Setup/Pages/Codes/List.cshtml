@@ -1,7 +1,8 @@
 ﻿@page "/Setup/Codes"
-@addTagHelper *, Syncfusion.EJ2 
+@addTagHelper *, Syncfusion.EJ2
 @using Syncfusion.EJ2.Grids;
 @using CERP.App;
+@using CERP.App.Helpers;
 @model CERP.Web.Areas.Setup.Codes.ListModel
 @{
     ViewData["Title"] = "Lookup";
@@ -27,28 +28,33 @@
         //new GridColumn { Field = "Id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { AllowEditing = false, Field = "id", Visible = false, IsPrimaryKey = true, HeaderText = "Code", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { AllowEditing = false, Field = "key", HeaderText = "Code", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "value", HeaderText = "Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "value", HeaderText = "Name", ValidationRules=new { required= true, minLength= 3 }, TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "valueLocalizationKey", HeaderText = "Name in Arabic", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { AllowEditing = false, Field = "valueType.valueTypeName", HeaderText = "Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Width = "150", HeaderText = "Commands", TextAlign=TextAlign.Center, MinWidth="10", Commands = commands }
     };
+    //Enum.GetValues(typeof(CERP.ValueTypeModules))
+    
+    var DropDownList = new Syncfusion.EJ2.DropDowns.DropDownList() { CssClass = "moduleTypeDropDown", BeforeOpen = "loadModuleTypes", DataSource = Model.GetModulesDS(), Query = "new ej.data.Query()", AllowFiltering = true, ActionComplete = "actionComplete" };
+
     ViewData["DicValueTypeGridColumns"] = new List<GridColumn>()
 {
         //new GridColumn { Field = "Id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { AllowEditing = false, Field = "id", Visible = false, IsPrimaryKey = true, HeaderText = "Code", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { AllowEditing = false, Field = "valueTypeCode", HeaderText = "Code", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "valueTypeName", HeaderText = "Type Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "valueTypeName", ValidationRules=new { required= true, minLength= 3 }, HeaderText = "Type Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "valueTypeNameLocalizationKey", HeaderText = "Name in Arabic", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        //new GridColumn { Field = "valueTypeFor", EditType='dropdownedit', Edit=Enum.GetValues(typeof(CERP.ValueTypeModules)), HeaderText = "Module", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Width = "150", HeaderText = "Commands",  TextAlign=TextAlign.Center, MinWidth="10", Commands = commands }
-    };
+        new GridColumn { Field = "valueTypeForDescription", ValidationRules=new { required= true }, Type="string", EditType="dropdownedit", Edit=new {@@params = DropDownList }, HeaderText = "Module", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Width = "150", HeaderText = "Commands",  TextAlign=TextAlign.Center, MinWidth="10", Commands = commands
+    }
+};
 
-    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
-    ViewData["alertbutton"] = new
-    {
-        content = "OK",
-        isPrimary = true
-    };
+var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+ViewData["alertbutton"] = new
+{
+content = "OK",
+isPrimary = true
+};
 }
 @section styles {
     <link href="~/libs/syncfusion/ej2-grid/styles/fabric.css" rel="stylesheet" />
@@ -63,33 +69,33 @@
             background-color: rgb(253,253,253);
         }
 
-        .nav-item{
+        .nav-item {
             background-color: rgb(250,250,250);
             margin-bottom: 8px !important;
             cursor: pointer;
         }
-        .nav-item:not(.active) .custom-nav-icon{
-            padding-top: 5px;
-            color: #787878;
-        }
-        .nav-item.active .custom-nav-icon{
-            font-size: 22px;
-            padding-top: 3.5px;
-            color: #efefef;
-        }
-        .nav>li>a {
+
+            .nav-item:not(.active) .custom-nav-icon {
+                padding-top: 5px;
+                color: #787878;
+            }
+
+            .nav-item.active .custom-nav-icon {
+                font-size: 22px;
+                padding-top: 3.5px;
+                color: #efefef;
+            }
+
+        .nav > li > a {
             font-size: 15px;
             cursor: pointer;
         }
-        
-        .nav-pills>li.active>a{
+
+        .nav-pills > li.active > a {
             padding-top: 12.5px;
             font-size: 18px;
             cursor: pointer;
         }
-
-        
-        
     </style>
 }
 @section scripts {
@@ -118,15 +124,15 @@
                 </li>
                 <hr />
                 @foreach (var item in dictionaryValueTypes)
-                {
-                    <li class="nav-item @(item.ValueTypeCode==CurValueTypeCode?"active":"")">
-                        <a class="nav-link" data-typeId="@item.Id" data-toggle="tab" onclick="BindGrid('@item.ValueTypeCode')">
-                            @item.ValueTypeName
+                                {
+                <li class="nav-item @(item.ValueTypeCode==CurValueTypeCode?"active":"")">
+                    <a class="nav-link" data-typeId="@item.Id" data-toggle="tab" onclick="BindGrid('@item.ValueTypeCode')">
+                        @item.ValueTypeName
 
-                            <i class="fa fa-search pull-right custom-nav-icon"></i>
-                        </a>
-                    </li>
-                }
+                        <i class="fa fa-search pull-right custom-nav-icon"></i>
+                    </a>
+                </li>
+                                }
             </ul>
         </div>
         <div class="col-lg-9 p-b-20">
@@ -217,6 +223,10 @@
 
 
 <script>
+    function loadModuleTypes(args) {
+        
+    }
+
     function BindGrid(codeType) {
         ValueTypeCode = codeType;
         console.log(ValueTypeCode);
@@ -283,6 +293,10 @@
                 var dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
                 dialogObj.show();
             }
+        }
+
+        if (args.item.text === 'Add') {
+            
         }
     }
     function alertBtnClick() {
@@ -351,6 +365,7 @@
     }
     function actionBeginValueType(args) {
         if (args.requestType == "save") {
+            
             if (typeof args.data.valueTypeName === 'undefined') {
                 args.cancel = true;
             }
@@ -382,10 +397,19 @@
                                                             <i class="fa fa-search pull-right custom-nav-icon"></i>
                                                         </a>
                                                     </li>`);
+                            
                         }
                         else {
                             $(`li>a[data-typeId="${args.data.id}"]`, $('#valueTypes')).html(`${ args.data.valueTypeName } <i class="fa fa-search pull-right custom-nav-icon"></i>`);
                         }
+                        var Obj = $("#CodesValueTypeItemGrid")[0].ej2_instances[0]; 
+
+                        var ajax = new ej.base.Ajax('@Url.Content("~")Codes?handler=ModulesTypes', 'GET');
+                        ajax.send();
+                        ajax.onSuccess = function (data) {
+                            Obj.columns[4].edit.params.dataSource = JSON.parse(data);
+                            console.log(Obj.columns[4].edit.params.dataSource)
+                        };
                         //BindGrid(data.body.key);
                     },
                     error: function (err) {
@@ -395,13 +419,28 @@
                 });
             }
         }
+        else if (args.requestType == "beginEdit") {
+            var Obj = $("#CodesValueTypeItemGrid")[0].ej2_instances[0]; 
+            var ajax = new ej.base.Ajax('@Url.Content("~")Codes?handler=ModulesTypes', 'GET');
+            ajax.send();
+            ajax.onSuccess = function (data) {
+                var ds = JSON.parse(data);
+                console.log(args.rowData);
+                ds.push(args.rowData.valueTypeForDescription);
+                Obj.columns[4].edit.params.dataSource = ds;
+                //ddldist.dataBind(); 
+            };
+
+            Obj.columns[4].allowEditing = false;
+        }
         else if (args.requestType == "delete")
         {
 
         }
         else if (args.requestType == "add")
         {
-
+            var Obj = $("#CodesValueTypeItemGrid")[0].ej2_instances[0];
+            Obj.columns[4].allowEditing = true;
         }
     }
 
@@ -431,7 +470,7 @@
     }
     function actionCompleteValueType(args) {
         if (args.requestType == "save") {
-
+            
         }
         else if (args.requestType == "delete")
         {
@@ -448,6 +487,14 @@
                     for (var i = 0; i < args.data.length; i++) {
                         $(`li>a[data-typeId="${args.data[i].id}"]`, $('#valueTypes')).remove();
                     }
+                    var Obj = $("#CodesValueTypeItemGrid")[0].ej2_instances[0]; 
+
+                    var ajax = new ej.base.Ajax('@Url.Content("~")Codes?handler=ModulesTypes', 'GET');
+                    ajax.send();
+                    ajax.onSuccess = function (data) {
+                        Obj.columns[4].edit.params.dataSource = JSON.parse(data);
+                        console.log(Obj.columns[4].edit.params.dataSource)
+                    };
                 },
                 error: function (err) {
                     console.log(err);
@@ -457,8 +504,11 @@
     }
 
     function commandClick(args) {
-        //console.log(args);
-        if (args.commandColumn.type == "Edit") {
+        console.log(args);
+        if (args.commandColumn.type == "Add") {
+            
+        }
+        else if (args.commandColumn.type == "Edit") {
             //var params_ = JSON.stringify(args.rowData);  // display row data
             @*window.location = "@Url.Content("~")/GL/Edit?Id=" + args.rowData.Id;*@
             @*$.ajax({

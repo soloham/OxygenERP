@@ -2,6 +2,8 @@
 using CERP.FM;
 using CERP.FM.COA;
 using CERP.HR.Employees;
+using CERP.HR.Workshifts;
+using CERP.Setup;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Volo.Abp;
@@ -137,6 +139,8 @@ namespace CERP.EntityFrameworkCore
                     .IsRequired();
                 b.Property(p => p.VATNumber)
                     .IsRequired();
+
+                b.HasMany(p => p.Departments).WithOne(c => c.Company).OnDelete(DeleteBehavior.ClientCascade);
             });
 
             builder.Entity<Branch>(b =>
@@ -250,6 +254,7 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
+                b.HasOne(p => p.EmployeeStatus).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.POB).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.Nationality).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.Gender).WithMany().OnDelete(DeleteBehavior.Restrict);
@@ -257,24 +262,54 @@ namespace CERP.EntityFrameworkCore
                 b.HasOne(p => p.BloodGroup).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.Religion).WithMany().OnDelete(DeleteBehavior.Restrict);
 
+                b.HasOne(p => p.Position).WithOne(pos => pos.Employee).OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(p => p.WorkShift).WithMany(p => p.Employees).OnDelete(DeleteBehavior.Restrict);
             });
 
-            builder.Entity<PhysicalID>(b =>
+            builder.Entity<Department>(b =>
             {
-                b.ToTable(CERPConsts.HRDbTablePrefix + "EmpPhysicalIDs", CERPConsts.HRDbSchema);
+                b.ToTable(CERPConsts.SetupDbTablePrefix + "Departments", CERPConsts.SetupDbSchema);
 
-                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureSoftDelete();
                 b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
-                b.Property(p => p.Id).UseIdentityColumn(1, 1);
+                b.Property(p => p.Name)
+                    .IsRequired();
 
-                b.HasOne(p => p.IDType).WithMany().OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(p => p.IssuedFrom).WithMany().OnDelete(DeleteBehavior.Restrict);
-
+                b.HasMany(p => p.Positions).WithOne(d => d.Department).OnDelete(DeleteBehavior.ClientCascade);
             });
 
+            builder.Entity<Position>(b =>
+            {
+                b.ToTable(CERPConsts.SetupDbTablePrefix + "Positions", CERPConsts.SetupDbSchema);
 
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureSoftDelete();
+                b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.Property(x => x.Title)
+                    .IsRequired();
+
+                b.HasOne(p => p.Employee).WithOne(e => e.Position).OnDelete(DeleteBehavior.Restrict);
+            });
+            builder.Entity<WorkShift>(b =>
+            {
+                b.ToTable(CERPConsts.HRDbTablePrefix + "WorkShifts", CERPConsts.HRDbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureSoftDelete();
+                b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.Property(x => x.Title)
+                    .IsRequired();
+
+                b.HasOne(x => x.Department).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasMany(p => p.Employees).WithOne().OnDelete(DeleteBehavior.Restrict);
+            });
         }
 
         public static void ConfigureCustomUserProperties<TUser>(this EntityTypeBuilder<TUser> b)

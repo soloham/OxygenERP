@@ -1,5 +1,6 @@
 ﻿using CERP.App;
 using CERP.HR.Employee.Enums;
+using CERP.HR.Employees.DTOs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -15,8 +16,7 @@ namespace CERP.HR.Employees.UV_DTOs
         }
 
         public DictionaryValue_Dto IDType { get; set; }
-        [Required]
-        public Guid IDTypeId { get; set; }
+        public Guid? IDTypeId { get; set; }
         [Required]
         public string IDNumber { get; set; }
         public DictionaryValue_Dto IssuedFrom { get; set; }
@@ -31,5 +31,9 @@ namespace CERP.HR.Employees.UV_DTOs
         public DateTime EndDate { get; set; }
         //[Required]
         public string IDCopy { get; set; }
+
+
+        public Employee_Dto Employee { get; set; }
+        public Guid EmployeeId { get; set; }
     }
 }

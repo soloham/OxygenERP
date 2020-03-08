@@ -23,5 +23,8 @@ namespace CERP.HR.Employees.DTOs
         public DateTime IssuedDate { get; set; }
         public DateTime EndDate { get; set; }
         public string IDCopy { get; set; }
+
+        public Employee_Dto Employee { get; set; }
+        public Guid EmployeeId { get; set; }
     }
 }

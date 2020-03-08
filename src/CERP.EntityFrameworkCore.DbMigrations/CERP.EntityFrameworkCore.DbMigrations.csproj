@@ -52,6 +52,14 @@
     <Compile Remove="Migrations\20200305100224_RemovedDicValueAndDicValueType.Designer.cs" />
     <Compile Remove="Migrations\20200305170120_UpdatedDicValueType.cs" />
     <Compile Remove="Migrations\20200305170120_UpdatedDicValueType.Designer.cs" />
+    <Compile Remove="Migrations\20200306110348_UpdatedPhysicalIdsEntity.cs" />
+    <Compile Remove="Migrations\20200306110348_UpdatedPhysicalIdsEntity.Designer.cs" />
+    <Compile Remove="Migrations\20200306183902_AddedSetupEntities.cs" />
+    <Compile Remove="Migrations\20200306183902_AddedSetupEntities.Designer.cs" />
+    <Compile Remove="Migrations\20200306190633_AddedSetupEntities.cs" />
+    <Compile Remove="Migrations\20200306190633_AddedSetupEntities.Designer.cs" />
+    <Compile Remove="Migrations\20200308085406_AddedStatusToEmployee.cs" />
+    <Compile Remove="Migrations\20200308085406_AddedStatusToEmployee.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

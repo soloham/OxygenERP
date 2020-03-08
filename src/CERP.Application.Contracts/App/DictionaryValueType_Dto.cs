@@ -1,4 +1,5 @@
-﻿using CERP.FM;
+﻿using CERP.App.Helpers;
+using CERP.FM;
 using CERP.FM.DTOs;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,8 @@ namespace CERP.App
         {
             Id = guid;
         }
+        public string ValueTypeForDescription { get => EnumExtensions.GetDescription(ValueTypeFor); set => ValueTypeFor = EnumExtensions.GetValueFromDescription<ValueTypeModules>(value); }
+
         public ValueTypeModules ValueTypeFor { get; set; }
         public string ValueTypeCode { get; set; }
         public string ValueTypeName { get; set; }

@@ -22,6 +22,17 @@
             background-color: #f5f5f5;
             /*font-size: 18px;*/
         }
+
+        .e-detailcell .e-headercell {
+            background-color: #6691b1 !important;
+            color: rgb(253,253,253);
+            /*font-size: 18px;*/
+        }
+        /*.e-grid .e-rowcell{
+            background-color: #fcfcfc;
+            /*font-size: 18px;*/
+        }
+        */
     </style>
 }
 @section scripts {
@@ -62,7 +73,9 @@
 </ejs-dialog>
 
 <script>
-
+    function onLoad() {
+        this.parentDetails.parentKeyFieldValue = this.parentDetails.parentRowData['Id'];
+    }
     function toolbarClick(args) {
         var gridObj = document.getElementById("Grid").ej2_instances[0];
         if (args.item.id === 'Grid_pdfexport') {
@@ -104,14 +117,14 @@
         //    this.groupModule.collapseAll();
         //    initial = false;
         //}
-        console.log(args);
+        //console.log(args);
     }
 
     function commandClick(args) {
         console.log(args);
         if (args.commandColumn.type == "Edit") {
             var params_ = JSON.stringify(args.rowData);  // display row data
-            window.location = "@Url.Content("~")/GL/Edit?Id=" + args.rowData.Id;
+            window.location = "@Url.Content("~")/HR/Employees/Edit/" + args.rowData.Id;
             @*$.ajax({
                 url: "/?handler=EditAccountkj&Guid_=" + params_.Id,
                 async: true,

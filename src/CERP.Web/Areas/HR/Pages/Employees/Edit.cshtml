@@ -1,0 +1,1327 @@
+﻿@page "{EmployeeId?}"
+@addTagHelper *, Syncfusion.EJ2
+@using CERP;
+@using CERP.App;
+@using Syncfusion.EJ2.Grids;
+@model CERP.Web.Areas.HR.Pages.Employees.EditModel
+@{
+    ViewData["Title"] = "Add Employee";
+    ViewData["IconClass"] = "fa fa-user-tie";
+    ViewData["HeaderTitle"] = "EMPLOYEES";
+    ViewData["SubTitle"] = "Add New Employee";
+
+    ViewData["IsList"] = false;
+    ViewData["IsCreate"] = false;
+    ViewData["IsEditing"] = false;
+
+    ViewData["birthPlaces"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Country).OrderBy(x => x.Key).ToList();
+    ViewData["nationalities"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Country).OrderBy(x => x.Key).ToList();
+    ViewData["genders"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Gender).ToList();
+    ViewData["maritalStatuses"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.MaritalStatus).OrderBy(x => x.Key).ToList();
+    ViewData["booldGroups"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.BloodGroup).OrderBy(x => x.Key).ToList();
+
+    ViewData["religions"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Religion).OrderBy(x => x.Key).ToList();
+
+
+    ViewData["idTypes"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.IDType).OrderBy(x => x.Key).ToList();
+    ViewData["idIssuers"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Country).OrderBy(x => x.Key).ToList();
+
+    ViewData["departments"] = Model.Departments.ToList();
+    ViewData["employeeStatuses"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.EmployeeStatus).OrderBy(x => x.Key).ToList();
+    ViewData["contractTypes"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.ContractType).OrderBy(x => x.Key).ToList();
+    ViewData["contractStatuses"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.ContractStatus).OrderBy(x => x.Key).ToList();
+
+
+    ViewData["banks"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Bank).OrderBy(x => x.Key).ToList();
+    ViewData["banksColumns"] = new List<GridColumn>() {
+        new GridColumn { Field = "Id", Width = "110", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "GetBankName", Width = "110", HeaderText = "Bank", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "AccountTitle", Width = "110", HeaderText = "Account Title", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "AccountNumber", Width = "110", HeaderText = "Account Number", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "BankIBAN", Width = "80", HeaderText = "IBAN", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    };
+
+    ViewData["allowanceTypes"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.AllowanceType).OrderBy(x => x.Key).ToList();
+    ViewData["allowancesColumns"] = new List<GridColumn>() {
+        new GridColumn { Field = "Id", Width = "110", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "GetAllowanceTypeName", Width = "110", HeaderText = "Allowance Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "PercBasicSalary", Width = "110", HeaderText = "% of Basic Salary", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "Amount", Width = "110", HeaderText = "Amount", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "FromDate", Width = "80", HeaderText = "From", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "EndDate", Width = "80", HeaderText = "End", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    };
+
+
+    ViewData["contactRelations"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Relationship).OrderBy(x => x.Key).ToList();
+    ViewData["countries"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Country).OrderBy(x => x.Key).ToList();
+    ViewData["cities"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Country).OrderBy(x => x.Key).ToList();
+    ViewData["secondaryContactsColumns"] = new List<GridColumn>() {
+        new GridColumn { Field = "Id", Width = "110", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "GetRelationType", Width = "110", HeaderText = "Contact Relation", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "PhoneNumber", Width = "110", HeaderText = "Phone Number", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "MobileNumber", Width = "110", HeaderText = "Mobile Number", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "FaxNumber", Width = "80", HeaderText = "Fax Number", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "Email", Width = "80", HeaderText = "Email", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "GetCountryName", Width = "80", HeaderText = "Country", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "City", Width = "80", HeaderText = "City", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    };
+
+    ViewData["degrees"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Degree).OrderBy(x => x.Key).ToList();
+    ViewData["institues"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.AcademicInstitution).OrderBy(x => x.Key).ToList();
+    ViewData["qualificationsColumns"] = new List<GridColumn>() {
+        new GridColumn { Field = "Id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "GetDegreeValue", Width = "110", HeaderText = "Degree / Certificate", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "GetInstitutionValue", Width = "110", HeaderText = "Institution", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "FromDate", Width = "80", HeaderText = "From", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "ToDate", Width = "80", HeaderText = "To", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    };
+
+    ViewData["dependantRelationshipTypes"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Relationship).OrderBy(x => x.Key).ToList();
+    ViewData["dependantsColumns"] = new List<GridColumn>() {
+        new GridColumn { Field = "Id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "GetRelationTypeValue", Width = "80", HeaderText = "Relation", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "Name", Width = "110", HeaderText = "Dependant Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "NameLocalized", Width = "110", HeaderText = "Dependant Name in AR", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "DOB", Width = "80", HeaderText = "Date of Birth", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "GetPOBValue", Width = "80", HeaderText = "Birth Place", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "GetNationalityValue", Width = "80", HeaderText = "Nationality", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "GetGenderValue", Width = "80", HeaderText = "Gender", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    };
+    
+    ViewData["DependantsIdsListColumns"] = new List<GridColumn>() {
+        new GridColumn { Field = "Id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "GetParentName", Width = "120", HeaderText = "Dependant", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { EditType = "dropdownedit", Type = "dropdownedit", Field = "IDType.Value", Width = "120", HeaderText = "ID Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "IDNumber", Width = "150", HeaderText = "ID Number", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "GetIssuedFromValue", Width = "120", HeaderText = "Issued From", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "JobTitle", Width = "120", HeaderText = "Job Title", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "IssuedDate", Width = "120", HeaderText = "Issued Date", Format = "yMd", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "EndDate", Width = "120", HeaderText = "End Date", Format = "yMd", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "Sponsor", Width = "120", HeaderText = "Sponsor", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "SoftCopy", Width = "120", HeaderText = "Soft Copy", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    };
+
+    ViewData["workShifts"] = (await Model.workShiftsAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
+    ViewData["workShiftsColumns"] = new List<GridColumn>() {
+        new GridColumn { Field = "WorkShiftId", Width = "10", Visible=false, HeaderText = "Work Shift", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "GetWorkShiftName", Width = "150", HeaderText = "Work Shift", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "GetStartHour", Width = "120", HeaderText = "Start Hour", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "GetEndHour", Width = "120", HeaderText = "End Hour", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "FromDate", Width = "120", HeaderText = "From", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "ToDate", Width = "120", HeaderText = "To", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    };
+
+
+    ViewData["IdsListColumns"] = new List<GridColumn>() {
+        new GridColumn { Field = "Id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { EditType = "dropdownedit", Type = "dropdownedit", Field = "GetIDTypeValue", Width = "120", HeaderText = "ID Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "IDNumber", Width = "150", HeaderText = "ID Number", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "GetIssuedFromValue", Width = "120", HeaderText = "Issued From", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "JobTitle", Width = "120", HeaderText = "Job Title", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "IssuedDate", Width = "120", HeaderText = "Issued Date", Format = "yMd", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "EndDate", Width = "120", HeaderText = "End Date", Format = "yMd", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "Sponsor", Width = "120", HeaderText = "Sponsor", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "SoftCopy", Width = "120", HeaderText = "Soft Copy", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    };
+    if((bool)ViewData["IsEditing"] == true)
+
+    //ViewData["PassportIdsListColumns"] = new List<GridColumn>() {
+    //    new GridColumn { Field = "Id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    //    new GridColumn { Field = "IDNumber", Width = "150", HeaderText = "Passport Number", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    //    new GridColumn { Field = "IssuedFrom.Value", Width = "120", HeaderText = "Issued From", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    //    new GridColumn { Field = "IssuedDate", Width = "120", HeaderText = "Issued Date", Format = "yMd", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    //    new GridColumn { Field = "EndDate", Width = "120", HeaderText = "Expiry Date", Format = "yMd", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    //    new GridColumn { Field = "SoftCopy", Width = "120", HeaderText = "Soft Copy", Format = "yMd", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    //};
+    //if((bool)ViewData["IsEditing"] == true)
+    //    ViewData["PassportIdsListDS"] = Model.PhysicalIds.Where(x => x.IsPassport.HasValue == true && x.IsPassport == true).ToList();//new List<PhysicalID_Dto>() { new PhysicalID_Dto() { IDType = CERP.HR.Employee.Enums.PhysicalIDType.Iqama, IDNumber = "5445466", IssuedFrom = CERP.HR.Employee.Enums.PhysicalIDIssuers.Iqama } };
+
+
+    ViewData["basicSalaryColumns"] = new List<GridColumn>() {
+        new GridColumn { Field = "Id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "Salary", Width = "150", HeaderText = "Salary", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "FromDate", Width = "120", HeaderText = "From", Format = "yMd", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "ToDate", Width = "120", HeaderText = "To", Format = "yMd", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    };
+
+    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+
+    //var coaInput = Model.COAInput;
+}
+@section styles {
+    <link href="~/libs/smartwizard/dist/css/smart_wizard_theme_arrows.min.css" rel="stylesheet" />
+    <link href="~/libs/smartwizard/dist/css/smart_wizard.min.css" rel="stylesheet" />
+    <link href="~/libs/syncfusion/ej2-grid/styles/fabric.css" rel="stylesheet" />
+
+    <style>
+        .e-grid .e-headercell {
+            background-color: #f5f5f5;
+            /*font-size: 18px;*/
+        }
+    </style>
+}
+@section scripts {
+
+    <script src="~/libs/smartwizard/dist/js/jquery.smartWizard.min.js"></script>
+    <script src="~/libs/syncfusion/ej2-grid/scripts/ej2.min.js"></script>
+
+    @*<script src="~/libs/syncfusion/ej2-according/scripts/ej2-according.min.js"></script>*@
+    <script type="text/javascript">
+        $(document).ready(function () {
+            function objectifyForm(formArray) {//serialize data function
+                var returnArray = {};
+                for (var i = 0; i < formArray.length; i++){
+                    returnArray[formArray[i]['name']] = formArray[i]['value'];
+                }
+                return returnArray;
+            }
+            $(window).keydown(function(event){
+                if(event.keyCode == 13) {
+                  event.preventDefault();
+                  return false;
+                }
+            });
+
+            if ($("#BasicSalariesGrid")[0].ej2_instances[0].dataSource.length == 0)
+                $("#allowancesSection").slideUp();
+            else
+                $("#allowancesSection").slideDown();
+            
+            if ($("#DependantsGrid")[0].ej2_instances[0].dataSource.length == 0)
+                $("#dependantsDocumentsSection").slideUp();
+            else
+                $("#dependantsDocumentsSection").slideDown();
+
+            var curStepNumber = 0;
+            function GetFormValidated() {
+                for (var i = 0; i < 4; i++) {
+
+                    var elmForm = $("#form-step-" + i);
+                    // stepDirection === 'forward' :- this condition allows to do the form validation
+                    // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
+                    var valid = true;
+                    elmForm.validator('validate');
+                    var elmErr = elmForm.find('.has-error');
+                    if (elmErr) {
+                            console.log("Yup");
+                        if (elmErr.length > 0) {
+                            console.log("Greater");
+                            // Form validation failed
+                            valid = true;
+                        }
+                        else {
+                            console.log("Lesser");
+                            valid = true;
+                        }
+                    }
+                }
+                return valid;
+            }
+            $("#allowGLPosting").change(function (e) {
+                if (!$(this)[0].checked) {
+                    $("#allowPayment").attr("disabled", "disabled");
+                    $("#allowPaymentRow").hide();
+                    $("#allowReceipt").attr("disabled", "disabled");
+                    $("#allowReceiptRow").hide();
+                    $("#postingAttr").hide();
+                } else {
+                    $("#allowPaymentRow").show();
+                    $("#allowPayment").removeAttr("disabled");
+                    $("#allowReceiptRow").show();
+                    $("#allowReceipt").removeAttr("disabled");
+                    $("#postingAttr").show();
+                }
+            });
+            $("#allowGLPosting").prop('checked', true);
+
+            $('#employeeForm').on('submit', function (e) {
+
+                e.preventDefault();
+
+                //Grid References
+                //ID & Residence
+                var piGrid = $("#PhysicalIdsGrid")[0].ej2_instances[0]
+                //Financial Details
+                var bsGrid = $("#BasicSalariesGrid")[0].ej2_instances[0]
+                var alGrid = $("#AllowancesGrid")[0].ej2_instances[0]
+                var bnGrid = $("#BanksGrid")[0].ej2_instances[0]
+                //Contact Information
+                var scGrid = $("#SecondaryContactsGrid")[0].ej2_instances[0]
+                //Qualification
+                var qfGrid = $("#QualificationsGrid")[0].ej2_instances[0]
+                //Dependants
+                var dpGrid = $("#DependantsGrid")[0].ej2_instances[0]
+                var dpIdsGrid = $("#DependantsPhysicalIdsGrid")[0].ej2_instances[0]
+                //WorkShifts
+                var wsGrid = $("#WorkShiftsGrid")[0].ej2_instances[0]
+
+                //Froms References
+                var form = [];
+                var generalInfo = $('#generalInfo').find("select, textarea, input").serializeArray();
+                form = form.concat(generalInfo);
+                var contractDetails = $('#form-step-2').find("select, textarea, input").serializeArray();
+                form = form.concat(contractDetails);
+                var params = objectifyForm(form);
+                var primaryContactInfo = objectifyForm($('#primaryContactForm').find("select, textarea, input").serializeArray());
+                var nationalAddressInfo = objectifyForm($('#nationalAddressInfo').find("select, textarea, input").serializeArray());
+
+
+                var physicalIds = piGrid.dataSource;
+                var physicalIdsDto = [];
+                for (var i = 0; i < physicalIds.length; i++) {
+                    //dependantsIds[i].iDTypeId = dependantsIds[i].IDType.Id;
+                    //dependantsIds[i].issuedFromId = dependantsIds[i].IssuedFrom.Id;
+                    //dependantsIds[i].parentId = dependantsIds[i].Parent.Id;
+                    physicalIdsDto.push(JSON.parse(JSON.stringify(physicalIds[i])));
+                    //dependantsIdsDto[i].IDType = null;
+                    //dependantsIdsDto[i].IssuedFrom = null;
+                    //dependantsIdsDto[i].Parent = null;
+                }
+                var basicSalaries = bsGrid.dataSource;
+                var allowances = alGrid.dataSource;
+                var allowancesDto = [];
+                for (var i = 0; i < allowances.length; i++) {
+                    //allowances[i].AllowanceTypeId = allowances[i].AllowanceType.Id;
+                    allowancesDto.push(JSON.parse(JSON.stringify(allowances[i])));
+                    //allowancesDto[i].AllowanceType = null;
+                }
+                var banks = bnGrid.dataSource;
+                var banksDto = [];
+                for (var i = 0; i < banks.length; i++) {
+                    //banks[i].BankId = banks[i].Bank.Id;
+                    banksDto.push(JSON.parse(JSON.stringify(banks[i])));
+                    //banksDto[i].Bank = null;
+                }
+                var secondaryContacts = scGrid.dataSource;
+                var secondaryContactsDto = [];
+                for (var i = 0; i < secondaryContacts.length; i++) {
+                    //secondaryContacts[i].relationId = secondaryContacts[i].ContactRelation.Id;
+                    //secondaryContacts[i].countryId = secondaryContacts[i].Country.Id;
+                    secondaryContactsDto.push(JSON.parse(JSON.stringify(secondaryContacts[i])));
+                    //secondaryContactsDto[i].ContactRelation = null;
+                    //secondaryContactsDto[i].Country = null;
+                }
+                var qualifications = qfGrid.dataSource;
+                var qualificationsDto = [];
+                for (var i = 0; i < qualifications.length; i++) {
+                    //qualifications[i].degreeId = qualifications[i].Degree.Id;
+                    //qualifications[i].institutionId = qualifications[i].Institution.Id;
+                    qualificationsDto.push(JSON.parse(JSON.stringify(qualifications[i])));
+                    //qualificationsDto[i].Degree = null;
+                    //qualificationsDto[i].Institution = null;
+                }
+                var dependants = dpGrid.dataSource;
+                var dependantsDto = [];
+                for (var i = 0; i < dependants.length; i++) {
+                    //dependants[i].relationId = dependants[i].RelationshipType.Id;
+                    //dependants[i].birthPlaceId = dependants[i].POB.Id;
+                    //dependants[i].nationalityId = dependants[i].Nationality.Id;
+                    //dependants[i].genderId = dependants[i].Gender.Id;
+                    dependantsDto.push(JSON.parse(JSON.stringify(dependants[i])));
+                    //dependantsDto[i].RelationshipType = null;
+                    //dependantsDto[i].POB = null;
+                    //dependantsDto[i].Nationality = null;
+                    //dependantsDto[i].Gender = null;
+                }
+                var dependantsIds = dpIdsGrid.dataSource;
+                var dependantsIdsDto = [];
+                for (var i = 0; i < dependantsIds.length; i++) {
+                    //dependantsIds[i].iDTypeId = dependantsIds[i].IDType.Id;
+                    //dependantsIds[i].issuedFromId = dependantsIds[i].IssuedFrom.Id;
+                    //dependantsIds[i].parentId = dependantsIds[i].Parent.Id;
+                    dependantsIdsDto.push(JSON.parse(JSON.stringify(dependantsIds[i])));
+                    //dependantsIdsDto[i].IDType = null;
+                    //dependantsIdsDto[i].IssuedFrom = null;
+                    //dependantsIdsDto[i].Parent = null;
+                }
+                var workShifts = wsGrid.dataSource;
+                console.log("General Parameters");
+                console.log(params);
+                console.log("----------------------------------------------------------------");
+                console.log("Physical Ids");
+                console.log(physicalIdsDto);
+                console.log("----------------------------------------------------------------");
+                console.log("Basic Salaries");
+                console.log(basicSalaries);
+                console.log("----------------------------------------------------------------");
+                console.log("Allowances");
+                console.log(allowancesDto);
+                console.log("----------------------------------------------------------------");
+                console.log("Banks");
+                console.log(banksDto);
+                console.log("----------------------------------------------------------------");
+                console.log("Contact Information");
+                console.log("--------------------------");
+                console.log("Primary Contact");
+                console.log(primaryContactInfo);
+                console.log("--------------------------");
+                console.log("National Address");
+                console.log(nationalAddressInfo);
+                console.log("--------------------------");
+                console.log("Secondary Contacts");
+                console.log(secondaryContactsDto);
+                console.log("----------------------------------------------------------------");
+                console.log("Qualification");
+                console.log(qualificationsDto);
+                console.log("----------------------------------------------------------------");
+                console.log("Dependants");
+                console.log(dependantsDto);
+                console.log("Dependants Ids");
+                console.log(dependantsIdsDto);
+                console.log("----------------------------------------------------------------");
+                console.log("Workshifts");
+                console.log(workShifts);
+                //var companyCode = $('option:selected', $('#company')).attr('data-companyCode');
+                //console.log(companyCode);
+                //params += "&companyCode=" + companyCode;
+
+                //var headAccCode = $('option:selected', $('#headAccount')).attr('data-headAccCode');
+                //console.log(headAccCode);
+                //params += "&headAccCode=" + headAccCode;
+
+                //var subCatCode = $('option:selected', $('#subCat')).attr('data-categoryCode');
+                //console.log(subCatCode);
+                //params += "&subCatCode=" + subCatCode;
+
+                //var groupCatCode = $('option:selected', $('#groupCat')).attr('data-categoryCode');
+                //console.log(groupCatCode);
+                //params += "&groupCatCode=" + groupCatCode;
+
+                //var accStatementTypeId = $('option:selected', $('#statementType')).val();
+                //console.log(accStatementTypeId + " dsddsdfds");
+                //params += "&accStatementTypeId=" + accStatementTypeId;
+
+                if (GetFormValidated() === true)
+                {
+                    $.ajax({
+                        url: "@Url.Content("~")/HR/Employees/Edit",
+                        async: false,
+                        type: "POST",
+                        data: {
+                            employee: params,
+                            physicalIDs: physicalIdsDto,
+                            basicSalaries: basicSalaries,
+                            allowances: allowancesDto,
+                            banks: banksDto,
+                            primaryContact: primaryContactInfo,
+                            nationalAddress: nationalAddressInfo,
+                            secondaryContacts: secondaryContactsDto,
+                            qualifications: qualificationsDto,
+                            dependants: dependantsDto,
+                            dependantsIds: dependantsIdsDto,
+                            workShifts: workShifts,
+                            __RequestVerificationToken: $('input:hidden[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (data) {
+                            //window.location = "@Url.Content("~")/HR/Employees";
+                        },
+                        error: function (err) {
+                            console.log("ERROR" + err);
+                        }
+                    })
+                }
+                else {
+                    console.log("Invalid Form");
+                }
+            });
+            // Smart Wizard
+            $('#smartwizard').smartWizard({
+                selected: 0,
+                theme: 'arrows',
+                transitionEffect: 'slide',
+                showStepURLhash: false,
+                keyNavigation: true,
+                toolbarSettings: {
+                    showNextButton: false, // show/hide a Next button
+                    showPreviousButton: false, // show/hide a Previous button
+                },
+                anchorSettings: {
+                    anchorClickable: true, // Enable/Disable anchor navigation
+                    markDoneStep: true, // add done css
+                    markAllPreviousStepsAsDone: false, // When a step selected by url hash, all previous steps are marked done
+                    removeDoneStepOnNavigateBack: true, // While navigate back done step after active step will be cleared
+                    enableAnchorOnDoneStep: true, // Enable/Disable the done steps navigation
+                }
+            });
+            $("#smartwizard").on("showStep", function (e, anchorObject, stepNumber, stepDirection, stepPosition) {
+                //alert("You are on step "+stepNumber+" now");
+                if (stepPosition === 'first') {
+                    $("#prev-btn").addClass('disabled');
+                } else if (stepPosition === 'final') {
+                    $("#next-btn").addClass('disabled');
+                } else {
+                    $("#prev-btn").removeClass('disabled');
+                    $("#next-btn").removeClass('disabled');
+                }
+            });
+            $("#smartwizard").on("leaveStep", function (e, anchorObject, stepNumber, stepDirection) {
+                curStepNumber = stepNumber;
+                var elmForm = $("#form-step-" + stepNumber);
+                console.log(curStepNumber);
+                // stepDirection === 'forward' :- this condition allows to do the form validation
+                // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
+                var valid = true;
+                elmForm.validator('validate');
+                if (stepDirection === 'forward' && elmForm) {
+                    //elmForm.validate({
+                    //    submitHandler: function (form) {
+                    //        console.log("Submit")
+                    //        valid = true;
+                    //    },
+                    //    invalidHandler: function (form) {
+                    //        console.log("Invalid")
+                    //        valid = false;
+                    //    }
+                    //})
+                    var elmErr = elmForm.find('.has-error');
+                    if (elmErr) {
+                        if (elmErr.length > 0) {
+                            // Form validation failed
+                            valid = true;
+                        }
+                        else {
+                            valid = true;
+                        }
+                        console.log(elmErr.length);
+                    }
+                }
+                return valid;
+            });
+            $("#smartwizard").on("endReset", function () {
+                $("#next-btn").removeClass('disabled');
+            });
+
+            // Toolbar extra buttons
+            var btnFinish = $('<button></button>').text('Finish')
+                .addClass('btn btn-info')
+                .on('click', function () { alert('Finish Clicked'); });
+            var btnCancel = $('<button></button>').text('Cancel')
+                .addClass('btn btn-danger')
+                .on('click', function () { $('#smartwizard').smartWizard("reset"); });
+
+            $("#submitEmployeePhysicalId").on("click", function (e) {
+                // Navigate previous
+                e.preventDefault();
+                var elmForm = $("#form-step-2-1");
+                // stepDirection === 'forward' :- this condition allows to do the form validation
+                // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
+                var valid = true;
+                elmForm.validator('validate');
+                if (elmForm) {
+                    //elmForm.validate({
+                    //    submitHandler: function (form) {
+                    //        console.log("Submit")
+                    //        valid = true;
+                    //    },
+                    //    invalidHandler: function (form) {
+                    //        console.log("Invalid")
+                    //        valid = false;
+                    //    }
+                    //})
+                    var elmErr = elmForm.find('.has-error');
+                    if (elmErr) {
+                        if (elmErr.length > 0) {
+                            // Form validation failed
+                            valid = false;
+                        }
+                        else {
+                            valid = true;
+                        }
+                    }
+                }
+
+                var params = "";
+                var grid = $("#PhysicalIdsGrid")[0].ej2_instances[0];
+                var id = 0;
+                if (grid.dataSource.length > 0)
+                    id = grid.dataSource[grid.dataSource.length - 1].Id;
+                var idTypeValue = $("option:selected", "#idTypeId").attr("data-value");
+                var idType = $("#idTypeId").val();
+                var idNumber = $("#idNo").val();
+                var issuedFromValue = $("option:selected", "#idIssuedFromId").attr("data-value");
+                var issuedFrom = $("#idIssuedFromId").val();
+                var sponsor = $("#idSponsorName").val();
+                var jobTitle = $("#idJobTitle").val();
+                var issueDate = $("#idIssuedDate").val();
+                var endDate = $("#idEndDate").val();
+                var idCopy = $("#idCard").val();
+                var antiForg = $('input:hidden[name="__RequestVerificationToken"]').val();
+                params += "IDTypeId=" + idType;
+                params += "&IDNumber=" + idNumber;
+                params += "&Sponsor=" + sponsor;
+                params += "&JobTitle=" + jobTitle;
+                params += "&IssuedFromId=" + issuedFrom;
+                params += "&IssuedDate=" + issueDate;
+                params += "&EndDate=" + endDate;
+                params += "&IDCopy=" + idCopy;
+                params += "&__RequestVerificationToken=" + antiForg;
+                console.log(grid);
+                if (valid) {
+                    @*$.ajax({
+                        url: "@Url.Content("~")/HR/Employees/Create?handler=AddPhysicalId",
+                        async: false,
+                        type: "POST",
+                        data: params,
+                        success: function (data) {
+                            //window.location = "@Url.Content("~")/HR/Employees";
+                            console.log(params);
+                            
+                        },
+                        error: function (err) {
+                            console.log("ERROR" + err);
+                        }
+                    })*@
+                    grid.dataSource.push({
+                        Id: id + 1,
+                        IDTypeId: idType,
+                        GetIDTypeValue: idTypeValue,
+                        idType,
+                        IDNumber: idNumber,
+                        JobTitle: jobTitle,
+                        IssuedFromId: issuedFrom,
+                        GetIssuedFromValue: issuedFromValue,
+                        IssuedDate: issueDate,
+                        EndDate: endDate,
+                        Sponsor: sponsor,
+                        SoftCopy: idCopy
+                    }); // refresh the Grid.
+                    grid.refresh(); // refresh the Grid.
+                }
+                return true;
+            })
+            $("#submitBasicSalary").on("click", function (e) {
+                // Navigate previous
+                e.preventDefault();
+                var elmForm = $("#form-step-3-1");
+                // stepDirection === 'forward' :- this condition allows to do the form validation
+                // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
+                var valid = true;
+                elmForm.validator('validate');
+                if (elmForm) {
+                    //elmForm.validate({
+                    //    submitHandler: function (form) {
+                    //        console.log("Submit")
+                    //        valid = true;
+                    //    },
+                    //    invalidHandler: function (form) {
+                    //        console.log("Invalid")
+                    //        valid = false;
+                    //    }
+                    //})
+                    var elmErr = elmForm.find('.has-error');
+                    if (elmErr) {
+                        if (elmErr.length > 0) {
+                            // Form validation failed
+                            valid = false;
+                        }
+                        else {
+                            valid = true;
+                        }
+                    }
+                }
+
+                var params = "";
+                var grid = $("#BasicSalariesGrid")[0].ej2_instances[0];
+                var id = 0;
+                if (grid.dataSource.length > 0)
+                    id = grid.dataSource[grid.dataSource.length - 1].Id;
+                var basicSalary = $("#basicSalary").val();
+                var antiForg = $('input:hidden[name="__RequestVerificationToken"]').val();
+                params += "&BasicSalary=" + basicSalary;
+                params += "&__RequestVerificationToken=" + antiForg;
+                if (valid) {
+                    @*$.ajax({
+                        url: "@Url.Content("~")/HR/Employees/Create?handler=AddPhysicalId",
+                        async: false,
+                        type: "POST",
+                        data: params,
+                        success: function (data) {
+                            //window.location = "@Url.Content("~")/HR/Employees";
+                            console.log(params);
+                            
+                        },
+                        error: function (err) {
+                            console.log("ERROR" + err);
+                        }
+                    })*@
+                    grid.dataSource.push({
+                        Id: id + 1,
+                        Salary: basicSalary,
+                        FromDate: $.datepicker.formatDate('yy/mm/dd', new Date()).toString(),
+                        ToDate: "—",
+                    }); // refresh the Grid.
+                    grid.refresh(); // refresh the Grid.
+                }
+                return true;
+            })
+            $("#submitAllowance").on("click", function (e) {
+                // Navigate previous
+                e.preventDefault();
+                var elmForm = $("#form-step-3-2");
+                // stepDirection === 'forward' :- this condition allows to do the form validation
+                // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
+                var valid = true;
+                elmForm.validator('validate');
+                if (elmForm) {
+                    //elmForm.validate({
+                    //    submitHandler: function (form) {
+                    //        console.log("Submit")
+                    //        valid = true;
+                    //    },
+                    //    invalidHandler: function (form) {
+                    //        console.log("Invalid")
+                    //        valid = false;
+                    //    }
+                    //})
+                    var elmErr = elmForm.find('.has-error');
+                    if (elmErr) {
+                        if (elmErr.length > 0) {
+                            // Form validation failed
+                            valid = false;
+                        }
+                        else {
+                            valid = true;
+                        }
+                    }
+                }
+
+                var params = "";
+                var grid = $("#AllowancesGrid")[0].ej2_instances[0];
+                var id = 0;
+                if (grid.dataSource.length > 0)
+                    id = grid.dataSource[grid.dataSource.length - 1].Id;
+                var allowanceType = $("#allowanceType").val();
+                var allowanceTypeValue = $("option:selected","#allowanceType").attr("data-value");
+                var percOfBasicSalary = $("#percOfBasicSalary").val();
+                var basicSalaryAmount = $("#basicSalaryAmount").val();
+                var basicSalaryFromDate = $("#basicSalaryFromDate").val();
+                var basicSalaryEndDate = $("#basicSalaryEndDate").val();
+                var antiForg = $('input:hidden[name="__RequestVerificationToken"]').val();
+                params += "&BasicSalary=" + basicSalary;
+                params += "&__RequestVerificationToken=" + antiForg;
+                if (valid) {
+                    @*$.ajax({
+                        url: "@Url.Content("~")/HR/Employees/Create?handler=AddPhysicalId",
+                        async: false,
+                        type: "POST",
+                        data: params,
+                        success: function (data) {
+                            //window.location = "@Url.Content("~")/HR/Employees";
+                            console.log(params);
+                            
+                        },
+                        error: function (err) {
+                            console.log("ERROR" + err);
+                        }
+                    })*@
+                    grid.dataSource.push({
+                        Id: id + 1,
+                        AllowanceTypeId: allowanceType, 
+                        GetAllowanceTypeName: allowanceTypeValue,
+                        PercBasicSalary: percOfBasicSalary,
+                        Amount: basicSalaryAmount,
+                        FromDate: basicSalaryFromDate,
+                        EndDate: basicSalaryEndDate,
+                    });
+                    grid.refresh(); // refresh the Grid.
+                    console.log(grid.dataSource);
+                }
+                return true;
+            })
+            $("#submitBank").on("click", function (e) {
+                // Navigate previous
+                e.preventDefault();
+                var elmForm = $("#form-step-3-3");
+                // stepDirection === 'forward' :- this condition allows to do the form validation
+                // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
+                var valid = true;
+                elmForm.validator('validate');
+                if (elmForm) {
+                    //elmForm.validate({
+                    //    submitHandler: function (form) {
+                    //        console.log("Submit")
+                    //        valid = true;
+                    //    },
+                    //    invalidHandler: function (form) {
+                    //        console.log("Invalid")
+                    //        valid = false;
+                    //    }
+                    //})
+                    var elmErr = elmForm.find('.has-error');
+                    if (elmErr) {
+                        if (elmErr.length > 0) {
+                            // Form validation failed
+                            valid = false;
+                        }
+                        else {
+                            valid = true;
+                        }
+                    }
+                }
+
+                var params = "";
+                var grid = $("#BanksGrid")[0].ej2_instances[0];
+                var id = 0;
+                if (grid.dataSource.length > 0)
+                    id = grid.dataSource[grid.dataSource.length - 1].Id;
+                var bankId = $("#bankId").val();
+                var bankIdValue = $("option:selected","#bankId").attr("data-value");
+                var accountTitle = $("#bankAccountTitle").val();
+                var accountNo = $("#bankAccountNo").val();
+                var IBAN = $("#bankIBAN").val();
+                var antiForg = $('input:hidden[name="__RequestVerificationToken"]').val();
+                params += "&__RequestVerificationToken=" + antiForg;
+                if (valid) {
+                    @*$.ajax({
+                        url: "@Url.Content("~")/HR/Employees/Create?handler=AddPhysicalId",
+                        async: false,
+                        type: "POST",
+                        data: params,
+                        success: function (data) {
+                            //window.location = "@Url.Content("~")/HR/Employees";
+                            console.log(params);
+                            
+                        },
+                        error: function (err) {
+                            console.log("ERROR" + err);
+                        }
+                    })*@
+                    grid.dataSource.push({
+                        Id: id + 1,
+                        BankId: bankId,
+                        GetBankName: bankIdValue,
+                        AccountTitle: accountTitle,
+                        AccountNumber: accountNo,
+                        BankIBAN: IBAN
+                    });
+                    grid.refresh(); // refresh the Grid.
+                }
+                return true;
+            })
+            $("#submitSecondaryContact").on("click", function (e) {
+                // Navigate previous
+                e.preventDefault();
+                var elmForm = $("#form-step-4-1");
+                // stepDirection === 'forward' :- this condition allows to do the form validation
+                // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
+                var valid = true;
+                elmForm.validator('validate');
+                if (elmForm) {
+                    //elmForm.validate({
+                    //    submitHandler: function (form) {
+                    //        console.log("Submit")
+                    //        valid = true;
+                    //    },
+                    //    invalidHandler: function (form) {
+                    //        console.log("Invalid")
+                    //        valid = false;
+                    //    }
+                    //})
+                    var elmErr = elmForm.find('.has-error');
+                    if (elmErr) {
+                        if (elmErr.length > 0) {
+                            // Form validation failed
+                            valid = false;
+                        }
+                        else {
+                            valid = true;
+                        }
+                    }
+                }
+
+                var params = "";
+                var grid = $("#SecondaryContactsGrid")[0].ej2_instances[0];
+                var id = 0;
+                if (grid.dataSource.length > 0)
+                    id = grid.dataSource[grid.dataSource.length - 1].Id;
+                var contactRelationId = $("#contactRelationId").val();
+                var contactRelationValue = $("option:selected","#contactRelationId").attr("data-value");
+                var phoneNo = $("#secPhoneKey").val() + "-" + $("#secPhoneNo").val();
+                var mobileNo = $("#secMobileKey").val() + "-" + $("#secMobileNo").val();
+                var faxNo = $("#secFaxKey").val() + "-" + $("#secFaxNo").val();
+                var secEmail = $("#secEmail").val();
+                var secCountryId = $("#secCountryId").val();
+                var secCountryValue = $("option:selected", "#secCountryId").attr("data-value");
+                var secCityId = $("#secCityId").val();
+                var secCityValue = $("option:selected", "#secCityId").attr("data-value");
+                var antiForg = $('input:hidden[name="__RequestVerificationToken"]').val();
+                params += "&__RequestVerificationToken=" + antiForg;
+                if (valid) {
+                    grid.dataSource.push({
+                        Id: id + 1,
+                        RelationId: contactRelationId,
+                        GetRelationType: contactRelationValue,
+                        PhoneNumber: phoneNo,
+                        MobileNumber: mobileNo,
+                        FaxNumber: faxNo,
+                        Email: secEmail,
+                        CountryId: secCountryId,
+                        GetCountryName: secCountryValue,
+                        City: secCityValue
+                    });
+                    grid.refresh(); // refresh the Grid.
+                }
+                return true;
+            })
+            $("#submitQualification").on("click", function (e) {
+                // Navigate previous
+                e.preventDefault();
+                var elmForm = $("#form-step-4-2");
+                // stepDirection === 'forward' :- this condition allows to do the form validation
+                // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
+                var valid = true;
+                elmForm.validator('validate');
+                if (elmForm) {
+                    //elmForm.validate({
+                    //    submitHandler: function (form) {
+                    //        console.log("Submit")
+                    //        valid = true;
+                    //    },
+                    //    invalidHandler: function (form) {
+                    //        console.log("Invalid")
+                    //        valid = false;
+                    //    }
+                    //})
+                    var elmErr = elmForm.find('.has-error');
+                    if (elmErr) {
+                        if (elmErr.length > 0) {
+                            // Form validation failed
+                            valid = false;
+                        }
+                        else {
+                            valid = true;
+                        }
+                    }
+                }
+
+                var params = "";
+                var grid = $("#QualificationsGrid")[0].ej2_instances[0];
+                var id = 0;
+                if (grid.dataSource.length > 0)
+                    id = grid.dataSource[grid.dataSource.length - 1].Id;
+                var degreeId = $("#degreeId").val();
+                var degreeIdValue = $("option:selected","#degreeId").attr("data-value");
+                var institutionId = $("#institutionId").val();
+                var institutionIdValue = $("option:selected","#institutionId").attr("data-value");
+                var fromDate = $("#fromDate").val();
+                var toDate = $("#toDate").val();
+                var antiForg = $('input:hidden[name="__RequestVerificationToken"]').val();
+                params += "&__RequestVerificationToken=" + antiForg;
+                if (valid) {
+                    grid.dataSource.push({
+                        Id: id + 1,
+                        DegreeId: degreeId,
+                        GetDegreeValue: degreeIdValue,
+                        InstitutionId: institutionId,
+                        GetInstitutionValue: institutionIdValue,
+                        FromDate: fromDate,
+                        ToDate: toDate
+                    });
+                    grid.refresh(); // refresh the Grid.
+                }
+                return true;
+            })
+            $("#submitAddDependant").on("click", function (e) {
+                // Navigate previous
+                e.preventDefault();
+                var elmForm = $("#form-step-5-1");
+                // stepDirection === 'forward' :- this condition allows to do the form validation
+                // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
+                var valid = true;
+                elmForm.validator('validate');
+                if (elmForm) {
+                    //elmForm.validate({
+                    //    submitHandler: function (form) {
+                    //        console.log("Submit")
+                    //        valid = true;
+                    //    },
+                    //    invalidHandler: function (form) {
+                    //        console.log("Invalid")
+                    //        valid = false;
+                    //    }
+                    //})
+                    var elmErr = elmForm.find('.has-error');
+                    if (elmErr) {
+                        if (elmErr.length > 0) {
+                            // Form validation failed
+                            valid = false;
+                        }
+                        else {
+                            valid = true;
+                        }
+                    }
+                }
+
+                var params = "";
+                var grid = $("#DependantsGrid")[0].ej2_instances[0];
+                var id = Math.round(Math.random() * 100);
+                var dependantName = $("#dependantName").val();
+                var dependantNameLocalized = $("#dependantNameLocalized").val();
+                var dob = $("#dependantDob").val();
+                var POB = $("#dependantPOB").val();
+                var pobValue = $("option:selected","#dependantPOB").attr("data-value");
+                var nationalityId = $("#dependantNationalityId").val();
+                var nationalityIdValue = $("option:selected","#dependantNationalityId").attr("data-value");
+                var genderId = $("#dependantGenderId").val();
+                var genderIdValue = $("option:selected","#dependantGenderId").attr("data-value");
+                var relationTypeId = $("#relationshipTypeId").val();
+                var relationTypeValue = $("option:selected","#relationshipTypeId").attr("data-value");
+                var antiForg = $('input:hidden[name="__RequestVerificationToken"]').val();
+                params += "&__RequestVerificationToken=" + antiForg;
+                if (valid) {
+                    grid.dataSource.push({
+                        Id: id,
+                        RelationshipTypeId: relationTypeId, 
+                        GetRelationTypeValue: relationTypeValue,
+                        Name: dependantName,
+                        NameLocalized: dependantNameLocalized,
+                        DOB: dob,
+                        POBId: POB,
+                        GetPOBValue: pobValue,
+                        NationalityId: nationalityId,
+                        GetNationalityValue: nationalityIdValue,
+                        GenderId: genderId,
+                        GetGenderValue: genderIdValue
+                    });
+                    grid.refresh(); // refresh the Grid.
+                }
+                return true;
+            })
+            $("#submitDependantPhysicalId").on("click", function (e) {
+                // Navigate previous
+                e.preventDefault();
+                var elmForm = $("#form-step-5-2");
+                // stepDirection === 'forward' :- this condition allows to do the form validation
+                // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
+                var valid = true;
+                elmForm.validator('validate');
+                if (elmForm) {
+                    //elmForm.validate({
+                    //    submitHandler: function (form) {
+                    //        console.log("Submit")
+                    //        valid = true;
+                    //    },
+                    //    invalidHandler: function (form) {
+                    //        console.log("Invalid")
+                    //        valid = false;
+                    //    }
+                    //})
+                    var elmErr = elmForm.find('.has-error');
+                    if (elmErr) {
+                        if (elmErr.length > 0) {
+                            // Form validation failed
+                            valid = false;
+                        }
+                        else {
+                            valid = true;
+                        }
+                    }
+                }
+
+                var params = "";
+                var dependantsGrid = $("#DependantsGrid")[0].ej2_instances[0];
+                var grid = $("#DependantsPhysicalIdsGrid")[0].ej2_instances[0];
+                var id = Math.round(Math.random() * 100);
+                var dependantId = $("option:selected", "#dependantId").attr("data-value");
+                var dependant = dependantsGrid.dataSource.find(x => x.id == dependantId);
+                var idTypeValue = $("option:selected", "#dependantIdTypeId").attr("data-value");
+                var idType = $("#dependantIdTypeId").val();
+                var idNumber = $("#dependantIdNo").val();
+                var issuedFromValue = $("option:selected", "#dependantIdIssuedFromId").attr("data-value");
+                var issuedFrom = $("#dependantIdIssuedFromId").val();
+                var sponsor = $("#dependantIdSponsorName").val();
+                var jobTitle = $("#dependantIdJobTitle").val();
+                var issueDate = $("#dependantIdIssuedDate").val();
+                var endDate = $("#dependantIdEndDate").val();
+                var idCopy = $("#dependantIdCard").val();
+                var antiForg = $('input:hidden[name="__RequestVerificationToken"]').val();
+                params += "&__RequestVerificationToken=" + antiForg;
+                console.log(grid);
+                if (valid) {
+                    grid.dataSource.push({
+                        Id: id,
+                        Parent: dependant,
+                        IDTypeId: idType,
+                        GetIDTypeValue: idTypeValue,
+                        idType,
+                        IDNumber: idNumber,
+                        JobTitle: jobTitle,
+                        IssuedFromId: issuedFrom,
+                        GetIssuedFromValue: issuedFromValue,
+                        IssuedDate: issueDate,
+                        EndDate: endDate,
+                        Sponsor: sponsor,
+                        SoftCopy: idCopy
+                    }); // refresh the Grid.
+                    grid.refresh(); // refresh the Grid.
+                }
+                return true;
+            });
+            $("#submitDependantPassportId").on("click", function (e) {
+                // Navigate previous
+                e.preventDefault();
+                var elmForm = $("#form-step-5-3");
+                // stepDirection === 'forward' :- this condition allows to do the form validation
+                // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
+                var valid = true;
+                elmForm.validator('validate');
+                if (elmForm) {
+                    //elmForm.validate({
+                    //    submitHandler: function (form) {
+                    //        console.log("Submit")
+                    //        valid = true;
+                    //    },
+                    //    invalidHandler: function (form) {
+                    //        console.log("Invalid")
+                    //        valid = false;
+                    //    }
+                    //})
+                    var elmErr = elmForm.find('.has-error');
+                    if (elmErr) {
+                        if (elmErr.length > 0) {
+                            // Form validation failed
+                            valid = false;
+                        }
+                        else {
+                            valid = true;
+                        }
+                    }
+                }
+
+                var params = "";
+                var grid = $("#DependantsPassportIdsGrid")[0].ej2_instances[0];
+                var id = 0;
+                if (grid.dataSource.length > 0)
+                    id = grid.dataSource[grid.dataSource.length - 1].Id;
+                var passportNumber = $("#dependantPassportNo").val();
+                var issuedFromValue = $("option:selected", "#dependantPassportIssuedFromId").attr("data-value");
+                var IssuedFromId = $("#dependantPassportIssuedFromId").val();
+                var sponsor = $("#dependantPassportSponsorName").val();
+                var issueDate = $("#dependantPassportIssuedDate").val();
+                var expiryDate = $("#dependantPassportExpiryDate").val();
+                var passport = $("#dependantPassport").val();
+                var antiForg = $('input:hidden[name="__RequestVerificationToken"]').val();
+                params += "&__RequestVerificationToken=" + antiForg;
+                if (valid) {
+                    grid.dataSource.push({
+                        Id: id + 1,
+                        PassportNumber: passportNumber,
+                        IssuedFromId: IssuedFromId,
+                        GetIssuedFromValue: issuedFromValue,
+                        IssuedDate: issueDate,
+                        ExpiryDate: expiryDate,
+                        Sponsor: sponsor,
+                        SoftCopy: passport
+                    }); // refresh the Grid.
+                    grid.refresh(); // refresh the Grid.
+                }
+                return true;
+            })
+            $("#submitWorkShift").on("click", function (e) {
+                // Navigate previous
+                e.preventDefault();
+                var elmForm = $("#form-step-6-1");
+                // stepDirection === 'forward' :- this condition allows to do the form validation
+                // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
+                var valid = true;
+                elmForm.validator('validate');
+                if (elmForm) {
+                    //elmForm.validate({
+                    //    submitHandler: function (form) {
+                    //        console.log("Submit")
+                    //        valid = true;
+                    //    },
+                    //    invalidHandler: function (form) {
+                    //        console.log("Invalid")
+                    //        valid = false;
+                    //    }
+                    //})
+                    var elmErr = elmForm.find('.has-error');
+                    if (elmErr) {
+                        if (elmErr.length > 0) {
+                            // Form validation failed
+                            valid = false;
+                        }
+                        else {
+                            valid = true;
+                        }
+                    }
+                }
+
+                var params = "";
+                var grid = $("#WorkShiftsGrid")[0].ej2_instances[0];
+                var id = 0;
+                if (grid.dataSource.length > 0)
+                    id = grid.dataSource[grid.dataSource.length - 1].Id;
+                var workshiftId = $("#workshiftId").val();
+                var workshiftIdValue = $("option:selected", "#workshiftId").attr("data-value");
+                var workshiftStartH = $("option:selected", "#workshiftId").attr("data-startH");
+                var workshiftEndH = $("option:selected", "#workshiftId").attr("data-endH");
+                var fromDate = $("#workshiftFromDate").val();
+                var toDate = $("#workshiftToDate").val();
+                var antiForg = $('input:hidden[name="__RequestVerificationToken"]').val();
+                params += "&__RequestVerificationToken=" + antiForg;
+                if (valid) {
+                    grid.dataSource.push({
+                        Id: id + 1,
+                        WorkShiftId: workshiftId, 
+                        GetWorkShiftName: workshiftIdValue,
+                        GetStartHour: workshiftStartH,
+                        GetEndHour: workshiftEndH,
+                        FromDate: fromDate,
+                        ToDate: toDate
+                    });
+                    grid.refresh(); // refresh the Grid.
+                }
+                return true;
+            })
+
+            // External Button Events
+            $("#reset-btn").on("click", function (e) {
+                // Reset wizard
+                e.preventDefault();
+                $('#smartwizard').smartWizard("reset");
+                $("#next-btn").removeClass('disabled');
+                return true;
+            });
+            $("#prev-btn").on("click", function (e) {
+                // Navigate previous
+                e.preventDefault();
+                $('#smartwizard').smartWizard("prev");
+                return true;
+            });
+            $("#next-btn").on("click", function (e) {
+                // Navigate next
+                e.preventDefault();
+                $('#smartwizard').smartWizard("next");
+                return true;
+            });
+
+            //$("#submitEmployee").on("click", function () {
+            //    // Navigate next
+            //    $('#employeeForm').submit();
+            //    return true;
+            //});
+
+            $("#customToolbar").removeClass("tab-pane");
+            $("#customToolbar").removeClass("step-content");
+            $("#customToolbar").addClass("col-sm-12");
+
+            //$("#theme_selector").on("change", function () {
+            //    // Change theme
+            //    $('#smartwizard').smartWizard("theme", $(this).val());
+            //    return true;
+            //});
+
+            //// Set selected theme on page refresh
+            //$("#theme_selector").change();
+
+            $("#departmentId").on("change", function () {
+                SelectDepartmentPositions();
+            });
+
+           function SelectDepartmentPositions() {
+               var departmentId = $("#departmentId").val();
+                $("#positionId").empty();
+                $("#positionId").append("<option value=''>Select Position</option>");
+                $.getJSON(`?handler=Positions&departmentId=${departmentId}`, (data) => {
+                    $.each(data, function (i, item) {
+                        $("#positionId").append(`<option value="${item.id}">${item.title}</option>`);
+                    });
+                });
+           }
+        });
+    </script>
+    <ejs-scripts></ejs-scripts>
+}
+
+<div class="site-content" style="padding:0; background-color: rgb(253,253,253);">
+    <partial name="_DefaultPageHeader" />
+</div>
+
+<div class="site-content" style="background-color: rgb(253,253,253);">
+    <form id="employeeForm" role="form" method="post" accept-charset="utf-8" novalidate>
+        <div id="smartwizard">
+            <ul>
+                <li><a href="#step-1">Step 1<br /><p style="font-size: 15px">General Information</p></a></li>
+                <li><a href="#step-2">Step 2<br /><p style="font-size: 15px">ID & Residence</p></a></li>
+                <li><a href="#step-3">Step 3<br /><p style="font-size: 15px">Contract Detail</p></a></li>
+                <li><a href="#step-4">Step 4<br /><p style="font-size: 15px">Financial Detail</p></a></li>
+                <li><a href="#step-5">Step 5<br /><p style="font-size: 15px">Contact Information</p></a></li>
+                <li><a href="#step-6">Step 6<br /><p style="font-size: 15px">Qualification</p></a></li>
+                <li><a href="#step-7">Step 7<br /><p style="font-size: 15px">Dependants</p></a></li>
+                <li><a href="#step-8">Step 8<br /><p style="font-size: 15px">Work Shifts</p></a></li>
+            </ul>
+            <div>
+                <div id="step-1">
+                    <div id="form-step-0" role="form" data-toggle="validator">
+                        <partial name="_EmployeeGeneralInfoPartial" />
+                    </div>
+                </div>
+                <div id="step-2">
+                    <div id="form-step-1" role="form" data-toggle="validator">
+                        <partial name="_EmployeeIdAndResidencePartial" />
+                    </div>
+                </div>
+                <div id="step-3">
+                    <div id="form-step-2" role="form" data-toggle="validator">
+                        <partial name="_EmployeeContractDetailsPartial" />
+                    </div>
+                </div>
+                <div id="step-4">
+                    <div id="form-step-3" role="form" data-toggle="validator">
+                        <partial name="_EmployeeFinancialDetailsPartial" />
+                    </div>
+                </div>
+                <div id="step-5">
+                    <div id="form-step-4" role="form" data-toggle="validator">
+                        <partial name="_EmployeeContactInfoPartial" />
+                    </div>
+                </div>
+                <div id="step-6">
+                    <div id="form-step-5" role="form" data-toggle="validator">
+                        <partial name="_EmployeeQualificationDetailsPartial" />
+                    </div>
+                </div>
+                <div id="step-7">
+                    <div id="form-step-6" role="form" data-toggle="validator">
+                        <partial name="_EmployeeDependentsDetailsPartial" />
+                    </div>
+                </div>
+                <div id="step-8">
+                    <div id="form-step-0" role="form" data-toggle="validator">
+                        <partial name="_EmployeeWorkShiftsDetailsPartial" />
+                        <div class="col-sm-12 m-t-20">
+                            <div class="form-group">
+                                <button id="submitEmployee" type="submit" class="btn btn-outline-success btn-block">Update Employee</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="customToolbar">
+                    <hr />
+                    <div class="col-sm-6">
+                        <button class="btn btn-outline-light btn-block disabled" id="prev-btn">Previous</button>
+                    </div>
+                    <div class="col-sm-6">
+                        <button class="btn btn-primary btn-block" id="next-btn">Next</button>
+                    </div>
+                </div>
+                <ejs-dialog id="alert_dialog" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy with Header" content="Atleast one row should be selected to copy with header">
+                    <e-dialog-buttons>
+                        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+                    </e-dialog-buttons>
+                </ejs-dialog>
+                <ejs-dialog id="alert_dialog_1" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy" content="Atleast one row should be selected to copy">
+                    <e-dialog-buttons>
+                        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+                    </e-dialog-buttons>
+                </ejs-dialog>
+            </div>
+
+        </div>
+
+
+    </form>
+</div>

@@ -21,13 +21,12 @@
     ViewData["accountStatementTypes"] = Model._accStatementTypeRepo.Where(x => x.ParentId == null).ToList();
     ViewData["accountStatementDetails"] = Model._accStatementTypeRepo.Where(x => x.ParentId != null).ToList();
 
-    ViewData["cashflowStatementTypes"] = Model._dictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.CashflowStatementTypesKey).ToList();
-    ViewData["cashflowStatementDetails"] = Model._dictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.CashflowStatementTypesKey).ToList();
+    ViewData["cashflowStatementTypes"] = Model._dictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.CashflowStatementType).ToList();
+    ViewData["cashflowStatementDetails"] = Model._dictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.CashflowStatementType).ToList();
 
-    ViewData["revenueStatementTypes"] = Model._dictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.CashflowStatementTypesKey).ToList();
-    ViewData["revenueStatementDetails"] = Model._dictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.CashflowStatementTypesKey).ToList();
+    ViewData["revenueStatementTypes"] = Model._dictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.CashflowStatementType).ToList();
+    ViewData["revenueStatementDetails"] = Model._dictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.CashflowStatementType).ToList();
 
-    var accountNameAR = "";
 
     var coaInput = Model.COAInput;
 }

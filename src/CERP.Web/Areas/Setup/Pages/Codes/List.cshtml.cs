@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Helpers;
 using CERP.App;
+using CERP.App.Helpers;
 using CERP.AppServices.Setup.Lookup;
 using CERP.Web.Pages;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +27,26 @@ namespace CERP.Web.Areas.Setup.Codes
         public DictionaryValueAppService dictionaryValueAppService { get; set; }
         public DictionaryValueTypeAppService dictionaryValueTypeAppService { get; set; }
 
+        public string[] GetModulesDS()
+        {
+            List<string> res = new List<string>();
+
+            var values = EnumExtensions.GetDescriptions(typeof(ValueTypeModules));
+            var curValues = dictionaryValueTypeAppService.Repository.Select(x => x.ValueTypeFor).ToArray();
+
+            for (int i = 0; i < values.Length; i++)
+            {
+                if (!curValues.Any(x => x.GetDescription() == values[i]))
+                    res.Add(values[i]);
+            }
+
+            return res.ToArray();
+        }
+        public JsonResult OnGetModulesTypes()
+        {
+            JsonResult result = new JsonResult(GetModulesDS());
+            return result;
+        }
         public void OnGet()
         {
         }
@@ -105,7 +126,7 @@ namespace CERP.Web.Areas.Setup.Codes
 
         public JsonResult OnGetUpdateVTGrid()
         {
-            var Values = dictionaryValueTypeAppService.Repository.OrderBy(x => x.ValueTypeCode).ToList();
+            var Values = ObjectMapper.Map<List<DictionaryValueType>, List<DictionaryValueType_Dto>>(dictionaryValueTypeAppService.Repository.OrderBy(x => x.ValueTypeCode).ToList());
             ViewData["CurDicValueTypeGridDS"] = Values;
             return new JsonResult(Values);
         }

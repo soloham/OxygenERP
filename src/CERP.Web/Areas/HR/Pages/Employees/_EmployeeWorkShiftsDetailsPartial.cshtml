@@ -1,10 +1,14 @@
 ﻿@using CERP.App;
 @using Syncfusion.EJ2.Grids;
+@using CERP.HR.EMPLOYEE.DTOs;
+@using CERP.HR.EMPLOYEE.RougeDTOs
 @{
     List<GridColumn> workShiftsColumns = (List<GridColumn>)ViewData["workShiftsColumns"];
-    object workShiftsDS = (object)ViewData["workShiftsDS"];
-    List<DictionaryValue> workShifts = (List<DictionaryValue>)ViewData["workShifts"];
+    List<WorkShift_Dto> workShifts = (List<WorkShift_Dto>)ViewData["workShifts"];
 
+
+    WorkShiftDetail workShiftDetail = ((bool)ViewData["IsEditing"] == true) ? (WorkShiftDetail)Model.WorkShiftDetail : null;
+    IList<WorkShiftRDto> workShiftsDS = ((bool)ViewData["IsEditing"] == true) ? workShiftDetail.workShifts : new List<WorkShiftRDto>();
 }
 
 @section scripts{
@@ -32,7 +36,7 @@
                             <option></option>
                             @for (int i = 0; i < workShifts.Count; i++)
                             {
-                                <option value="@workShifts[i].Id" data-value="@workShifts[i].Value">@workShifts[i].Value</option>
+                                <option value="@workShifts[i].Id" data-value="@workShifts[i].Title" data-startH="@workShifts[i].StartHour" data-endH="@workShifts[i].EndHour">@workShifts[i].Title</option>
                             }
                         </select>
                     </div>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CERP.Setup;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Volo.Abp;
@@ -40,5 +41,7 @@ namespace CERP.FM
 
         public string VATNumber { get; set; }
         public string CRNumber { get; set; }
+
+        public ICollection<Department> Departments { get; set; }
     }
 }

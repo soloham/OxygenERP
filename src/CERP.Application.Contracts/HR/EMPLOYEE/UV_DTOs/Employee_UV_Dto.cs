@@ -1,4 +1,6 @@
 ﻿using CERP.App;
+using CERP.HR.EMPLOYEE.DTOs;
+using CERP.Setup.DTOs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -63,7 +65,26 @@ namespace CERP.HR.Employees.UV_DTOs
         [Required]
         public DictionaryValue_Dto Religion { get; set; }
         public Guid ReligionId { get; set; }
+
+        [Required]
+        public DictionaryValue_Dto EmployeeStatus { get; set; }
+        public Guid EmployeeStatusId { get; set; }
         #endregion
 
+        #region ID & Residence
+        #endregion
+
+        #region Contract Details
+
+        public Position_Dto Position { get; set; }
+        public Guid PositionId { get; set; }
+        #endregion
+
+        #region Workshifts
+        public WorkShift_Dto WorkShift { get; set; }
+        public int WorkShiftId { get; set; }
+        #endregion
+
+        public IDictionary<string, object> ExtraProperties { get; set; } = new Dictionary<string, object>();
     }
 }

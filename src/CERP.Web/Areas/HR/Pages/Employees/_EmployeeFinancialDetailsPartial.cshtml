@@ -1,17 +1,20 @@
 ﻿@using CERP.App;
 @using Syncfusion.EJ2.Grids
+@using CERP.HR.EMPLOYEE.RougeDTOs
 @{
 
     List<GridColumn> basicSalaryColumns = (List<GridColumn>)ViewData["basicSalaryColumns"];
-    object basicSalaryDS = (object)ViewData["basicSalaryDS"];
+    FinancialDetails fd = ((bool)ViewData["IsEditing"] == true)? (FinancialDetails)Model.FinancialDetails : null;
+
+    IList<BasicSalaryRDTO> basicSalaryDS = ((bool)ViewData["IsEditing"] == true)? fd.BasicSalaries : new List<BasicSalaryRDTO>();
 
     List<DictionaryValue> allowanceTypes = (List<DictionaryValue>)ViewData["allowanceTypes"];
     List<GridColumn> allowancesColumns = (List<GridColumn>)ViewData["allowancesColumns"];
-    object allowancesDS = (object)ViewData["allowancesDS"];
+    IList<AllowanceRDTO> allowancesDS = ((bool)ViewData["IsEditing"] == true)? fd.AllowancesDetails : new List<AllowanceRDTO>();
 
     List<DictionaryValue> banks = (List<DictionaryValue>)ViewData["banks"];
     List<GridColumn> banksColumns = (List<GridColumn>)ViewData["banksColumns"];
-    object banksDS = (object)ViewData["banksDS"];
+    IList<BanksRDTO> banksDS = ((bool)ViewData["IsEditing"] == true)? fd.Banks : new List<BanksRDTO>();
 }
 <div class="panel-body" style="padding-bottom:0">
     <div class="col-lg-12 padding-right-0">

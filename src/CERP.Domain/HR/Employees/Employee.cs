@@ -1,4 +1,6 @@
 ﻿using CERP.App;
+using CERP.HR.Workshifts;
+using CERP.Setup;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -57,7 +59,25 @@ namespace CERP.HR.Employees
         [ForeignKey("ReligionId")]
         public DictionaryValue Religion { get; set; }
         public Guid ReligionId { get; set; }
+
+        [ForeignKey("EmployeeStatusId")]
+        public DictionaryValue EmployeeStatus { get; set; }
+        public Guid EmployeeStatusId { get; set; }
         #endregion
 
+        #region ID & Residence
+        #endregion
+
+        #region Contract Details
+        [ForeignKey("PositionId")]
+        public Position Position { get; set; }
+        public Guid PositionId { get; set; }
+        #endregion
+
+        #region Workshifts
+        [ForeignKey("WorkShiftId")]
+        public WorkShift WorkShift { get; set; }
+        public int WorkShiftId { get; set; }
+        #endregion
     }
 }

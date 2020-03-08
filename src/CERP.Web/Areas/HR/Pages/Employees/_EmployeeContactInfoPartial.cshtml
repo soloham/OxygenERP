@@ -1,12 +1,16 @@
 ﻿@using CERP.App;
 @using Syncfusion.EJ2.Grids;
+@using CERP.HR.EMPLOYEE.RougeDTOs;
 @{
     List<DictionaryValue> countries = (List<DictionaryValue>)ViewData["countries"];
     List<DictionaryValue> cities = (List<DictionaryValue>)ViewData["cities"];
     List<DictionaryValue> contactRelations = (List<DictionaryValue>)ViewData["contactRelations"];
 
+    ContactInformation contactInformation = ((bool)ViewData["IsEditing"] == true) ? (ContactInformation)Model.ContactInformation : null;
+
+
     List<GridColumn> secondaryContactsColumns = (List<GridColumn>)ViewData["secondaryContactsColumns"];
-    object secondaryContactsDS = (object)ViewData["secondaryContactsDS"];
+    IList<Contact> secondaryContactsDS = ((bool)ViewData["IsEditing"] == true)? contactInformation.SecondaryContacts : new List<Contact>();
 }
 
 @section scripts{
@@ -30,47 +34,47 @@
                 Provide primary contact of the employee
             </p>
         </div>
-        <div>
+        <div id="primaryContactForm">
             <div class="row">
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                    <div class="col-sm-3" style="padding:0">
-                        <div class="form-group">
-                            <label class="control-label m-b-5">Code:</label>
-                            <input type="number" id="phoneKey" name="PhoneKey" style="width:100% !important" class="form-control inline pull-left">
-                        </div>
-                    </div>
-                    <div class="col-sm-9" style="padding:0">
+                    @*<div class="col-sm-3" style="padding:0">
+                            <div class="form-group">
+                                <label class="control-label m-b-5">Code:</label>
+                                <input type="number" id="phoneKey" name="PhoneKey" style="width:100% !important" class="form-control inline pull-left">
+                            </div>
+                        </div>*@
+                    <div class="col-sm-12" style="padding:0">
                         <div class="form-group">
                             <label class="control-label m-b-5 pull-right ">Phone:</label>
-                            <input type="number" id="phoneNo" name="PhoneNo" @*value="@(empInfo!=null? empInfo.PHONE_NO : "")"*@ style="width:100% !important" class="form-control inline">
+                            <input type="number" id="phoneNo" name="PhoneNumber" @*value="@(empInfo!=null? empInfo.PHONE_NO : "")"*@ style="width:100% !important" class="form-control inline">
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                    <div class="col-sm-3" style="padding:0">
-                        <div class="form-group">
-                            <label class="control-label m-b-5">Code:</label>
-                            <input type="number" id="mobileKey" name="MobileKey" style="width:100% !important" class="form-control inline pull-left">
-                        </div>
-                    </div>
-                    <div class="col-sm-9" style="padding:0">
+                    @*<div class="col-sm-3" style="padding:0">
+                            <div class="form-group">
+                                <label class="control-label m-b-5">Code:</label>
+                                <input type="number" id="mobileKey" name="MobileKey" style="width:100% !important" class="form-control inline pull-left">
+                            </div>
+                        </div>*@
+                    <div class="col-sm-12" style="padding:0">
                         <div class="form-group">
                             <label class="control-label m-b-5 pull-right ">Mobile:</label>
-                            <input type="number" id="mobileNo" name="MobileNo" @*value="@(empInfo!=null? empInfo.PHONE_NO : "")"*@ style="width:100% !important" class="form-control inline">
+                            <input type="number" id="mobileNo" name="MobileNumber" @*value="@(empInfo!=null? empInfo.PHONE_NO : "")"*@ style="width:100% !important" class="form-control inline">
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                    <div class="col-sm-3" style="padding:0">
-                        <div class="form-group">
-                            <label class="control-label m-b-5">Code:</label>
-                            <input type="number" id="faxKey" name="FaxKey" style="width:100% !important" class="form-control inline pull-left">
-                        </div>
-                    </div>
-                    <div class="col-sm-9" style="padding:0">
+                    @*<div class="col-sm-3" style="padding:0">
+                            <div class="form-group">
+                                <label class="control-label m-b-5">Code:</label>
+                                <input type="number" id="faxKey" name="FaxKey" style="width:100% !important" class="form-control inline pull-left">
+                            </div>
+                        </div>*@
+                    <div class="col-sm-12" style="padding:0">
                         <div class="form-group">
                             <label class="control-label m-b-5 pull-right ">Fax:</label>
-                            <input type="number" id="faxNo" name="FaxNo" @*value="@(empInfo!=null? empInfo.PHONE_NO : "")"*@ style="width:100% !important" class="form-control inline">
+                            <input type="number" id="faxNo" name="FaxNumber" @*value="@(empInfo!=null? empInfo.PHONE_NO : "")"*@ style="width:100% !important" class="form-control inline">
                         </div>
                     </div>
                 </div>
@@ -122,66 +126,68 @@
 
                     <div class="form-group">
                         <label class="margin-bottom-5  control-label">P.O Box:</label>
-                        <input type="number" id="poBox" name="POBoxNumber" min="0" @*value="@(empInfo!=null? empInfo.PO_BOX : "")"*@ class="form-control">
+                        <input type="number" id="poBox" name="POBox" min="0" @*value="@(empInfo!=null? empInfo.PO_BOX : "")"*@ class="form-control">
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="m-l-0 m-t-0">
-            <h2>National Address</h2>
-            <p>
-                Provide national address of the employee
-            </p>
-        </div>
-        <div>
-            <hr class="margin-top-5 margin-bottom-10">
-            <div class="row">
-                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label class="margin-bottom-5  control-label">Building No:</label>
-                        <input type="text" id="buildingNumber" name="BuildingNumber" @*value="@(empInfo!=null? empInfo.ADD_BUILDING_NO : "")"*@ class="form-control">
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label class="margin-bottom-5  control-label">Street Name:</label>
-                        <input type="text" id="streetName" name="StreetName" @*value="@(empInfo!=null? empInfo.ADD_STREET_NAME : "")"*@ class="form-control">
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label class="margin-bottom-5  control-label">District:</label>
-                        <input type="text" id="addDistrict" name="AddDstrict" @*value="@(empInfo!=null? empInfo.ADD_DISTRICT : "")"*@ class="form-control">
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label class="margin-bottom-5  control-label">City :</label>
-                        <input type="text" id="addCity" name="AddCity" @*value="@(empInfo!=null? empInfo.ADD_CITY : "")"*@ class="form-control">
-                    </div>
-                </div>
+        <div id="nationalAddressInfo">
+            <div class="m-l-0 m-t-0">
+                <h2>National Address</h2>
+                <p>
+                    Provide national address of the employee
+                </p>
             </div>
-            <div class="clearfix margin-5"></div>
-
-
-            <div class="row">
-                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label class="margin-bottom-5  control-label">Postal Code:</label>
-                        <input type="text" id="addPostalCode" name="AddPostalCode" @*value="@(empInfo!=null? empInfo.ADD_POSTAL_CODE : "")"*@ class="form-control">
+            <div>
+                <hr class="margin-top-5 margin-bottom-10">
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label class="margin-bottom-5  control-label">Building No:</label>
+                            <input type="text" id="buildingNumber" name="BuildingNumber" @*value="@(empInfo!=null? empInfo.ADD_BUILDING_NO : "")"*@ class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label class="margin-bottom-5  control-label">Street Name:</label>
+                            <input type="text" id="streetName" name="StreetName" @*value="@(empInfo!=null? empInfo.ADD_STREET_NAME : "")"*@ class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label class="margin-bottom-5  control-label">District:</label>
+                            <input type="text" id="addDistrict" name="NADistrict" @*value="@(empInfo!=null? empInfo.ADD_DISTRICT : "")"*@ class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label class="margin-bottom-5  control-label">City:</label>
+                            <input type="text" id="addCity" name="NACity" @*value="@(empInfo!=null? empInfo.ADD_CITY : "")"*@ class="form-control">
+                        </div>
                     </div>
                 </div>
+                <div class="clearfix margin-5"></div>
 
-                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label class="margin-bottom-5  control-label">Additional Number:</label>
-                        <input type="text" id="addAdditionalNumber" name="AddAdditionalNumber" @*value="@(empInfo!=null? empInfo.ADD_ADDITIONAL_NO : "")"*@ class="form-control">
+
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label class="margin-bottom-5  control-label">Postal Code:</label>
+                            <input type="text" id="addPostalCode" name="NAPostalCode" @*value="@(empInfo!=null? empInfo.ADD_POSTAL_CODE : "")"*@ class="form-control">
+                        </div>
                     </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label class="margin-bottom-5  control-label">Additional Number:</label>
+                            <input type="text" id="addAdditionalNumber" name="NAAdditionalNumber" @*value="@(empInfo!=null? empInfo.ADD_ADDITIONAL_NO : "")"*@ class="form-control">
+                        </div>
+                    </div>
+
                 </div>
 
             </div>
-
         </div>
 
         <hr />
@@ -193,7 +199,7 @@
             </p>
         </div>
 
-        <ejs-grid id="SecondaryContactGrid" dataSource="@secondaryContactsDS" enableAutoFill="true" columns="@secondaryContactsColumns"
+        <ejs-grid id="SecondaryContactsGrid" dataSource="@secondaryContactsDS" enableAutoFill="true" columns="@secondaryContactsColumns"
                   dataBound="dataBound" commandClick="commandClick"
                   allowExcelExport="true" allowGrouping="true" allowPdfExport="true"
                   hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"

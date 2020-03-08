@@ -303,6 +303,7 @@ namespace CERP.App
 
                     await DictionaryValueTypesRepo.InsertAsync(new DictionaryValueType(guid)
                     {
+                        ValueTypeFor = ValueTypeModules.Gender,
                         ValueTypeCode = "03",
                         ValueTypeName = "Gender",
                         ActiveStatus = true,
@@ -337,6 +338,7 @@ namespace CERP.App
 
                     await DictionaryValueTypesRepo.InsertAsync(new DictionaryValueType(guid)
                     {
+                        ValueTypeFor = ValueTypeModules.MaritalStatus,
                         ValueTypeCode = "04",
                         ValueTypeName = "Marital Status",
                         ActiveStatus = true,
@@ -425,6 +427,7 @@ namespace CERP.App
 
                     await DictionaryValueTypesRepo.InsertAsync(new DictionaryValueType(guid)
                     {
+                        ValueTypeFor = ValueTypeModules.BloodGroup,
                         ValueTypeCode = "05",
                         ValueTypeName = "Blood Group",
                         ActiveStatus = true,
@@ -477,6 +480,7 @@ namespace CERP.App
 
                     await DictionaryValueTypesRepo.InsertAsync(new DictionaryValueType(guid)
                     {
+                        ValueTypeFor = ValueTypeModules.Religion,
                         ValueTypeCode = "06",
                         ValueTypeName = "Religion",
                         ActiveStatus = true,
@@ -522,6 +526,7 @@ namespace CERP.App
 
                     await DictionaryValueTypesRepo.InsertAsync(new DictionaryValueType(guid)
                     {
+                        ValueTypeFor = ValueTypeModules.IDType,
                         ValueTypeCode = "07",
                         ValueTypeName = "ID Type",
                         ActiveStatus = true,

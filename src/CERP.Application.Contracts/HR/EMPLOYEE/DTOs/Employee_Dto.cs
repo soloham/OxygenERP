@@ -1,4 +1,6 @@
 ﻿using CERP.App;
+using CERP.HR.EMPLOYEE.DTOs;
+using CERP.Setup.DTOs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -18,6 +20,8 @@ namespace CERP.HR.Employees.DTOs
         {
             Id = guid;
         }
+
+        public string GetReferenceId { get => Id.ToString().Substring(0, 4); }
 
         #region General Info
         public string Name { get => FirstName + " " + LastName; }
@@ -52,7 +56,27 @@ namespace CERP.HR.Employees.DTOs
 
         public DictionaryValue_Dto Religion { get; set; }
         public Guid ReligionId { get; set; }
+
+        public DictionaryValue_Dto EmployeeStatus { get; set; }
+        public Guid EmployeeStatusId { get; set; }
         #endregion
 
+
+        #region ID & Residence
+        #endregion
+
+
+        #region Contract Details
+        [ForeignKey("PositionId")]
+        public Position_Dto Position { get; set; }
+        public Guid PositionId { get; set; }
+        #endregion
+
+        #region Workshifts
+        public WorkShift_Dto WorkShift { get; set; }
+        public int WorkShiftId { get; set; }
+        #endregion
+
+        public IDictionary<string, object> ExtraProperties { get; set; } 
     }
 }

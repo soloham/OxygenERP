@@ -16,8 +16,9 @@ namespace CERP.HR.Employees
 
         [ForeignKey("IDTypeId")]
         public DictionaryValue IDType { get; set; }
-        public Guid IDTypeId { get; set; }
+        public Guid? IDTypeId { get; set; }
         public string IDNumber { get; set; }
+
         [ForeignKey("IssuedFromId")]
         public DictionaryValue IssuedFrom { get; set; }
         public Guid IssuedFromId { get; set; }
@@ -26,5 +27,9 @@ namespace CERP.HR.Employees
         public DateTime IssuedDate { get; set; }
         public DateTime EndDate { get; set; }
         public string IDCopy { get; set; }
+
+        [ForeignKey("EmployeeId")]
+        public Employee Employee { get; set; }
+        public Guid EmployeeId { get; set; }
     }
 }

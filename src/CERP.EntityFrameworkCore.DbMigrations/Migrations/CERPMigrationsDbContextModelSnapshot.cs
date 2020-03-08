@@ -787,6 +787,9 @@ namespace CERP.Migrations
                         .HasColumnName("DeletionTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("EmployeeStatusId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("ExtraProperties")
                         .HasColumnName("ExtraProperties")
                         .HasColumnType("nvarchar(max)");
@@ -844,12 +847,26 @@ namespace CERP.Migrations
                     b.Property<Guid>("POB_ID")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("PositionId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("ReligionId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("WorkShiftId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("WorkShiftId1")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WorkShiftId2")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BloodGroupId");
+
+                    b.HasIndex("EmployeeStatusId");
 
                     b.HasIndex("GenderId");
 
@@ -859,18 +876,23 @@ namespace CERP.Migrations
 
                     b.HasIndex("POB_ID");
 
+                    b.HasIndex("PositionId")
+                        .IsUnique();
+
                     b.HasIndex("ReligionId");
+
+                    b.HasIndex("WorkShiftId");
+
+                    b.HasIndex("WorkShiftId1");
 
                     b.ToTable("Employees","HR");
                 });
 
-            modelBuilder.Entity("CERP.HR.Employees.PhysicalID", b =>
+            modelBuilder.Entity("CERP.HR.Workshifts.WorkShift", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1)
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ConcurrencyStamp")
@@ -886,30 +908,29 @@ namespace CERP.Migrations
                         .HasColumnName("CreatorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnName("DeleterId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnName("DeletionTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid>("DepartmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("EndHour")
+                        .HasColumnType("int");
 
                     b.Property<string>("ExtraProperties")
                         .HasColumnName("ExtraProperties")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("IDCopy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("IDNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("IDTypeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("IssuedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("IssuedFromId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("JobTitle")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnName("LastModificationTime")
@@ -919,16 +940,139 @@ namespace CERP.Migrations
                         .HasColumnName("LastModifierId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Sponsor")
+                    b.Property<int>("StartHour")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IDTypeId");
+                    b.HasIndex("DepartmentId");
 
-                    b.HasIndex("IssuedFromId");
+                    b.ToTable("WorkShifts","HR");
+                });
 
-                    b.ToTable("EmpPhysicalIDs","HR");
+            modelBuilder.Entity("CERP.Setup.Department", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnName("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnName("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnName("DeleterId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnName("DeletionTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnName("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnName("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("Departments","SETUP");
+                });
+
+            modelBuilder.Entity("CERP.Setup.Position", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnName("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnName("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnName("DeleterId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnName("DeletionTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("DepartmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnName("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnName("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.ToTable("Positions","SETUP");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>
@@ -2589,6 +2733,12 @@ namespace CERP.Migrations
                         .HasForeignKey("BloodGroupId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("CERP.App.DictionaryValue", "EmployeeStatus")
+                        .WithMany()
+                        .HasForeignKey("EmployeeStatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("CERP.App.DictionaryValue", "Gender")
                         .WithMany()
                         .HasForeignKey("GenderId")
@@ -2613,25 +2763,54 @@ namespace CERP.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("CERP.Setup.Position", "Position")
+                        .WithOne("Employee")
+                        .HasForeignKey("CERP.HR.Employees.Employee", "PositionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("CERP.App.DictionaryValue", "Religion")
                         .WithMany()
                         .HasForeignKey("ReligionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-                });
 
-            modelBuilder.Entity("CERP.HR.Employees.PhysicalID", b =>
-                {
-                    b.HasOne("CERP.App.DictionaryValue", "IDType")
+                    b.HasOne("CERP.HR.Workshifts.WorkShift", "WorkShift")
                         .WithMany()
-                        .HasForeignKey("IDTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("WorkShiftId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CERP.App.DictionaryValue", "IssuedFrom")
+                    b.HasOne("CERP.HR.Workshifts.WorkShift", null)
+                        .WithMany("Employees")
+                        .HasForeignKey("WorkShiftId1")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("CERP.HR.Workshifts.WorkShift", b =>
+                {
+                    b.HasOne("CERP.Setup.Department", "Department")
                         .WithMany()
-                        .HasForeignKey("IssuedFromId")
+                        .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CERP.Setup.Department", b =>
+                {
+                    b.HasOne("CERP.FM.Company", "Company")
+                        .WithMany("Departments")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CERP.Setup.Position", b =>
+                {
+                    b.HasOne("CERP.Setup.Department", "Department")
+                        .WithMany("Positions")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
                 });
 

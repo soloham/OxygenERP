@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CERP.AppServices.HR.EmployeeService;
+using CERP.HR.EMPLOYEE.RougeDTOs;
 using CERP.HR.Employees.DTOs;
 using CERP.Web.Pages;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Syncfusion.EJ2.Grids;
+using Volo.Abp.Json;
 
 namespace CERP.Web.Areas.HR.Pages.Employees
 {
@@ -15,19 +17,26 @@ namespace CERP.Web.Areas.HR.Pages.Employees
     {
         private readonly EmployeeAppService employeeAppService;
         public Grid SecondaryDetailsGrid = new Grid();
-        public ListModel(EmployeeAppService _employeeAppService)
+
+        private IJsonSerializer JsonSerializer { get; set; }
+
+        public ListModel(EmployeeAppService _employeeAppService, IJsonSerializer jsonSerializer)
         {
             employeeAppService = _employeeAppService;
+            JsonSerializer = jsonSerializer;
         }
 
         public void OnGet()
         {
             List<Employee_Dto> Employees = employeeAppService.GetAllEmployees();
 
+            List<PhysicalId<Guid>> physicalIDs = (Employees.Count > 0) ? (List<PhysicalId<Guid>>)Employees.SelectMany(x => (JsonSerializer.Deserialize<GeneralInfo>(x.ExtraProperties["generalInfo"].ToString()).PhysicalIds)).ToList() : new List<PhysicalId<Guid>>();
+
             SecondaryDetailsGrid = new Grid()
             {
-                DataSource = null,
-                QueryString = "Id",
+                DataSource = physicalIDs,
+                Load = "onLoad",
+                QueryString = "EmployeeId",
                 EditSettings = new Syncfusion.EJ2.Grids.GridEditSettings() { },
                 AllowExcelExport = true,
                 //AllowGrouping = true,
@@ -73,12 +82,11 @@ namespace CERP.Web.Areas.HR.Pages.Employees
         public List<GridColumn> GetPrimaryGridColumns()
         {
             List<GridColumn> gridColumns = new List<GridColumn>() {
-                new GridColumn { Field = "EmployeeId", Width = "110", HeaderText = "Id", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "GetReferenceId", Width = "110", HeaderText = "Id", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "Name", Width = "230", HeaderText = "Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "Department.Name", AutoFit = true, HeaderText = "Department", TextAlign=TextAlign.Center, },
+                new GridColumn { Field = "Position.Department.Name", AutoFit = true, HeaderText = "Department", TextAlign=TextAlign.Center, },
                 new GridColumn { Field = "Position.Title", AutoFit = true, HeaderText = "Position", TextAlign=TextAlign.Center,  },
-                new GridColumn { Field = "IqamaNo", AutoFit = true, HeaderText = "Iqama No", TextAlign=TextAlign.Center  },
-                new GridColumn { Field = "Email", AutoFit = true, HeaderText = "Email", TextAlign=TextAlign.Center},
+                new GridColumn { Field = "EmployeeStatus.Value", AutoFit = true, HeaderText = "Employee Status", TextAlign=TextAlign.Center  }
             };
 
             gridColumns.AddRange(GetCommandsColumns());
@@ -87,9 +95,14 @@ namespace CERP.Web.Areas.HR.Pages.Employees
         }
         public List<GridColumn> GetSecondaryGridColumns()
         {
-            List<GridColumn> gridColumns = new List<GridColumn>();
-
-
+            List<GridColumn> gridColumns = new List<GridColumn>()
+            {
+                new GridColumn { Field = "IDType.Value", Width = "110", HeaderText = "Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "IDNumber", Width = "110", HeaderText = "ID Number", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "IssuedFrom.Value", Width = "110", HeaderText = "Issued From", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "IssuedDate", Type = "date", Format = "dd/MM/yyyy", Width = "110", HeaderText = "Issue Date", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "EndDate", Type = "date", Format = "dd/MM/yyyy", Width = "110", HeaderText = "End Date", TextAlign=TextAlign.Center,  MinWidth="10"  }
+            }; 
 
             return gridColumns;
         }

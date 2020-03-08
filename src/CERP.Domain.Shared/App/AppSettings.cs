@@ -7,25 +7,8 @@ namespace CERP
 {
     public static class AppSettings
     {
-        public static DicValueTypeId DicValueTypeId = new DicValueTypeId();
         
     }
-
-    public class DicValueTypeId
-    {
-        public string CashflowStatementTypesKey = "01";
-
-        public string Location = "02";
-        public string City = "03";
-        public string Nationality = "04";
-        public string Gender = "05";
-        public string MaritalStatus = "06";
-        public string BloodGroup = "07";
-        public string Religion = "08";
-
-        public string IDType = "09";
-    }
-
     public enum ValueTypeModules
     {
         [Description("Country")]
@@ -42,5 +25,21 @@ namespace CERP
         IDType,
         [Description("Cashflow Statement Type")]
         CashflowStatementType,
+        [Description("Contract Type")]
+        ContractType,
+        [Description("Contract Status")]
+        ContractStatus,
+        [Description("Employee Status")]
+        EmployeeStatus,
+        [Description("Bank")]
+        Bank,
+        [Description("Relationship")]
+        Relationship,
+        [Description("Degree / Certification")]
+        Degree,
+        [Description("Academic Institution")]
+        AcademicInstitution,
+        [Description("Allowance Type")]
+        AllowanceType,
     }
 }

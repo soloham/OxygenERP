@@ -24,6 +24,7 @@ namespace CERP.AppServices.HR.EmployeeService
             try
             {
                 Employee employee = MapToEntity(employeee);
+
                 Employee_Dto dto = MapToGetOutputDto(await Repository.InsertAsync(employee));
                 return dto;
             }

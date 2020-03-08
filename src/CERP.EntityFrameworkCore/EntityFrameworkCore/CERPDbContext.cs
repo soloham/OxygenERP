@@ -8,6 +8,8 @@ using CERP.FM.COA;
 using CERP.FM;
 using CERP.App;
 using CERP.HR.Employees;
+using CERP.Setup;
+using CERP.HR.Workshifts;
 
 namespace CERP.EntityFrameworkCore
 {
@@ -31,6 +33,8 @@ namespace CERP.EntityFrameworkCore
 
         public DbSet<COA_Account> COAs { get; set; }
         public DbSet<Company> Companies { get; set; }
+        public DbSet<Department> Departments { get; set; }
+        public DbSet<Position> Positions { get; set; }
         public DbSet<Branch> Branches { get; set; }
         public DbSet<COA_HeadAccount> COAHeadAccounts { get; set; }
         public DbSet<COA_AccountSubCategory> COASubCategories { get; set; }
@@ -43,7 +47,8 @@ namespace CERP.EntityFrameworkCore
 
 
         public DbSet<Employee> Employees { get; set; }
-        public DbSet<PhysicalID> PhysicalIDs { get; set; }
+
+        public DbSet<WorkShift> WorkShifts { get; set; }
 
         public CERPDbContext(DbContextOptions<CERPDbContext> options)
             : base(options)

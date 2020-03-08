@@ -1,12 +1,15 @@
 ﻿@using CERP.App;
+@using CERP.HR.EMPLOYEE.RougeDTOs;
 @using Syncfusion.EJ2.Grids;
 @{
     List<DictionaryValue> idTypes = (List<DictionaryValue>)ViewData["idTypes"];
     List<DictionaryValue> idIssuers = (List<DictionaryValue>)ViewData["idIssuers"];
-    List<DictionaryValue> passportIssuers = (List<DictionaryValue>)ViewData["passportIssuers"];
+
+    GeneralInfo generalInfo = ((bool)ViewData["IsEditing"] == true) ? (GeneralInfo)Model.GeneralInfo : null;
 
     List<GridColumn> IdsListColumns = (List<GridColumn>)ViewData["IdsListColumns"];
-    List<GridColumn> PassportIdsListColumns = (List<GridColumn>)ViewData["PassportIdsListColumns"];
+    IList<PhysicalId<Guid>> IdsListDs = ((bool)ViewData["IsEditing"] == true)? generalInfo.PhysicalIds : new List<PhysicalId<Guid>>();
+
 }
 
 @section scripts{
@@ -23,9 +26,9 @@
 <hr class="m-b-0"/>
 <div class="panel-body" style="padding-bottom:0; padding-top: 0">
     <div class="col-lg-12 padding-right-0 ">
-        <div class="col-lg-6 m-t-20">
+        <div class="col-lg-12 m-t-20">
             <h3 class="m-t-0">Employee IDs</h3>
-            <ejs-grid id="PhysicalIdsGrid" dataSource="@ViewData["IdsListDS"]" enableAutoFill="true" columns="@IdsListColumns"
+            <ejs-grid id="PhysicalIdsGrid" dataSource="@IdsListDs" enableAutoFill="true" columns="@IdsListColumns"
                         dataBound="dataBound" commandClick="commandClick"
                         allowExcelExport="true" allowGrouping="true" allowPdfExport="true"
                         hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"
@@ -164,7 +167,7 @@
             </div>
         </div>
         
-        <div class="col-lg-6 m-t-20">
+        @*<div class="col-lg-6 m-t-20">
             <h3 class="m-t-0">Employee Passports</h3>
             <ejs-grid id="PassportIdsGrid" dataSource="@ViewData["PassportIdsListDS"]" enableAutoFill="true" columns="@PassportIdsListColumns"
                       dataBound="dataBound" commandClick="commandClick"
@@ -186,7 +189,7 @@
 
                         <div class="form-group">
                             <label class="margin-bottom-5  control-label">Passport No:</label>
-                            <input type="text" id="passportNo" name="PassportNo" @*value="@(empInfo!=null? empInfo.PASSPORT_NO : "")"*@ class="form-control" required>
+                            <input type="text" id="passportNo" name="PassportNo" value="@(empInfo!=null? empInfo.PASSPORT_NO : "")" class="form-control" required>
                         </div>
                     </div>
 
@@ -203,29 +206,29 @@
                         </div>
                     </div>
 
-                    @*<div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label class="margin-bottom-5  control-label">Job Title on Passport:</label>
                         <input type="text" id="passportJobTitle" name="PassportJobTitle" value="@(empInfo!=null? empInfo.PASSPORT_JOB_TITLE_EN : "")" class="form-control" required>
                     </div>
-                </div>*@
-                    @*<div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                </div>
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <label class="margin-bottom-5  control-label">Job Title in Passport (Arabic):</label>
                     <div>
                         <input type="text" id="PASSPORT_JOB_TITLE_AR" name="PASSPORT_JOB_TITLE_AR" value="@(empInfo!=null? empInfo.PASSPORT_JOB_TITLE_AR : "")" class="form-control">
                     </div>
-                </div>*@
+                </div>
                     <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                         <div class="col-sm-6" style="padding:0">
                             <div class="form-group">
                                 <label class="control-label m-b-5">Issued Date:</label>
-                                <input type="text" id="passportIssuedDate" name="PassportIssuedDate" @*value="@(empInfo!=null? empInfo.PASSPORT_ISSUED_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
+                                <input type="text" id="passportIssuedDate" name="PassportIssuedDate" value="@(empInfo!=null? empInfo.PASSPORT_ISSUED_DATE : "")" style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
                             </div>
                         </div>
                         <div class="col-sm-6" style="padding:0">
                             <div class="form-group">
                                 <label class="control-label m-b-5 pull-right ">Hijri date</label>
-                                <input type="text" id="passportIssuedHDate" name="PassportIssuedHDate" @*value="@(empInfo!=null? empInfo.ID_ISSUED_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline DatePickerHijri">
+                                <input type="text" id="passportIssuedHDate" name="PassportIssuedHDate" value="@(empInfo!=null? empInfo.ID_ISSUED_DATE_H : "")" style="width:100% !important" class="text-right  form-control inline DatePickerHijri">
                             </div>
                         </div>
                     </div>
@@ -233,13 +236,13 @@
                         <div class="col-sm-6" style="padding:0">
                             <div class="form-group">
                                 <label class="control-label m-b-5">Expiry Date:</label>
-                                <input type="text" id="passportExpiryDate" name="PassportEndDate" @*value="@(empInfo!=null? empInfo.PASSPORT_EXPIRY_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
+                                <input type="text" id="passportExpiryDate" name="PassportEndDate" value="@(empInfo!=null? empInfo.PASSPORT_EXPIRY_DATE : "")" style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
                             </div>
                         </div>
                         <div class="col-sm-6" style="padding:0">
                             <div class="form-group">
                                 <label class="control-label m-b-5 pull-right ">Hijri date</label>
-                                <input type="text" id="passportExpiryHDate" name="PassportExpiryHDate" @*value="@(empInfo!=null? empInfo.PASSPORT_EXPIRY_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri">
+                                <input type="text" id="passportExpiryHDate" name="PassportExpiryHDate" value="@(empInfo!=null? empInfo.PASSPORT_EXPIRY_DATE_H : "")" style="width:100% !important" class="text-right  form-control inline   DatePickerHijri">
                             </div>
                         </div>
                     </div>
@@ -248,17 +251,17 @@
                 <div class="clearfix margin-5"></div>
                 <div class="row">
                     <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                        @*@if (empInfo != null && empInfo.PASSPORT_ATTACHMENT != null)
+                        @if (empInfo != null && empInfo.PASSPORT_ATTACHMENT != null)
                     {
                         <a href='@(Url.Content("~")+"Files\\"+ Model.EMP_ID+"\\"+Convert.ToString(empInfo.PASSPORT_ATTACHMENT))' target="_blank" class="margin-bottom-5  pull-right text-right">
                             View File
                         </a>
-                    }*@
+                    }
                         <div class="form-group">
                             <label class="margin-bottom-5  control-label">Updated Passport Copy:</label>
                             <input type="file" id="passport" name="Passport" class="form-control" />
                         </div>
-                        <input type="hidden" id="passportAttachment" name="PassportAttachment" @*value="@(empInfo!=null? empInfo.PASSPORT_ATTACHMENT : "")"*@ class="form-control">
+                        <input type="hidden" id="passportAttachment" name="PassportAttachment" value="@(empInfo!=null? empInfo.PASSPORT_ATTACHMENT : "")" class="form-control">
 
 
 
@@ -271,7 +274,7 @@
                 </div>
 
             </div>
-        </div>
+        </div>*@
 
 
 

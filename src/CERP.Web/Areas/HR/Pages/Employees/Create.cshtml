@@ -2,8 +2,6 @@
 @addTagHelper *, Syncfusion.EJ2
 @using CERP;
 @using CERP.App;
-@using CERP.HR.Employees.DTOs;
-@using System.Dynamic;
 @using Syncfusion.EJ2.Grids;
 @model CERP.Web.Areas.HR.Pages.Employees.CreateModel
 @{
@@ -14,29 +12,27 @@
 
     ViewData["IsList"] = false;
     ViewData["IsCreate"] = false;
+    ViewData["IsEditing"] = false;
 
-    ViewData["birthPlaces"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
-    ViewData["nationalities"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Nationality).OrderBy(x => x.Key).ToList();
-    ViewData["genders"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Gender).OrderBy(x => x.Key).ToList();
-    ViewData["maritalStatuses"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.MaritalStatus).OrderBy(x => x.Key).ToList();
-    ViewData["booldGroups"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.BloodGroup).OrderBy(x => x.Key).ToList();
+    ViewData["birthPlaces"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Country).OrderBy(x => x.Key).ToList();
+    ViewData["nationalities"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Country).OrderBy(x => x.Key).ToList();
+    ViewData["genders"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Gender).ToList();
+    ViewData["maritalStatuses"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.MaritalStatus).OrderBy(x => x.Key).ToList();
+    ViewData["booldGroups"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.BloodGroup).OrderBy(x => x.Key).ToList();
 
-    ViewData["religions"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Religion).OrderBy(x => x.Key).ToList();
-
-
-    ViewData["idTypes"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.IDType).OrderBy(x => x.Key).ToList();
-    ViewData["idIssuers"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
-    ViewData["passportIssuers"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
+    ViewData["religions"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Religion).OrderBy(x => x.Key).ToList();
 
 
-    ViewData["departments"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
-    ViewData["positions"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
-    ViewData["employeeStatuses"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
-    ViewData["contractTypes"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
-    ViewData["contractStatuses"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
+    ViewData["idTypes"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.IDType).OrderBy(x => x.Key).ToList();
+    ViewData["idIssuers"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Country).OrderBy(x => x.Key).ToList();
+
+    ViewData["departments"] = Model.Departments.ToList();
+    ViewData["employeeStatuses"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.EmployeeStatus).OrderBy(x => x.Key).ToList();
+    ViewData["contractTypes"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.ContractType).OrderBy(x => x.Key).ToList();
+    ViewData["contractStatuses"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.ContractStatus).OrderBy(x => x.Key).ToList();
 
 
-    ViewData["banks"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
+    ViewData["banks"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Bank).OrderBy(x => x.Key).ToList();
     ViewData["banksColumns"] = new List<GridColumn>() {
         new GridColumn { Field = "Id", Width = "110", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "Bank.Value", Width = "110", HeaderText = "Bank", TextAlign=TextAlign.Center,  MinWidth="10"  },
@@ -44,9 +40,9 @@
         new GridColumn { Field = "AccountNumber", Width = "110", HeaderText = "Account Number", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "BankIBAN", Width = "80", HeaderText = "IBAN", TextAlign=TextAlign.Center,  MinWidth="10"  },
     };
-    ViewData["bankDS"] = new List<DictionaryValue>();
+    ViewData["bankDS"] = null;
 
-    ViewData["allowanceTypes"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
+    ViewData["allowanceTypes"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.AllowanceType).OrderBy(x => x.Key).ToList();
     ViewData["allowancesColumns"] = new List<GridColumn>() {
         new GridColumn { Field = "Id", Width = "110", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "AllowanceType.Value", Width = "110", HeaderText = "Allowance Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
@@ -58,10 +54,9 @@
     ViewData["allowancesDS"] = new List<DictionaryValue>();
 
 
-    ViewData["contactRelations"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
-    ViewData["contactRelations"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
-    ViewData["countries"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
-    ViewData["cities"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.City).OrderBy(x => x.Key).ToList();
+    ViewData["contactRelations"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Relationship).OrderBy(x => x.Key).ToList();
+    ViewData["countries"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Country).OrderBy(x => x.Key).ToList();
+    ViewData["cities"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Country).OrderBy(x => x.Key).ToList();
     ViewData["secondaryContactsColumns"] = new List<GridColumn>() {
         new GridColumn { Field = "Id", Width = "110", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "ContactRelation.Value", Width = "110", HeaderText = "Contact Relation", TextAlign=TextAlign.Center,  MinWidth="10"  },
@@ -74,8 +69,8 @@
     };
     ViewData["secondaryContactsDS"] = new List<DictionaryValue>();
 
-    ViewData["degrees"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
-    ViewData["institues"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
+    ViewData["degrees"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Degree).OrderBy(x => x.Key).ToList();
+    ViewData["institues"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.AcademicInstitution).OrderBy(x => x.Key).ToList();
     ViewData["qualificationsColumns"] = new List<GridColumn>() {
         new GridColumn { Field = "Id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "Degree.Value", Width = "110", HeaderText = "Degree / Certificate", TextAlign=TextAlign.Center,  MinWidth="10"  },
@@ -85,27 +80,43 @@
     };
     ViewData["qualificationsDS"] = new List<DictionaryValue>();
 
-    ViewData["dependantRelationshipTypes"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
+    ViewData["dependantRelationshipTypes"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Relationship).OrderBy(x => x.Key).ToList();
     ViewData["dependantsColumns"] = new List<GridColumn>() {
         new GridColumn { Field = "Id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "RelationshipType.Value", Width = "80", HeaderText = "Relation", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "Dependant.Name", Width = "110", HeaderText = "Dependant Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "Dependant.NameLocalized", Width = "110", HeaderText = "Dependant Name in AR", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "Name", Width = "110", HeaderText = "Dependant Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "NameLocalized", Width = "110", HeaderText = "Dependant Name in AR", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "DOB", Width = "80", HeaderText = "Date of Birth", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "POB.Value", Width = "80", HeaderText = "Birth Place", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "Nationality.Value", Width = "80", HeaderText = "Nationality", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "Gender.Value", Width = "80", HeaderText = "Gender", TextAlign=TextAlign.Center,  MinWidth="10"  },
     };
     ViewData["dependantsDS"] = new List<DictionaryValue>();
+    
+    ViewData["DependantsIdsListColumns"] = new List<GridColumn>() {
+        new GridColumn { Field = "Id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "Parent.Name", Width = "120", HeaderText = "Dependant", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { EditType = "dropdownedit", Type = "dropdownedit", Field = "IDType.Value", Width = "120", HeaderText = "ID Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "IDNumber", Width = "150", HeaderText = "ID Number", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "IssuedFrom.Value", Width = "120", HeaderText = "Issued From", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "JobTitle", Width = "120", HeaderText = "Job Title", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "IssuedDate", Width = "120", HeaderText = "Issued Date", Format = "yMd", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "EndDate", Width = "120", HeaderText = "End Date", Format = "yMd", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "Sponsor", Width = "120", HeaderText = "Sponsor", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "SoftCopy", Width = "120", HeaderText = "Soft Copy", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    };
+    ViewData["DependantsIdsListDS"] = new List<DictionaryValue>();
 
-
-    ViewData["workShifts"] = Model.DictionaryValuesRepo.Where(x => x.Key == AppSettings.DicValueTypeId.Location).OrderBy(x => x.Key).ToList();
+    ViewData["workShifts"] = (await Model.workShiftsAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
     ViewData["workShiftsColumns"] = new List<GridColumn>() {
-        new GridColumn { Field = "WorkShift.Title", Width = "150", HeaderText = "Work Shift", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "WorkShiftId", Width = "10", Visible=false, HeaderText = "Work Shift", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "Title", Width = "150", HeaderText = "Work Shift", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "StartHour", Width = "120", HeaderText = "Start Hour", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "EndHour", Width = "120", HeaderText = "End Hour", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "FromDate", Width = "120", HeaderText = "From", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "ToDate", Width = "120", HeaderText = "To", TextAlign=TextAlign.Center,  MinWidth="10"  },
     };
-    ViewData["workShiftsDS"] = new List<DictionaryValue>();
+    ViewData["workShiftsDS"] = null;
 
 
     ViewData["IdsListColumns"] = new List<GridColumn>() {
@@ -119,19 +130,21 @@
         new GridColumn { Field = "Sponsor", Width = "120", HeaderText = "Sponsor", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "SoftCopy", Width = "120", HeaderText = "Soft Copy", TextAlign=TextAlign.Center,  MinWidth="10"  },
     };
-    ViewData["IdsListDS"] = Model.PhysicalIds;//new List<PhysicalID_Dto>() { new PhysicalID_Dto() { IDType = CERP.HR.Employee.Enums.PhysicalIDType.Iqama, IDNumber = "5445466", IssuedFrom = CERP.HR.Employee.Enums.PhysicalIDIssuers.Iqama } };
-    
-    ViewData["PassportIdsListColumns"] = new List<GridColumn>() {
-        new GridColumn { Field = "Id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "PassportNumber", Width = "150", HeaderText = "Passport Number", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "IssuedFrom.Value", Width = "120", HeaderText = "Issued From", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "IssuedDate", Width = "120", HeaderText = "Issued Date", Format = "yMd", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "ExpiryDate", Width = "120", HeaderText = "Expiry Date", Format = "yMd", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "SoftCopy", Width = "120", HeaderText = "Soft Copy", Format = "yMd", TextAlign=TextAlign.Center,  MinWidth="10"  },
-    };
-    ViewData["PassportIdsListDS"] = Model.PhysicalIds;//new List<PhysicalID_Dto>() { new PhysicalID_Dto() { IDType = CERP.HR.Employee.Enums.PhysicalIDType.Iqama, IDNumber = "5445466", IssuedFrom = CERP.HR.Employee.Enums.PhysicalIDIssuers.Iqama } };
+    if((bool)ViewData["IsEditing"] == true)
+        ViewData["IdsListDS"] = Model.PhysicalIds.ToList();//new List<PhysicalID_Dto>() { new PhysicalID_Dto() { IDType = CERP.HR.Employee.Enums.PhysicalIDType.Iqama, IDNumber = "5445466", IssuedFrom = CERP.HR.Employee.Enums.PhysicalIDIssuers.Iqama } };
 
-    
+    //ViewData["PassportIdsListColumns"] = new List<GridColumn>() {
+    //    new GridColumn { Field = "Id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    //    new GridColumn { Field = "IDNumber", Width = "150", HeaderText = "Passport Number", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    //    new GridColumn { Field = "IssuedFrom.Value", Width = "120", HeaderText = "Issued From", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    //    new GridColumn { Field = "IssuedDate", Width = "120", HeaderText = "Issued Date", Format = "yMd", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    //    new GridColumn { Field = "EndDate", Width = "120", HeaderText = "Expiry Date", Format = "yMd", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    //    new GridColumn { Field = "SoftCopy", Width = "120", HeaderText = "Soft Copy", Format = "yMd", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    //};
+    //if((bool)ViewData["IsEditing"] == true)
+    //    ViewData["PassportIdsListDS"] = Model.PhysicalIds.Where(x => x.IsPassport.HasValue == true && x.IsPassport == true).ToList();//new List<PhysicalID_Dto>() { new PhysicalID_Dto() { IDType = CERP.HR.Employee.Enums.PhysicalIDType.Iqama, IDNumber = "5445466", IssuedFrom = CERP.HR.Employee.Enums.PhysicalIDIssuers.Iqama } };
+
+
     ViewData["basicSalaryColumns"] = new List<GridColumn>() {
         new GridColumn { Field = "Id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "Salary", Width = "150", HeaderText = "Salary", TextAlign=TextAlign.Center,  MinWidth="10"  },
@@ -165,6 +178,13 @@
     @*<script src="~/libs/syncfusion/ej2-according/scripts/ej2-according.min.js"></script>*@
     <script type="text/javascript">
         $(document).ready(function () {
+            function objectifyForm(formArray) {//serialize data function
+                var returnArray = {};
+                for (var i = 0; i < formArray.length; i++){
+                    returnArray[formArray[i]['name']] = formArray[i]['value'];
+                }
+                return returnArray;
+            }
             $(window).keydown(function(event){
                 if(event.keyCode == 13) {
                   event.preventDefault();
@@ -228,8 +248,129 @@
 
                 e.preventDefault();
 
-                var params = $('#employeeForm').serialize();
+                //Grid References
+                //ID & Residence
+                var piGrid = $("#PhysicalIdsGrid")[0].ej2_instances[0]
+                //Financial Details
+                var bsGrid = $("#BasicSalariesGrid")[0].ej2_instances[0]
+                var alGrid = $("#AllowancesGrid")[0].ej2_instances[0]
+                var bnGrid = $("#BanksGrid")[0].ej2_instances[0]
+                //Contact Information
+                var scGrid = $("#SecondaryContactsGrid")[0].ej2_instances[0]
+                //Qualification
+                var qfGrid = $("#QualificationsGrid")[0].ej2_instances[0]
+                //Dependants
+                var dpGrid = $("#DependantsGrid")[0].ej2_instances[0]
+                var dpIdsGrid = $("#DependantsPhysicalIdsGrid")[0].ej2_instances[0]
+                //WorkShifts
+                var wsGrid = $("#WorkShiftsGrid")[0].ej2_instances[0]
 
+                //Froms References
+                var form = [];
+                var generalInfo = $('#generalInfo').find("select, textarea, input").serializeArray();
+                form = form.concat(generalInfo);
+                var contractDetails = $('#form-step-2').find("select, textarea, input").serializeArray();
+                form = form.concat(contractDetails);
+                var params = objectifyForm(form);
+                var primaryContactInfo = objectifyForm($('#primaryContactForm').find("select, textarea, input").serializeArray());
+                var nationalAddressInfo = objectifyForm($('#nationalAddressInfo').find("select, textarea, input").serializeArray());
+
+
+                var physicalIds = piGrid.dataSource;
+                var basicSalaries = bsGrid.dataSource;
+                var allowances = alGrid.dataSource;
+                var allowancesDto = [];
+                for (var i = 0; i < allowances.length; i++) {
+                    allowances[i].AllowanceTypeId = allowances[i].AllowanceType.Id;
+                    allowancesDto.push(JSON.parse(JSON.stringify(allowances[i])));
+                    allowancesDto[i].AllowanceType = null;
+                }
+                var banks = bnGrid.dataSource;
+                var banksDto = [];
+                for (var i = 0; i < banks.length; i++) {
+                    banks[i].BankId = banks[i].Bank.Id;
+                    banksDto.push(JSON.parse(JSON.stringify(banks[i])));
+                    banksDto[i].Bank = null;
+                }
+                var secondaryContacts = scGrid.dataSource;
+                var secondaryContactsDto = [];
+                for (var i = 0; i < secondaryContacts.length; i++) {
+                    secondaryContacts[i].relationId = secondaryContacts[i].ContactRelation.Id;
+                    secondaryContacts[i].countryId = secondaryContacts[i].Country.Id;
+                    secondaryContactsDto.push(JSON.parse(JSON.stringify(secondaryContacts[i])));
+                    secondaryContactsDto[i].ContactRelation = null;
+                    secondaryContactsDto[i].Country = null;
+                }
+                var qualifications = qfGrid.dataSource;
+                var qualificationsDto = [];
+                for (var i = 0; i < qualifications.length; i++) {
+                    qualifications[i].degreeId = qualifications[i].Degree.Id;
+                    qualifications[i].institutionId = qualifications[i].Institution.Id;
+                    qualificationsDto.push(JSON.parse(JSON.stringify(qualifications[i])));
+                    qualificationsDto[i].Degree = null;
+                    qualificationsDto[i].Institution = null;
+                }
+                var dependants = dpGrid.dataSource;
+                var dependantsDto = [];
+                for (var i = 0; i < dependants.length; i++) {
+                    dependants[i].relationId = dependants[i].RelationshipType.Id;
+                    dependants[i].birthPlaceId = dependants[i].POB.Id;
+                    dependants[i].nationalityId = dependants[i].Nationality.Id;
+                    dependants[i].genderId = dependants[i].Gender.Id;
+                    dependantsDto.push(JSON.parse(JSON.stringify(dependants[i])));
+                    dependantsDto[i].RelationshipType = null;
+                    dependantsDto[i].POB = null;
+                    dependantsDto[i].Nationality = null;
+                    dependantsDto[i].Gender = null;
+                }
+                var dependantsIds = dpIdsGrid.dataSource;
+                var dependantsIdsDto = [];
+                for (var i = 0; i < dependantsIds.length; i++) {
+                    dependantsIds[i].iDTypeId = dependantsIds[i].IDType.Id;
+                    dependantsIds[i].issuedFromId = dependantsIds[i].IssuedFrom.Id;
+                    dependantsIds[i].parentId = dependantsIds[i].Parent.Id;
+                    dependantsIdsDto.push(JSON.parse(JSON.stringify(dependantsIds[i])));
+                    dependantsIdsDto[i].IDType = null;
+                    dependantsIdsDto[i].IssuedFrom = null;
+                    dependantsIdsDto[i].Parent = null;
+                }
+                var workShifts = wsGrid.dataSource;
+                console.log("General Parameters");
+                console.log(params);
+                console.log("----------------------------------------------------------------");
+                console.log("Physical Ids");
+                console.log(physicalIds);
+                console.log("----------------------------------------------------------------");
+                console.log("Basic Salaries");
+                console.log(basicSalaries);
+                console.log("----------------------------------------------------------------");
+                console.log("Allowances");
+                console.log(allowancesDto);
+                console.log("----------------------------------------------------------------");
+                console.log("Banks");
+                console.log(banksDto);
+                console.log("----------------------------------------------------------------");
+                console.log("Contact Information");
+                console.log("--------------------------");
+                console.log("Primary Contact");
+                console.log(primaryContactInfo);
+                console.log("--------------------------");
+                console.log("National Address");
+                console.log(nationalAddressInfo);
+                console.log("--------------------------");
+                console.log("Secondary Contacts");
+                console.log(secondaryContactsDto);
+                console.log("----------------------------------------------------------------");
+                console.log("Qualification");
+                console.log(qualificationsDto);
+                console.log("----------------------------------------------------------------");
+                console.log("Dependants");
+                console.log(dependantsDto);
+                console.log("Dependants Ids");
+                console.log(dependantsIdsDto);
+                console.log("----------------------------------------------------------------");
+                console.log("Workshifts");
+                console.log(workShifts);
                 //var companyCode = $('option:selected', $('#company')).attr('data-companyCode');
                 //console.log(companyCode);
                 //params += "&companyCode=" + companyCode;
@@ -250,16 +391,29 @@
                 //console.log(accStatementTypeId + " dsddsdfds");
                 //params += "&accStatementTypeId=" + accStatementTypeId;
 
-                if (GetFormValidated() === true) {
-
-                    console.log(params);
+                if (GetFormValidated() === true)
+                {
                     $.ajax({
                         url: "@Url.Content("~")/HR/Employees/Create",
                         async: false,
                         type: "POST",
-                        data: params,
+                        data: {
+                            employee: params,
+                            physicalIDs: physicalIds,
+                            basicSalaries: basicSalaries,
+                            allowances: allowancesDto,
+                            banks: banksDto,
+                            primaryContact: primaryContactInfo,
+                            nationalAddress: nationalAddressInfo,
+                            secondaryContacts: secondaryContactsDto,
+                            qualifications: qualificationsDto,
+                            dependants: dependantsDto,
+                            dependantsIds: dependantsIdsDto,
+                            workShifts: workShifts,
+                            __RequestVerificationToken: $('input:hidden[name="__RequestVerificationToken"]').val()
+                        },
                         success: function (data) {
-                            window.location = "@Url.Content("~")/HR/Employees";
+                            //window.location = "@Url.Content("~")/HR/Employees";
                         },
                         error: function (err) {
                             console.log("ERROR" + err);
@@ -276,7 +430,7 @@
                 theme: 'arrows',
                 transitionEffect: 'slide',
                 showStepURLhash: false,
-                keyNavigation: false,
+                keyNavigation: true,
                 toolbarSettings: {
                     showNextButton: false, // show/hide a Next button
                     showPreviousButton: false, // show/hide a Previous button
@@ -497,10 +651,10 @@
                     })*@
                     grid.dataSource.push({
                         Id: id + 1,
-                        PassportNumber: passportNumber,
+                        IDNumber: passportNumber,
                         IssuedFrom: { Id: issuedFromId, Value: issuedFromValue },
                         IssuedDate: issueDate,
-                        ExpiryDate: expiryDate,
+                        EndDate: expiryDate,
                         Sponsor: sponsor,
                         SoftCopy: passport
                     }); // refresh the Grid.
@@ -633,8 +787,6 @@
                             console.log("ERROR" + err);
                         }
                     })*@
-                    console.log("Hey");
-                    console.log(grid);
                     grid.dataSource.push({
                         Id: id + 1,
                         AllowanceType: { Id: allowanceType, Value: allowanceTypeValue },
@@ -644,6 +796,7 @@
                         EndDate: basicSalaryEndDate,
                     });
                     grid.refresh(); // refresh the Grid.
+                    console.log(grid.dataSource);
                 }
                 return true;
             })
@@ -748,7 +901,7 @@
                 }
 
                 var params = "";
-                var grid = $("#SecondaryContactGrid")[0].ej2_instances[0];
+                var grid = $("#SecondaryContactsGrid")[0].ej2_instances[0];
                 var id = 0;
                 if (grid.dataSource.length > 0)
                     id = grid.dataSource[grid.dataSource.length - 1].Id;
@@ -868,9 +1021,7 @@
 
                 var params = "";
                 var grid = $("#DependantsGrid")[0].ej2_instances[0];
-                var id = 0;
-                if (grid.dataSource.length > 0)
-                    id = grid.dataSource[grid.dataSource.length - 1].Id;
+                var id = Math.round(Math.random() * 100);
                 var dependantName = $("#dependantName").val();
                 var dependantNameLocalized = $("#dependantNameLocalized").val();
                 var dob = $("#dependantDob").val();
@@ -886,9 +1037,10 @@
                 params += "&__RequestVerificationToken=" + antiForg;
                 if (valid) {
                     grid.dataSource.push({
-                        Id: id + 1,
+                        Id: id,
                         RelationshipType: { Id: relationTypeId, Value: relationTypeValue },
-                        Dependant: { Name: dependantName, NameLocalized: dependantNameLocalized },
+                        Name: dependantName,
+                        NameLocalized: dependantNameLocalized,
                         DOB: dob,
                         POB: { Id: POB, Value: pobValue },
                         Nationality: { Id: nationalityId, Value: nationalityIdValue },
@@ -930,10 +1082,11 @@
                 }
 
                 var params = "";
+                var dependantsGrid = $("#DependantsGrid")[0].ej2_instances[0];
                 var grid = $("#DependantsPhysicalIdsGrid")[0].ej2_instances[0];
-                var id = 0;
-                if (grid.dataSource.length > 0)
-                    id = grid.dataSource[grid.dataSource.length - 1].Id;
+                var id = Math.round(Math.random() * 100);
+                var dependantId = $("option:selected", "#dependantId").attr("data-value");
+                var dependant = dependantsGrid.dataSource.find(x => x.id == dependantId);
                 var idTypeValue = $("option:selected", "#dependantIdTypeId").attr("data-value");
                 var idType = $("#dependantIdTypeId").val();
                 var idNumber = $("#dependantIdNo").val();
@@ -949,7 +1102,9 @@
                 console.log(grid);
                 if (valid) {
                     grid.dataSource.push({
-                        Id: id + 1, IDType: { Id: idType, Value: idTypeValue },
+                        Id: id,
+                        Parent: dependant,
+                        IDType: { Id: idType, Value: idTypeValue },
                         idType,
                         IDNumber: idNumber,
                         JobTitle: jobTitle,
@@ -1060,6 +1215,8 @@
                     id = grid.dataSource[grid.dataSource.length - 1].Id;
                 var workshiftId = $("#workshiftId").val();
                 var workshiftIdValue = $("option:selected", "#workshiftId").attr("data-value");
+                var workshiftStartH = $("option:selected", "#workshiftId").attr("data-startH");
+                var workshiftEndH = $("option:selected", "#workshiftId").attr("data-endH");
                 var fromDate = $("#workshiftFromDate").val();
                 var toDate = $("#workshiftToDate").val();
                 var antiForg = $('input:hidden[name="__RequestVerificationToken"]').val();
@@ -1067,10 +1224,13 @@
                 if (valid) {
                     grid.dataSource.push({
                         Id: id + 1,
-                        WorkShift: { Id: workshiftId, Title: workshiftIdValue },
+                        WorkShiftId: workshiftId, 
+                        Title: workshiftIdValue,
+                        StartHour: workshiftStartH,
+                        EndHour: workshiftEndH,
                         FromDate: fromDate,
-                        ToDate: toDate,
-                    }); // refresh the Grid.
+                        ToDate: toDate
+                    });
                     grid.refresh(); // refresh the Grid.
                 }
                 return true;
@@ -1116,94 +1276,17 @@
             //// Set selected theme on page refresh
             //$("#theme_selector").change();
 
-            $("#company").on("change", function () {
-                UpdateAccountCodeField()
-            });
-            $("#headAccount").on("change", function () {
-                var headAccount = $('option:selected', this).val();
-                var headAccountName = $('option:selected', this).attr("data-headName");
-                //$("#subCat").empty();
-                //$("#subCat").append("<option value=''>Select Sub Header Account</option>");
-                $.each($("#subCat > option"), function (i, item) {
-                    $(this).hide();
-
-                    var optionType = $(this).attr('data-headId');
-                    if (optionType == headAccount || optionType == '') {
-                        $('#subCat').val('');
-                        $(this).show();
-                    }
-                });
-                $.getJSON(`?handler=SubCategoriesAndStatementType&headAccount=${headAccount}&headAccountName=${headAccountName}&parentId=@Guid.Empty&CLR=2`, (data) => {
-                    $("#statementType").val(data.item2);
-                    SelectStatementDetail();
-                });
-
-                UpdateAccountCodeField();
-            });
-            $("#subCat").on("change", function () {
-               var subCat = $('option:selected', this).val();
-
-                if (!$("#groupCat > option#desc").length)
-                    $("#groupCat").prepend("<option value='' id='desc'>Select a Sub Header Group Category</option>");
-
-                $.each($("#groupCat > option"), function (i, item) {
-                    $(this).hide();
-
-                    var optionType = $(this).attr('data-parentId');
-                    if (optionType == subCat || optionType == '') {
-                        $('#groupCat').val('');
-                        $(this).show();
-                    }
-                });
-
-                UpdateAccountCodeField();
-            });
-            $("#groupCat").on("change", function () {
-                var groupCat = $('option:selected', this).val();
-
-                if (!$("#subCat3 > option#desc").length)
-                    $("#subCat3").prepend("<option value='' id='desc'>Select Account Group</option>");
-                $.each($("#subCat3 > option"), function (i, item) {
-                    $(this).hide();
-
-                    var optionType = $(this).attr('data-parentId');
-                    if (optionType == groupCat || optionType == '') {
-                        $('#subCat3').val('');
-                        $(this).show();
-                    }
-                });
-
-                UpdateAccountCodeField();
-            });
-            $("#subCat3").on("change", function () {
-                var subCat3 = $('option:selected', this).val();
-
-                if (!$("#subCat4 > option#desc").length)
-                    $("#subCat4").prepend("<option value='' id='desc'>Select Tertiary Sub Account</option>");
-                $.each($("#subCat4 > option"), function (i, item) {
-                    $(this).hide();
-
-                    var optionType = $(this).attr('data-parentId');
-                    if (optionType == subCat3 || optionType == '') {
-                        $('#subCat4').val('');
-                        $(this).show();
-                    }
-                });
-
-                UpdateAccountCodeField();
+            $("#departmentId").on("change", function () {
+                SelectDepartmentPositions();
             });
 
-            $("#statementType").on("change", function () {
-                SelectStatementDetail();
-            });
-
-           function SelectStatementDetail() {
-               var statementType = $("#statementType").val();
-                $("#statementDetails").empty();
-                $("#statementDetails").append("<option value=''>Select Statement Details</option>");
-                $.getJSON(`?handler=StatementDetails&statementType=${statementType}`, (data) => {
+           function SelectDepartmentPositions() {
+               var departmentId = $("#departmentId").val();
+                $("#positionId").empty();
+                $("#positionId").append("<option value=''>Select Position</option>");
+                $.getJSON(`?handler=Positions&departmentId=${departmentId}`, (data) => {
                     $.each(data, function (i, item) {
-                        $("#statementDetails").append(`<option value="${item.id}">${item.title}</option>`);
+                        $("#positionId").append(`<option value="${item.id}">${item.title}</option>`);
                     });
                 });
            }
