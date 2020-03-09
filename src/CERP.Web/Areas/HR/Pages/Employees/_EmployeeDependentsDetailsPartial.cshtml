@@ -171,7 +171,22 @@
             <hr />
 
             <div id="form-step-5-2" role="form" data-toggle="validator">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <label class="margin-bottom-5  control-label">Dependant:</label>
+                            <select id="dependantId" name="DependantID" class="form-control" required>
+                                <option></option>
+                                @for (int i = 0; i < dependantsDS.Count; i++)
+                                {
+                                    <option value="@dependantsDS[i].Id" data-value="@dependantsDS[i].Name">@dependantsDS[i].Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
                 <div class="row m-t-20">
+
                     <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5  control-label">ID Type:</label>
@@ -214,11 +229,11 @@
                     </div>
 
                     @*<div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                            <label class="margin-bottom-5  control-label">Job Title in ID (Arabic):</label>
-                            <div>
-                                <input type="text" id="ID_JOB_TITLE_EN_AR" name="ID_JOB_TITLE_EN_AR" value="@(empInfo!=null? empInfo.ID_JOB_TITLE_EN_AR : "")" class="form-control">
-                            </div>
-                        </div>*@
+            <label class="margin-bottom-5  control-label">Job Title in ID (Arabic):</label>
+            <div>
+                <input type="text" id="ID_JOB_TITLE_EN_AR" name="ID_JOB_TITLE_EN_AR" value="@(empInfo!=null? empInfo.ID_JOB_TITLE_EN_AR : "")" class="form-control">
+            </div>
+        </div>*@
                 </div>
 
                 <div class="clearfix margin-5"></div>
@@ -512,8 +527,16 @@
     function actionCompleteDependant() {
         if ($("#DependantsGrid")[0].ej2_instances[0].dataSource.length == 0)
             $("#dependantsDocumentsSection").slideUp();
-        else
+        else {
             $("#dependantsDocumentsSection").slideDown();
+
+            var dependantsSelect = $("#dependantId");
+            dependantsSelect.empty();
+            dependantsSelect.append("<option value=''>Select Dependant</option>");
+            $.each($("#DependantsGrid")[0].ej2_instances[0].dataSource, function (i, item) {
+                dependantsSelect.append(`<option value="${item.Id}">${item.Name}</option>`);
+            });
+        }
     }
     function commandClick(args) {
         console.log(args);

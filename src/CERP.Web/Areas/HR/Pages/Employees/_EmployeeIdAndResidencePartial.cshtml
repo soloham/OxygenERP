@@ -5,7 +5,8 @@
     List<DictionaryValue> idTypes = (List<DictionaryValue>)ViewData["idTypes"];
     List<DictionaryValue> idIssuers = (List<DictionaryValue>)ViewData["idIssuers"];
 
-    GeneralInfo generalInfo = ((bool)ViewData["IsEditing"] == true) ? (GeneralInfo)Model.GeneralInfo : null;
+    bool isEditing = (bool)ViewData["IsEditing"];
+    GeneralInfo generalInfo = (isEditing == true) ? (GeneralInfo)Model.GeneralInfo : null;
 
     List<GridColumn> IdsListColumns = (List<GridColumn>)ViewData["IdsListColumns"];
     IList<PhysicalId<Guid>> IdsListDs = ((bool)ViewData["IsEditing"] == true)? generalInfo.PhysicalIds : new List<PhysicalId<Guid>>();

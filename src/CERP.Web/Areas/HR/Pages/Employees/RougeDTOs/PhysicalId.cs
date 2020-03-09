@@ -69,6 +69,29 @@ namespace CERP.HR.EMPLOYEE.RougeDTOs
         public DateTime EndDate { get; set; }
         public string IDCopy { get; set; }
 
+
+        [JsonIgnore]
+        private string parentName;
+        public string GetParentName
+        {
+            get
+            {
+                try
+                {
+                    if (Holder != null)
+                    {
+                        parentName = Holder.Name;
+                    }
+                }
+                catch { }
+
+
+                return parentName;
+            }
+            set { parentName = value; }
+        }
+        [JsonIgnore]
+        public Dependant Holder;
         public T ParentId { get; set; }
     }
 }

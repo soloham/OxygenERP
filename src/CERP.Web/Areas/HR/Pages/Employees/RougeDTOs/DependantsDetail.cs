@@ -24,6 +24,7 @@ namespace CERP.HR.EMPLOYEE.RougeDTOs
         {
             Dependants.ForEach(x => x.DicValuesProxy = dictionaryValuesRepo);
             PhysicalIds.ForEach(x => x.DicValuesProxy = dictionaryValuesRepo);
+            PhysicalIds.ForEach(x => x.Holder = Dependants.First(x1 => x1.Id == x.ParentId));
         }
     }
 
@@ -122,5 +123,6 @@ namespace CERP.HR.EMPLOYEE.RougeDTOs
             set { gender = value; }
         }
         public Guid GenderId { get; set; }
+
     }
 }

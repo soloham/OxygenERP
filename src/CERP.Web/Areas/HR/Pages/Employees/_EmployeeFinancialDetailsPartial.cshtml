@@ -41,14 +41,44 @@
         </ejs-grid>
 
         <div id="form-step-3-1" role="form" data-toggle="validator">
-            <label class="margin-bottom-5 m-t-20  fontSize-15">Basic Salary:</label>
-            <div class="row">
-                <div class="col-lg-6">
+            <div class="row m-t-20">
+                <div class="col-lg-4 col-sm-6 col-12">
                     <div class="form-group">
+                        <label class="margin-bottom-5 fontSize-15">Basic Salary:</label>
                         <input type="number" id="basicSalary" name="BasicSalary" min="01" @*value="@(empInfo!=null? empInfo.BASIC_SALARY : 0)"*@ class="form-control" required>
                     </div>
                 </div>
-                <div class="col-lg-6">
+                <div class="col-lg-4 col-sm-6 col-12">
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5">From Date:</label>
+                            <input type="text" id="bsFromDate" name="BasicSalaryFromDate" @*value="@(empInfo!=null? empInfo.ID_ISSUED_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
+                        </div>
+                    </div>
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 pull-right ">Hijri date</label>
+                            <input type="text" id="bsFromHDate" name="BasicSalaryFromHDate" @*value="@(empInfo!=null? empInfo.ID_ISSUED_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline DatePickerHijri">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6 col-12">
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5">End Date:</label>
+                            <input type="text" id="bsToDate" name="BasicSalaryEndDate" @*value="@(empInfo!=null? empInfo.ID_END_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
+                        </div>
+                    </div>
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 pull-right ">Hijri date</label>
+                            <input type="text" id="bsToHDate" name="BasicSalaryEndHDate" @*value="@(empInfo!=null? empInfo.ID_END_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
                     <button id="submitBasicSalary" type="button" class="btn btn-primary btn-block">Commit Salary</button>
                 </div>
             </div>
@@ -202,7 +232,36 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-12">
+                <div class="col-lg-4 col-sm-6 col-12">
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5">From Date:</label>
+                            <input type="text" id="bankFromDate" name="BasicSalaryFromDate" @*value="@(empInfo!=null? empInfo.ID_ISSUED_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
+                        </div>
+                    </div>
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 pull-right ">Hijri date</label>
+                            <input type="text" id="bankFromHDate" name="BasicSalaryFromHDate" @*value="@(empInfo!=null? empInfo.ID_ISSUED_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline DatePickerHijri">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-6 col-12">
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5">End Date:</label>
+                            <input type="text" id="bankToDate" name="BasicSalaryEndDate" @*value="@(empInfo!=null? empInfo.ID_END_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
+                        </div>
+                    </div>
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 pull-right ">Hijri date</label>
+                            <input type="text" id="bankToHDate" name="BasicSalaryEndHDate" @*value="@(empInfo!=null? empInfo.ID_END_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <label class="control-label m-b-5">Please confirm the details before commiting</label>
                     <button id="submitBank" type="button" class="btn btn-primary btn-block">Commit Bank</button>
                 </div>
             </div>

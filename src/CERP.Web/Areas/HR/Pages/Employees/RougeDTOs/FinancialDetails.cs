@@ -102,5 +102,7 @@ namespace CERP.HR.EMPLOYEE.RougeDTOs
         public string AccountTitle { get; set; }
         public string AccountNumber { get; set; }
         public string BankIBAN { get; set; }
+        public string FromDate { get; set; }
+        public string ToDate { get; set; }
     }
 }

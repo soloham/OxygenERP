@@ -12,7 +12,7 @@
 
     ViewData["IsList"] = false;
     ViewData["IsCreate"] = false;
-    ViewData["IsEditing"] = false;
+    ViewData["IsEditing"] = true;
 
     ViewData["birthPlaces"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Country).OrderBy(x => x.Key).ToList();
     ViewData["nationalities"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Country).OrderBy(x => x.Key).ToList();
@@ -38,7 +38,9 @@
         new GridColumn { Field = "GetBankName", Width = "110", HeaderText = "Bank", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "AccountTitle", Width = "110", HeaderText = "Account Title", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "AccountNumber", Width = "110", HeaderText = "Account Number", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "BankIBAN", Width = "80", HeaderText = "IBAN", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "BankIBAN", Width = "110", HeaderText = "IBAN", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "FromDate", Width = "100", HeaderText = "From", Format = "yMd", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "ToDate", Width = "100", HeaderText = "To", Format = "yMd", TextAlign=TextAlign.Center,  MinWidth="10"  },
     };
 
     ViewData["allowanceTypes"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.AllowanceType).OrderBy(x => x.Key).ToList();
@@ -91,7 +93,7 @@
     ViewData["DependantsIdsListColumns"] = new List<GridColumn>() {
         new GridColumn { Field = "Id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "GetParentName", Width = "120", HeaderText = "Dependant", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { EditType = "dropdownedit", Type = "dropdownedit", Field = "IDType.Value", Width = "120", HeaderText = "ID Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { EditType = "dropdownedit", Type = "dropdownedit", Field = "GetIDTypeValue", Width = "120", HeaderText = "ID Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "IDNumber", Width = "150", HeaderText = "ID Number", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "GetIssuedFromValue", Width = "120", HeaderText = "Issued From", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "JobTitle", Width = "120", HeaderText = "Job Title", TextAlign=TextAlign.Center,  MinWidth="10"  },
@@ -123,7 +125,6 @@
         new GridColumn { Field = "Sponsor", Width = "120", HeaderText = "Sponsor", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "SoftCopy", Width = "120", HeaderText = "Soft Copy", TextAlign=TextAlign.Center,  MinWidth="10"  },
     };
-    if((bool)ViewData["IsEditing"] == true)
 
     //ViewData["PassportIdsListColumns"] = new List<GridColumn>() {
     //    new GridColumn { Field = "Id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
@@ -626,6 +627,8 @@
                 if (grid.dataSource.length > 0)
                     id = grid.dataSource[grid.dataSource.length - 1].Id;
                 var basicSalary = $("#basicSalary").val();
+                var basicSalaryFromDate = $("#bsFromDate").val();
+                var basicSalaryToDate = $("#bsToDate").val();
                 var antiForg = $('input:hidden[name="__RequestVerificationToken"]').val();
                 params += "&BasicSalary=" + basicSalary;
                 params += "&__RequestVerificationToken=" + antiForg;
@@ -647,9 +650,10 @@
                     grid.dataSource.push({
                         Id: id + 1,
                         Salary: basicSalary,
-                        FromDate: $.datepicker.formatDate('yy/mm/dd', new Date()).toString(),
-                        ToDate: "—",
-                    }); // refresh the Grid.
+                        //FromDate: $.datepicker.formatDate('yy/mm/dd', new Date()).toString(),
+                        FromDate: basicSalaryFromDate,
+                        ToDate: basicSalaryToDate == '' ? '—' : basicSalaryToDate,
+                    });
                     grid.refresh(); // refresh the Grid.
                 }
                 return true;
@@ -769,6 +773,8 @@
                 var accountTitle = $("#bankAccountTitle").val();
                 var accountNo = $("#bankAccountNo").val();
                 var IBAN = $("#bankIBAN").val();
+                var fromDate = $("#bankFromDate").val();
+                var toDate = $("#bankToDate").val();
                 var antiForg = $('input:hidden[name="__RequestVerificationToken"]').val();
                 params += "&__RequestVerificationToken=" + antiForg;
                 if (valid) {
@@ -792,7 +798,9 @@
                         GetBankName: bankIdValue,
                         AccountTitle: accountTitle,
                         AccountNumber: accountNo,
-                        BankIBAN: IBAN
+                        BankIBAN: IBAN,
+                        FromDate: fromDate,
+                        ToDate: toDate,
                     });
                     grid.refresh(); // refresh the Grid.
                 }
@@ -984,6 +992,13 @@
                         GetGenderValue: genderIdValue
                     });
                     grid.refresh(); // refresh the Grid.
+
+                    var dependantsSelect = $("#dependantId");
+                    dependantsSelect.empty();
+                    dependantsSelect.append("<option value=''>Select Dependant</option>");
+                    $.each(grid.dataSource, function (i, item) {
+                        dependantsSelect.append(`<option value="${item.id}">${item.Name}</option>`);
+                    });
                 }
                 return true;
             })
@@ -1022,8 +1037,8 @@
                 var dependantsGrid = $("#DependantsGrid")[0].ej2_instances[0];
                 var grid = $("#DependantsPhysicalIdsGrid")[0].ej2_instances[0];
                 var id = Math.round(Math.random() * 100);
-                var dependantId = $("option:selected", "#dependantId").attr("data-value");
-                var dependant = dependantsGrid.dataSource.find(x => x.id == dependantId);
+                var dependantId = $("option:selected", "#dependantId").val();
+                var dependant = dependantsGrid.dataSource.find(x => x.Id == dependantId);
                 var idTypeValue = $("option:selected", "#dependantIdTypeId").attr("data-value");
                 var idType = $("#dependantIdTypeId").val();
                 var idNumber = $("#dependantIdNo").val();
@@ -1036,11 +1051,15 @@
                 var idCopy = $("#dependantIdCard").val();
                 var antiForg = $('input:hidden[name="__RequestVerificationToken"]').val();
                 params += "&__RequestVerificationToken=" + antiForg;
-                console.log(grid);
+                console.log(dependantsGrid.dataSource);
+                console.log(dependant);
+                console.log(dependantId);
                 if (valid) {
                     grid.dataSource.push({
                         Id: id,
                         Parent: dependant,
+                        GetParentName: dependant.Name,
+                        ParentId: dependantId,
                         IDTypeId: idType,
                         GetIDTypeValue: idTypeValue,
                         idType,
