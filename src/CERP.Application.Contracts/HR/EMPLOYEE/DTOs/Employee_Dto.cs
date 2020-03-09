@@ -67,6 +67,21 @@ namespace CERP.HR.Employees.DTOs
 
 
         #region Contract Details
+        public DateTime ContractStartDate { get; set; }
+        public DateTime ContractEndDate { get; set; }
+        public int VacationDays { get; set; }
+        [ForeignKey("ContractStatusId")]
+        public DictionaryValue_Dto ContractStatus { get; set; }
+        public Guid ContractStatusId { get; set; }
+        [ForeignKey("ContractTypeId")]
+        public DictionaryValue_Dto ContractType { get; set; }
+        public Guid ContractTypeId { get; set; }
+        [ForeignKey("EmployeeStatusId")]
+        public DictionaryValue_Dto EmployeeStatus { get; set; }
+        public Guid EmployeeStatusId { get; set; }
+        [ForeignKey("DepartmentId")]
+        public Department_Dto Department;
+        public Guid DepartmentId { get; set; }
         [ForeignKey("PositionId")]
         public Position_Dto Position { get; set; }
         public Guid PositionId { get; set; }

@@ -1,7 +1,6 @@
 ﻿@using CERP.App;
 @using CERP.Setup.DTOs;
 @using CERP.HR.Employees.DTOs;
-
 @{
     List<Department_Dto> departments = (List<Department_Dto>)ViewData["departments"];
 
@@ -37,7 +36,7 @@
                         <option></option>
                         @for (int i = 0; i < departments.Count; i++)
                         {
-                            <option selected="@(isEditing ? : false;)" value="@departments[i].Id">@departments[i].Name</option>
+                            <option selected="@(isEditing ?  : false;)" value="@departments[i].Id">@departments[i].Name</option>
                         }
                     </select>
                 </div>
