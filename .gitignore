@@ -258,4 +258,3 @@ src/CERP.IdentityServer/Logs/*
 src/CERP.HttpApi.Host/Logs/*
 src/CERP.HttpApi.HostWithIds/Logs/*
 
-core/*
