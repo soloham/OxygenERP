@@ -1,5 +1,6 @@
 ﻿using CERP.App;
 using CERP.FM.COA;
+using CERP.HR.Documents;
 using CERP.HR.Employees;
 using CERP.HR.Workshifts;
 using Microsoft.EntityFrameworkCore;
@@ -91,6 +92,13 @@ namespace CERP.EntityFrameworkCore
                 options.Entity<WorkShift>(opt =>
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.Employees).ThenInclude(p => p.Position);
+                });
+                options.Entity<Document>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.OwnerType)
+                                                       .Include(p => p.DocumentType)
+                                                       .Include(p => p.Owner)
+                                                       .Include(p => p.IssuedFrom);
                 });
             });
 

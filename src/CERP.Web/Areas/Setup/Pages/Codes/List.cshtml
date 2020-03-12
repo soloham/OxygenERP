@@ -24,11 +24,11 @@
     commands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
 
     ViewData["DicValueGridColumns"] = new List<GridColumn>()
-{
+    {
         //new GridColumn { Field = "Id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { AllowEditing = false, Field = "id", Visible = false, IsPrimaryKey = true, HeaderText = "Code", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { AllowEditing = false, Field = "key", HeaderText = "Code", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "value", HeaderText = "Name", ValidationRules=new { required= true, minLength= 3 }, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "value", HeaderText = "Name", ValidationRules=new { required= true, minLength = 2 }, TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "valueLocalizationKey", HeaderText = "Name in Arabic", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { AllowEditing = false, Field = "valueType.valueTypeName", HeaderText = "Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Width = "150", HeaderText = "Commands", TextAlign=TextAlign.Center, MinWidth="10", Commands = commands }
@@ -42,7 +42,7 @@
         //new GridColumn { Field = "Id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { AllowEditing = false, Field = "id", Visible = false, IsPrimaryKey = true, HeaderText = "Code", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { AllowEditing = false, Field = "valueTypeCode", HeaderText = "Code", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "valueTypeName", ValidationRules=new { required= true, minLength= 3 }, HeaderText = "Type Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "valueTypeName", ValidationRules=new { required= true, minLength = 2 }, HeaderText = "Type Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "valueTypeNameLocalizationKey", HeaderText = "Name in Arabic", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "valueTypeForDescription", ValidationRules=new { required= true }, Type="string", EditType="dropdownedit", Edit=new {@@params = DropDownList }, HeaderText = "Module", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Width = "150", HeaderText = "Commands",  TextAlign=TextAlign.Center, MinWidth="10", Commands = commands

@@ -28,7 +28,7 @@
 
     @*<link href="~/libs/JqueryDatepicker/css/jquery.calendars.picker.css" />*@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-
+    <link href="~/libs/sweetalert2/dist/sweetalert2.css" rel="stylesheet" />
     <link href="~/styles/cerp/site.css" rel="stylesheet" asp-append-version="true" />
 </head>
 <body class="layout layout-header-fixed layout-left-sidebar-fixed">
@@ -534,6 +534,7 @@
                     </li>
 
 
+
                     <li class="menu-title">Human Resources</li>
                     <li class="with-sub">
                         <a href="#" aria-haspopup="true">
@@ -548,7 +549,7 @@
 
                             <li class=""><a asp-area="HR" asp-page="/Employees/List"><span class="menu-icon"><i class="zmdi zmdi-minus"></i></span> <span class="menu-text">Employee List</span></a></li>
                             <li class="">
-                                <a href="index-2.html">
+                                <a asp-area="HR" asp-page="/Documents/List">
                                     <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
                                     <span class="menu-text">Documents</span>
                                 </a>
@@ -840,7 +841,8 @@
             2020 © Cloud ERP
         </div>
     </div>
-
+    <script src="~/libs/sweetalert2/dist/sweetalert2.min.js"></script>
+    @*<script src="~/libs/sweetalert/sweetalert.min.js"></script>*@
     <script src="~/scripts/cerp/vendor.min.js"></script>
     @*<script src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>*@
     @*<script src="~/seed/js/libs/jquery-3.2.1.min.js"></script>*@

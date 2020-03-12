@@ -5,7 +5,8 @@
     List<DictionaryValue> degrees = (List<DictionaryValue>)ViewData["degrees"];
     List<DictionaryValue> institues = (List<DictionaryValue>)ViewData["institues"];
 
-    QualificationDetail qualificationDetail = ((bool)ViewData["IsEditing"] == true) ? (QualificationDetail)Model.QualificationDetail : null;
+    bool isEditing = (bool)ViewData["IsEditing"] == true;
+    QualificationDetail qualificationDetail = isEditing ? (QualificationDetail)Model.QualificationDetail : null;
 
     List<GridColumn> qualificationsColumns = (List<GridColumn>)ViewData["qualificationsColumns"];
     IList<Qualification> qualificationsDS = ((bool)ViewData["IsEditing"] == true) ? qualificationDetail.Qualifications : new List<Qualification>();

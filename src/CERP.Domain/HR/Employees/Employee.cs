@@ -30,8 +30,8 @@ namespace CERP.HR.Employees
         public string FamilyName { get; set; }
         public string FamilyNameLocalized { get; set; }
 
-        public DateTime DOB { get; set; }
-        public DateTime DOB_H { get; set; }
+        public string DOB { get; set; }
+        public string DOB_H { get; set; }
 
 
         [ForeignKey("POB_ID")]
@@ -59,16 +59,31 @@ namespace CERP.HR.Employees
         [ForeignKey("ReligionId")]
         public DictionaryValue Religion { get; set; }
         public Guid ReligionId { get; set; }
-
-        [ForeignKey("EmployeeStatusId")]
-        public DictionaryValue EmployeeStatus { get; set; }
-        public Guid EmployeeStatusId { get; set; }
         #endregion
 
         #region ID & Residence
         #endregion
 
         #region Contract Details
+        public string JoiningDate { get; set; }
+        public string JoiningHDate { get; set; }
+        public string ContractStartDate { get; set; }
+        public string ContractStartHDate { get; set; }
+        public string ContractEndDate { get; set; }
+        public string ContractEndHDate { get; set; }
+        public int VacationDays { get; set; }
+        [ForeignKey("ContractStatusId")]
+        public DictionaryValue ContractStatus { get; set; }
+        public Guid ContractStatusId { get; set; }
+        [ForeignKey("ContractTypeId")]
+        public DictionaryValue ContractType { get; set; }
+        public Guid ContractTypeId { get; set; }
+        [ForeignKey("EmployeeStatusId")]
+        public DictionaryValue EmployeeStatus { get; set; }
+        public Guid EmployeeStatusId { get; set; }
+        [ForeignKey("DepartmentId")]
+        public Department Department;
+        public Guid DepartmentId { get; set; }
         [ForeignKey("PositionId")]
         public Position Position { get; set; }
         public Guid PositionId { get; set; }
@@ -78,6 +93,14 @@ namespace CERP.HR.Employees
         [ForeignKey("WorkShiftId")]
         public WorkShift WorkShift { get; set; }
         public int WorkShiftId { get; set; }
+
         #endregion
+
+        public string ProfilePic { get; set; }
+
+        public void UpdateExtraProperties(IDictionary<string, object> extraProperties)
+        {
+            ExtraProperties = (Dictionary<string, object>)extraProperties;
+        }
     }
 }

@@ -36,54 +36,76 @@ namespace CERP.HR.Employees.UV_DTOs
         public string FamilyNameLocalized { get; set; }
 
         [Required]
-        public DateTime DOB { get; set; }
-        public DateTime DOB_H { get; set; }
+        public string DOB { get; set; }
+        public string DOB_H { get; set; }
 
-        [Required]
         public DictionaryValue_Dto POB { get; set; }
+        [Required]
         public Guid POB_ID { get; set; }
 
-        [Required]
         public DictionaryValue_Dto Nationality { get; set; }
+        [Required]
         public Guid NationalityId { get; set; }
 
-        [Required]
         public DictionaryValue_Dto Gender { get; set; }
+        [Required]
         public Guid GenderId { get; set; }
 
-        [Required]
         public DictionaryValue_Dto MaritalStatus { get; set; }
+        [Required]
         public Guid MaritalStatusId { get; set; }
 
         [Required]
         public int NoOfDependents { get; set; }
 
-        [Required]
         public DictionaryValue_Dto? BloodGroup { get; set; }
         public Guid? BloodGroupId { get; set; }
 
-        [Required]
         public DictionaryValue_Dto Religion { get; set; }
-        public Guid ReligionId { get; set; }
-
         [Required]
-        public DictionaryValue_Dto EmployeeStatus { get; set; }
-        public Guid EmployeeStatusId { get; set; }
+        public Guid ReligionId { get; set; }
         #endregion
 
         #region ID & Residence
         #endregion
 
         #region Contract Details
-
+        [Required]
+        public string JoiningDate { get; set; }
+        public string JoiningHDate { get; set; }
+        [Required]
+        public string ContractStartDate { get; set; }
+        public string ContractStartHDate { get; set; }
+        [Required]
+        public string ContractEndDate { get; set; }
+        public string ContractEndHDate { get; set; }
+        [Required]
+        public int VacationDays { get; set; }
+        public DictionaryValue_Dto ContractStatus { get; set; }
+        [Required]
+        public Guid ContractStatusId { get; set; }
+        public DictionaryValue_Dto ContractType { get; set; }
+        [Required]
+        public Guid ContractTypeId { get; set; }
+        public DictionaryValue_Dto EmployeeStatus { get; set; }
+        [Required]
+        public Guid EmployeeStatusId { get; set; }
+        public Department_Dto Department;
+        [Required]
+        public Guid DepartmentId { get; set; }
         public Position_Dto Position { get; set; }
+        [Required]
         public Guid PositionId { get; set; }
         #endregion
 
         #region Workshifts
         public WorkShift_Dto WorkShift { get; set; }
+        [Required]
         public int WorkShiftId { get; set; }
         #endregion
+
+        [Required]
+        public string ProfilePic { get; set; }
 
         public IDictionary<string, object> ExtraProperties { get; set; } = new Dictionary<string, object>();
     }

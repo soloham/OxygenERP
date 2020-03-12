@@ -13,12 +13,75 @@
     List<DictionaryValue> religions = (List<DictionaryValue>)ViewData["religions"];
 }
 
-@section scripts{
-    <script>
 
-    </script>
+<style>
+    .avatar-upload {
+  position: relative;
 }
-
+.avatar-upload .avatar-edit {
+  position: absolute;
+  right: 12px;
+  z-index: 1;
+  top: 10px;
+}
+.avatar-upload .avatar-edit input {
+  display: none;
+}
+.avatar-upload .avatar-edit input + label {
+  display: inline-block;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 0;
+  border-radius: 0%;
+  background: #FFFFFF;
+  border: 1px solid transparent;
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  font-weight: normal;
+  transition: all 0.2s ease-in-out;
+}
+.avatar-upload .avatar-edit input + label:hover {
+  background: #f1f1f1;
+  border-color: #d6d6d6;
+}
+.avatar-upload .avatar-edit input#imageCancel + label#remove:after {
+    content: "\f136";
+    font-size: 1.35em;
+    font-family: Material-Design-Iconic-Font;
+    color: #757575;
+    position: absolute;
+    top: 6px;
+    left: 11px;
+    text-align: center;
+    margin: auto;
+}
+.avatar-upload .avatar-edit input#imageUpload + label#upload:after {
+    content: "\f11f";
+    font-size: 1.35em;
+    font-family: Material-Design-Iconic-Font;
+    color: #757575;
+    position: absolute;
+    top: 6px;
+    right: 11px;
+    text-align: center;
+    margin: auto;
+}
+.avatar-upload .avatar-preview {
+  height: auto;
+  position: relative;
+  border-radius: 0%;
+  border: 6px solid #F8F8F8;
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+}
+    .avatar-upload .avatar-preview > div {
+        width: 100%;
+        height: auto;
+        border-radius: 0%;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+</style>
 <div class="m-l-20 m-t-0">
     <h2>General Information</h2>
     <p>
@@ -26,24 +89,44 @@
     </p>
 </div>
 <hr />
-<div class="panel-body" style="padding-bottom:0">
+<div class="panel-body" style="padding-bottom: 0">
     <div class="col-lg-2 padding-left-0 m-t-15">
+        <div class="avatar-upload">
+            <div class="avatar-edit">
+                <input type='' style="@((!isEditing || employee.ProfilePic == "noimage.jpg")? "display:none" : "")" id="imageCancel" accept=".png, .jpg, .jpeg" onclick="removeImage(this);" />
+                <label id="remove" style="@((!isEditing || employee.ProfilePic == "noimage.jpg")? "display:none" : "")" for="imageCancel"></label>
+                <input type='file' id="imageUpload" value="@(isEditing && employee.ProfilePic != null? employee.ProfilePic : "noimage.jpg")" accept=".png, .jpg, .jpeg" onchange="showpreview(this);" />
+                <label id="upload" for="imageUpload"></label>
+            </div>
+            <div class="avatar-preview">
+                @*<div id="imagePreview" style="background-image: url(/images/@(isEditing? employee.ProfilePic : "noimage.jpg"));">
+                </div>*@
+                <img id="EmpPhoto" src="/Uploads/@(isEditing && employee.ProfilePic != null? employee.ProfilePic : "noimage.jpg")" class="img-responsive padding-5" style="cursor:pointer" />
+            </div>
+        </div>
+        @*<div id='profile-upload'>
+            <div class="hvr-profile-img"><input type="file" name="logo" id='getval' onchange="showpreview(this);" class="upload fa-w-18" title="Dimensions 180 X 180" id="imag"></div>
+            <i class="fa fa-camera"></i>
+        </div>*@
 
-        <img id="EmpPhoto" src="~/img/noimage.jpg" class="img-responsive padding-5" style="cursor:pointer" />
+        @*<img id="EmpPhoto" src="~/images/@(isEditing? employee.ProfilePic : "noimage.jpg")" class="img-responsive padding-5" style="cursor:pointer" />*@
         @*@if (empInfo != null && empInfo.PHOTO != null)
-            {
-                <img id="EmpPhoto" src='@(Url.Content("~")+"Files\\"+ Model.EMP_ID+"\\"+Convert.ToString(empInfo.PHOTO)+"?v="+DateTime.Now.Second.ToString())' class="img-responsive padding-5" style="cursor:pointer" />
-            }
-            else
-            {
-                <img id="EmpPhoto" src="@Url.Content("~")assets/img/noimage.jpg" class="img-responsive padding-5" style="cursor:pointer" />
-            }*@
+        {
+            <img id="EmpPhoto" src='@(Url.Content("~")+"Files\\"+ Model.EMP_ID+"\\"+Convert.ToString(empInfo.PHOTO)+"?v="+DateTime.Now.Second.ToString())' class="img-responsive padding-5" style="cursor:pointer" />
+        }
+        else
+        {
+            <img id="EmpPhoto" src="@Url.Content("~")assets/img/noimage.jpg" class="img-responsive padding-5" style="cursor:pointer" />
+        }*@
 
         @*<input type="hidden" id="PHOTO" name="PHOTO" value="@(empInfo!=null? empInfo.PHOTO : "")" class="form-control">*@
 
-        <div id="divPhoto" style="display:none">
-            <input type="file" id="PIC" name="PIC" class="form-control" />
-        </div>
+        @*<div id="divPhoto" class="form-control" style="display:none">
+            <input type="file" id="PIC" name="PIC" width="100px"  />
+            <div class="col-lg-3">
+                <span class="fas fa-close pull-right"> Remove</span>
+            </div>
+        </div>*@
 
     </div>
     <div id="generalInfo" role="form" class="col-lg-10 padding-right-0">
@@ -52,7 +135,7 @@
                 <div class="col-sm-6" style="padding:0">
                     <div class="form-group">
                         <label class="control-label m-b-5">First Name:</label>
-                        <input type="text" id="firstName" @(isEditing? $"value={employee.FirstName}" : "") name="FirstName" style="width:100% !important" class="text-left form-control inline pull-left" required="">
+                        <input type="text" id="firstName" @((isEditing && employee.FirstName != null)? $"value={(employee.FirstName)}" : "") name="FirstName" style="width:100% !important" class="text-left form-control inline pull-left" required="">
                     </div>
                 </div>
                 <div class="col-sm-6" style="padding:0">
@@ -121,7 +204,7 @@
                 <div class="col-sm-6" style="padding:0">
                     <div class="form-group">
                         <label class="control-label m-b-5 pull-right ">(Hijri date)</label>
-                        <input type="text" id="dobH" @(isEditing? $"value={employee.DOB_H}" : "") name="DOB_H" style="width:100% !important" class="text-right form-control inline DatePickerHijri is-calendarsPicker" autocomplete="off">
+                        <input type="text" id="dobH" @(isEditing && employee.DOB_H != null? $"value={employee.DOB_H}" : "") name="DOB_H" style="width:100% !important" class="text-right form-control inline DatePickerHijri is-calendarsPicker" autocomplete="off">
                     </div>
                 </div>
             </div>
@@ -231,3 +314,40 @@
         </div>
     </div>
 </div>
+
+<script>
+    //Swal.fire("success", "hello", "success");
+
+    function removeImage(e) {
+        $('#imageUpload').val('');
+        $('#imageCancel').hide();
+        $('#remove').hide();
+
+        $('#EmpPhoto').attr('src', '/images/noimage.jpg');
+        $('#EmpPhoto').hide();
+        $('#EmpPhoto').fadeIn(650);
+
+    }
+
+    function showpreview(input) {
+        if (input.files && input.files[0]) {
+
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#imageCancel').show();
+                $('#imageCancel').css('display', '');
+                $('#remove').show();
+
+                $('#EmpPhoto').attr('src', e.target.result);
+                $('#EmpPhoto').hide();
+                $('#EmpPhoto').fadeIn(650);
+            }
+            //reader.onload = function (e) {
+            //    $('#EmpPhoto').css('visibility', 'visible');
+            //    $('#EmpPhoto').attr('src', e.target.result);
+            //}
+            reader.readAsDataURL(input.files[0]);
+        }
+
+    }
+</script>

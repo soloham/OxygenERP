@@ -60,6 +60,8 @@
     <Compile Remove="Migrations\20200306190633_AddedSetupEntities.Designer.cs" />
     <Compile Remove="Migrations\20200308085406_AddedStatusToEmployee.cs" />
     <Compile Remove="Migrations\20200308085406_AddedStatusToEmployee.Designer.cs" />
+    <Compile Remove="Migrations\20200309153348_EmployeeUpdate.cs" />
+    <Compile Remove="Migrations\20200309153348_EmployeeUpdate.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

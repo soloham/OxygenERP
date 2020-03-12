@@ -16,8 +16,10 @@ namespace CERP.AppServices.HR.EmployeeService
     {
         public EmployeeAppService(IRepository<Employee, Guid> repository) : base(repository)
         {
-
+            Repository = repository;
         }
+
+        public IRepository<Employee, Guid> Repository { get; }
 
         public async Task<Employee_Dto> CreateEmployee(Employee_UV_Dto employeee)
         {

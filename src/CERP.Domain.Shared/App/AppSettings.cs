@@ -41,5 +41,9 @@ namespace CERP
         AcademicInstitution,
         [Description("Allowance Type")]
         AllowanceType,
+        [Description("Owner Type")]
+        OwnerType,
+        [Description("Document Type")]
+        DocumentType,
     }
 }

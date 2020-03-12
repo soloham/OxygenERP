@@ -34,8 +34,8 @@ namespace CERP.HR.Employees.DTOs
         public string FamilyName { get; set; }
         public string FamilyNameLocalized { get; set; }
 
-        public DateTime DOB { get; set; }
-        public DateTime DOB_H { get; set; }
+        public string DOB { get; set; }
+        public string DOB_H { get; set; }
 
         public DictionaryValue_Dto POB { get; set; }
         public Guid POB_ID { get; set; }
@@ -56,9 +56,6 @@ namespace CERP.HR.Employees.DTOs
 
         public DictionaryValue_Dto Religion { get; set; }
         public Guid ReligionId { get; set; }
-
-        public DictionaryValue_Dto EmployeeStatus { get; set; }
-        public Guid EmployeeStatusId { get; set; }
         #endregion
 
 
@@ -67,22 +64,21 @@ namespace CERP.HR.Employees.DTOs
 
 
         #region Contract Details
-        public DateTime ContractStartDate { get; set; }
-        public DateTime ContractEndDate { get; set; }
+        public string JoiningDate { get; set; }
+        public string JoiningHDate { get; set; }
+        public string ContractStartDate { get; set; }
+        public string ContractStartHDate { get; set; }
+        public string ContractEndDate { get; set; }
+        public string ContractEndHDate { get; set; }
         public int VacationDays { get; set; }
-        [ForeignKey("ContractStatusId")]
         public DictionaryValue_Dto ContractStatus { get; set; }
         public Guid ContractStatusId { get; set; }
-        [ForeignKey("ContractTypeId")]
         public DictionaryValue_Dto ContractType { get; set; }
         public Guid ContractTypeId { get; set; }
-        [ForeignKey("EmployeeStatusId")]
         public DictionaryValue_Dto EmployeeStatus { get; set; }
         public Guid EmployeeStatusId { get; set; }
-        [ForeignKey("DepartmentId")]
         public Department_Dto Department;
         public Guid DepartmentId { get; set; }
-        [ForeignKey("PositionId")]
         public Position_Dto Position { get; set; }
         public Guid PositionId { get; set; }
         #endregion
@@ -91,6 +87,8 @@ namespace CERP.HR.Employees.DTOs
         public WorkShift_Dto WorkShift { get; set; }
         public int WorkShiftId { get; set; }
         #endregion
+
+        public string ProfilePic { get; set; }
 
         public IDictionary<string, object> ExtraProperties { get; set; } 
     }

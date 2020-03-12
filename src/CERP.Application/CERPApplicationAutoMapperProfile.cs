@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using CERP.App;
+using CERP.CERP.HR.Documents;
 using CERP.FM;
 using CERP.FM.COA;
 using CERP.FM.COA.DTOs;
 using CERP.FM.COA.UV_DTOs;
 using CERP.FM.DTOs;
 using CERP.FM.UV_DTOs;
+using CERP.HR.Documents;
 using CERP.HR.EMPLOYEE.DTOs;
 using CERP.HR.Employees;
 using CERP.HR.Employees.DTOs;
@@ -40,6 +42,9 @@ namespace CERP
             CreateMap<Company, Company_Dto>();
             CreateMap<Company_Dto, Company>();
             CreateMap<Company_UV_Dto, Company>();
+
+            CreateMap<Document, Document_Dto>();
+            CreateMap<Document_Dto, Document>();
 
             CreateMap<Department, Department_Dto>()
                 .ForMember(d => d.Positions, opt => opt.Ignore());

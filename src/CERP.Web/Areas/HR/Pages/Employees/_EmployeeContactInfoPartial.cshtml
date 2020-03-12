@@ -6,7 +6,8 @@
     List<DictionaryValue> cities = (List<DictionaryValue>)ViewData["cities"];
     List<DictionaryValue> contactRelations = (List<DictionaryValue>)ViewData["contactRelations"];
 
-    ContactInformation contactInformation = ((bool)ViewData["IsEditing"] == true) ? (ContactInformation)Model.ContactInformation : null;
+    bool isEditing = (bool)ViewData["IsEditing"];
+    ContactInformation contactInformation = isEditing ? (ContactInformation)Model.ContactInformation : null;
 
 
     List<GridColumn> secondaryContactsColumns = (List<GridColumn>)ViewData["secondaryContactsColumns"];
@@ -46,7 +47,7 @@
                     <div class="col-sm-12" style="padding:0">
                         <div class="form-group">
                             <label class="control-label m-b-5 ">Phone:</label>
-                            <input type="number" id="phoneNo" name="PhoneNumber" @*value="@(empInfo!=null? empInfo.PHONE_NO : "")"*@ style="width:100% !important" class="form-control inline">
+                            <input type="number" value="@(isEditing? contactInformation.PrimaryContact.PhoneNumber : "")" id="phoneNo" name="PhoneNumber" @*value="@(empInfo!=null? empInfo.PHONE_NO : "")"*@ style="width:100% !important" class="form-control inline">
                         </div>
                     </div>
                 </div>
@@ -60,7 +61,7 @@
                     <div class="col-sm-12" style="padding:0">
                         <div class="form-group">
                             <label class="control-label m-b-5 ">Mobile:</label>
-                            <input type="number" id="mobileNo" name="MobileNumber" @*value="@(empInfo!=null? empInfo.PHONE_NO : "")"*@ style="width:100% !important" class="form-control inline">
+                            <input type="number" value="@(isEditing? contactInformation.PrimaryContact.MobileNumber : "")"  id="mobileNo" name="MobileNumber" @*value="@(empInfo!=null? empInfo.PHONE_NO : "")"*@ style="width:100% !important" class="form-control inline">
                         </div>
                     </div>
                 </div>
@@ -74,14 +75,14 @@
                     <div class="col-sm-12" style="padding:0">
                         <div class="form-group">
                             <label class="control-label m-b-5 ">Fax:</label>
-                            <input type="number" id="faxNo" name="FaxNumber" @*value="@(empInfo!=null? empInfo.PHONE_NO : "")"*@ style="width:100% !important" class="form-control inline">
+                            <input type="number" id="faxNo" value="@(isEditing? contactInformation.PrimaryContact.FaxNumber : "")"  name="FaxNumber" @*value="@(empInfo!=null? empInfo.PHONE_NO : "")"*@ style="width:100% !important" class="form-control inline">
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label class="margin-bottom-5  control-label">Email:</label>
-                        <input type="email" id="email" name="Email" @*value="@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                        <input type="email" id="email" value="@(isEditing? contactInformation.PrimaryContact.Email : "")"  name="Email" @*value="@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                     </div>
                 </div>
             </div>
@@ -95,7 +96,7 @@
                             <option></option>
                             @for (int i = 0; i < countries.Count; i++)
                             {
-                                <option value="@countries[i].Id" data-value="@countries[i].Value">@countries[i].Value</option>
+                                <option value="@countries[i].Id" selected="@(isEditing? countries[i].Id == contactInformation.PrimaryContact.CountryId : false)"  data-value="@countries[i].Value">@countries[i].Value</option>
                             }
                         </select>
                     </div>
@@ -113,7 +114,7 @@
                                 <option value="@cities[i].Id" data-value="@cities[i].Value">@cities[i].Value</option>
                             }
                         </select>*@
-                        <input type="text" id="cityId" name="CityId" min="0" @*value="@(empInfo!=null? empInfo.ZIP_CODE : "")"*@ class="form-control">
+                        <input type="text" id="cityId" value="@(isEditing? contactInformation.PrimaryContact.PCity : "")" name="PCity" min="0" @*value="@(empInfo!=null? empInfo.ZIP_CODE : "")"*@ class="form-control">
 
                     </div>
                 </div>
@@ -121,14 +122,14 @@
 
                     <div class="form-group">
                         <label class="margin-bottom-5  control-label">Zip Code:</label>
-                        <input type="number" id="zipCode" name="ZipCode" min="0" @*value="@(empInfo!=null? empInfo.ZIP_CODE : "")"*@ class="form-control">
+                        <input type="number" id="zipCode" value="@(isEditing? contactInformation.PrimaryContact.ZipCode : "")" name="ZipCode" min="0" @*value="@(empInfo!=null? empInfo.ZIP_CODE : "")"*@ class="form-control">
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
 
                     <div class="form-group">
                         <label class="margin-bottom-5  control-label">P.O Box:</label>
-                        <input type="number" id="poBox" name="POBox" min="0" @*value="@(empInfo!=null? empInfo.PO_BOX : "")"*@ class="form-control">
+                        <input type="number" id="poBox" value="@(isEditing? contactInformation.PrimaryContact.POBox : "")" name="POBox" min="0" @*value="@(empInfo!=null? empInfo.PO_BOX : "")"*@ class="form-control">
                     </div>
                 </div>
             </div>
@@ -147,25 +148,25 @@
                     <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5  control-label">Building No:</label>
-                            <input type="text" id="buildingNumber" name="BuildingNumber" @*value="@(empInfo!=null? empInfo.ADD_BUILDING_NO : "")"*@ class="form-control">
+                            <input type="text" id="buildingNumber" value="@(isEditing ? contactInformation.NationalAddress.BuildingNumber : "")" name="BuildingNumber" @*value="@(empInfo!=null? empInfo.ADD_BUILDING_NO : "")"*@ class="form-control">
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5  control-label">Street Name:</label>
-                            <input type="text" id="streetName" name="StreetName" @*value="@(empInfo!=null? empInfo.ADD_STREET_NAME : "")"*@ class="form-control">
+                            <input type="text" id="streetName" value="@(isEditing? contactInformation.NationalAddress.StreetName : "")" name="StreetName" @*value="@(empInfo!=null? empInfo.ADD_STREET_NAME : "")"*@ class="form-control">
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5  control-label">District:</label>
-                            <input type="text" id="addDistrict" name="NADistrict" @*value="@(empInfo!=null? empInfo.ADD_DISTRICT : "")"*@ class="form-control">
+                            <input type="text" id="addDistrict" value="@(isEditing? contactInformation.NationalAddress.NADistrict : "")" name="NADistrict" @*value="@(empInfo!=null? empInfo.ADD_DISTRICT : "")"*@ class="form-control">
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5  control-label">City:</label>
-                            <input type="text" id="addCity" name="NACity" @*value="@(empInfo!=null? empInfo.ADD_CITY : "")"*@ class="form-control">
+                            <input type="text" id="addCity" value="@(isEditing? contactInformation.NationalAddress.NACity : "")" name="NACity" @*value="@(empInfo!=null? empInfo.ADD_CITY : "")"*@ class="form-control">
                         </div>
                     </div>
                 </div>
@@ -176,14 +177,14 @@
                     <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5  control-label">Postal Code:</label>
-                            <input type="text" id="addPostalCode" name="NAPostalCode" @*value="@(empInfo!=null? empInfo.ADD_POSTAL_CODE : "")"*@ class="form-control">
+                            <input type="text" id="addPostalCode" value="@(isEditing? contactInformation.NationalAddress.NAPostalCode : "")" name="NAPostalCode" @*value="@(empInfo!=null? empInfo.ADD_POSTAL_CODE : "")"*@ class="form-control">
                         </div>
                     </div>
 
                     <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5  control-label">Additional Number:</label>
-                            <input type="text" id="addAdditionalNumber" name="NAAdditionalNumber" @*value="@(empInfo!=null? empInfo.ADD_ADDITIONAL_NO : "")"*@ class="form-control">
+                            <input type="text" id="addAdditionalNumber" value="@(isEditing? contactInformation.NationalAddress.NAAdditionalNumber : "")" name="NAAdditionalNumber" @*value="@(empInfo!=null? empInfo.ADD_ADDITIONAL_NO : "")"*@ class="form-control">
                         </div>
                     </div>
 
@@ -219,7 +220,7 @@
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label class="margin-bottom-5  control-label">Contact Relation:</label>
-                        <select id="contactRelationId" name="ContactRelationId" class="form-control" required>
+                        <select id="contactRelationId" name="ContactRelationId" class="form-control">
                             <option></option>
                             @for (int i = 0; i < contactRelations.Count; i++)
                             {

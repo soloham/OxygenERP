@@ -33,6 +33,7 @@ namespace CERP.HR.EMPLOYEE.RougeDTOs
 
         }
 
+        public int Id { get; set; }
         [JsonIgnore]
         private string degree;
         public string GetDegreeValue

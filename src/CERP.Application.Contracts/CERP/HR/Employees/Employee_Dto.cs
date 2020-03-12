@@ -1,3 +1,0 @@
-﻿namespace CERP.HR.Employees
-{
-}

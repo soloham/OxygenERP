@@ -10,6 +10,7 @@ using CERP.App;
 using CERP.HR.Employees;
 using CERP.Setup;
 using CERP.HR.Workshifts;
+using CERP.HR.Documents;
 
 namespace CERP.EntityFrameworkCore
 {
@@ -45,7 +46,7 @@ namespace CERP.EntityFrameworkCore
         public DbSet<DictionaryValue> ValuesDictionary { get; set; }
         public DbSet<DictionaryValueType> ValueTypesDictionary { get; set; }
 
-
+        public DbSet<Document> Documents { get; set; }
         public DbSet<Employee> Employees { get; set; }
 
         public DbSet<WorkShift> WorkShifts { get; set; }

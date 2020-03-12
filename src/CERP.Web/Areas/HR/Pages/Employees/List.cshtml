@@ -10,7 +10,7 @@
     ViewData["IsList"] = false;
     ViewData["IsCreate"] = true;
     ViewData["CreateNewText"] = "Add Employee";
-    ViewData["CreateNewLink"] = "/Employees/Create";
+    ViewData["CreateNewLink"] = "/Employees/Employee";
 
     var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
 }
@@ -124,7 +124,7 @@
         console.log(args);
         if (args.commandColumn.type == "Edit") {
             var params_ = JSON.stringify(args.rowData);  // display row data
-            window.location = "@Url.Content("~")/HR/Employees/Edit/" + args.rowData.Id;
+            window.location = "@Url.Content("~")/HR/Employee/" + args.rowData.Id;
             @*$.ajax({
                 url: "/?handler=EditAccountkj&Guid_=" + params_.Id,
                 async: true,

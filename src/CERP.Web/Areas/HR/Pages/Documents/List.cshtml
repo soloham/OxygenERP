@@ -1,0 +1,625 @@
+﻿@page "/HR/Documents"
+@using CERP;
+@using CERP.App;
+@model CERP.Web.Areas.HR.Pages.Documents.ListModel
+@{
+    ViewData["Title"] = "Documents";
+    ViewData["IconClass"] = "fa fa-user-tie";
+    ViewData["HeaderTitle"] = "DOCUMENTS";
+    ViewData["SubTitle"] = "List of Documents";
+    ViewData["Area"] = "HR";
+
+    ViewData["IsList"] = false;
+    ViewData["IsCreate"] = false;
+    ViewData["CreateNewText"] = "New Document";
+    ViewData["CreateNewLink"] = "/Documents/New";
+
+    List<DictionaryValue> ownerTypes = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.OwnerType).OrderBy(x => x.Key).ToList();
+    List<DictionaryValue> docTypes = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.DocumentType).OrderBy(x => x.Key).ToList();
+    List<DictionaryValue> issuers = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Country).OrderBy(x => x.Key).ToList();
+    List<KeyValuePair<Guid, string>> owners = new List<KeyValuePair<Guid, string>>();
+
+    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+}
+@section styles {
+    <link href="~/libs/syncfusion/ej2-grid/styles/fabric.css" rel="stylesheet" />
+
+    <style>
+        .e-grid .e-headercell {
+            background-color: #f5f5f5;
+            /*font-size: 18px;*/
+        }
+
+        .e-detailcell .e-headercell {
+            background-color: #6691b1 !important;
+            color: rgb(253,253,253);
+            /*font-size: 18px;*/
+        }
+    </style>
+}
+@section scripts {
+    <!-- Syncfusion Essential JS 2 Scripts -->
+    <script src="~/libs/syncfusion/ej2-grid/scripts/ej2.min.js"></script>
+    <script>
+        var isEditing = false;
+        var curEditRow;
+        $(document).ready(function () {
+            function objectifyForm(formArray) {//serialize data function
+                var returnArray = {};
+                for (var i = 0; i < formArray.length; i++){
+                    var curName = formArray[i]['name'];
+                    var newObjIndex = curName.indexOf('.');
+                    if (newObjIndex != -1) {
+                        var objName = curName.substring(0, newObjIndex); 
+                        var propName = curName.substring(newObjIndex + 1);
+                        if (returnArray[objName] == null)
+                            returnArray[objName] = {};
+                        returnArray[objName][propName] = formArray[i]['value'];
+                    }
+                    else
+                        returnArray[curName] = formArray[i]['value'];
+                }
+                return returnArray;
+            }
+            $('#ownerTypeId').on('change', function (e) {
+                console.log("Hello");
+                var ownerType = $('option:selected', '#ownerTypeId').attr('data-value');
+                if (ownerType == 'Employee') {
+                    $("#ownerId").empty();
+                    $("#ownerId").append("<option value=''>Select Owner</option>");
+                    $.getJSON(`?handler=Owners&ownerType=${ownerType}`, (data) => {
+                        
+                        $.each(data.owners, function (i, item) {
+                            $("#ownerId").append(`<option value="${item.key}">${item.value}</option>`);
+                        });
+                        if (selectedOwnerId != null) {
+                            $("#ownerId").val(selectedOwnerId);
+                            selectedOwnerId = null;
+                        }
+                    });
+                }
+            });
+            $('#newDocForm').on('submit', function (e) {
+                e.preventDefault();
+                if (ValidateForm()) {
+                    Swal.showLoading();
+
+                    let form = [];
+                    let generalInfo = $('#newDocForm').find("select, textarea, input").serializeArray();
+                    form = form.concat(generalInfo);
+                    var params = objectifyForm(form);
+                    params.isEditing = isEditing;
+                    console.log(params);
+                    console.log(curEditRow);
+                    if(isEditing)
+                        params.Document.Id = curEditRow.id;
+                    let fileInput = $('#documentInput')[0];
+                    let document = fileInput.files[0];
+
+                    let formData = new FormData();
+                    formData.append("info", JSON.stringify(params));
+                    formData.append("file", document);
+                    var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+                    formData.append("__RequestVerificationToken", xhrToken);
+
+                    $.ajax({
+                        url: "@Url.Content("~")/HR/Documents",
+                        async: true,
+                        type: "POST",
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (data) {
+                            var grid = $("#AllDocumentsGrid")[0].ej2_instances[0];
+                            console.log("Response");
+                            console.log(data);
+                            console.log(params);
+                            //gridSource.push({
+                            //    GetReferenceId: params.ReferenceNo,
+                            //    Description: params.description,
+                            //    Name: params.name,
+                            //    NameLocalized: params.nameLocalized,
+                            //    GetOwnerTypeId: params.ownerTypeId,
+                            //    GetOwnerType: ownerTypeValue,
+                            //    GetDocTypeId: params.documentTypeId,
+                            //    GetDocType: documentTypeValue,
+                            //    GetOwnerId: params.ownerId,
+                            //    GetOwnerName: ownerValue,
+                            //    GetIssuedFromId: params.issuedFromId,
+                            //    GetIssuedFromValue: issuedFromValue,
+                            //    IssueDate: params.issueDate,
+                            //    ExpiryDate: params.expiryDate,
+                            //});
+                            Swal.hideLoading();
+                            if (isEditing) {
+                                curEditRow.name = data.name;
+                                curEditRow.nameLocalized = data.nameLocalized;
+                                curEditRow.description = data.description;
+                                curEditRow.documentType = data.documentType;
+                                curEditRow.ownerType = data.ownerType;
+                                curEditRow.owner = data.owner;
+                                curEditRow.issueDate = data.issueDate;
+                                curEditRow.expiryDate = data.expiryDate;
+                                curEditRow.fileName = data.fileName;
+                                grid.refresh(); // refresh the Grid.
+
+                                swal.fire("Success", "Document has successfully been updated", "success");
+                            }
+                            else {
+                                grid.dataSource.push(data);
+                                grid.refresh(); // refresh the Grid.
+
+                                swal.fire("Success", "Document has successfully been added", "success");
+                            }
+                            //window.location = "@Url.Content("~")/HR/Employees";
+                        },
+                        error: function (err) {
+                            Swal.hideLoading();
+                            if (isEditing)
+                                swal.fire("Failed", "Document couldn't be updated, please fix all errors and try again.", "error");
+                            else
+                                swal.fire("Failed", "Document couldn't be added, please fix all errors and try again.", "error");
+
+                            console.log(err);
+                        }
+                    })
+                }
+                else {
+                    Swal.close();
+                    Swal.hideLoading();
+                }
+            });
+
+            function ValidateForm() {
+                var elmForm = $("#newDocForm");
+                // stepDirection === 'forward' :- this condition allows to do the form validation
+                // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
+                var valid = false;
+                elmForm.validator('validate');
+                if (elmForm) {
+                    //elmForm.validate({
+                    //    submitHandler: function (form) {
+                    //        console.log("Submit")
+                    //        valid = true;
+                    //    },
+                    //    invalidHandler: function (form) {
+                    //        console.log("Invalid")
+                    //        valid = false;
+                    //    }
+                    //})
+                    var elmErr = elmForm.find('.has-error');
+                    if (elmErr) {
+                        if (elmErr.length > 0) {
+                            // Form validation failed
+                            valid = false;
+                        }
+                        else {
+                            valid = true;
+                        }
+                    }
+                }
+                return valid;
+            }
+        });
+
+    </script>
+    <ejs-scripts></ejs-scripts>
+
+}
+<div class="site-content" style="padding:0; background-color: rgb(253,253,253);">
+    <partial name="_DefaultPageHeader" />
+    <div id="toggleAddSection" class="panel-body p-t-0">
+        <div class="row">
+            <div class="col-lg-12">
+                <button id="addSecToggleBtn" type="button" class="btn btn-primary btn-block" onclick="toggleAddSection();">Add New Document</button>
+            </div>
+        </div>
+    </div>
+    <div id="addDocSection" class="panel-body p-t-0" style="display:none;">
+        <div class="m-l-0 m-t-0">
+            <h2 id="addSecTitle">Add Document</h2>
+            <p>
+                Provide details regarding the document
+            </p>
+        </div>
+        <form id="newDocForm" method="post" data-toggle="validator">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    @*<div class="col-sm-3" style="padding:0">
+                            <div class="form-group">
+                                <label class="control-label m-b-5">Code:</label>
+                                <input type="number" id="phoneKey" name="PhoneKey" style="width:100% !important" class="form-control inline pull-left">
+                            </div>
+                        </div>*@
+                    <div class="col-sm-12" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 ">Owner Type:</label>
+                            <select id="ownerTypeId" name="Document.OwnerTypeId" class="form-control" required>
+                                <option></option>
+                                @for (int i = 0; i < ownerTypes.Count; i++)
+                                {
+                                    <option value="@ownerTypes[i].Id" data-value="@ownerTypes[i].Value">@ownerTypes[i].Value</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    @*<div class="col-sm-3" style="padding:0">
+                            <div class="form-group">
+                                <label class="control-label m-b-5">Code:</label>
+                                <input type="number" id="mobileKey" name="MobileKey" style="width:100% !important" class="form-control inline pull-left">
+                            </div>
+                        </div>*@
+                    <div class="col-sm-12" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 ">Document Owner:</label>
+                            <select id="ownerId" name="Document.OwnerId" class="form-control" required>
+                                <option></option>
+                                @for (int i = 0; i < owners.Count; i++)
+                                {
+                                    <option value="@owners[i].Key" data-value="@owners[i].Value">@owners[i].Value</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    @*<div class="col-sm-3" style="padding:0">
+                            <div class="form-group">
+                                <label class="control-label m-b-5">Code:</label>
+                                <input type="number" id="faxKey" name="FaxKey" style="width:100% !important" class="form-control inline pull-left">
+                            </div>
+                        </div>*@
+                    <div class="col-sm-12" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 ">Document Type:</label>
+                            <select id="docTypeId" name="Document.DocumentTypeId" class="form-control" required>
+                                <option></option>
+                                @for (int i = 0; i < docTypes.Count; i++)
+                                {
+                                    <option value="@docTypes[i].Id" data-value="@docTypes[i].Value">@docTypes[i].Value</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5  control-label">Reference #:</label>
+                        <input type="number" id="docRefNo" name="Document.ReferenceNo" @*value="@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix margin-5"></div>
+            <div class="row">
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5  control-label">Document Name:</label>
+                        <input type="text" id="docName" name="Document.Name" @*value="@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5  control-label">Document Name in AR:</label>
+                        <input type="text" id="docNameLocalized" name="Document.NameLocalized" @*value="@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5  control-label">Attachment:</label>
+                        <input type="file" id="documentInput" name="File" @*value="@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5  control-label">Document Description</label>
+                        <input type="text" id="docDesc" name="Document.Description" @*value="@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5  control-label">Issued From:</label>
+                        <select id="issuedFromId" name="Document.IssuedFromId" class="form-control" required>
+                            <option></option>
+                            @for (int i = 0; i < issuers.Count; i++)
+                            {
+                                <option value="@issuers[i].Id" data-value="@issuers[i].Value">@issuers[i].Value</option>
+                            }
+                        </select>                    
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5  control-label">Issued Date:</label>
+                        <input type="text" id="issueDate" name="Document.IssueDate" @*value="@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control DatePicker" required>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5  control-label">Expiry Date:</label>
+                        <input type="text" id="expiryDate" name="Document.ExpiryDate" @*value="@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control DatePicker" required>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <label id="submitAddSectionLabel" class="control-label m-b-5 ">Please review all fields before submitting:</label>
+                    <input id="submitAddSection" type="submit" class="btn btn-primary btn-block" value="Submit Document" required />
+                </div>
+            </div>
+            @*<div class="row">
+                <div class="col-lg-12">
+                    <input id="submitAddSection" type="submit" class="btn btn-primary btn-block" value="Submit Document" required />
+                </div>
+            </div>*@
+        </form>
+    </div>
+</div>
+<div class="site-content" style="padding-top:0; background-color: rgb(253,253,253);">
+    <div class="control-section">
+        <ejs-grid id="AllDocumentsGrid" dataSource="@ViewData["Documents_DS"]" enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()"
+                  dataBound="dataBound" commandClick="commandClick" actionComplete="actionComplete"
+                  allowExcelExport="true" allowGrouping="true" allowPdfExport="true"
+                  hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"
+                  allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                  toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
+                  contextMenuItems="@(new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending","Copy", "Edit", "Delete", "Save", "Cancel","PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage","LastPage", "NextPage"})"
+                  allowPaging="true" allowResizing="true">
+
+            <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
+            <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+            <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+        </ejs-grid>
+    </div>
+</div>
+
+<ejs-dialog id="alert_dialog" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy with Header" content="Atleast one row should be selected to copy with header">
+    <e-dialog-buttons>
+        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+    </e-dialog-buttons>
+</ejs-dialog>
+<ejs-dialog id="alert_dialog_1" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy" content="Atleast one row should be selected to copy">
+    <e-dialog-buttons>
+        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+    </e-dialog-buttons>
+</ejs-dialog>
+
+<script>
+    
+    function actionComplete(args) {
+        if (args.requestType == "save") {
+
+        }
+        else if (args.requestType == "delete")
+        {
+            console.log(args);
+            Swal.showLoading();
+
+            let formData = new FormData();
+            formData.append("documents", JSON.stringify(args.data));
+            var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+            formData.append("__RequestVerificationToken", xhrToken);
+
+            $.ajax({
+                url: '@Url.Content("~")/HR/Documents?handler=Document',
+                async: true,
+                type: "DELETE",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    //console.log(data.success);
+                    swal.fire("Success", "Document has successfully been deleted", "success");
+                    if ($('#addDocSection').css('display') !== 'none') {
+                        $('#addDocSection').slideUp();
+                        $('#toggleAddSection').slideUp(50);
+                        setTimeout(function () {
+                            $('#addSecToggleBtn').html('Add New Document');
+                        }, 50);
+                        $('#toggleAddSection').slideDown(250);
+                    }
+                },
+                error: function (err) {
+                    swal.fire("Failed", "Document couldn't be deleted, please fix all errors and try again.", "error");
+
+                    console.log(err);
+                }
+            });
+        }
+    }
+    var selectedOwnerId;
+    function commandClick(args)
+    {
+        if (args.commandColumn.type == "Edit")
+        {
+            console.log(args);
+            var params = args.rowData;  // display row data
+            curEditRow = args.rowData;
+
+            $('#toggleAddSection').slideUp(50);
+            $('#toggleAddSection').slideDown(250);
+            $('#addDocSection').slideUp(50);
+            $('#addDocSection').slideDown(250);
+
+            $('#submitAddSectionLabel').html('Please review all fields before updating:');
+            $('#submitAddSection').val('Update Document');
+            $('#addSecTitle').html('Update Document');
+
+            setTimeout(function () {
+                $('#addSecToggleBtn').html('Close Section');
+                $('#documentInput').removeAttr('required');
+                $('#docRefNo').removeAttr('readonly');
+                $('#docRefNo').val(params.referenceNo);
+                $('#docRefNo').attr('readonly', 'readonly');
+                $('#docDesc').val(params.description);
+                $('#docName').val(params.name);
+                $('#docNameLocalized').val(params.nameLocalized);
+                $('#ownerTypeId').val(params.ownerTypeId).change();
+                $('#docTypeId').val(params.documentTypeId);
+                selectedOwnerId = params.ownerId;
+                $('#issuedFromId').val(params.issuedFromId);
+                $('#issueDate').val(params.issueDate);
+                $('#expiryDate').val(params.expiryDate);
+
+                isEditing = true;
+            }, 50);
+            //window.location = "@Url.Content("~")/HR/Employee/" + args.rowData.Id;
+            @*$.ajax({
+                url: "/?handler=EditAccountkj&Guid_=" + params_.Id,
+                async: true,
+                type: "GET",
+                data: "",
+                success: function (data) {
+                    console.log(data);
+                    //window.location = "@Url.Content("~")/COA/Edit";
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            })*@
+        }
+        else if (args.commandColumn.type == "View") {
+            console.log(args);
+            var data = args.rowData;
+            var re = /(?:\.([^.]+))?$/;
+            var ext = re.exec(data.fileName)[1];   // "txt"
+            var html = ``;
+            html += `<hr class='m-t-0 p-t-0'/>`
+            if (ext == "jpg" || ext == "jpeg" || ext == "png" || ext == "ico") {
+                html += `<div style="margin: 0px; padding: 0px;height:auto;width:100%;">
+                           <img src="/Uploads/${data.fileName}" style="height: 100%; width: 100%;" />
+                        </div>`
+            }
+            else {
+                html += `<div style="margin: 0px; padding: 0px;height:auto;width:100%;">
+                           <p>The selected document isn't supported for preview. <br/> You may download it and view it locally</p>
+                        </div>`
+            }
+            html += `<hr class='m-b-0 p-b-0'/>`
+            Swal.fire({
+                title: `<strong>${data.name}</strong>`,
+                html: html,
+                showCloseButton: true,
+                showCancelButton: true,
+                focusConfirm: false,
+                confirmButtonText:
+                    `<a style="text-decoration: none; color: white;" id="downlod" download="${data.owner.name}_Document.${ext}" href='/Uploads/${data.fileName}' ><i class="zmdi zmdi-download m-r-5"></i> Download</a>`,
+                  confirmButtonAriaLabel: 'Download Document',
+                  cancelButtonText:
+                    'Close',
+                  cancelButtonAriaLabel: 'Close'
+            }).then((result) => {
+                if (result.value) {
+                    //e.preventDefault();  //stop the browser from following
+                    //top.location.href = `/Uploads/${data.fileName}`;
+                    Swal.fire(
+                        'Downloaded',
+                        'Your file has been downloaded.',
+                        'success'
+                    )
+                }
+            });
+
+
+        }
+        else if (args.commandColumn.type == "Copy") {
+            this.copy(false);
+        }
+    }
+    function downloadDocument(fileName) {
+        console.log(fileName);
+    }
+
+    function toggleAddSection() {
+        if ($('#addDocSection').css('display') == 'none') {
+           $('#toggleAddSection').slideUp(50);
+            setTimeout(function () {
+                $('#addSecToggleBtn').html('Cancel');
+            }, 50);
+            $('#toggleAddSection').slideDown(250);
+
+            $('#addDocSection').slideUp(50);
+            
+            $('#submitAddSectionLabel').html('Please review all fields before submitting:');
+            $('#submitAddSection').val('Submit Document');
+            $('#addSecTitle').html('Add Document');
+
+            setTimeout(function () {
+                $('#documentInput').attr('required', 'required');
+                $('#docRefNo').val(Math.round(Math.random() * 5465445));
+                $('#docRefNo').attr('readonly', 'readonly');
+                $('#docDesc').val('');
+                $('#docName').val('');
+                $('#docNameLocalized').val('');
+                //$("#ownerTypeId").append("<option value=''>Select Owner Type</option>");
+                $('#ownerTypeId').val('').change();
+                $("#ownerId").empty();
+                $('#docTypeId').val('');
+                selectedOwnerId = null;
+                $('#issuedFromId').val('');
+                $('#issueDate').val('');
+                $('#expiryDate').val('');
+
+                isEditing = false;
+            }, 50);
+
+            $('#addDocSection').slideDown(250);
+        }
+        else {
+            $('#addDocSection').slideUp();
+            $('#toggleAddSection').slideUp(50);
+            setTimeout(function () {
+                $('#addSecToggleBtn').html('Add New Document');
+            }, 50);
+            $('#toggleAddSection').slideDown(250);
+        }
+    }
+
+    function onLoad() {
+        this.parentDetails.parentKeyFieldValue = this.parentDetails.parentRowData['Id'];
+    }
+    function toolbarClick(args) {
+        var gridObj = document.getElementById("AllDocumentsGrid").ej2_instances[0];
+        if (args.item.id === 'Grid_pdfexport') {
+            gridObj.pdfExport();
+        }
+        if (args.item.id === 'Grid_excelexport') {
+            gridObj.excelExport();
+        }
+        if (args.item.id === 'Grid_csvexport') {
+            gridObj.csvExport();
+        }
+        if (this.getSelectedRecords().length > 0) {
+            var withHeader = false;
+            if (args.item.id === 'copyHeader') {
+                withHeader = true;
+            }
+            this.copy(withHeader);
+        } else {
+            if (args.item.id === 'copyHeader') {
+                var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+                dialogObj.show();
+            }
+            else if (args.item.id === 'copy') {
+                var dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+                dialogObj.show();
+            }
+        }
+    }
+    function alertBtnClick() {
+        var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+        var dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
+        dialogObj.hide();
+        dialogObj1.hide();
+    }
+    var initial = true;
+    function dataBound(args) {
+        //this.autoFitColumns();
+        //if (initial == true) {
+        //    this.groupModule.collapseAll();
+        //    initial = false;
+        //}
+        //console.log(args);
+    }
+</script>

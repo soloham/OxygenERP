@@ -1,4 +1,5 @@
 ﻿using CERP.App;
+using CERP.AppServices.HR.DepartmentService;
 using Newtonsoft.Json;
 using Syncfusion.EJ2.Linq;
 using System;
@@ -20,11 +21,18 @@ namespace CERP.HR.EMPLOYEE.RougeDTOs
         public IList<Dependant> Dependants { get; set; }
         public IList<PhysicalId<int>> PhysicalIds { get; set; }
 
-        internal void Initialize(IRepository<DictionaryValue, Guid> dictionaryValuesRepo)
+        internal void Initialize(IRepository<DictionaryValue, Guid> dictionaryValuesRepo, documentAppService docAppService)
         {
-            Dependants.ForEach(x => x.DicValuesProxy = dictionaryValuesRepo);
-            PhysicalIds.ForEach(x => x.DicValuesProxy = dictionaryValuesRepo);
-            PhysicalIds.ForEach(x => x.Holder = Dependants.First(x1 => x1.Id == x.ParentId));
+            try
+            {
+                for (int i = 0; i < PhysicalIds.Count; i++)
+                {
+                    PhysicalIds[i].DicValuesProxy = dictionaryValuesRepo;
+                    PhysicalIds[i].DocAppServiceProxy = docAppService;
+                    PhysicalIds[i].Document = PhysicalIds[i].GetDocument;
+                }
+            }
+            catch { }
         }
     }
 

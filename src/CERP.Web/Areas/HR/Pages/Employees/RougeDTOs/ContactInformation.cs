@@ -34,6 +34,8 @@ namespace CERP.HR.EMPLOYEE.RougeDTOs
         [JsonIgnore]
         public IRepository<DictionaryValue, Guid> DicValuesProxy;
 
+        public int Id { get; set; }
+
         [JsonIgnore]
         private string relationType;
         public string GetRelationType
@@ -79,12 +81,14 @@ namespace CERP.HR.EMPLOYEE.RougeDTOs
             set { country = value; }
         }
         public Guid CountryId { get; set; }
-        public string City { get; set; }
+        public string PCity { get; set; }
         public string ZipCode { get; set; }
         public string POBox { get; set; }
     }
     public class NationalAddress
     {
+        public int Id { get; set; }
+
         public string BuildingNumber { get; set; }
         public string StreetName { get; set; }
         public string NADistrict { get; set; }

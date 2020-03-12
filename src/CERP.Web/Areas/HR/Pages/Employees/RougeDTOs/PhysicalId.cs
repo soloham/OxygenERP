@@ -1,9 +1,14 @@
 ﻿using CERP.App;
+using CERP.AppServices.HR.DepartmentService;
+using CERP.CERP.HR.Documents;
+using CERP.HR.Documents;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 
 namespace CERP.HR.EMPLOYEE.RougeDTOs
@@ -12,12 +17,15 @@ namespace CERP.HR.EMPLOYEE.RougeDTOs
     {
         [JsonIgnore]
         public IRepository<DictionaryValue, Guid> DicValuesProxy;
+        [JsonIgnore]
+        public documentAppService DocAppServiceProxy;
 
         public PhysicalId()
         {
 
         }
 
+        public int Id { get; set; }
 
         [JsonIgnore]
         private string idType;
@@ -67,7 +75,33 @@ namespace CERP.HR.EMPLOYEE.RougeDTOs
         public string Sponsor { get; set; }
         public DateTime IssuedDate { get; set; }
         public DateTime EndDate { get; set; }
-        public string IDCopy { get; set; }
+        [JsonIgnore]
+        public Document Document;
+        public Document GetDocument
+        {
+            get
+            {
+                try
+                {
+                    if (SoftCopy != "")
+                    {
+                        Document document = DocAppServiceProxy.Repository.First(x => x.Id == Guid.Parse(SoftCopy));
+                        Document = document;
+                    }
+                }
+                catch(Exception ex) 
+                { 
+                    Document = new Document(); 
+                }
+
+                return Document;
+            }
+            set
+            {
+                Document = value;
+            }
+        }
+        public string SoftCopy { get; set; }
 
 
         [JsonIgnore]
@@ -93,5 +127,6 @@ namespace CERP.HR.EMPLOYEE.RougeDTOs
         [JsonIgnore]
         public Dependant Holder;
         public T ParentId { get; set; }
+        public string GetParentNameLocalized { get; internal set; }
     }
 }

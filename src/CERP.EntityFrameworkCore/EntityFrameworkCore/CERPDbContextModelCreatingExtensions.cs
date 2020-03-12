@@ -1,6 +1,7 @@
 ﻿using CERP.App;
 using CERP.FM;
 using CERP.FM.COA;
+using CERP.HR.Documents;
 using CERP.HR.Employees;
 using CERP.HR.Workshifts;
 using CERP.Setup;
@@ -261,6 +262,10 @@ namespace CERP.EntityFrameworkCore
                 b.HasOne(p => p.MaritalStatus).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.BloodGroup).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.Religion).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(p => p.ContractStatus).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(p => p.ContractType).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(p => p.EmployeeStatus).WithMany().OnDelete(DeleteBehavior.Restrict);
+                //b.HasOne(p => p.Department).WithMany().OnDelete(DeleteBehavior.Restrict);
 
                 b.HasOne(p => p.Position).WithOne(pos => pos.Employee).OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.WorkShift).WithMany(p => p.Employees).OnDelete(DeleteBehavior.Restrict);
@@ -309,6 +314,34 @@ namespace CERP.EntityFrameworkCore
 
                 b.HasOne(x => x.Department).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasMany(p => p.Employees).WithOne().OnDelete(DeleteBehavior.Restrict);
+            });
+            builder.Entity<Document>(b =>
+            {
+                b.ToTable(CERPConsts.HRDbTablePrefix + "Documents", CERPConsts.HRDbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureSoftDelete();
+                b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.Property(x => x.ReferenceNo)
+                    .IsRequired();
+                b.Property(x => x.FileName)
+                    .IsRequired();
+                b.Property(x => x.Name)
+                    .IsRequired();
+                b.Property(x => x.NameLocalized)
+                    .IsRequired();
+                b.Property(x => x.Description)
+                    .IsRequired();
+                b.Property(x => x.IssueDate)
+                    .IsRequired();
+                b.Property(x => x.ExpiryDate)
+                    .IsRequired();
+
+                b.HasOne(x => x.DocumentType).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.OwnerType).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.Owner).WithMany().OnDelete(DeleteBehavior.Restrict);
             });
         }
 
