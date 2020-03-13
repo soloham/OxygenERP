@@ -80,6 +80,10 @@ namespace CERP.Web.Areas.HR.Pages.Employees
             List<Position_Dto> result =  positionAppService.GetPositionByDepartmentId(departmentId);
             return new JsonResult(result);
         }
+        public IActionResult OnGetWorkshifts(Guid departmentId)
+        {
+            return new JsonResult(workShiftsAppService.Repository.Where(x => x.Department.Id == departmentId).ToList());
+        }
         public async Task<IActionResult> OnGet()
         {
             IsEditing = false;

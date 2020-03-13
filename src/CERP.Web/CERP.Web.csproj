@@ -61,7 +61,6 @@
     <Folder Include="Areas\FM\Pages\COA\Categories\" />
     <Folder Include="Areas\FM\Pages\COA\Main\" />
     <Folder Include="Areas\HR\Pages\Timesheet\" />
-    <Folder Include="Areas\HR\Pages\Work Shifts\" />
   </ItemGroup>
 
   <ItemGroup>

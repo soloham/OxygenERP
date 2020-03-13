@@ -104,7 +104,7 @@
         new GridColumn { Field = "GetDocument.Name", Width = "120", HeaderText = "Soft Copy", TextAlign=TextAlign.Center,  MinWidth="10"  },
     };
 
-    ViewData["workShifts"] = (await Model.workShiftsAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
+    ViewData["workShifts"] = new List<string>();
     ViewData["workShiftsColumns"] = new List<GridColumn>() {
         new GridColumn { Field = "WorkShiftId", Width = "10", Visible=false, HeaderText = "Work Shift", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "GetWorkShiftName", Width = "150", HeaderText = "Work Shift", TextAlign=TextAlign.Center,  MinWidth="10"  },
@@ -1317,7 +1317,6 @@
 
            function SelectDepartmentPositions() {
                var departmentId = $("#departmentId").val();
-               console.log("DID: " + departmentId);
                 $("#positionId").empty();
                 $("#positionId").append("<option value=''>Select Position</option>");
                 $.getJSON(`?handler=Positions&departmentId=${departmentId}`, (data) => {
@@ -1328,6 +1327,18 @@
                     if (isEditing) {
                         var positionId = "@((bool)ViewData["IsEditing"]? Model.EmployeeToEdit.PositionId : Guid.Empty)";
                         $("#positionId").val(positionId);
+                    }
+                });
+                $("#workshiftId").empty();
+                $("#workshiftId").append("<option value=''>Select Workshift</option>");
+                $.getJSON(`?handler=Workshifts&departmentId=${departmentId}`, (data) => {
+                    $.each(data, function (i, item) {
+                        $("#workshiftId").append(`<option value="${item.id}">${item.title}</option>`);
+                    });
+
+                    if (isEditing) {
+                        var workshiftId = "@((bool)ViewData["IsEditing"]? Model.EmployeeToEdit.WorkShiftId : 0)";
+                        $("#workshiftId").val(workshiftId);
                     }
                 });
             }

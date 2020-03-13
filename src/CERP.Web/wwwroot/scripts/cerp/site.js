@@ -34,3 +34,21 @@ function initDatePicker() {
 
     console.log("HEYY - " + $('.DatePicker').length)
 }
+
+function objectifyForm(formArray) {//serialize data function
+    var returnArray = {};
+    for (var i = 0; i < formArray.length; i++) {
+        var curName = formArray[i]['name'];
+        var newObjIndex = curName.indexOf('.');
+        if (newObjIndex != -1) {
+            var objName = curName.substring(0, newObjIndex);
+            var propName = curName.substring(newObjIndex + 1);
+            if (returnArray[objName] == null)
+                returnArray[objName] = {};
+            returnArray[objName][propName] = formArray[i]['value'];
+        }
+        else
+            returnArray[curName] = formArray[i]['value'];
+    }
+    return returnArray;
+}

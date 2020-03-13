@@ -4,7 +4,7 @@
 @using CERP.HR.EMPLOYEE.RougeDTOs
 @{
     List<GridColumn> workShiftsColumns = (List<GridColumn>)ViewData["workShiftsColumns"];
-    List<WorkShift_Dto> workShifts = (List<WorkShift_Dto>)ViewData["workShifts"];
+    //List<WorkShift_Dto> workShifts = (List<WorkShift_Dto>)ViewData["workShifts"];
 
 
     WorkShiftDetail workShiftDetail = ((bool)ViewData["IsEditing"] == true) ? (WorkShiftDetail)Model.WorkShiftDetail : null;
@@ -34,10 +34,10 @@
                         <label class="margin-bottom-5  control-label">Work Shift:</label>
                         <select id="workshiftId" name="WorkshiftId" class="form-control" required>
                             <option></option>
-                            @for (int i = 0; i < workShifts.Count; i++)
+                            @*@for (int i = 0; i < workShifts.Count; i++)
                             {
                                 <option value="@workShifts[i].Id" data-value="@workShifts[i].Title" data-startH="@workShifts[i].StartHour" data-endH="@workShifts[i].EndHour">@workShifts[i].Title</option>
-                            }
+                            }*@
                         </select>
                     </div>
                 </div>
