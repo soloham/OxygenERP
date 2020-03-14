@@ -263,6 +263,7 @@ namespace CERP.EntityFrameworkCore
                 b.HasOne(p => p.MaritalStatus).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.BloodGroup).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.Religion).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(p => p.EmployeeType).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.ContractStatus).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.ContractType).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.EmployeeStatus).WithMany().OnDelete(DeleteBehavior.Restrict);

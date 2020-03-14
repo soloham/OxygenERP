@@ -59,6 +59,10 @@ namespace CERP.HR.Employees
         [ForeignKey("ReligionId")]
         public DictionaryValue Religion { get; set; }
         public Guid ReligionId { get; set; }
+
+        [ForeignKey("EmployeeTypeId")]
+        public DictionaryValue EmployeeType { get; set; }
+        public Guid EmployeeTypeId { get; set; }
         #endregion
 
         #region ID & Residence

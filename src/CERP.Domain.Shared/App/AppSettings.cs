@@ -21,6 +21,8 @@ namespace CERP
         BloodGroup,
         [Description("Religion")]
         Religion,
+        [Description("Employee Type")]
+        EmployeeType,
         [Description("ID Type")]
         IDType,
         [Description("Cashflow Statement Type")]

@@ -64,6 +64,10 @@ namespace CERP.HR.Employees.UV_DTOs
         public DictionaryValue_Dto Religion { get; set; }
         [Required]
         public Guid ReligionId { get; set; }
+
+        public DictionaryValue_Dto EmployeeType { get; set; }
+        [Required]
+        public Guid EmployeeTypeId { get; set; }
         #endregion
 
         #region ID & Residence

@@ -56,6 +56,9 @@ namespace CERP.HR.Employees.DTOs
 
         public DictionaryValue_Dto Religion { get; set; }
         public Guid ReligionId { get; set; }
+
+        public DictionaryValue_Dto EmployeeType { get; set; }
+        public Guid EmployeeTypeId { get; set; }
         #endregion
 
 

@@ -11,6 +11,8 @@
     List<DictionaryValue> maritalStatuses = (List<DictionaryValue>)ViewData["maritalStatuses"];
     List<DictionaryValue> booldGroups = (List<DictionaryValue>)ViewData["booldGroups"];
     List<DictionaryValue> religions = (List<DictionaryValue>)ViewData["religions"];
+
+    List<DictionaryValue> employeeTypes = (List<DictionaryValue>)ViewData["employeeTypes"];
 }
 
 
@@ -277,31 +279,31 @@
                 <div class="form-group">
                     <label class="m-b-5  control-label">No. of Dependants:</label>
                     <div>
-                        <input type="number" min="0" id="noOfDependants" @(isEditing? $"value={employee.NoOfDependents}" : "") name="NoOfDependents" value="0" class="form-control" required>
+                        <input type="number" min="0" id="noOfDependants" @(isEditing ? $"value={employee.NoOfDependents}" : "") name="NoOfDependents" value="0" class="form-control" required>
                     </div>
                 </div>
             </div>
 
             @*<div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label class="m-b-5 control-label">Blood Group:</label>
-                        <div>
-                            <select id="bloodGroups" name="BloodGroupId" class="form-control">
-                                <option></option>
-                                @for (int i = 0; i < booldGroups.Count; i++)
-                                {
-                                    <option value="@booldGroups[i].Id">@booldGroups[i].Value</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-                </div>*@
+            <div class="form-group">
+                <label class="m-b-5 control-label">Blood Group:</label>
+                <div>
+                    <select id="bloodGroups" name="BloodGroupId" class="form-control">
+                        <option></option>
+                        @for (int i = 0; i < booldGroups.Count; i++)
+                        {
+                            <option value="@booldGroups[i].Id">@booldGroups[i].Value</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>*@
 
             <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                 <div class="form-group">
                     <label class="m-b-5 control-label">Religion:</label>
                     <div>
-                        <select id="religionId" name="ReligionId" @(isEditing? $"value={employee.ReligionId}" : "") class="form-control" required>
+                        <select id="religionId" name="ReligionId" @(isEditing ? $"value={employee.ReligionId}" : "") class="form-control" required>
                             <option></option>
                             @for (int i = 0; i < religions.Count; i++)
                             {
@@ -309,6 +311,19 @@
                             }
                         </select>
                     </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="margin-bottom-5  control-label">Employee Type:</label>
+                    <select id="employeeTypeId" name="EmployeeTypeId" class="form-control" required>
+                        <option selected hidden></option>
+                        @for (int i = 0; i < employeeTypes.Count; i++)
+                        {
+                            <option value="@employeeTypes[i].Id" selected="@(isEditing? employee.EmployeeTypeId == employeeTypes[i].Id : false)">@employeeTypes[i].Value</option>
+                        }
+                    </select>
                 </div>
             </div>
         </div>
