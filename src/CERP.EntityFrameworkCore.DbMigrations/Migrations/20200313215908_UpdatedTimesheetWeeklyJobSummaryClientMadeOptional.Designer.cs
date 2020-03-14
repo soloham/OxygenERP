@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200313215908_UpdatedTimesheetWeeklyJobSummaryClientMadeOptional")]
+    partial class UpdatedTimesheetWeeklyJobSummaryClientMadeOptional
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -992,8 +994,6 @@ namespace CERP.Migrations
 
                     b.HasIndex("ContractTypeId");
 
-                    b.HasIndex("DepartmentId");
-
                     b.HasIndex("EmployeeStatusId");
 
                     b.HasIndex("GenderId");
@@ -1115,7 +1115,7 @@ namespace CERP.Migrations
                     b.Property<Guid>("ChargeabilityId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ClientId")
+                    b.Property<Guid>("ClientId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -3210,12 +3210,6 @@ namespace CERP.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("CERP.Setup.Department", "Department")
-                        .WithMany()
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("CERP.App.DictionaryValue", "EmployeeStatus")
                         .WithMany()
                         .HasForeignKey("EmployeeStatusId")
@@ -3290,7 +3284,8 @@ namespace CERP.Migrations
                     b.HasOne("CERP.App.DictionaryValue", "Client")
                         .WithMany()
                         .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("CERP.HR.Employees.Employee", "Employee")
                         .WithMany()

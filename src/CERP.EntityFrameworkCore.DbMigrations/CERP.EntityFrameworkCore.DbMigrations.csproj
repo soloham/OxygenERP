@@ -62,6 +62,10 @@
     <Compile Remove="Migrations\20200308085406_AddedStatusToEmployee.Designer.cs" />
     <Compile Remove="Migrations\20200309153348_EmployeeUpdate.cs" />
     <Compile Remove="Migrations\20200309153348_EmployeeUpdate.Designer.cs" />
+    <Compile Remove="Migrations\20200313182108_UpdatedTimesheetAndAddedWeeklyTimesheetsAndRenamedToJobSummary.cs" />
+    <Compile Remove="Migrations\20200313182108_UpdatedTimesheetAndAddedWeeklyTimesheetsAndRenamedToJobSummary.Designer.cs" />
+    <Compile Remove="Migrations\20200313223900_UpdatedEmployeeMadeDepartmentProperty.cs" />
+    <Compile Remove="Migrations\20200313223900_UpdatedEmployeeMadeDepartmentProperty.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

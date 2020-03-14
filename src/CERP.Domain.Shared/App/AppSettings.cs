@@ -45,5 +45,15 @@ namespace CERP
         OwnerType,
         [Description("Document Type")]
         DocumentType,
+        [Description("Service Category")]
+        ServiceCategory,
+        [Description("Service Line Chargeables")]
+        ServiceLineChargeables,
+        [Description("Service Line Non Chargeables")]
+        ServiceLineNonChargeables,
+        [Description("Service Line Admins")]
+        ServiceLineAdmins,
+        [Description("Clients")]
+        Clients,
     }
 }

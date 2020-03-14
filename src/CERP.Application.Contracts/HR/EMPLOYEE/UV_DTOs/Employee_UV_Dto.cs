@@ -90,7 +90,7 @@ namespace CERP.HR.Employees.UV_DTOs
         public DictionaryValue_Dto EmployeeStatus { get; set; }
         [Required]
         public Guid EmployeeStatusId { get; set; }
-        public Department_Dto Department;
+        public Department_Dto Department { get; set; }
         [Required]
         public Guid DepartmentId { get; set; }
         public Position_Dto Position { get; set; }

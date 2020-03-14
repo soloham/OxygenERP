@@ -2,6 +2,7 @@
 using CERP.FM.COA;
 using CERP.HR.Documents;
 using CERP.HR.Employees;
+using CERP.HR.Timesheets;
 using CERP.HR.Workshifts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -99,6 +100,12 @@ namespace CERP.EntityFrameworkCore
                                                        .Include(p => p.DocumentType)
                                                        .Include(p => p.Owner)
                                                        .Include(p => p.IssuedFrom);
+                });
+
+                options.Entity<Timesheet>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.WeeklySummaries).ThenInclude(x => (x as TimesheetWeekSummary).WeeklyJobSummaries)
+                                                       .Include(p => p.Employee).ThenInclude(p => p.Department);
                 });
             });
 

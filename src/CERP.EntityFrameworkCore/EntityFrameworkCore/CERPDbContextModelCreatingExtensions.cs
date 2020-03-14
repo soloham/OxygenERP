@@ -3,6 +3,7 @@ using CERP.FM;
 using CERP.FM.COA;
 using CERP.HR.Documents;
 using CERP.HR.Employees;
+using CERP.HR.Timesheets;
 using CERP.HR.Workshifts;
 using CERP.Setup;
 using Microsoft.EntityFrameworkCore;
@@ -265,7 +266,7 @@ namespace CERP.EntityFrameworkCore
                 b.HasOne(p => p.ContractStatus).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.ContractType).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.EmployeeStatus).WithMany().OnDelete(DeleteBehavior.Restrict);
-                //b.HasOne(p => p.Department).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(p => p.Department).WithMany().OnDelete(DeleteBehavior.Restrict);
 
                 b.HasOne(p => p.Position).WithOne(pos => pos.Employee).OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.WorkShift).WithMany(p => p.Employees).OnDelete(DeleteBehavior.Restrict);
@@ -342,6 +343,138 @@ namespace CERP.EntityFrameworkCore
                 b.HasOne(x => x.DocumentType).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(x => x.OwnerType).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(x => x.Owner).WithMany().OnDelete(DeleteBehavior.Restrict);
+            });
+
+            builder.Entity<Timesheet>(b =>
+            {
+                b.ToTable(CERPConsts.HRDbTablePrefix + "Timesheets", CERPConsts.HRDbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureSoftDelete();
+                b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.Property(x => x.Year)
+                    .IsRequired();
+                b.Property(x => x.Month)
+                    .IsRequired();
+
+                b.Property(x => x.Week1Hours)
+                    .IsRequired();
+                b.Property(x => x.Week2Hours)
+                    .IsRequired();     
+                b.Property(x => x.Week3Hours)
+                    .IsRequired();     
+                b.Property(x => x.Week4Hours)
+                    .IsRequired();     
+                b.Property(x => x.Week5Hours)
+                    .IsRequired();
+
+                b.Property(x => x.TotalMonthHours)
+                    .IsRequired();
+
+                b.Property(x => x.IsPosted)
+                    .IsRequired();
+                b.Property(x => x.Dated)
+                    .IsRequired();
+
+                b.HasOne(x => x.Employee).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasMany(x => x.WeeklySummaries).WithOne(e => e.Timesheet).OnDelete(DeleteBehavior.Restrict);
+            });
+            builder.Entity<TimesheetWeekSummary>(b =>
+            {
+                b.ToTable(CERPConsts.HRDbTablePrefix + "WeeklyTimesheets", CERPConsts.HRDbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureSoftDelete();
+                b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.Property(x => x.TimesheetId)
+                    .IsRequired();
+                b.Property(x => x.EmployeeId)
+                    .IsRequired();
+
+                b.Property(x => x.Week)
+                    .IsRequired();
+
+                b.Property(x => x.SumSun)
+                    .IsRequired();
+                b.Property(x => x.SumMon)
+                    .IsRequired();
+                b.Property(x => x.SumTue)
+                    .IsRequired();
+                b.Property(x => x.SumWed)
+                    .IsRequired();
+                b.Property(x => x.SumThu)
+                    .IsRequired();
+                b.Property(x => x.SumFri)
+                    .IsRequired();
+                b.Property(x => x.SumSat)
+                    .IsRequired();
+
+                b.Property(x => x.TotalWeekHours)
+                    .IsRequired();
+
+                b.Property(x => x.IsSubmitted)
+                    .IsRequired();
+                b.Property(x => x.Dated)
+                    .IsRequired();
+
+                b.HasOne(x => x.Timesheet).WithMany(t => t.WeeklySummaries).OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.Employee).WithMany().OnDelete(DeleteBehavior.Restrict);
+            });
+            builder.Entity<TimesheetWeekJobSummary>(b =>
+            {
+                b.ToTable(CERPConsts.HRDbTablePrefix + "WeeklyTimesheetsJobs", CERPConsts.HRDbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureSoftDelete();
+                b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.Property(x => x.WeekSheetId)
+                    .IsRequired();
+                b.Property(x => x.EmployeeId)
+                    .IsRequired();
+
+                b.Property(x => x.ChargeabilityId)
+                    .IsRequired();
+                b.Property(x => x.ServiceLineId)
+                    .IsRequired();
+                b.Property(x => x.ClientId)
+                    .IsRequired(false);
+                
+                b.Property(x => x.Week)
+                    .IsRequired();
+
+                b.Property(x => x.Sun)
+                    .IsRequired();
+                b.Property(x => x.Mon)
+                    .IsRequired();
+                b.Property(x => x.Tue)
+                    .IsRequired();
+                b.Property(x => x.Wed)
+                    .IsRequired();
+                b.Property(x => x.Thu)
+                    .IsRequired();
+                b.Property(x => x.Fri)
+                    .IsRequired();
+                b.Property(x => x.Sat)
+                    .IsRequired();
+
+                b.Property(x => x.TotalJobWeekHours)
+                    .IsRequired();
+
+                b.Property(x => x.IsSubmitted)
+                    .IsRequired();
+
+                b.HasOne(x => x.WeekSheet).WithMany(t => t.WeeklyJobSummaries).OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.Employee).WithMany().OnDelete(DeleteBehavior.Restrict);
+
+                b.HasOne(x => x.Chargeability).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.ServiceLine).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.Client).WithMany().OnDelete(DeleteBehavior.Restrict);
             });
         }
 

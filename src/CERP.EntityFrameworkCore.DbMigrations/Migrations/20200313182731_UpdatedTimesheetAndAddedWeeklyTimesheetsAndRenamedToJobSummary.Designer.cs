@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200313182731_UpdatedTimesheetAndAddedWeeklyTimesheetsAndRenamedToJobSummary")]
+    partial class UpdatedTimesheetAndAddedWeeklyTimesheetsAndRenamedToJobSummary
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -992,8 +994,6 @@ namespace CERP.Migrations
 
                     b.HasIndex("ContractTypeId");
 
-                    b.HasIndex("DepartmentId");
-
                     b.HasIndex("EmployeeStatusId");
 
                     b.HasIndex("GenderId");
@@ -1112,12 +1112,6 @@ namespace CERP.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<Guid>("ChargeabilityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ClientId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnName("ConcurrencyStamp")
@@ -1161,9 +1155,6 @@ namespace CERP.Migrations
                     b.Property<bool>("IsSubmitted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("JobInWeekId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnName("LastModificationTime")
                         .HasColumnType("datetime2");
@@ -1180,9 +1171,6 @@ namespace CERP.Migrations
 
                     b.Property<int>("Sat")
                         .HasColumnType("int");
-
-                    b.Property<Guid>("ServiceLineId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Sun")
                         .HasColumnType("int");
@@ -1210,13 +1198,7 @@ namespace CERP.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChargeabilityId");
-
-                    b.HasIndex("ClientId");
-
                     b.HasIndex("EmployeeId");
-
-                    b.HasIndex("ServiceLineId");
 
                     b.HasIndex("WeekSheetId");
 
@@ -3210,12 +3192,6 @@ namespace CERP.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("CERP.Setup.Department", "Department")
-                        .WithMany()
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("CERP.App.DictionaryValue", "EmployeeStatus")
                         .WithMany()
                         .HasForeignKey("EmployeeStatusId")
@@ -3281,26 +3257,9 @@ namespace CERP.Migrations
 
             modelBuilder.Entity("CERP.HR.Timesheets.TimesheetWeekJobSummary", b =>
                 {
-                    b.HasOne("CERP.App.DictionaryValue", "Chargeability")
-                        .WithMany()
-                        .HasForeignKey("ChargeabilityId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CERP.App.DictionaryValue", "Client")
-                        .WithMany()
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("CERP.HR.Employees.Employee", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CERP.App.DictionaryValue", "ServiceLine")
-                        .WithMany()
-                        .HasForeignKey("ServiceLineId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 

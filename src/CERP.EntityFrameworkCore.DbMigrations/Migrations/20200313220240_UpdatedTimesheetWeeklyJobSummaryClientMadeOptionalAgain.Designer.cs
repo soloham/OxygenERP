@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200313220240_UpdatedTimesheetWeeklyJobSummaryClientMadeOptionalAgain")]
+    partial class UpdatedTimesheetWeeklyJobSummaryClientMadeOptionalAgain
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -991,8 +993,6 @@ namespace CERP.Migrations
                     b.HasIndex("ContractStatusId");
 
                     b.HasIndex("ContractTypeId");
-
-                    b.HasIndex("DepartmentId");
 
                     b.HasIndex("EmployeeStatusId");
 
@@ -3207,12 +3207,6 @@ namespace CERP.Migrations
                     b.HasOne("CERP.App.DictionaryValue", "ContractType")
                         .WithMany()
                         .HasForeignKey("ContractTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CERP.Setup.Department", "Department")
-                        .WithMany()
-                        .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 

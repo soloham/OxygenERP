@@ -11,6 +11,7 @@ using CERP.HR.Employees;
 using CERP.Setup;
 using CERP.HR.Workshifts;
 using CERP.HR.Documents;
+using CERP.HR.Timesheets;
 
 namespace CERP.EntityFrameworkCore
 {
@@ -46,10 +47,13 @@ namespace CERP.EntityFrameworkCore
         public DbSet<DictionaryValue> ValuesDictionary { get; set; }
         public DbSet<DictionaryValueType> ValueTypesDictionary { get; set; }
 
-        public DbSet<Document> Documents { get; set; }
         public DbSet<Employee> Employees { get; set; }
-
+        public DbSet<Document> Documents { get; set; }
         public DbSet<WorkShift> WorkShifts { get; set; }
+
+        public DbSet<Timesheet> TimeSheets { get; set; }
+        public DbSet<TimesheetWeekSummary> WeeklySheets { get; set; }
+        public DbSet<TimesheetWeekJobSummary> WeeklySheetsJobs { get; set; }
 
         public CERPDbContext(DbContextOptions<CERPDbContext> options)
             : base(options)

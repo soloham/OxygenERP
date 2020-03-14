@@ -12,6 +12,7 @@ using CERP.HR.EMPLOYEE.DTOs;
 using CERP.HR.Employees;
 using CERP.HR.Employees.DTOs;
 using CERP.HR.Employees.UV_DTOs;
+using CERP.HR.Timesheets;
 using CERP.HR.Workshifts;
 using CERP.Setup;
 using CERP.Setup.DTOs;
@@ -46,9 +47,9 @@ namespace CERP
             CreateMap<Document, Document_Dto>();
             CreateMap<Document_Dto, Document>();
 
-            CreateMap<Department, Department_Dto>()
+            CreateMap<Department, Department_Dto>().MaxDepth(1)
                 .ForMember(d => d.Positions, opt => opt.Ignore());
-            CreateMap<Department_Dto, Department>()
+            CreateMap<Department_Dto, Department>().MaxDepth(1)
                 .ForMember(d => d.Positions, opt => opt.Ignore());
             CreateMap<Department_UV_Dto, Department>()
                 .ForMember(d => d.Positions, opt => opt.Ignore());
@@ -100,6 +101,13 @@ namespace CERP
 
             CreateMap<WorkShift, WorkShift_Dto>();
             CreateMap<WorkShift_Dto, WorkShift>();
+
+            CreateMap<Timesheet, Timesheet_Dto>();
+            CreateMap<Timesheet_Dto, Timesheet>();
+            CreateMap<TimesheetWeekSummary, TimesheetWeekSummary_Dto>().ForMember(d => d.Timesheet, opt => opt.Ignore());
+            CreateMap<TimesheetWeekSummary_Dto, TimesheetWeekSummary>().ForMember(d => d.Timesheet, opt => opt.Ignore());
+            CreateMap<TimesheetWeekJobSummary, TimesheetWeekJobSummary_Dto>().ForMember(d => d.WeekSheet, opt => opt.Ignore());
+            CreateMap<TimesheetWeekJobSummary_Dto, TimesheetWeekJobSummary>().ForMember(d => d.WeekSheet, opt => opt.Ignore());
         }
     }
 }

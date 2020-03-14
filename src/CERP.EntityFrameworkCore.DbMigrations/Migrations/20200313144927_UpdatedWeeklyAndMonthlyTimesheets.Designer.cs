@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200313144927_UpdatedWeeklyAndMonthlyTimesheets")]
+    partial class UpdatedWeeklyAndMonthlyTimesheets
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -992,8 +994,6 @@ namespace CERP.Migrations
 
                     b.HasIndex("ContractTypeId");
 
-                    b.HasIndex("DepartmentId");
-
                     b.HasIndex("EmployeeStatusId");
 
                     b.HasIndex("GenderId");
@@ -1036,6 +1036,63 @@ namespace CERP.Migrations
                         .HasColumnName("CreatorId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnName("DeleterId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnName("DeletionTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnName("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnName("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId")
+                        .IsUnique();
+
+                    b.ToTable("Timesheets","HR");
+                });
+
+            modelBuilder.Entity("CERP.HR.Timesheets.TimesheetMonthSummary", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnName("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnName("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("Dated")
                         .HasColumnType("datetime2");
 
@@ -1049,9 +1106,6 @@ namespace CERP.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("EmployeeId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ExtraProperties")
                         .HasColumnName("ExtraProperties")
@@ -1077,132 +1131,25 @@ namespace CERP.Migrations
                     b.Property<int>("Month")
                         .HasColumnType("int");
 
+                    b.Property<int>("TimesheetId")
+                        .HasColumnType("int");
+
                     b.Property<int>("TotalMonthHours")
                         .HasColumnType("int");
 
-                    b.Property<int>("Week1Hours")
+                    b.Property<int>("Week1")
                         .HasColumnType("int");
 
-                    b.Property<int>("Week2Hours")
+                    b.Property<int>("Week2")
                         .HasColumnType("int");
 
-                    b.Property<int>("Week3Hours")
+                    b.Property<int>("Week3")
                         .HasColumnType("int");
 
-                    b.Property<int>("Week4Hours")
+                    b.Property<int>("Week4")
                         .HasColumnType("int");
 
-                    b.Property<int>("Week5Hours")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.ToTable("Timesheets","HR");
-                });
-
-            modelBuilder.Entity("CERP.HR.Timesheets.TimesheetWeekJobSummary", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<Guid>("ChargeabilityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ClientId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnName("ConcurrencyStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnName("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnName("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnName("DeleterId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnName("DeletionTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("EmployeeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnName("ExtraProperties")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Fri")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsChargeable")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("IsDeleted")
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<bool>("IsSubmitted")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("JobInWeekId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnName("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnName("LastModifierId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Mon")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Month")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Sat")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("ServiceLineId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Sun")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Thu")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TotalJobWeekHours")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Tue")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Wed")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Week")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WeekSheetId")
+                    b.Property<int>("Week5")
                         .HasColumnType("int");
 
                     b.Property<int>("Year")
@@ -1210,17 +1157,9 @@ namespace CERP.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChargeabilityId");
+                    b.HasIndex("TimesheetId");
 
-                    b.HasIndex("ClientId");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.HasIndex("ServiceLineId");
-
-                    b.HasIndex("WeekSheetId");
-
-                    b.ToTable("WeeklyTimesheetsJobs","HR");
+                    b.ToTable("MonthlyTimesheets","HR");
                 });
 
             modelBuilder.Entity("CERP.HR.Timesheets.TimesheetWeekSummary", b =>
@@ -1243,8 +1182,26 @@ namespace CERP.Migrations
                         .HasColumnName("CreatorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("Dated")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("Day1")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Day2")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Day3")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Day4")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Day5")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Day6")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Day7")
+                        .HasColumnType("int");
 
                     b.Property<Guid?>("DeleterId")
                         .HasColumnName("DeleterId")
@@ -1254,15 +1211,12 @@ namespace CERP.Migrations
                         .HasColumnName("DeletionTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("EmployeeId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("ExtraProperties")
                         .HasColumnName("ExtraProperties")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsChargeable")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -1270,7 +1224,7 @@ namespace CERP.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<bool>("IsSubmitted")
+                    b.Property<bool>("IsPosted")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
@@ -1281,31 +1235,7 @@ namespace CERP.Migrations
                         .HasColumnName("LastModifierId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Month")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SumFri")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SumMon")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SumSat")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SumSun")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SumThu")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SumTue")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SumWed")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TimesheetId")
+                    b.Property<int>("MonthSheetId")
                         .HasColumnType("int");
 
                     b.Property<int>("TotalWeekHours")
@@ -1314,14 +1244,9 @@ namespace CERP.Migrations
                     b.Property<int>("Week")
                         .HasColumnType("int");
 
-                    b.Property<int>("Year")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("EmployeeId");
-
-                    b.HasIndex("TimesheetId");
+                    b.HasIndex("MonthSheetId");
 
                     b.ToTable("WeeklyTimesheets","HR");
                 });
@@ -3210,12 +3135,6 @@ namespace CERP.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("CERP.Setup.Department", "Department")
-                        .WithMany()
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("CERP.App.DictionaryValue", "EmployeeStatus")
                         .WithMany()
                         .HasForeignKey("EmployeeStatusId")
@@ -3273,55 +3192,26 @@ namespace CERP.Migrations
             modelBuilder.Entity("CERP.HR.Timesheets.Timesheet", b =>
                 {
                     b.HasOne("CERP.HR.Employees.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
+                        .WithOne()
+                        .HasForeignKey("CERP.HR.Timesheets.Timesheet", "EmployeeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CERP.HR.Timesheets.TimesheetWeekJobSummary", b =>
+            modelBuilder.Entity("CERP.HR.Timesheets.TimesheetMonthSummary", b =>
                 {
-                    b.HasOne("CERP.App.DictionaryValue", "Chargeability")
-                        .WithMany()
-                        .HasForeignKey("ChargeabilityId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CERP.App.DictionaryValue", "Client")
-                        .WithMany()
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("CERP.HR.Employees.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CERP.App.DictionaryValue", "ServiceLine")
-                        .WithMany()
-                        .HasForeignKey("ServiceLineId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CERP.HR.Timesheets.TimesheetWeekSummary", "WeekSheet")
-                        .WithMany("WeeklyJobSummaries")
-                        .HasForeignKey("WeekSheetId")
+                    b.HasOne("CERP.HR.Timesheets.Timesheet", "Timesheet")
+                        .WithMany("MonthlySummaries")
+                        .HasForeignKey("TimesheetId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
             modelBuilder.Entity("CERP.HR.Timesheets.TimesheetWeekSummary", b =>
                 {
-                    b.HasOne("CERP.HR.Employees.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CERP.HR.Timesheets.Timesheet", "Timesheet")
+                    b.HasOne("CERP.HR.Timesheets.TimesheetMonthSummary", "MonthSheet")
                         .WithMany("WeeklySummaries")
-                        .HasForeignKey("TimesheetId")
+                        .HasForeignKey("MonthSheetId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

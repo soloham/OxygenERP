@@ -1,0 +1,279 @@
+﻿@page "/HR/Timesheets/Edit"
+@using CERP.HR.Employees.DTOs;
+@model CERP.Web.Areas.HR.Pages.TimeSheets.EditModel
+@{
+    ViewData["Title"] = "Timesheets";
+    ViewData["IconClass"] = "fa fa-user-tie";
+    ViewData["HeaderTitle"] = "TIMESHEETS";
+    ViewData["SubTitle"] = "Weekly Timesheet";
+    ViewData["Area"] = "HR";
+
+    ViewData["IsList"] = false;
+    ViewData["IsCreate"] = false;
+    ViewData["CreateNewText"] = "Edit Timesheet";
+    ViewData["CreateNewLink"] = "/Timesheets/Edit";
+
+ List<Employee_Dto> employees = Model.GetEmployees();
+
+ var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+}
+@section styles {
+    <link href="~/libs/syncfusion/ej2-grid/styles/fabric.css" rel="stylesheet" />
+
+    <style>
+        .e-grid .e-headercell {
+            background-color: #f5f5f5;
+            /*font-size: 18px;*/
+        }
+
+        .e-detailcell .e-headercell {
+            background-color: #6691b1 !important;
+            color: rgb(253,253,253);
+            /*font-size: 18px;*/
+        }
+    </style>
+}
+@section scripts {
+    <!-- Syncfusion Essential JS 2 Scripts -->
+    <script src="~/libs/syncfusion/ej2-grid/scripts/ej2.min.js"></script>
+    <script>
+        var isEditing = false;
+        var curEditRow;
+        $(document).ready(function () {
+            $('#newTimesheetForm').on('submit', function (e) {
+                e.preventDefault();
+                if (ValidateForm()) {
+                    Swal.showLoading();
+
+                    let form = [];
+                    let generalInfo = $('#newTimesheetForm').find("select, textarea, input").serializeArray();
+                    form = form.concat(generalInfo);
+                    var params = objectifyForm(form);
+                    params.isEditing = isEditing;
+
+                    if (isEditing)
+                        params.Id = curEditRow.id;
+
+                    let formData = new FormData();
+                    formData.append("info", JSON.stringify(params));
+                    var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+                    formData.append("__RequestVerificationToken", xhrToken);
+
+                    $.ajax({
+                        url: "@Url.Content("~")/HR/Workshifts",
+                        async: true,
+                        type: "POST",
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (data) {
+                            var grid = $("#TimesheetsGrid")[0].ej2_instances[0];
+                            console.log("Response");
+                            console.log(data);
+                            console.log(params);
+                            Swal.hideLoading();
+                            if (isEditing) {
+                                curEditRow.id = data.id;
+                                curEditRow.title = data.title;
+                                curEditRow.department.name = data.department.name;
+                                curEditRow.startHour = data.startHour;
+                                curEditRow.endHour = data.endHour;
+
+                                grid.refresh(); // refresh the Grid.
+
+                                swal.fire("Success", "Workshift has successfully been updated", "success");
+                            }
+                            else {
+                                grid.dataSource.push(data);
+                                grid.refresh(); // refresh the Grid.
+
+                                swal.fire("Success", "Workshift has successfully been added", "success");
+                            }
+                            //window.location = "@Url.Content("~")/HR/Employees";
+                        },
+                        error: function (err) {
+                            Swal.hideLoading();
+                            if (isEditing)
+                                swal.fire("Failed", "Workshift couldn't be updated, please fix all errors and try again.", "error");
+                            else
+                                swal.fire("Failed", "Workshift couldn't be added, please fix all errors and try again.", "error");
+
+                            console.log(err);
+                        }
+                    })
+                }
+                else {
+                    Swal.close();
+                    Swal.hideLoading();
+                }
+            });
+
+            function ValidateForm() {
+                var elmForm = $("#newTimesheetForm");
+                // stepDirection === 'forward' :- this condition allows to do the form validation
+                // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
+                var valid = false;
+                elmForm.validator('validate');
+                if (elmForm) {
+                    //elmForm.validate({
+                    //    submitHandler: function (form) {
+                    //        console.log("Submit")
+                    //        valid = true;
+                    //    },
+                    //    invalidHandler: function (form) {
+                    //        console.log("Invalid")
+                    //        valid = false;
+                    //    }
+                    //})
+                    var elmErr = elmForm.find('.has-error');
+                    if (elmErr) {
+                        if (elmErr.length > 0) {
+                            // Form validation failed
+                            valid = false;
+                        }
+                        else {
+                            valid = true;
+                        }
+                    }
+                }
+                return valid;
+            }
+        });
+
+    </script>
+    <ejs-scripts></ejs-scripts>
+
+}
+<div class="site-content" style="padding:0; background-color: rgb(253,253,253);">
+    <partial name="_DefaultPageHeader" />
+</div>
+<div class="site-content" style="padding-top:0; background-color: rgb(253,253,253);">
+    <div class="well" style="background-color: white">
+        <div>
+            <h3 class="m-t-0 p-t-0">
+                Timesheet Period
+            </h3>
+        </div>
+        <div>
+            <hr class="margin-top-0 margin-bottom-5">
+
+
+            <div id="divSearch" class="">
+
+
+                <div class="row">
+                    <div class="col-md-2">
+                        <h4>Year</h4>
+
+                        <select id="yearId" name="Year" class="form-control">
+                            @for (int i = DateTime.Now.Year; i >= DateTime.Now.Year - 5; i--)
+                            {
+                                @: <option @(ViewData["defYear"] != null && (int)ViewData["defYear"] == i? "selected" : "") value="@i">@i</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <h4>Month</h4>
+                        <select id="month" name="Month" class="form-control">
+                            @for (int i = 1; i <= 12; i++)
+                            {
+                                @: <option @(ViewData["defMonth"] != null && (int)ViewData["defMonth"] == i? "selected" : "") value="@i" )>
+                                @:    @(Convert.ToDateTime(i.ToString() + "/1/1990").ToString("MMMM"))
+                                @: </option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <h4>Week</h4>
+                        <select id="weekId" name="Week" class="form-control">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                @: <option @(ViewData["defWeek"] != null && (int)ViewData["defWeek"] == i? "selected" : "") value="@i">Week @i </option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <h4>Employee</h4>
+                        <select id="employeeId" name="EmployeeId" class="form-control">
+                            @foreach (var item in employees)
+                            {
+                                @: <option @(ViewData["defEmpId"] != null && (Guid)ViewData["defEmpId"] == item.Id? "selected" : "") value="@item.Id">
+                                @:     @item.FirstName @item.MiddleName @item.LastName
+                                @: </option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="control-section">
+        <div id="divLines"></div>
+        @*<partial name="_Weeksheet" />*@
+    </div>
+
+    <div class="well" style="background-color: white; margin-top:20px">
+        <div>
+            <h2 class="m-t-0">
+                Note:
+            </h2>
+        </div>
+        <div>
+            <hr class="margin-top-5 margin-bottom-10">
+            <div>
+                <ol>
+                    <li>We are required to complete <b>45 hours</b> per week. Our working week is from <b>Sunday</b> to <b>Thursday</b> with weekend on <b>Friday</b> and <b>Saturday</b></li>
+                    <li>For each week please input the Week number only from the list given in the tab. Please click on the tab above.</li>
+                    <li>Please have separte line for each client and each engagement. Please use additional lines in the table above as necessary.</li>
+                    <li>Please choose whether the hours were spent on chargeable work or Non-chargeable</li>
+                    <li>Please appropriately choose the Services line or the reason of non-chargeable work from the drop down list</li>
+                    <li>Please provide the complete name of the client. If you select no-Chargeable in the previous column then you are not required to complete the Client Name.</li>
+                    <li>The Engagementcolumn should have suffificent detail of the type whether it is for example preparation of Zakat Return, Audit Planning of XYZ Client, IFRS Conversion for ABC Client etc. if you select non-Chargeable in the previous</li>
+                    <li>You are required to inform the Engagement Executive if you are going to work on Friday or Saturday</li>
+                    <li>Please put hours ranging from 0 to 24 hours. If you have worked on an engagement for 30 minutes for example, then use 0.5 hours in the cell.</li>
+                    <li>Please submit the timesheet by <b>6pm Saturday</b> of each week to <b>Tahir Ameen</b> (<a href="mailto:tahir.ameen@lyca.com.sa">tahir.ameen@lyca.com.sa</a>)</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ejs-dialog id="alert_dialog" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy with Header" content="Atleast one row should be selected to copy with header">
+    <e-dialog-buttons>
+        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+    </e-dialog-buttons>
+</ejs-dialog>
+<ejs-dialog id="alert_dialog_1" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy" content="Atleast one row should be selected to copy">
+    <e-dialog-buttons>
+        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+    </e-dialog-buttons>
+</ejs-dialog>
+
+<script>
+    $(document).ready(function () {
+        loadHourSheet();
+    });
+
+    $('#divSearch').find('input,select').change(function () {
+        loadHourSheet();
+    });
+
+    function loadHourSheet() {
+
+        var params = $('#divSearch').find('input,select').serialize();
+        $('#divLines').html('<h5 class="margin-0"><p><i class="fa fa-spinner fa-spin fa-fw"></i> Please wait while data is loading...</p></h5>');
+
+        $.ajax({
+            url: '@Url.Content("~")/HR/Timesheets/Edit?handler=Weeksheet',
+            async: true,
+            type: "GET",
+            data: params,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                $('#divLines').html(data);
+            }
+        })
+    }
+</script>

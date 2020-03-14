@@ -82,7 +82,7 @@ namespace CERP.HR.Employees
         public DictionaryValue EmployeeStatus { get; set; }
         public Guid EmployeeStatusId { get; set; }
         [ForeignKey("DepartmentId")]
-        public Department Department;
+        public Department Department { get; set; }
         public Guid DepartmentId { get; set; }
         [ForeignKey("PositionId")]
         public Position Position { get; set; }

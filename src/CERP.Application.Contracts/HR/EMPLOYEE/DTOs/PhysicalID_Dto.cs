@@ -3,11 +3,11 @@ using CERP.HR.Employee.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Volo.Abp.Domain.Entities.Auditing;
+using Volo.Abp.Application.Dtos;
 
 namespace CERP.HR.Employees.DTOs
 {
-    public class PhysicalID_Dto : AuditedAggregateRoot<int>
+    public class PhysicalID_Dto : AuditedEntityDto<int>
     {
         public PhysicalID_Dto()
         {

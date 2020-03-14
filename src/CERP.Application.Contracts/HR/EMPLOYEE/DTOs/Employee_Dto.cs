@@ -77,7 +77,7 @@ namespace CERP.HR.Employees.DTOs
         public Guid ContractTypeId { get; set; }
         public DictionaryValue_Dto EmployeeStatus { get; set; }
         public Guid EmployeeStatusId { get; set; }
-        public Department_Dto Department;
+        public Department_Dto Department { get; set; }
         public Guid DepartmentId { get; set; }
         public Position_Dto Position { get; set; }
         public Guid PositionId { get; set; }
