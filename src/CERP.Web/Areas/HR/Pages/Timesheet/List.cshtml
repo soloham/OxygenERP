@@ -143,12 +143,12 @@
 
 }
 <div class="site-content" style="padding:0; background-color: rgb(253,253,253);">
-    <partial name="_DefaultPageHeader" />   
+    <partial name="_DefaultPageHeader" />
 </div>
 <div class="site-content" style="padding-top:0; background-color: rgb(253,253,253);">
     <div class="control-section">
         <ejs-grid id="TimesheetsGrid" dataSource="@ViewData["Timesheets_DS"]" childGrid="@Model.GetSecondaryGrid"
-                  enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()" 
+                  enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()"
                   dataBound="dataBound" commandClick="commandClick" actionComplete="actionComplete"
                   allowExcelExport="true" allowGrouping="true" allowPdfExport="true"
                   hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"
@@ -203,9 +203,7 @@
 
 <script>
     function onLoad(args) {
-        console.log(args);
-        console.log(this.parentDetails);
-        this.parentDetails.parentKeyFieldValue = this.parentDetails.parentRowData['Id'];
+        this.parentDetails.parentKeyFieldValue = this.parentDetails.parentRowData['id'];
     }
     function actionComplete(args) {
         if (args.requestType == "save") {
@@ -273,7 +271,7 @@
             $('#toggleAddSection').slideDown(250);
 
             $('#addWorkshiftSection').slideUp(50);
-            
+
             $('#submitAddSection').val('Add Workshift');
             $('#addSecTitle').html('Create New Workshift');
 
@@ -297,18 +295,15 @@
             $('#toggleAddSection').slideDown(250);
         }
     }
-    function onLoad() {
-        this.parentDetails.parentKeyFieldValue = this.parentDetails.parentRowData['Id'];
-    }
     function toolbarClick(args) {
         var gridObj = document.getElementById("TimesheetsGrid").ej2_instances[0];
-        if (args.item.id === 'Grid_pdfexport') {
+        if (args.item.id === 'TimesheetsGrid_pdfexport') {
             gridObj.pdfExport();
         }
-        if (args.item.id === 'Grid_excelexport') {
+        if (args.item.id === 'TimesheetsGrid_excelexport') {
             gridObj.excelExport();
         }
-        if (args.item.id === 'Grid_csvexport') {
+        if (args.item.id === 'TimesheetsGrid_csvexport') {
             gridObj.csvExport();
         }
         if (this.getSelectedRecords().length > 0) {

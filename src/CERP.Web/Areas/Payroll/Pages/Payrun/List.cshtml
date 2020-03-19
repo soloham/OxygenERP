@@ -78,7 +78,7 @@
 </ejs-dialog>
 
 <script>
-    
+
     function DeletePayrun(month, year) {
         var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
 
@@ -97,7 +97,7 @@
         });
         //swal.fire('Are you sure?', 'Are your sure you want to delete this payrun', 'warning')
         //    .then(function () {
-                
+
         //    });
     }
 
@@ -136,7 +136,7 @@
                 };
                 var value = parseFloat(args.cell.innerText);
                 const formatted = Number(value).toLocaleString('en', options);
-                args.cell.innerText = 'SAR ' + formatted // change decimal ; 
+                args.cell.innerText = 'SAR ' + formatted // change decimal ;
             }
         }
     }

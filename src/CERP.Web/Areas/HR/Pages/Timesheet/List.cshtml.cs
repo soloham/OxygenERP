@@ -1,22 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using CERP.App;
-using CERP.AppServices.HR.DepartmentService;
 using CERP.AppServices.HR.WorkShiftService;
-using CERP.AppServices.Setup.DepartmentSetup;
 using CERP.HR.EMPLOYEE.DTOs;
-using CERP.HR.Workshifts;
-using CERP.Setup.DTOs;
 using CERP.Web.Pages;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Syncfusion.EJ2.Grids;
-using Volo.Abp.Domain.Repositories;
+using System.Collections.Generic;
+using System.Linq;
 using Volo.Abp.Guids;
 using Volo.Abp.Json;
 
@@ -45,7 +32,8 @@ namespace CERP.Web.Areas.HR.Pages.TimeSheets
             GetSecondaryGrid = new Grid()
             {
                 DataSource = ViewData["Timesheets_ChildDS"],
-                QueryString = "employeeId",
+                Load = "onLoad",
+                QueryString = "timesheetId",
                 EditSettings = new Syncfusion.EJ2.Grids.GridEditSettings() { },
                 AllowExcelExport = true,
                 AllowGrouping = true,
@@ -62,7 +50,6 @@ namespace CERP.Web.Areas.HR.Pages.TimeSheets
                 ContextMenuItems = new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending", "Copy", "Edit", "Delete", "Save", "Cancel", "PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage", "LastPage", "NextPage" },
                 Columns = GetSecondaryGridColumns()
             };
-            GetSecondaryGrid.Query = "ej.Query().addParams('month','1')";
         }
 
         public List<GridColumn> GetCommandsColumns()
@@ -80,7 +67,7 @@ namespace CERP.Web.Areas.HR.Pages.TimeSheets
             List<GridColumn> gridColumns = new List<GridColumn>() {
                 new GridColumn { Field = "week", HeaderText = "Week", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "description", DefaultValue="—", HeaderText = "Description", TextAlign=TextAlign.Center,  MinWidth="20"  },
-                new GridColumn { Field = "", HeaderText = "Daily Hours", TextAlign=TextAlign.Center,  MinWidth="10", 
+                new GridColumn { Field = "", HeaderText = "Daily Hours", TextAlign=TextAlign.Center,  MinWidth="10",
                     Columns = new List<GridColumn>(){
                         new GridColumn { Field = "sumSun", HeaderText = "Sunday", TextAlign=TextAlign.Center,  MinWidth="40"  },
                         new GridColumn { Field = "sumMon", HeaderText = "Monday", TextAlign=TextAlign.Center,  MinWidth="40"  },
@@ -89,7 +76,7 @@ namespace CERP.Web.Areas.HR.Pages.TimeSheets
                         new GridColumn { Field = "sumThu", HeaderText = "Thursday", TextAlign=TextAlign.Center,  MinWidth="40"  },
                         new GridColumn { Field = "sumFri", HeaderText = "Friday", TextAlign=TextAlign.Center,  MinWidth="40"  },
                         new GridColumn { Field = "sumSat", HeaderText = "Satday", TextAlign=TextAlign.Center,  MinWidth="40"  },
-                    } 
+                    }
                 },
                 new GridColumn { Field = "totalWeekHours", HeaderText = "Total Hours", TextAlign=TextAlign.Center,  MinWidth="30" },
                 new GridColumn { Field = "isSubmitted", DisplayAsCheckBox=true, HeaderText = "Submitted", TextAlign=TextAlign.Center,  MinWidth="10"  },
@@ -107,14 +94,14 @@ namespace CERP.Web.Areas.HR.Pages.TimeSheets
                 new GridColumn { Field = "getMonth", HeaderText = "Month", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "year", HeaderText = "Year", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "description", DefaultValue="—", HeaderText = "Description", TextAlign=TextAlign.Center,  MinWidth="20"  },
-                new GridColumn { Field = "", HeaderText = "Weekly Hours", TextAlign=TextAlign.Center,  MinWidth="10", 
+                new GridColumn { Field = "", HeaderText = "Weekly Hours", TextAlign=TextAlign.Center,  MinWidth="10",
                     Columns = new List<GridColumn>(){
                         new GridColumn { Field = "week1Hours", Template = "#week1ColTemplate", HeaderText = "1st Week", TextAlign=TextAlign.Center,  MinWidth="40"  },
                         new GridColumn { Field = "week2Hours", Template = "#week2ColTemplate", HeaderText = "2nd Week", TextAlign=TextAlign.Center,  MinWidth="40"  },
                         new GridColumn { Field = "week3Hours", Template = "#week3ColTemplate", HeaderText = "3rd Week", TextAlign=TextAlign.Center,  MinWidth="40"  },
                         new GridColumn { Field = "week4Hours", Template = "#week4ColTemplate", HeaderText = "4th Week", TextAlign=TextAlign.Center,  MinWidth="40"  },
                         new GridColumn { Field = "week5Hours", Template = "#week5ColTemplate", HeaderText = "5th Week", TextAlign=TextAlign.Center,  MinWidth="40"  },
-                    } 
+                    }
                 },
                 new GridColumn { Field = "totalMonthHours", DefaultValue="—", HeaderText = "Total Hours", TextAlign=TextAlign.Center,  MinWidth="30" },
                 new GridColumn { Field = "isPosted", DisplayAsCheckBox=true, HeaderText = "Posted", TextAlign=TextAlign.Center,  MinWidth="10"  },

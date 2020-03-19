@@ -1,25 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using CERP.App;
-using CERP.AppServices.HR.DepartmentService;
 using CERP.AppServices.HR.EmployeeService;
 using CERP.AppServices.HR.WorkShiftService;
-using CERP.AppServices.Setup.DepartmentSetup;
 using CERP.HR.EMPLOYEE.DTOs;
-using CERP.HR.Employees;
 using CERP.HR.Employees.DTOs;
 using CERP.HR.Timesheets;
-using CERP.HR.Workshifts;
-using CERP.Setup.DTOs;
 using CERP.Web.Pages;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Syncfusion.EJ2.Grids;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Guids;
 using Volo.Abp.Json;
@@ -73,7 +64,8 @@ namespace CERP.Web.Areas.HR.Pages.TimeSheets
             CurrentWeeksheet = TimesheetAppService.GetWeekSummary(searchVM.Year, searchVM.Month, searchVM.Week, searchVM.EmployeeId);
             if (CurrentWeeksheet == null)
             {
-                CurrentWeeksheet = new TimesheetWeekSummary_Dto() { 
+                CurrentWeeksheet = new TimesheetWeekSummary_Dto()
+                {
                     Id = -1,
                     Year = searchVM.Year,
                     Month = searchVM.Month,
@@ -117,7 +109,7 @@ namespace CERP.Web.Areas.HR.Pages.TimeSheets
                         List<TimesheetWeekJobSummary> newJobSumaries = ObjectMapper.Map<ICollection<TimesheetWeekJobSummary_Dto>, List<TimesheetWeekJobSummary>>(weeksheetDto.WeeklyJobSummaries);
                         for (int i = 0; i < newJobSumaries.Count; i++)
                         {
-                            if(!weeksheetToUpdate.WeeklyJobSummaries.Any(x => x.Id == newJobSumaries[i].Id))
+                            if (!weeksheetToUpdate.WeeklyJobSummaries.Any(x => x.Id == newJobSumaries[i].Id))
                             {
                                 weeksheetToUpdate.WeeklyJobSummaries.Add(newJobSumaries[i]);
                             }
@@ -190,7 +182,7 @@ namespace CERP.Web.Areas.HR.Pages.TimeSheets
                     Timesheet_Dto timesheetCreatedDto = await TimesheetAppService.CreateAsync(timesheetToCreateDto);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return StatusCode(500);
             }
@@ -217,14 +209,14 @@ namespace CERP.Web.Areas.HR.Pages.TimeSheets
                 new GridColumn { Field = "client.name", Width = "110", HeaderText = "Month", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "year", Width = "110", HeaderText = "Year", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "dated", Width = "110", HeaderText = "Dated", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "", Width = "110", HeaderText = "Weekly Hours", TextAlign=TextAlign.Center,  MinWidth="10", 
+                new GridColumn { Field = "", Width = "110", HeaderText = "Weekly Hours", TextAlign=TextAlign.Center,  MinWidth="10",
                     Columns = new List<GridColumn>(){
                         new GridColumn { Field = "week1", Width = "95", HeaderText = "1st Week", TextAlign=TextAlign.Center,  MinWidth="10"  },
                         new GridColumn { Field = "week2", Width = "95", HeaderText = "2nd Week", TextAlign=TextAlign.Center,  MinWidth="10"  },
                         new GridColumn { Field = "week3", Width = "95", HeaderText = "3rd Week", TextAlign=TextAlign.Center,  MinWidth="10"  },
                         new GridColumn { Field = "week4", Width = "95", HeaderText = "4th Week", TextAlign=TextAlign.Center,  MinWidth="10"  },
                         new GridColumn { Field = "week5", Width = "95", HeaderText = "5th Week", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                    } 
+                    }
                 },
                 new GridColumn { Field = "totalMonthHours", Width = "110", HeaderText = "Total Hours", TextAlign=TextAlign.Center,  MinWidth="10" }
             };

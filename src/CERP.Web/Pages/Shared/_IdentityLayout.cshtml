@@ -1,0 +1,121 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="">
+    <title>@ViewData["Title"] - Cloud ERP</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.html">
+    <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="manifest.html">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500,700" rel="stylesheet">
+    @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />*@
+    @*<link rel="stylesheet" href="~/css/site.css" />*@
+    @*<link rel="stylesheet" href="~/css/vendor.min.css">*@
+    <link href="~/styles/cerp/cosmos.min.css" rel="stylesheet" />
+    @*<link rel="stylesheet" href="~/css/application.min.css">*@
+
+    <style type="text/css">
+        .input-validation-error {
+            border-color: crimson;
+            border-width: 1px;
+        }
+
+        .field-validation-error {
+            color: #ff0000;
+        }
+    </style>
+</head>
+<body class="authentication-body" style="background-image:url(/img/photos/bg.jpg); background-repeat:no-repeat; background-size:cover; background-position:center">
+    <div style="height:100%; display:flex; overflow-x:hidden; flex-direction: column">
+        <div class="container-fluid" style="margin:10px">
+            <div class="authentication-header m-b-30">
+                <div style="clear:both; overflow: auto;">
+                    <div class="pull-left">
+                        <a class="authentication-logo" asp-page="/">
+                            <img src="~/img/logo.png" alt="" height="25" asp-append-version="true">
+                            <span style="color:white">&nbsp Cloud ERP</span>
+                        </a>
+                    </div>
+                    <div class="pull-right">
+                        @if ((string)ViewData["Title"] == "Log In")
+                        {
+                            <a style="color:white" asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="btn btn-outline-info">Sign up</a>
+                        }
+                        else if ((string)ViewData["Title"] == "Register")
+                        {
+                            <a style="color:white" asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl" class="btn btn-outline-info">Log In</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="justify-content:center; flex-grow:1; display:flex;">
+            <div style="margin:auto; width:50%; max-width: 30%; min-width:400px;">
+                <div class="authentication-content m-b-30" style=" background-color:white; opacity:0.95">
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center bg-purple authentication-footer">
+            <span style="height:50px; color:white" class="text-muted">&copy; 2020 &nbsp; — &nbsp; Cloud ERP</span>
+        </div>
+    </div>
+
+    @*<script src="~/js/vendor.min.js"></script>*@
+    @*<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true"></script>*@
+    <script src="~/scripts/cerp/cosmos.min.js"></script>
+    @*<script src="~/js/application.min.js"></script>*@
+    <script src="~/lib/jquery/dist/jquery.min.js" asp-append-version="true"></script>
+    <script src="~/scripts/cerp/site.js" asp-append-version="true"></script>
+
+    @*<script type="text/javascript">
+        // Create a closure
+        (function() {
+
+            var originalAddClassMethod = jQuery.fn.addClass;
+
+            jQuery.fn.addClass = function() {
+                // Execute the original method.
+                var result = originalAddClassMethod.apply(this, arguments);
+
+                // trigger a custom event
+                // stop recursion...
+                if ((arguments[0] != "is-valid") && (arguments[0] != "is-invalid")) {
+                    jQuery(this).trigger('cssClassChanged');
+                }
+
+                // return the original result
+                return result;
+            }
+            })();
+
+           // document ready function
+            $(function () {
+                $("input").bind('cssClassChanged', function () {
+                    // cleanup
+                    if ($(this).hasClass("is-valid")) {
+                        $(this).removeClass("is-valid");
+                    }
+                    if ($(this).hasClass("is-invalid")) {
+                        $(this).removeClass("is-invalid");
+                    }
+
+                    // remap the css classes to that of BootStrap
+                    if ($(this).hasClass("input-validation-error")) {
+                        $(this).addClass("is-invalid");
+                    }
+                    //// remap the css classes to that of BootStrap
+                    //if ($(this).hasClass("valid")) {
+                    //    $(this).addClass("is-valid");
+                    //}
+                }
+                )
+            });
+        </script>*@
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

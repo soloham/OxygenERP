@@ -660,7 +660,7 @@ var i,
 				return "\uFFFD";
 			}
 
-			// Control characters and (dependant upon position) numbers get escaped as code points
+			// Control characters and (dependent upon position) numbers get escaped as code points
 			return ch.slice( 0, -1 ) + "\\" + ch.charCodeAt( ch.length - 1 ).toString( 16 ) + " ";
 		}
 
@@ -8948,7 +8948,7 @@ jQuery.extend( {
 			deferred = jQuery.Deferred(),
 			completeDeferred = jQuery.Callbacks( "once memory" ),
 
-			// Status-dependant callbacks
+			// Status-dependent callbacks
 			statusCode = s.statusCode || {},
 
 			// Headers (they are sent all at once)
@@ -9000,7 +9000,7 @@ jQuery.extend( {
 					return this;
 				},
 
-				// Status-dependant callbacks
+				// Status-dependent callbacks
 				statusCode: function( map ) {
 					var code;
 					if ( map ) {
@@ -9307,7 +9307,7 @@ jQuery.extend( {
 				deferred.rejectWith( callbackContext, [ jqXHR, statusText, error ] );
 			}
 
-			// Status-dependant callbacks
+			// Status-dependent callbacks
 			jqXHR.statusCode( statusCode );
 			statusCode = undefined;
 

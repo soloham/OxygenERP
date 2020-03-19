@@ -1,0 +1,12 @@
+﻿@page
+@model CERP.Web.Pages.Account.LogoutModel
+@{
+    ViewData["Title"] = "Log out";
+}
+
+<header>
+    <h1>@ViewData["Title"]</h1>
+    <p>You have successfully logged out of the application.</p>
+    <hr />
+    <a asp-page="./Login" asp-route-returnUrl="/" class="btn btn-outline-info btn-block">Log In</a>
+</header>

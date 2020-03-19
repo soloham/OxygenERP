@@ -1,31 +1,19 @@
+using CERP.App;
+using CERP.App.Helpers;
+using CERP.AppServices.Payroll.PayrunService;
+using CERP.HR.EMPLOYEE.RougeDTOs;
+using CERP.Payroll.DTOs;
+using CERP.Payroll.Payrun;
+using CERP.Web.Pages;
+using Microsoft.AspNetCore.Mvc;
+using Syncfusion.EJ2.Grids;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
-using CERP.App;
-using CERP.AppServices.HR.DepartmentService;
-using CERP.AppServices.HR.WorkShiftService;
-using CERP.AppServices.Payroll.PayrunService;
-using CERP.AppServices.Setup.DepartmentSetup;
-using CERP.HR.EMPLOYEE.DTOs;
-using CERP.HR.Workshifts;
-using CERP.Payroll.DTOs;
-using CERP.Setup.DTOs;
-using CERP.Web.Pages;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Syncfusion.EJ2.Grids;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.Guids;
 using Volo.Abp.Json;
-using CERP.Payroll;
-using CERP.Payroll.Payrun;
-using CERP.App.Helpers;
-using System.Dynamic;
-using CERP.HR.EMPLOYEE.RougeDTOs;
 
 namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
 {
@@ -130,7 +118,7 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
                     paymentSlipDSRow.getBankIBAN = curBank.BankIBAN;
 
                     paymentSlipDSRow.getBasicSalary = curDetail.BasicSalary;
-                    paymentSlipDSRow.getAllowanceHousing = housingAllowance == null? "—" : "SAR " + housingAllowance.Value.ToString("N2");
+                    paymentSlipDSRow.getAllowanceHousing = housingAllowance == null ? "—" : "SAR " + housingAllowance.Value.ToString("N2");
                     paymentSlipDSRow.getOtherIncome = otherAllowancesSum;
                     paymentSlipDSRow.getDeductions = curDetail.GrossDeductions;
                     paymentSlipDSRow.getPayment = curDetail.NetAmount;
@@ -178,7 +166,7 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
             //commands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
 
             return new List<GridColumn>()
-            { 
+            {
                 new GridColumn { Width = "200", HeaderText = "Actions", TextAlign=TextAlign.Center, MinWidth="10", Commands = commands }
             };
         }
@@ -218,7 +206,7 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
                 earningsColumns.Add(new GridColumn() { Field = $"{camelCaseName}_Value", HeaderText = $"{Allowances[i].Value}", TextAlign = TextAlign.Center, MinWidth = "50" });
             }
 
-            List<GridColumn> deductionsColumns = new List<GridColumn>() 
+            List<GridColumn> deductionsColumns = new List<GridColumn>()
             {
                 new GridColumn() { Field = "gosiValue", HeaderText = "GOSI", TextAlign = TextAlign.Center, MinWidth = "50" },
                 new GridColumn() { Field = "loansValue", HeaderText = "Loans", TextAlign = TextAlign.Center, MinWidth = "50" },

@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System;
-using Volo.Abp.Json;
 
 namespace CERP.Web
 {
@@ -24,11 +21,11 @@ namespace CERP.Web
                     options.Conventions.AuthorizeFolder("/Pages");
                     options.Conventions.AuthorizePage("/Index");
 
-                    options.Conventions.AddAreaPageRoute("Account", "/Account/Login", "/Login");
-                    options.Conventions.AddAreaPageRoute("Account", "/Account/Register", "/Register");
-                    options.Conventions.AddAreaPageRoute("Account", "/Account/Lockout", "/Lockout");
-                    options.Conventions.AddAreaPageRoute("Account", "/Account/AccessDenied", "/AccessDenied");
-                    options.Conventions.AddAreaPageRoute("Account", "/Account/Logout", "/Logout");
+                    options.Conventions.AddPageRoute("/Account/Login", "/Login");
+                    options.Conventions.AddPageRoute("/Account/Register", "/Register");
+                    options.Conventions.AddPageRoute("/Account/Lockout", "/Lockout");
+                    options.Conventions.AddPageRoute("/Account/AccessDenied", "/AccessDenied");
+                    options.Conventions.AddPageRoute("/Account/Logout", "/Logout");
 
                     options.Conventions.AddAreaPageRoute("FM", "/COA/List", "/COA");
                     options.Conventions.AddAreaPageRoute("FM", "/COA/Create", "/COA/Create");
@@ -41,7 +38,8 @@ namespace CERP.Web
 
                     //options.Conventions.AddPageRoute("/index", "{*url}");
                 })
-                .AddNewtonsoftJson(options => {
+                .AddNewtonsoftJson(options =>
+                {
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
 

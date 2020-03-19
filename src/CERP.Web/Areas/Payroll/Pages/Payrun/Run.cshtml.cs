@@ -1,36 +1,27 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using CERP.App;
+using CERP.App.Helpers;
 using CERP.AppServices.HR.DepartmentService;
+using CERP.AppServices.HR.EmployeeService;
 using CERP.AppServices.HR.WorkShiftService;
 using CERP.AppServices.Payroll.PayrunService;
-using CERP.AppServices.Setup.DepartmentSetup;
 using CERP.HR.EMPLOYEE.DTOs;
-using CERP.HR.Workshifts;
+using CERP.HR.EMPLOYEE.RougeDTOs;
+using CERP.HR.Employees.DTOs;
 using CERP.Payroll.DTOs;
-using CERP.Setup.DTOs;
+using CERP.Payroll.Payrun;
 using CERP.Web.Pages;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Syncfusion.EJ2.Grids;
-using Volo.Abp.Domain.Repositories;
-using Volo.Abp.Guids;
-using Volo.Abp.Json;
-using CERP.Payroll;
-using CERP.Payroll.Payrun;
-using CERP.AppServices.HR.EmployeeService;
-using CERP.HR.Employees.DTOs;
-using CERP.HR.EMPLOYEE.RougeDTOs;
+using System;
+using System.Collections.Generic;
 using System.Dynamic;
-using CERP.App.Helpers;
-using CERP.FM.DTOs;
-using CERP.FM;
-using CERP.HR.Timesheets;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Json;
 
 namespace CERP.Web.Areas.Payroll.Pages.Run
 {
@@ -91,7 +82,7 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
         {
             Payrun_Dto payrun = null;
             if (year != 0 && month != 0) payrun = ObjectMapper.Map<Payrun, Payrun_Dto>(PayrunAppService.Repository.WithDetails().SingleOrDefault(x => x.Year == year && x.Month == month));
-            List<PayrunDetail_Dto> payrunDetails = payrun == null? new List<PayrunDetail_Dto>() : payrun.PayrunDetails.ToList();
+            List<PayrunDetail_Dto> payrunDetails = payrun == null ? new List<PayrunDetail_Dto>() : payrun.PayrunDetails.ToList();
 
             List<dynamic> dynamicDS = new List<dynamic>();
 
@@ -186,7 +177,7 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
             dynamicDSRow.Payments.Add(new PayslipVM("Basic Salary", "Salary", rate, totalHours, rate * totalHours));
             dynamicDSRow.TotalPayments = (dynamicDSRow.Payments as List<PayslipVM>).Sum(x => x.Amount);
             dynamicDSRow.TotalHours = (dynamicDSRow.Payments as List<PayslipVM>).Sum(x => x.Hours);
-            
+
             if (payrunDetail == null) return StatusCode(500); else return PartialView("_Payslip", dynamicDSRow);
         }
 
@@ -236,7 +227,7 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
                     {
                         return new NotFoundObjectResult(new { message = $"Timesheet for the employee {curEmployee.Name} for the period {month.ToString().PadLeft(2, '0')}/{year.ToString().PadLeft(2, '0')}<br/>doesn't exist." });
                     }
-                    if(empTimesheet == null)
+                    if (empTimesheet == null)
                     {
                         return new BadRequestObjectResult(new { message = $"Timesheet for the employee {curEmployee.Name}<br/>for the period {month.ToString().PadLeft(2, '0')}/{year.ToString().PadLeft(2, '0')}<br/>doesn't exist." });
                     }
@@ -267,7 +258,7 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
                     List<AllowanceRDTO> allowances = financialDetails.AllowancesDetails.Count == 0 ? new List<AllowanceRDTO>() : financialDetails.AllowancesDetails.Where(x => curDateTime.Date >= DateTime.Parse(x.FromDate).Date && curDateTime.Date <= DateTime.Parse(x.EndDate).Date).ToList();
                     for (int j = 0; j < allowances.Count; j++)
                     {
-                        PayrunAllowanceSummary_Dto payrunAllowanceSummaryPrevious = empPayrunDetailPrevious == null? null : empPayrunDetailPrevious.PayrunAllowancesSummaries.SingleOrDefault(x => x.AllowanceTypeId == allowances[i].AllowanceTypeId);
+                        PayrunAllowanceSummary_Dto payrunAllowanceSummaryPrevious = empPayrunDetailPrevious == null ? null : empPayrunDetailPrevious.PayrunAllowancesSummaries.SingleOrDefault(x => x.AllowanceTypeId == allowances[i].AllowanceTypeId);
 
                         PayrunAllowanceSummary_Dto payrunAllowanceSummary = new PayrunAllowanceSummary_Dto();
 
@@ -334,7 +325,7 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
                     payrunDetails.Add(empPayrunDetail);
                 }
 
-                if(payrun == null) payrun = new Payrun_Dto();
+                if (payrun == null) payrun = new Payrun_Dto();
 
                 payrun.PayrunDetails = payrunDetails;
                 payrun.Year = year;
@@ -358,7 +349,7 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
                 return new StatusCodeResult(500);
             }
         }
-        public async Task<IActionResult> OnPostPayrun(int month, int year, string note) 
+        public async Task<IActionResult> OnPostPayrun(int month, int year, string note)
         {
             var formData = Request.Form;
 
@@ -415,7 +406,7 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
             //commands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
 
             return new List<GridColumn>()
-            { 
+            {
                 new GridColumn { Width = "75", HeaderText = "", TextAlign=TextAlign.Center, MinWidth="10", Commands = commands }
             };
         }
@@ -444,17 +435,27 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
                 new GridColumn { Field = "getEmployeePositionTitle", HeaderText = "Position", TextAlign=TextAlign.Center,  MinWidth="50"  }
             };
 
-            gridColumns.Add(new GridColumn { Field = "", HeaderText = "Earnings", TextAlign = TextAlign.Center, MinWidth = "50",
-                                             Columns = earningsColumns
+            gridColumns.Add(new GridColumn
+            {
+                Field = "",
+                HeaderText = "Earnings",
+                TextAlign = TextAlign.Center,
+                MinWidth = "50",
+                Columns = earningsColumns
             });
-            gridColumns.Add(new GridColumn { Field = "", HeaderText = "Deductions", TextAlign = TextAlign.Center, MinWidth = "50",
-                                             Columns = new List<GridColumn>()
+            gridColumns.Add(new GridColumn
+            {
+                Field = "",
+                HeaderText = "Deductions",
+                TextAlign = TextAlign.Center,
+                MinWidth = "50",
+                Columns = new List<GridColumn>()
                                              {
                                                  new GridColumn() { Field = "gosiValue", HeaderText = "GOSI", TextAlign = TextAlign.Center, MinWidth = "50" },
                                                  new GridColumn() { Field = "loansValue", HeaderText = "Loans", TextAlign = TextAlign.Center, MinWidth = "50" },
                                                  new GridColumn() { Field = "leavesValue", HeaderText = "Leaves", TextAlign = TextAlign.Center, MinWidth = "50" },
                                                  new GridColumn() { Field = "grossDeductions", HeaderText = "Total", TextAlign = TextAlign.Center, MinWidth = "50" },
-                                             }    
+                                             }
             });
 
             gridColumns.Add(new GridColumn { Field = "netAmount", HeaderText = "Net Amount", TextAlign = TextAlign.Center, MinWidth = "50" });

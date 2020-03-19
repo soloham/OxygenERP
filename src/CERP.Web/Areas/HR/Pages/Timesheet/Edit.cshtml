@@ -13,9 +13,9 @@
     ViewData["CreateNewText"] = "Edit Timesheet";
     ViewData["CreateNewLink"] = "/Timesheets/Edit";
 
- List<Employee_Dto> employees = Model.GetEmployees();
+    List<Employee_Dto> employees = Model.GetEmployees();
 
- var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
 }
 @section styles {
     <link href="~/libs/syncfusion/ej2-grid/styles/fabric.css" rel="stylesheet" />
@@ -168,7 +168,7 @@
                         <select id="yearId" name="Year" class="form-control">
                             @for (int i = DateTime.Now.Year; i >= DateTime.Now.Year - 5; i--)
                             {
-                                @: <option @(ViewData["defYear"] != null && (int)ViewData["defYear"] == i? "selected" : "") value="@i">@i</option>
+                                @: <option @(ViewData["defYear"] != null && (int)ViewData["defYear"] == i ? "selected" : "") value="@i">@i</option>
                             }
                         </select>
                     </div>
@@ -177,8 +177,8 @@
                         <select id="month" name="Month" class="form-control">
                             @for (int i = 1; i <= 12; i++)
                             {
-                                @: <option @(ViewData["defMonth"] != null && (int)ViewData["defMonth"] == i? "selected" : "") value="@i" )>
-                                @:    @(Convert.ToDateTime(i.ToString() + "/1/1990").ToString("MMMM"))
+                                @: <option @(ViewData["defMonth"] != null && (int)ViewData["defMonth"] == i ? "selected" : "") value="@i" )>
+                                    @:    @(Convert.ToDateTime(i.ToString() + "/1/1990").ToString("MMMM"))
                                 @: </option>
                             }
                         </select>
@@ -188,7 +188,7 @@
                         <select id="weekId" name="Week" class="form-control">
                             @for (int i = 1; i <= 5; i++)
                             {
-                                @: <option @(ViewData["defWeek"] != null && (int)ViewData["defWeek"] == i? "selected" : "") value="@i">Week @i </option>
+                                @: <option @(ViewData["defWeek"] != null && (int)ViewData["defWeek"] == i ? "selected" : "") value="@i">Week @i </option>
                             }
                         </select>
                     </div>
@@ -197,8 +197,8 @@
                         <select id="employeeId" name="EmployeeId" class="form-control">
                             @foreach (var item in employees)
                             {
-                                @: <option @(ViewData["defEmpId"] != null && (Guid)ViewData["defEmpId"] == item.Id? "selected" : "") value="@item.Id">
-                                @:     @item.FirstName @item.MiddleName @item.LastName
+                                @: <option @(ViewData["defEmpId"] != null && (Guid)ViewData["defEmpId"] == item.Id ? "selected" : "") value="@item.Id">
+                                    @:     @item.FirstName @item.MiddleName @item.LastName
                                 @: </option>
                             }
                         </select>

@@ -91,7 +91,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-5 text-right pull-right" >
+                                <div class="col-md-5 text-right pull-right">
                                     <div id="postSection" class="col-md-12 control-section" style="display: none">
                                         <form id="postPayrunForm">
                                             <div class="col-md-4">
@@ -113,14 +113,14 @@
                         <div class="well" style="background-color: white">
                             <div class="control-section">
                                 <ejs-grid id="PayrunsHistoryGrid" dataSource="@ViewData["PayrunsDetails_DS"]" queryCellInfo="QueryCellInfo"
-                                            enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()"
-                                            dataBound="dataBound" commandClick="commandClick" actionComplete="actionComplete"
-                                            allowExcelExport="true" allowGrouping="true" allowPdfExport="true"
-                                            hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"
-                                            allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                                            toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
-                                            contextMenuItems="@(new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending","Copy", "Edit", "Delete", "Save", "Cancel","PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage","LastPage", "NextPage"})"
-                                            allowPaging="true" allowResizing="true">
+                                          enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()"
+                                          dataBound="dataBound" commandClick="commandClick" actionComplete="actionComplete"
+                                          allowExcelExport="true" allowGrouping="true" allowPdfExport="true"
+                                          hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                                          toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
+                                          contextMenuItems="@(new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending","Copy", "Edit", "Delete", "Save", "Cancel","PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage","LastPage", "NextPage"})"
+                                          allowPaging="true" allowResizing="true">
 
                                     <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
                                     <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
@@ -139,7 +139,7 @@
 
 
     <div class="clearfix"></div>
-    
+
 </div>
 
 <ejs-dialog id="alert_dialog" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy with Header" content="Atleast one row should be selected to copy with header">
@@ -168,7 +168,7 @@
                 };
                 var value = parseFloat(args.cell.innerText);
                 const formatted = Number(value).toLocaleString('en', options);
-                args.cell.innerText = 'SAR ' + formatted // change decimal ; 
+                args.cell.innerText = 'SAR ' + formatted // change decimal ;
             }
         }
     }
@@ -269,14 +269,14 @@
         BindGrid_Data();
     });
     $('#submitPostPayrun').on('click', function () {
-        
+
     });
 
 
     function BindGrid_Data() {
         //$('#divList').html('<h5 class="margin-0"><p><i class="fa fa-spinner fa-spin fa-fw"></i> Please wait while data is loading...</p></h5>');
         var params = $('#actionForm').serialize();
-        
+
         $.ajax({
             url: '@Url.Content("~")/Payroll/Payrun/Run?handler=Payrun',
             async: true,
