@@ -15,6 +15,9 @@ namespace CERP
     {
         public companyAppService(IRepository<Company, Guid> repository) : base(repository)
         {
+            Repository = repository;
         }
+
+        public IRepository<Company, Guid> Repository { get; }
     }
 }

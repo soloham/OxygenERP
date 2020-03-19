@@ -4,6 +4,7 @@ using CERP.HR.Documents;
 using CERP.HR.Employees;
 using CERP.HR.Timesheets;
 using CERP.HR.Workshifts;
+using CERP.Payroll.Payrun;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
@@ -72,6 +73,7 @@ namespace CERP.EntityFrameworkCore
                                                        .Include(p => p.POB)
                                                        .Include(p => p.MaritalStatus)
                                                        .Include(p => p.EmployeeStatus)
+                                                       .Include(p => p.EmployeeType)
                                                        .Include(p => p.Position).ThenInclude(x => x.Department);
                 });
 
@@ -106,6 +108,35 @@ namespace CERP.EntityFrameworkCore
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.WeeklySummaries).ThenInclude(x => (x as TimesheetWeekSummary).WeeklyJobSummaries)
                                                        .Include(p => p.Employee).ThenInclude(p => p.Department);
+                });
+
+                options.Entity<Payrun>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.Company)
+                                                       .Include(p => p.PayrunDetails)
+                                                        .ThenInclude(p => p.PayrunAllowancesSummaries)
+                                                        .ThenInclude(p => p.AllowanceType)
+                                                       .Include(p => p.PayrunDetails)
+                                                        .ThenInclude(p => p.Employee)
+                                                        .ThenInclude(x => x.Department)
+                                                        .ThenInclude(x => x.Company)
+                                                       .Include(p => p.PayrunDetails)
+                                                        .ThenInclude(p => p.Employee)
+                                                        .ThenInclude(p => p.Position)
+                                                       .Include(p => p.PayrunDetails)
+                                                        .ThenInclude(x => x.EmployeeTimesheet)
+                                                       .Include(p => p.PostedBy);
+                });
+                options.Entity<PayrunDetail>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.Employee)
+                                                        .ThenInclude(x => x.Department)
+                                                        .ThenInclude(x => x.Company)
+                                                       .Include(p => p.Employee)
+                                                        .ThenInclude(p => p.Position)
+                                                       .Include(p => p.PayrunAllowancesSummaries)
+                                                        .ThenInclude(x => x.AllowanceType)
+                                                       .Include(p => p.EmployeeTimesheet);
                 });
             });
 

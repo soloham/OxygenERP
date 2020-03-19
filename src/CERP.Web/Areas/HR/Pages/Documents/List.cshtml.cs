@@ -92,22 +92,22 @@ namespace CERP.Web.Areas.HR.Pages.Documents
 
             return new List<GridColumn>()
             {
-                new GridColumn { Width = "200", HeaderText = "Commands", TextAlign=TextAlign.Center, MinWidth="10", Commands = commands }
+                new GridColumn { Width = "300", HeaderText = "Commands", TextAlign=TextAlign.Center, MinWidth="10", Commands = commands }
             };
         }
         public List<GridColumn> GetPrimaryGridColumns()
         {
             List<GridColumn> gridColumns = new List<GridColumn>() {
-                new GridColumn { Field = "referenceNo", Width = "110", HeaderText = "Ref #", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "name", Width = "110", HeaderText = "Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "nameLocalized", Width = "110", HeaderText = "Name in AR", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "description", Width = "110", HeaderText = "Description", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "ownerType.value", Width = "110", HeaderText = "Owner Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "documentType.value", Width = "110", HeaderText = "Doc Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "owner.name", Width = "110", HeaderText = "Owner Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "issuedFrom.value", Visible = false, Width = "110", HeaderText = "Issued From", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "issueDate", Visible = false, Width = "110", HeaderText = "Issue Date", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "expiryDate", Width = "110", HeaderText = "Expiry Date", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "referenceNo", HeaderText = "Ref #", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "name", HeaderText = "Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "nameLocalized", HeaderText = "Name in AR", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "description", HeaderText = "Description", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "ownerType.value", HeaderText = "Owner Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "documentType.value", HeaderText = "Doc Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "owner.name", HeaderText = "Owner Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "issuedFrom.value", Visible = false, HeaderText = "Issued From", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "issueDate", Visible = false, HeaderText = "Issue Date", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "expiryDate", HeaderText = "Expiry Date", TextAlign=TextAlign.Center,  MinWidth="10"  },
             };
 
             gridColumns.AddRange(GetCommandsColumns());

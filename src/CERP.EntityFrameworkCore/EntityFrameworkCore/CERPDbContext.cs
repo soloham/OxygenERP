@@ -12,6 +12,7 @@ using CERP.Setup;
 using CERP.HR.Workshifts;
 using CERP.HR.Documents;
 using CERP.HR.Timesheets;
+using CERP.Payroll.Payrun;
 
 namespace CERP.EntityFrameworkCore
 {
@@ -54,6 +55,11 @@ namespace CERP.EntityFrameworkCore
         public DbSet<Timesheet> TimeSheets { get; set; }
         public DbSet<TimesheetWeekSummary> WeeklySheets { get; set; }
         public DbSet<TimesheetWeekJobSummary> WeeklySheetsJobs { get; set; }
+
+        public DbSet<Payrun> Payruns { get; set; }
+        public DbSet<PayrunAllowanceSummary> PayrunAllowancesSummaries { get; set; }
+        public DbSet<PayrunDetail> PayrunDetails { get; set; }
+        public DbSet<Payslip> Payslips { get; set; }
 
         public CERPDbContext(DbContextOptions<CERPDbContext> options)
             : base(options)

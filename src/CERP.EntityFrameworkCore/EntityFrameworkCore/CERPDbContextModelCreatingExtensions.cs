@@ -5,6 +5,7 @@ using CERP.HR.Documents;
 using CERP.HR.Employees;
 using CERP.HR.Timesheets;
 using CERP.HR.Workshifts;
+using CERP.Payroll.Payrun;
 using CERP.Setup;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -476,6 +477,146 @@ namespace CERP.EntityFrameworkCore
                 b.HasOne(x => x.Chargeability).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(x => x.ServiceLine).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(x => x.Client).WithMany().OnDelete(DeleteBehavior.Restrict);
+            });
+
+
+            builder.Entity<Payrun>(b =>
+            {
+                b.ToTable(CERPConsts.PayrollDbTablePrefix + "Payruns", CERPConsts.PayrollDbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureSoftDelete();
+                b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.Property(x => x.CompanyId)
+                    .IsRequired();
+                b.Property(x => x.PostedById)
+                    .IsRequired(false);
+
+                b.Property(x => x.Year)
+                    .IsRequired();
+                b.Property(x => x.Month)
+                    .IsRequired();
+
+                b.Property(x => x.TotalEarnings)
+                    .IsRequired();
+                b.Property(x => x.TotalDeductions)
+                    .IsRequired();
+                b.Property(x => x.NetTotal)
+                    .IsRequired();
+
+                b.Property(x => x.Note)
+                    .IsRequired(false);
+
+                b.Property(x => x.IsPosted)
+                    .IsRequired();
+                b.Property(x => x.PostedDate)
+                    .IsRequired(false);
+
+                b.HasOne(x => x.Company).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.PostedBy).WithMany().OnDelete(DeleteBehavior.Restrict);
+
+                b.HasMany(x => x.PayrunDetails).WithOne(p => p.Payrun).OnDelete(DeleteBehavior.ClientCascade);
+                b.HasMany(x => x.Payslips).WithOne().OnDelete(DeleteBehavior.ClientCascade);
+            });
+            builder.Entity<PayrunDetail>(b =>
+            {
+                b.ToTable(CERPConsts.PayrollDbTablePrefix + "PayrunsDetails", CERPConsts.PayrollDbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureSoftDelete();
+                b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.Property(x => x.PayrunId)
+                    .IsRequired();
+                b.Property(x => x.EmployeeId)
+                    .IsRequired();
+
+                b.Property(x => x.Year)
+                    .IsRequired();
+                b.Property(x => x.Month)
+                    .IsRequired();
+
+                b.Property(x => x.GrossEarnings)
+                    .IsRequired();
+                b.Property(x => x.GrossDeductions)
+                    .IsRequired();
+                b.Property(x => x.NetAmount)
+                    .IsRequired();
+
+                b.Property(x => x.GOSIAmount)
+                    .IsRequired();
+                b.Property(x => x.Loan)
+                    .IsRequired();
+                b.Property(x => x.Leaves)
+                    .IsRequired();
+                b.Property(x => x.Disciplinary)
+                    .IsRequired();
+
+                b.Property(x => x.AmountPaid)
+                    .IsRequired();
+                b.Property(x => x.DifferAmount)
+                    .IsRequired();
+
+                b.HasOne(x => x.Payrun).WithMany(p => p.PayrunDetails).OnDelete(DeleteBehavior.Restrict);
+                b.HasMany(x => x.PayrunAllowancesSummaries).WithOne().OnDelete(DeleteBehavior.ClientCascade);
+                b.HasOne(x => x.Employee).WithMany().OnDelete(DeleteBehavior.Restrict);
+            });
+            builder.Entity<Payslip>(b =>
+            {
+                b.ToTable(CERPConsts.PayrollDbTablePrefix + "PayrunsPayslips", CERPConsts.PayrollDbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureSoftDelete();
+                b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.Property(x => x.PayrunDetailId)
+                    .IsRequired();
+                b.Property(x => x.EmployeeId)
+                    .IsRequired();
+
+                b.Property(x => x.Year)
+                    .IsRequired();
+                b.Property(x => x.Month)
+                    .IsRequired();
+
+                b.Property(x => x.Earning)
+                    .IsRequired();
+                b.Property(x => x.Deduction)
+                    .IsRequired();
+
+                b.Property(x => x.Description)
+                    .IsRequired();
+                b.Property(x => x.Remarks)
+                    .IsRequired();
+
+                b.Property(x => x.IsPosted)
+                    .IsRequired();
+
+                b.HasOne(x => x.PayrunDetail).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.Employee).WithMany().OnDelete(DeleteBehavior.Restrict);
+            });
+            builder.Entity<PayrunAllowanceSummary>(b =>
+            {
+                b.ToTable(CERPConsts.PayrollDbTablePrefix + "PayrunsAllowancesSummaries", CERPConsts.PayrollDbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureSoftDelete();
+                b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.Property(x => x.Value)
+                    .IsRequired();
+                b.Property(x => x.AllowanceTypeId)
+                    .IsRequired();
+                b.Property(x => x.EmployeeId)
+                    .IsRequired();
+
+                b.HasOne(x => x.Employee).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.AllowanceType).WithMany().OnDelete(DeleteBehavior.Restrict);
             });
         }
 

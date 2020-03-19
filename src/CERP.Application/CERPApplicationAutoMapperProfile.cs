@@ -14,6 +14,8 @@ using CERP.HR.Employees.DTOs;
 using CERP.HR.Employees.UV_DTOs;
 using CERP.HR.Timesheets;
 using CERP.HR.Workshifts;
+using CERP.Payroll.DTOs;
+using CERP.Payroll.Payrun;
 using CERP.Setup;
 using CERP.Setup.DTOs;
 
@@ -108,6 +110,16 @@ namespace CERP
             CreateMap<TimesheetWeekSummary_Dto, TimesheetWeekSummary>().ForMember(d => d.Timesheet, opt => opt.Ignore());
             CreateMap<TimesheetWeekJobSummary, TimesheetWeekJobSummary_Dto>().ForMember(d => d.WeekSheet, opt => opt.Ignore());
             CreateMap<TimesheetWeekJobSummary_Dto, TimesheetWeekJobSummary>().ForMember(d => d.WeekSheet, opt => opt.Ignore());
+
+            CreateMap<Payrun, Payrun_Dto>();
+            CreateMap<Payrun_Dto, Payrun>();
+            CreateMap<PayrunDetail, PayrunDetail_Dto>().ForMember(d => d.Payrun, opt => opt.Ignore());
+            CreateMap<PayrunDetail_Dto, PayrunDetail>().ForMember(d => d.Payrun, opt => opt.Ignore());
+            CreateMap<PayrunAllowanceSummary, PayrunAllowanceSummary_Dto>();
+            CreateMap<PayrunAllowanceSummary_Dto, PayrunAllowanceSummary>();
+            //CreateMap<Payslip, Payslip_Dto>().ForMember(d => d.Payrun, opt => opt.Ignore());
+            //CreateMap<Payslip_Dto, Payslip>().ForMember(d => d.Payrun, opt => opt.Ignore());
+
         }
     }
 }

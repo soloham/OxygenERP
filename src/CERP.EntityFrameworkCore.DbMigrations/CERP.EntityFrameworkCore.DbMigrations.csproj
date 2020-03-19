@@ -66,6 +66,12 @@
     <Compile Remove="Migrations\20200313182108_UpdatedTimesheetAndAddedWeeklyTimesheetsAndRenamedToJobSummary.Designer.cs" />
     <Compile Remove="Migrations\20200313223900_UpdatedEmployeeMadeDepartmentProperty.cs" />
     <Compile Remove="Migrations\20200313223900_UpdatedEmployeeMadeDepartmentProperty.Designer.cs" />
+    <Compile Remove="Migrations\20200314043901_UpdatedPayrun.cs" />
+    <Compile Remove="Migrations\20200314043901_UpdatedPayrun.Designer.cs" />
+    <Compile Remove="Migrations\20200314184640_UpdatedPayrunAllowancesSummaryAddedEmployee.cs" />
+    <Compile Remove="Migrations\20200314184640_UpdatedPayrunAllowancesSummaryAddedEmployee.Designer.cs" />
+    <Compile Remove="Migrations\20200317231734_UpdatedPayrunStatusAgain.cs" />
+    <Compile Remove="Migrations\20200317231734_UpdatedPayrunStatusAgain.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -36,9 +36,9 @@ namespace CERP.AppServices.HR.EmployeeService
             }
         }
 
-        public List<Employee_Dto> GetAllEmployees()
+        public List<Employee_Dto> GetAllEmployees(Func<Employee, bool> Selector = null)
         {
-            var result = Repository.WithDetails();
+            var result = Repository.WithDetails().Where(Selector ?? new Func<Employee, bool>(x => true));
             return result.Select(MapToGetListOutputDto).ToList();
         }
     }

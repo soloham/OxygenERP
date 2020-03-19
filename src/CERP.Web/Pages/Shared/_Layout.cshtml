@@ -30,8 +30,14 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link href="~/libs/sweetalert2/dist/sweetalert2.css" rel="stylesheet" />
     <link href="~/styles/cerp/site.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/libs/toastr/toastr.min.css" rel="stylesheet" />
 
     <script src="~/scripts/cerp/vendor.min.js"></script>
+    <style>
+        .calendars-popup {
+            z-index: 10000 !important;
+        }
+    </style>
 </head>
 <body class="layout layout-header-fixed layout-left-sidebar-fixed">
     <div class="site-overlay"></div>
@@ -588,7 +594,7 @@
                             <li class="">
                                 <a href="index-2.html">
                                     <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
-                                    <span class="menu-text">Leaves</span>
+                                    <span class="menu-text">Attendence & Leaves</span>
                                 </a>
                             </li>
                             <li class="">
@@ -610,15 +616,15 @@
                                 </a>
                             </li>
                             <li class="">
-                                <a href="index-2.html">
+                                <a asp-area="Payroll" asp-page="/Payrun/List">
                                     <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
-                                    <span class="menu-text">Attendence</span>
+                                    <span class="menu-text">Payrun</span>
                                 </a>
                             </li>
                             <li class="">
-                                <a href="index-2.html">
+                                <a asp-area="Payroll" asp-page="/Recon/List">
                                     <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
-                                    <span class="menu-text">Payrun</span>
+                                    <span class="menu-text">Reconcilliation</span>
                                 </a>
                             </li>
                         </ul>
@@ -863,7 +869,7 @@
     <!-- MAIN APP JS FILE -->
     @*<script src="~/seed/js/app.min.js"></script>*@
 
-
+    <script src="~/libs/toastr/toastr.min.js"></script>
     <script src="~/scripts/cerp/cosmos.min.js"></script>
     <script src="~/scripts/cerp/application.min.js"></script>
     <script src="~/scripts/cerp/index.min.js"></script>
@@ -876,16 +882,11 @@
         <script src="~/libs/JqueryDatepicker/js/jquery.calendars.islamic.js"></script>*@
 
 
-    @RenderSection("Scripts", required: false)
-    <script src="~/libs/font-awesome/js/fontawesome.min.js"></script>
-
-
     <script src="~/scripts/cerp/site.js" asp-append-version="true"></script>
+    <script src="~/libs/font-awesome/js/fontawesome.min.js"></script>
+    @RenderSection("Scripts", required: false)
 
-    <style>
-        .calendars-popup {
-            z-index: 10000 !important;
-        }
-    </style>
+
+
 </body>
 </html>

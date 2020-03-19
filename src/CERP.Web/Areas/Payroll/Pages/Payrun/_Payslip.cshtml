@@ -1,0 +1,175 @@
+﻿@using CERP;
+@using CERP.App;
+@using CERP.HR.EMPLOYEE.DTOs;
+@using Volo.Abp.Domain.Repositories;
+@{
+
+}
+
+    <div id="payslipPreview" class="well" style="background-color: white">
+        <div class="row">
+            <div class="col-sm-8 text-left">
+                <h4 class="m-t-0 col-sm-12 panelHeading">
+                    @Model.getCompanyName <br /><br />
+                    @Model.getCompanyAddress
+                </h4>
+            </div>
+            <div class="col-sm-4 ">
+                <p>@DateTime.Now.ToShortDateString() <br /><br /> @DateTime.Now.ToShortTimeString()</p>
+            </div>
+        </div>
+        <hr class="margin-top-5 margin-bottom-10" />
+        <div class="row">
+            <div class="col-sm-8  text-left ">
+                <h4 class="m-t-0 col-sm-12  panelHeading">
+                    @Model.getEmployeeName <br /><br />
+                    @DateTime.Now.ToShortDateString() <br /><br />
+                    @Model.getEmployeeDepartmentName <br /><br />
+                    @Model.getEmployeePositionTitle <br /><br />
+                </h4>
+            </div>
+            <div class="col-sm-4 ">
+                @*<h4 class="m-t-0 col-sm-12  panelHeading">
+                    EmployeeName <br /><br />
+                    DOB <br /><br />
+                    JoiningDate <br /><br />
+                    Department <br /><br />
+                    Position <br /><br />
+                </h4>*@
+            </div>
+        </div>
+        <div>
+            <hr class="m-b-0 m-t-0" />
+            <h4>Period: @Model.getPeriod</h4>
+            <div class="row" style="background-color: #808080; color:white;">
+                <div class="col-sm-1">
+                </div>
+                <div class="col-sm-2">
+                    <h4>Payments</h4>
+                </div>
+                <div class="col-sm-2">
+                    <h4>Type</h4>
+                </div>
+                <div class="col-sm-2">
+                    <h4>Rate</h4>
+                </div>
+                <div class="col-sm-2">
+                    <h4>Hours</h4>
+                </div>
+                <div class="col-sm-2">
+                    <h4>Amount</h4>
+                </div>
+            </div>
+            @for (int i = 0; i < Model.Payments.Count; i++)
+            {
+                <div class="row" style="background-color: white; color:#282626;">
+                    <div class="col-sm-1">
+                    </div>
+                    <div class="col-sm-2">
+                        <h4>@Model.Payments[i].Title</h4>
+                    </div>
+                    <div class="col-sm-2">
+                        <h4>@Model.Payments[i].Type</h4>
+                    </div>
+                    <div class="col-sm-2">
+                        <h4>SAR @Model.Payments[i].Rate</h4>
+                    </div>
+                    <div class="col-sm-2">
+                        <h4>@Model.Payments[i].Hours</h4>
+                    </div>
+                    <div class="col-sm-2">
+                        <h4>@Model.Payments[i].Amount.ToString("N2")</h4>
+                    </div>
+                </div>
+                <div class="row" style="background-color: #e9e9e9; margin-top:5px; color:#282626;">
+                    <div class="col-sm-1">
+                    </div>
+                    <div class="col-sm-2">
+                        <h4><b>Total</b></h4>
+                    </div>
+                    <div class="col-sm-2">
+
+                    </div>
+                    <div class="col-sm-2">
+
+                    </div>
+                    <div class="col-sm-2">
+                        <h4><b>@Model.TotalHours</b></h4>
+                    </div>
+                    <div class="col-sm-2">
+                        <h4><b>@Model.TotalPayments.ToString("N2")</b></h4>
+                    </div>
+                </div>
+            }
+        </div>
+        <hr class="m-t-0" />
+        <div>
+            <div class="row" style="background-color: #808080; color:white;">
+                <div class="col-sm-4 text-left">
+                    <h4>Summary</h4>
+                </div>
+            </div>
+            <div class="row" style="width: 100%;">
+                <div class="col-md-6">
+                    <div class="row" style="background-color:#1581e9; color:white">
+                        <h4>Earnings</h4>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="row" style="background-color:#d92c2c; color:white">
+                        <h4>Deductions</h4>
+                    </div>
+                </div>
+            </div>
+            <div style="width: 100%;">
+
+                @for (int i = 0; i < Model.Earnings.Count; i++)
+                {
+                    <div class="col-md-6">
+                        <div class="row" style="padding-top: 0; background-color: #e8f8ff; color:#282626;">
+                            <div class="col-sm-1">
+                            </div>
+                            <div class="col-sm-5">
+                                <h4>@Model.Earnings[i].Key</h4>
+                            </div>
+                            <div class="col-sm-6" style="background-color: whitesmoke;">
+                                <h4>@Model.Earnings[i].Value</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row" style="padding-top: 0; background-color: #ffeaea; margin-top:5px; color:#282626;">
+                            <div class="col-sm-1">
+                            </div>
+                            <div class="col-sm-5">
+                                <h4>@Model.Deductions[i].Key</h4>
+                            </div>
+                            <div class="col-sm-6" style="background-color: whitesmoke;">
+                                <h4>@Model.Deductions[i].Value</h4>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+            @*<div class="row" style="background-color: #808080; color:white;">
+                <div class="col-sm-4 text-left">
+                    <h4>Leave Balances</h4>
+                </div>
+            </div>
+            <hr />
+            <div class="row" style="background-color: #808080; color:white;">
+                <div class="col-sm-4 text-left">
+                    <h4>Direct Credit Details</h4>
+                </div>
+            </div>
+            <hr class="m-t-15" />*@
+
+        </div>
+
+
+        <style>
+            .swal2-popup {
+                width: 850px !important;
+            }
+        </style>

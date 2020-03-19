@@ -12,10 +12,27 @@
 }
 
 @section scripts{
-    <script>
-
-    </script>
 }
+
+<script>
+    $(document).ready(function () {
+        $('#addWorkshiftsSectionBtn').on('click', function () {
+            var isCollapsed = $('#form-step-6-1').css('display') == 'none';
+
+            if (isCollapsed) {
+                $('#addWorkshiftsSection').slideUp(200);
+                $('#form-step-6-1').slideDown(200);
+                setTimeout(function () { $('#addWorkshiftsSectionBtn', '#addWorkshiftsSection').html('<i class="fa fa-arrow-up p-r-5"></i> Cancel Add') }, 200)
+                $('#addWorkshiftsSection').slideDown(200);
+            } else {
+                $('#addWorkshiftsSection').slideUp(200);
+                $('#form-step-6-1').slideUp(200);
+                setTimeout(function () { $('#addWorkshiftsSectionBtn', '#addWorkshiftsSection').html('<i class="fa fa-plus p-r-5"></i> Add Workshift') }, 200)
+                $('#addWorkshiftsSection').slideDown(200);
+            }
+        });
+    });
+</script>
 
 <div class="m-l-20 m-t-0">
     <h2>Work Shifts Details</h2>
@@ -26,8 +43,12 @@
 <hr class="m-b-0"/>
 <div class="panel-body" style="padding-bottom:0">
     <div class="col-lg-12 padding-right-0">
-
-        <div id="form-step-6-1" role="form" data-toggle="validator">
+        <div id="addWorkshiftsSection" class="row" style="margin-bottom:10px;">
+            <div class="col-lg-12">
+                <button id="addWorkshiftsSectionBtn" type="button" class="btn btn-primary btn-block"><i class="fa fa-plus p-r-5"></i> Add Workshift</button>
+            </div>
+        </div>
+        <div id="form-step-6-1" role="form" data-toggle="validator" style="display: none">
             <div class="row">
                 <div class="col-lg-4 col-sm-6 col-12">
                     <div class="form-group">

@@ -60,7 +60,7 @@
                         <tr>
                             <th>S.No</th>
                             <th width="70px">Chargeable<br />/ Not chargeable</th>
-                            <th width="70px">Service Line or <br />No chargeable</th>
+                            <th width="70px">Department</th>
                             <th width="90px">Client</th>
                             @*<th width="100px">Engagement</th>*@
                             <th>Sun</th>
@@ -203,8 +203,8 @@
 
                 <div class="margin-top-10">
                     <button type="button" onclick="newRow(1)" class="btn btn-default btn-sm border-radius-5">Add Row</button>
-                    <button type="button" onclick="newRow(3)" class="btn btn-default btn-sm border-radius-5">Add 3 Rows</button>
-                    <button type="button" onclick="newRow(5)" class="btn btn-default btn-sm border-radius-5">Add 5 Rows</button>
+                    @*<button type="button" onclick="newRow(3)" class="btn btn-default btn-sm border-radius-5">Add 3 Rows</button>*@
+                    @*<button type="button" onclick="newRow(5)" class="btn btn-default btn-sm border-radius-5">Add 5 Rows</button>*@
                 </div>
             </div>
         </div>
@@ -428,17 +428,22 @@
             calculateTotal();
 
             tr.find('select,input').not('#CLIENT_ID,#ENGAGEMENT_ID').removeAttr('required');
+            var count = 0;
             if (IS_CHARGEABLE !='') {
                 tr.find('select,input').not('#CLIENT_ID,#ENGAGEMENT_ID').attr('required', 'required');
 
-
+                count++;
                 tr.find('input').each(function () {
                     if ($(this).val() == '') {
                         $(this).val(0);
                     }
                 });
 
+                
             }
+            //console.log("-------------------------------------");
+            //console.log(count);
+            //if (count == $('#tblTimeSheet').find('tbody tr').length) newRow(1);
 
         });
 
@@ -547,8 +552,6 @@
 
 </script>
 
-
-
 <style>
     #tblTimeSheet thead th {
         text-align: center !important;
@@ -556,7 +559,7 @@
         vertical-align: bottom;
         white-space: nowrap;
         background-color: #efefef;
-        color: #45547d;
+        color: #a1a4aa;
         padding: 10px 0px;
     }
 
@@ -576,7 +579,7 @@
 
     #tblTimeSheet .trSum td .form-control {
         font-weight: bold;
-        background-color: #efefef;
+        background-color: #fafafa;
         border-radius: 0px !important;
     }
 </style>

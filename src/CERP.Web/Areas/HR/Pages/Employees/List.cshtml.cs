@@ -82,11 +82,11 @@ namespace CERP.Web.Areas.HR.Pages.Employees
         public List<GridColumn> GetPrimaryGridColumns()
         {
             List<GridColumn> gridColumns = new List<GridColumn>() {
-                new GridColumn { Field = "GetReferenceId", Width = "110", HeaderText = "Id", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "Name", Width = "230", HeaderText = "Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "Position.Department.Name", AutoFit = true, HeaderText = "Department", TextAlign=TextAlign.Center, },
-                new GridColumn { Field = "Position.Title", AutoFit = true, HeaderText = "Position", TextAlign=TextAlign.Center,  },
-                new GridColumn { Field = "EmployeeStatus.Value", AutoFit = true, HeaderText = "Employee Status", TextAlign=TextAlign.Center  }
+                new GridColumn { Field = "GetReferenceId", HeaderText = "Id", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "Name", HeaderText = "Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "Position.Department.Name", HeaderText = "Department", TextAlign=TextAlign.Center, },
+                new GridColumn { Field = "Position.Title", HeaderText = "Position", TextAlign=TextAlign.Center,  },
+                new GridColumn { Field = "EmployeeStatus.Value", HeaderText = "Employee Status", TextAlign=TextAlign.Center  }
             };
 
             gridColumns.AddRange(GetCommandsColumns());
@@ -97,11 +97,11 @@ namespace CERP.Web.Areas.HR.Pages.Employees
         {
             List<GridColumn> gridColumns = new List<GridColumn>()
             {
-                new GridColumn { Field = "IDType.Value", Width = "110", HeaderText = "Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "IDNumber", Width = "110", HeaderText = "ID Number", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "IssuedFrom.Value", Width = "110", HeaderText = "Issued From", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "IssuedDate", Type = "date", Format = "dd/MM/yyyy", Width = "110", HeaderText = "Issue Date", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "EndDate", Type = "date", Format = "dd/MM/yyyy", Width = "110", HeaderText = "End Date", TextAlign=TextAlign.Center,  MinWidth="10"  }
+                new GridColumn { Field = "IDType.Value", HeaderText = "Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "IDNumber", HeaderText = "ID Number", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "IssuedFrom.Value", HeaderText = "Issued From", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "IssuedDate", Type = "date", Format = "dd/MM/yyyy", HeaderText = "Issue Date", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "EndDate", Type = "date", Format = "dd/MM/yyyy", HeaderText = "End Date", TextAlign=TextAlign.Center,  MinWidth="10"  }
             }; 
 
             return gridColumns;

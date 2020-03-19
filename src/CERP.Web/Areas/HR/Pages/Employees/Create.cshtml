@@ -31,6 +31,7 @@
     ViewData["employeeStatuses"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.EmployeeStatus).OrderBy(x => x.Key).ToList();
     ViewData["contractTypes"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.ContractType).OrderBy(x => x.Key).ToList();
     ViewData["contractStatuses"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.ContractStatus).OrderBy(x => x.Key).ToList();
+    ViewData["employees"] = await Model.employeeAppService.Repository.GetListAsync();
 
 
     ViewData["banks"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Bank).OrderBy(x => x.Key).ToList();

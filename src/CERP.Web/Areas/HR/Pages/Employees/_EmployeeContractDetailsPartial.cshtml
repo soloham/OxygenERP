@@ -1,6 +1,7 @@
 ﻿@using CERP.App;
 @using CERP.Setup.DTOs;
 @using CERP.HR.Employees.DTOs;
+@using CERP.HR.Employees;
 @{
     List<Department_Dto> departments = (List<Department_Dto>)ViewData["departments"];
 
@@ -10,6 +11,8 @@
     List<DictionaryValue> employeeStatuses = (List<DictionaryValue>)ViewData["employeeStatuses"];
     List<DictionaryValue> contractStatuses = (List<DictionaryValue>)ViewData["contractStatuses"];
     List<DictionaryValue> contractTypes = (List<DictionaryValue>)ViewData["contractTypes"];
+
+    List<Employee> employees = (List<Employee>)ViewData["employees"];
 }
 
 @section scripts{
@@ -147,6 +150,18 @@
                 <div class="form-group">
                     <label class="margin-bottom-5  control-label">Vacation Days (Annually):</label>
                     <input type="number" value="@(isEditing? employee.VacationDays.ToString() : "")" id="vacationDays" name="VacationDays" min="0" @*value="@(empInfo!=null? empInfo.VACATION_DAYS :0)"*@ class="form-control" required>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="margin-bottom-5  control-label">Reporting To:</label>
+                    <select id="reportingToId" name="ReportingToId" class="form-control">
+                        <option selected></option>
+                        @for (int i = 0; i < employees.Count; i++)
+                        {
+                            @: <option value="@employees[i].Id" @(isEditing && employee != null? employee.ReportingToId == employees[i].Id? "selected" : "" : "")>@(employees[i].FirstName + " " + employees[i].LastName)</option>
+                        }
+                    </select>                
                 </div>
             </div>
         </div>

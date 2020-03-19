@@ -1,4 +1,5 @@
 ﻿using CERP.App;
+using CERP.FM.DTOs;
 using CERP.HR.EMPLOYEE.DTOs;
 using CERP.Setup.DTOs;
 using System;
@@ -100,6 +101,8 @@ namespace CERP.HR.Employees.UV_DTOs
         public Position_Dto Position { get; set; }
         [Required]
         public Guid PositionId { get; set; }
+        public Employee_UV_Dto? ReportingTo { get; set; }
+        public Guid? ReportingToId { get; set; }
         #endregion
 
         #region Workshifts

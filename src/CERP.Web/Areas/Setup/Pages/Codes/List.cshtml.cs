@@ -91,7 +91,11 @@ namespace CERP.Web.Areas.Setup.Codes
             dicValue.ValueType = null;
             try
             {
-                var value = await dictionaryValueAppService.UpdateAsync(dicValue.Id, dicValue);
+                var curDicValue = dictionaryValueAppService.Repository.First(x => x.Id == dicValue.Id);
+                curDicValue.Value = dicValue.Value;
+
+                var value = await dictionaryValueAppService.Repository.UpdateAsync(curDicValue);
+
                 return new OkResult();
             }
             catch(Exception ex)

@@ -1,4 +1,5 @@
 ﻿using CERP.App;
+using CERP.FM;
 using CERP.HR.Workshifts;
 using CERP.Setup;
 using System;
@@ -19,8 +20,12 @@ namespace CERP.HR.Employees
         {
             Id = guid;
         }
+        [NotMapped]
+        public string GetReferenceId { get => Id.ToString().Substring(0, 4); }
 
         #region General Info
+        [NotMapped]
+        public string Name { get => FirstName + " " + LastName; }
         public string FirstName { get; set; }
         public string FirstNameLocalized { get; set; }
         public string MiddleName { get; set; }
@@ -91,6 +96,9 @@ namespace CERP.HR.Employees
         [ForeignKey("PositionId")]
         public Position Position { get; set; }
         public Guid PositionId { get; set; }
+        [ForeignKey("ReportingToId")]
+        public Employee? ReportingTo { get; set; }
+        public Guid? ReportingToId { get; set; }
         #endregion
 
         #region Workshifts

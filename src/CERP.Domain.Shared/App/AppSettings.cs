@@ -7,7 +7,9 @@ namespace CERP
 {
     public static class AppSettings
     {
-        
+        public static int PermanantEmployeeTypeKey { get; set; } = 25001;
+        public static int ContractBasedEmployeeTypeKey { get; set; } = 25002;
+        public static string TerminatedEmployeeStatusKey { get; set; }
     }
     public enum ValueTypeModules
     {
@@ -21,8 +23,6 @@ namespace CERP
         BloodGroup,
         [Description("Religion")]
         Religion,
-        [Description("Employee Type")]
-        EmployeeType,
         [Description("ID Type")]
         IDType,
         [Description("Cashflow Statement Type")]
@@ -57,5 +57,7 @@ namespace CERP
         ServiceLineAdmins,
         [Description("Clients")]
         Clients,
+        [Description("Employee Type")]
+        EmployeeType,
     }
 }

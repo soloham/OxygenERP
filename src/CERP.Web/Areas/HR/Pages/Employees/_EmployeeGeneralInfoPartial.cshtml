@@ -101,9 +101,9 @@
                 <label id="upload" for="imageUpload"></label>
             </div>
             <div class="avatar-preview">
-                @*<div id="imagePreview" style="background-image: url(/images/@(isEditing? employee.ProfilePic : "noimage.jpg"));">
+                @*<div id="imagePreview" style="background-image: url(/images/@(isEditing && employee != null? employee.ProfilePic : "noimage.jpg"));">
                 </div>*@
-                <img id="EmpPhoto" src="/Uploads/@(isEditing && employee.ProfilePic != null? employee.ProfilePic : "noimage.jpg")" class="img-responsive padding-5" style="cursor:pointer" />
+                <img id="EmpPhoto" src="/Uploads/@(isEditing && employee.ProfilePic != null && employee.ProfilePic != ""? employee.ProfilePic : "noimage.jpg")" class="img-responsive padding-5" style="cursor:pointer" />
             </div>
         </div>
         @*<div id='profile-upload'>
@@ -111,7 +111,7 @@
             <i class="fa fa-camera"></i>
         </div>*@
 
-        @*<img id="EmpPhoto" src="~/images/@(isEditing? employee.ProfilePic : "noimage.jpg")" class="img-responsive padding-5" style="cursor:pointer" />*@
+        @*<img id="EmpPhoto" src="~/images/@(isEditing && employee != null? employee.ProfilePic : "noimage.jpg")" class="img-responsive padding-5" style="cursor:pointer" />*@
         @*@if (empInfo != null && empInfo.PHOTO != null)
         {
             <img id="EmpPhoto" src='@(Url.Content("~")+"Files\\"+ Model.EMP_ID+"\\"+Convert.ToString(empInfo.PHOTO)+"?v="+DateTime.Now.Second.ToString())' class="img-responsive padding-5" style="cursor:pointer" />
@@ -143,7 +143,7 @@
                 <div class="col-sm-6" style="padding:0">
                     <div class="form-group">
                         <label class="control-label m-b-5 pull-right ">(Arabic)</label>
-                        <input type="text" id="firstNameLocalized" @(isEditing? $"value={employee.FirstNameLocalized}" : "") name="FirstNameLocalized" style="width:100% !important" class="text-right  form-control inline rtl text-right">
+                        <input type="text" id="firstNameLocalized" value='@(isEditing && employee != null? $"{employee.FirstNameLocalized}" : "")' name="FirstNameLocalized" style="width:100% !important" class="text-right  form-control inline rtl text-right">
                     </div>
                 </div>
             </div>
@@ -152,13 +152,13 @@
                 <div class="col-sm-6" style="padding:0">
                     <div class="form-group">
                         <label class="control-label m-b-5">Middle Name:</label>
-                        <input type="text" id="MiddleName" @(isEditing? $"value={employee.MiddleName}" : "") name="MiddleName" style="width:100% !important;" class="text-left form-control inline pull-left" required>
+                        <input type="text" id="MiddleName" @(isEditing && employee != null? $"value={employee.MiddleName}" : "") name="MiddleName" style="width:100% !important;" class="text-left form-control inline pull-left" required>
                     </div>
                 </div>
                 <div class="col-sm-6" style="padding:0">
                     <div class="form-group">
                         <label class="control-label m-b-5 pull-right ">(Arabic)</label>
-                        <input type="text" id="MiddleNameLocalized" @(isEditing? $"value={employee.MiddleNameLocalized}" : "") name="MiddleNameLocalized" style="width:100% !important;" class="text-right  form-control inline rtl text-right">
+                        <input type="text" id="MiddleNameLocalized" value='@(isEditing && employee != null? $"{employee.MiddleNameLocalized}" : "")' name="MiddleNameLocalized" style="width:100% !important;" class="text-right  form-control inline rtl text-right">
                     </div>
                 </div>
             </div>
@@ -167,13 +167,13 @@
                 <div class="col-sm-6" style="padding:0">
                     <div class="form-group">
                         <label class="control-label m-b-5">Last Name:</label>
-                        <input type="text" id="grandName" @(isEditing? $"value={employee.LastName}" : "") name="LastName" style="width:100% !important" class="text-left form-control inline pull-left" required>
+                        <input type="text" id="grandName" @(isEditing && employee != null? $"value={employee.LastName}" : "") name="LastName" style="width:100% !important" class="text-left form-control inline pull-left" required>
                     </div>
                 </div>
                 <div class="col-sm-6" style="padding:0">
                     <div class="form-group">
                         <label class="control-label m-b-5 pull-right ">(Arabic)</label>
-                        <input type="text" id="grandNameAr" @(isEditing? $"value={employee.LastNameLocalized}" : "") name="LastNameLocalized" style="width:100% !important" class="text-right  form-control inline rtl text-right">
+                        <input type="text" id="grandNameAr" value='@(isEditing && employee != null? $"{employee.LastNameLocalized}" : "")' name="LastNameLocalized" style="width:100% !important" class="text-right  form-control inline rtl text-right">
                     </div>
                 </div>
             </div>
@@ -182,13 +182,13 @@
                 <div class="col-sm-6" style="padding:0">
                     <div class="form-group">
                         <label class="control-label m-b-5">Family Name:</label>
-                        <input type="text" id="familyName" @(isEditing? $"value={employee.FamilyName}" : "") name="FamilyName" style="width:100% !important" class="text-left form-control inline pull-left">
+                        <input type="text" id="familyName" @(isEditing && employee != null? $"value={employee.FamilyName}" : "") name="FamilyName" style="width:100% !important" class="text-left form-control inline pull-left">
                     </div>
                 </div>
                 <div class="col-sm-6" style="padding:0">
                     <div class="form-group">
                         <label class="control-label m-b-5 pull-right ">(Arabic)</label>
-                        <input type="text" id="familyNameLocalized" @(isEditing? $"value={employee.FamilyNameLocalized}" : "") name="FamilyNameLocalized" style="width:100% !important" class="text-right  form-control inline rtl text-right">
+                        <input type="text" id="familyNameLocalized" value='@(isEditing && employee != null? $"{employee.FamilyNameLocalized}" : "")' name="FamilyNameLocalized" style="width:100% !important" class="text-right  form-control inline rtl text-right">
                     </div>
                 </div>
             </div>
@@ -200,13 +200,13 @@
                 <div class="col-sm-6" style="padding:0">
                     <div class="form-group">
                         <label class="control-label m-b-5">Birth Date:</label>
-                        <input type="text" id="dob" @(isEditing? $"value={employee.DOB}" : "") name="DOB" style="width: 100% !important; cursor: default;" class="text-left form-control inline pull-left DatePicker is-calendarsPicker" autocomplete="off" required>
+                        <input type="text" id="dob" @(isEditing && employee != null? $"value={employee.DOB}" : "") name="DOB" style="width: 100% !important; cursor: default;" class="text-left form-control inline pull-left DatePicker is-calendarsPicker" autocomplete="off" required>
                     </div>
                 </div>
                 <div class="col-sm-6" style="padding:0">
                     <div class="form-group">
                         <label class="control-label m-b-5 pull-right ">(Hijri date)</label>
-                        <input type="text" id="dobH" @(isEditing && employee.DOB_H != null? $"value={employee.DOB_H}" : "") name="DOB_H" style="width:100% !important" class="text-right form-control inline DatePickerHijri is-calendarsPicker" autocomplete="off">
+                        <input type="text" id="dobH" value='@(isEditing && employee.DOB_H != null? $"{employee.DOB_H}" : "")' name="DOB_H" style="width:100% !important" class="text-right form-control inline DatePickerHijri is-calendarsPicker" autocomplete="off">
                     </div>
                 </div>
             </div>
@@ -321,7 +321,7 @@
                         <option selected hidden></option>
                         @for (int i = 0; i < employeeTypes.Count; i++)
                         {
-                            <option value="@employeeTypes[i].Id" selected="@(isEditing? employee.EmployeeTypeId == employeeTypes[i].Id : false)">@employeeTypes[i].Value</option>
+                            <option value="@employeeTypes[i].Id" selected="@(isEditing && employee != null? employee.EmployeeTypeId == employeeTypes[i].Id : false)">@employeeTypes[i].Value</option>
                         }
                     </select>
                 </div>
