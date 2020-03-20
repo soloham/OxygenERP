@@ -108,6 +108,7 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
                     DateTime curPeriod = new DateTime(curDetail.Year, curDetail.Month, 1);
 
                     dynamic paymentSlipDSRow = new ExpandoObject();
+                    paymentSlipDSRow.payrunId = payrunId;
                     paymentSlipDSRow.sNo = i + 1;
                     paymentSlipDSRow.getEmpRefCode = curDetail.Employee.GetReferenceId;
                     paymentSlipDSRow.getEmpName = curDetail.Employee.Name;
@@ -117,11 +118,11 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
                     paymentSlipDSRow.getBankName = curBank.GetBankName;
                     paymentSlipDSRow.getBankIBAN = curBank.BankIBAN;
 
-                    paymentSlipDSRow.getBasicSalary = curDetail.BasicSalary;
+                    paymentSlipDSRow.getBasicSalary = "SAR " + curDetail.BasicSalary.ToString("N2");
                     paymentSlipDSRow.getAllowanceHousing = housingAllowance == null ? "—" : "SAR " + housingAllowance.Value.ToString("N2");
                     paymentSlipDSRow.getOtherIncome = otherAllowancesSum;
-                    paymentSlipDSRow.getDeductions = curDetail.GrossDeductions;
-                    paymentSlipDSRow.getPayment = curDetail.NetAmount;
+                    paymentSlipDSRow.getDeductions = "SAR " + curDetail.GrossDeductions.ToString("N2");
+                    paymentSlipDSRow.getPayment = "SAR " + curDetail.NetAmount.ToString("N2");
 
                     dynamicDS.Add(paymentSlipDSRow);
                 }
@@ -181,7 +182,7 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
                 new GridColumn { Field = "netTotal", HeaderText = "Net Total", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "note", HeaderText = "Note", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "isPosted", Width = "65", DisplayAsCheckBox = true, HeaderText = "Is Posted", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "postedDate", HeaderText = "Posted Date", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "postedDate", HeaderText = "Posted Date", Format="yMEd", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "postedByTemp", HeaderText = "Posted By", TextAlign=TextAlign.Center,  MinWidth="10"  },
             };
 

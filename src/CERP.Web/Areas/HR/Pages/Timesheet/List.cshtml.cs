@@ -32,6 +32,7 @@ namespace CERP.Web.Areas.HR.Pages.TimeSheets
             GetSecondaryGrid = new Grid()
             {
                 DataSource = ViewData["Timesheets_ChildDS"],
+                QueryCellInfo="queryCellInfo",
                 Load = "onLoad",
                 QueryString = "timesheetId",
                 EditSettings = new Syncfusion.EJ2.Grids.GridEditSettings() { },
@@ -79,7 +80,7 @@ namespace CERP.Web.Areas.HR.Pages.TimeSheets
                     }
                 },
                 new GridColumn { Field = "totalWeekHours", HeaderText = "Total Hours", TextAlign=TextAlign.Center,  MinWidth="30" },
-                new GridColumn { Field = "isSubmitted", DisplayAsCheckBox=true, HeaderText = "Submitted", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "isSubmitted", DisplayAsCheckBox=true, Width="100",  HeaderText = "Submitted", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "getProgress", DefaultValue="—", Template = "#progressColTemplate", HeaderText = "Progress", TextAlign=TextAlign.Center,  MinWidth="10"  }
             };
 
@@ -104,7 +105,7 @@ namespace CERP.Web.Areas.HR.Pages.TimeSheets
                     }
                 },
                 new GridColumn { Field = "totalMonthHours", DefaultValue="—", HeaderText = "Total Hours", TextAlign=TextAlign.Center,  MinWidth="30" },
-                new GridColumn { Field = "isPosted", DisplayAsCheckBox=true, HeaderText = "Posted", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "isPosted", Width="100", DisplayAsCheckBox=true, HeaderText = "Posted", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "getProgress", DefaultValue="—", Template = "#progressColTemplate", HeaderText = "Progress", TextAlign=TextAlign.Center,  MinWidth="10"  }
             };
 

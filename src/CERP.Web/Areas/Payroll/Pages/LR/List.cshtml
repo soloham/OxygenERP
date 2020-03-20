@@ -1,11 +1,11 @@
-﻿@page "/Payroll/Reconciliation"
+﻿@page "/Payroll/LR"
 @using CERP.Setup.DTOs;
-@model CERP.Web.Areas.Payroll.Pages.ReconcilliationPage.ListModel
+@model CERP.Web.Areas.Payroll.Pages.LR.ListModel
 @{
-    ViewData["Title"] = "Reconciliation";
+    ViewData["Title"] = "Leave Request";
     ViewData["IconClass"] = "fas fa-calendar-check";
-    ViewData["HeaderTitle"] = "RECONCILIATION";
-    ViewData["SubTitle"] = "List of Reconciliations";
+    ViewData["HeaderTitle"] = "LEAVE REQUEST";
+    ViewData["SubTitle"] = "Request Leaves";
     ViewData["Area"] = "Payroll";
 
     ViewData["IsList"] = false;
@@ -17,13 +17,10 @@
 
     var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
 }
-@section Styles {
+@section styles {
     <link href="~/libs/syncfusion/ej2-grid/styles/fabric.css" rel="stylesheet" />
 
     <style>
-        .customContentArea {
-            position: unset !important;
-        }
         .e-grid .e-headercell {
             background-color: #f5f5f5;
             /*font-size: 18px;*/
@@ -42,11 +39,6 @@
     <script src="~/libs/syncfusion/ej2-grid/scripts/ej2.min.js"></script>
     <script>
         $(document).ready(function () {
-            var p1Month = $('option:selected', '#p1Month').val();
-            var p2Month = $('option:selected', '#p2Month').val();
-            if (p1Month == p2Month) $('#p2Month').val((p1Month + 1).toString());
-            $('*', '#p2Month').show();
-            $('option[value=' + p1Month + ']', '#p2Month').hide();
             if ('@isReconDS' == 'True')
             {
                  $('#reconSection').slideDown(200);
@@ -61,20 +53,6 @@
                     //$("#pMonth").val();
                 }, 200);
             }
-            $('#p1Month').on('change', function (e) {
-                var p1Month = $('option:selected', '#p1Month').val();
-                var p2Month = $('option:selected', '#p2Month').val();
-                if (p1Month == p2Month) $('#p2Month').val((p1Month + 1).toString());
-                $('*', '#p2Month').show();
-                $('option[value=' + p1Month + ']', '#p2Month').hide();
-            });
-            $('#p2Month').on('change', function (e) {
-                var p2Month = $('option:selected', '#p2Month').val();
-                var p1Month = $('option:selected', '#p1Month').val();
-                if (p2Month == p1Month) $('#p1Month').val((p2Month + 1).toString());
-                $('*', '#p1Month').show();
-                $('option[value=' + p2Month + ']', '#p1Month').hide();
-            });
             $("#submitPeriod").on('click', function (e) {
                 swal.showLoading();
                 //var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
@@ -188,7 +166,7 @@
                 </div>
             </div>
             <div class="col-md-12 m-t-15">
-                <button id="submitPeriod" type="button" class="btn btn-primary btn-block" style="font-weight:400">CALCULATE RECONCILIATION</button>
+                <button id="submitPeriod" type="button" class="btn btn-primary btn-block" style="font-weight:400">CALCULATE RECON</button>
             </div>
         
         </div>

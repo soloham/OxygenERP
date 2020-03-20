@@ -142,15 +142,16 @@ isPrimary = true
                 <div class="control-section ">
                     <ejs-grid id="CodesItemGrid" dataSource="@ViewData["CurDicValueGridDS"]" enableAutoFill="true" columns="@ViewData["DicValueGridColumns"]"
                               dataBound="dataBound" commandClick="commandClick"
-                              allowExcelExport="true" allowGrouping="true" allowPdfExport="true"
-                              hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"
+                              allowExcelExport="true" allowGrouping="true" height="100%"allowPdfExport="true"
+                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                               allowSorting="true" allowMultiSorting="true" gridLines="Both"
                               toolbarClick="toolbarClick" actionComplete="actionComplete" actionBegin="actionBegin"
                               toolbar="@(new List<object>() {"Add", "Cancel", "Edit", "Delete", "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
-                              contextMenuItems="@(new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending","Copy", "Edit", "Delete", "Save", "Cancel","PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage","LastPage", "NextPage"})"
+                              
                               allowPaging="true" allowResizing="true">
 
-                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                        <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+            <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
                         <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
                         <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
                     </ejs-grid>
@@ -174,15 +175,16 @@ isPrimary = true
                 <div class="control-section ">
                     <ejs-grid id="CodesValueTypeItemGrid" dataSource="@ViewData["CurDicValueTypeGridDS"]" enableAutoFill="true" columns="@ViewData["DicValueTypeGridColumns"]"
                               dataBound="dataBound" commandClick="commandClick"
-                              allowExcelExport="true" allowGrouping="true" allowPdfExport="true"
-                              hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"
+                              allowExcelExport="true" allowGrouping="true" height="100%"allowPdfExport="true"
+                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                               allowSorting="true" allowMultiSorting="true" gridLines="Both"
                               toolbarClick="toolbarClick" actionComplete="actionCompleteValueType" actionBegin="actionBeginValueType"
                               toolbar="@(new List<object>() {"Add", "Cancel", "Edit", "Delete", "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
-                              contextMenuItems="@(new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending","Copy", "Edit", "Delete", "Save", "Cancel","PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage","LastPage", "NextPage"})"
+                              
                               allowPaging="true" allowResizing="true">
 
-                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                        <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+            <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
                         <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
                         <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
                     </ejs-grid>

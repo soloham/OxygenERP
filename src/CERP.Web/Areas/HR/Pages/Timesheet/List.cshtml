@@ -29,6 +29,38 @@
             color: rgb(253,253,253);
             /*font-size: 18px;*/
         }
+
+        #myProgress {
+            position: relative;
+            height: 20px;
+            width: 100%;
+            padding-right: 10px;
+            text-align: left;
+            background-color: whitesmoke;
+        }
+
+        .highcontrast .e-grid #myProgress {
+            background-color: black;
+        }
+
+        #myBar {
+            position: absolute;
+            width: 10%;
+            height: 100%;
+            background-color: #00b300;
+        }
+
+        #myBar.progressdisable {
+            background-color: #e65729;
+        }
+
+        #label {
+            position: relative;
+            left: 10px;
+            line-height: 18px;
+            font-size: 10px;
+            color: black;
+        }
     </style>
 }
 @section scripts {
@@ -142,31 +174,31 @@
     <ejs-scripts></ejs-scripts>
 
 }
-<div class="site-content" style="padding:0; background-color: rgb(253,253,253);">
-    <partial name="_DefaultPageHeader" />
-</div>
-<div class="site-content" style="padding-top:0; background-color: rgb(253,253,253);">
+<partial name="_DefaultPageHeader" />
+<div class="site-content customContentArea" style="padding-top:0; background-color: rgb(253,253,253);">
     <div class="control-section">
         <ejs-grid id="TimesheetsGrid" dataSource="@ViewData["Timesheets_DS"]" childGrid="@Model.GetSecondaryGrid"
-                  enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()"
+                  enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()" queryCellInfo="queryCellInfo"
                   dataBound="dataBound" commandClick="commandClick" actionComplete="actionComplete"
-                  allowExcelExport="true" allowGrouping="true" allowPdfExport="true"
-                  hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"
+                  allowExcelExport="true" allowGrouping="true" height="100%" allowPdfExport="true" allowPaging="true"
+                  hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                   allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                  toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
-                  contextMenuItems="@(new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending","Copy", "Edit", "Delete", "Save", "Cancel","PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage","LastPage", "NextPage"})"
-                  allowPaging="true" allowResizing="true">
+                  toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search",  new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
+                  
+                  allowResizing="true">
 
-            <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
+            <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+            <e-grid-editSettings allowAdding="false" allowDeleting="false" allowEditing="false"></e-grid-editSettings>
             <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
             <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
         </ejs-grid>
     </div>
-    <script id="progressColTemplate" type="text/template">
-        <div class="target">
-            ${getProgress}%
+    <script type="text/template" id="progressColTemplate">
+        <div id="myProgress" class="pbar">
+            <div id="myBar" class="bar">
+                <div id="label" class="barlabel"></div>
+            </div>
         </div>
-        @*$("#target").ejProgressBar({ enabled:true , value: ${getProgress}});*@
     </script>
     <script id="week1ColTemplate" type="text/template">
         <a href='@Url.Content("~")/HR/Timesheets/Edit?year=${year}&month=${month}&week=1&employeeId=${employeeId}'>${week1Hours}</a>
@@ -202,6 +234,24 @@
 </ejs-dialog>
 
 <script>
+    function queryCellInfo(args) {
+        if (args.column.field === "getProgress") {
+            //if (args.data.getProgress <= 20) {
+            //    args.data.getProgress = args.data.getProgress + 30;
+            //}
+            args.cell.querySelector(".bar").style.width = args.data.getProgress + "%";
+            args.cell.querySelector(".barlabel").textContent = args.data.getProgress + "%";
+            if (args.data.getProgress >= 28) {
+                args.cell.querySelector("#label").style.color = "rgb(253,253,253)";
+            }
+            if (typeof args.data.isPosted != 'undefined' && !args.data.isPosted) {
+                args.cell.querySelector(".bar").classList.add("progressdisable");
+            }
+            if (typeof args.data.isSubmitted != 'undefined' && !args.data.isSubmitted) {
+                args.cell.querySelector(".bar").classList.add("progressdisable");
+            }
+        }
+    }
     function onLoad(args) {
         this.parentDetails.parentKeyFieldValue = this.parentDetails.parentRowData['id'];
     }

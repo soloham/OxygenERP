@@ -11,9 +11,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="description" content="">
     <title>@ViewData["Title"] - Cloud ERP</title>
-    <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
+    @*<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">*@
 
-    @RenderSection("Styles", required: false)
 
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500,700" rel="stylesheet">
 
@@ -38,8 +37,10 @@
             z-index: 10000 !important;
         }
     </style>
+
+    @RenderSection("Styles", required: false)
 </head>
-<body class="layout layout-header-fixed layout-left-sidebar-fixed">
+<body class="layout layout-header-fixed layout-left-sidebar-fixed" style="margin:0">
     <div class="site-overlay"></div>
     <div class="site-header">
         <nav class="navbar navbar-default">
@@ -845,8 +846,11 @@
         </div>
 
         @RenderBody()
-        <div class="site-footer position-sticky">
-            2020 © Cloud ERP
+
+        <div class="site-footer position-sticky customPageFooter">
+            <div class="container">
+                <span class="text-muted"> 2020 © Cloud ERP</span>
+            </div>
         </div>
     </div>
     <script src="~/libs/sweetalert2/dist/sweetalert2.min.js"></script>
@@ -884,6 +888,7 @@
 
     <script src="~/scripts/cerp/site.js" asp-append-version="true"></script>
     <script src="~/libs/font-awesome/js/fontawesome.min.js"></script>
+
     @RenderSection("Scripts", required: false)
 
 

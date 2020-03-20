@@ -64,12 +64,13 @@
         <ejs-grid id="BasicSalariesGrid" width="auto" dataSource="@basicSalaryDS" enableAutoFill="true" columns="@basicSalaryColumns"
                   dataBound="dataBound" commandClick="commandClick" actionComplete="actionComplete"
                   allowExcelExport="true" allowGrouping="false" allowPdfExport="true"
-                  hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"
+                  hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                   allowSorting="true" allowMultiSorting="true" gridLines="Both"
                   toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
-                  contextMenuItems="@(new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending","Copy", "Edit", "Delete", "Save", "Cancel","PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage","LastPage", "NextPage"})"
+                  
                   allowPaging="true" allowResizing="true">
 
+            <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
             <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
             <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
             <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
@@ -204,14 +205,15 @@
 
             <ejs-grid id="AllowancesGrid" dataSource="@allowancesDS" enableAutoFill="true" columns="@allowancesColumns"
                       dataBound="dataBound" commandClick="commandClick"
-                      allowExcelExport="true" allowGrouping="true" allowPdfExport="true"
-                      hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"
+                      allowExcelExport="true" allowGrouping="true" height="100%"allowPdfExport="true"
+                      hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                       allowSorting="true" allowMultiSorting="true" gridLines="Both"
                       toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
-                      contextMenuItems="@(new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending","Copy", "Edit", "Delete", "Save", "Cancel","PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage","LastPage", "NextPage"})"
+                      
                       allowPaging="true" allowResizing="true">
 
-                <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="false" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+            <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="false" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
                 <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
                 <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
             </ejs-grid>
@@ -306,12 +308,13 @@
         <ejs-grid id="BanksGrid" width="auto" dataSource="@banksDS" enableAutoFill="true" columns="@banksColumns"
                   dataBound="dataBound" commandClick="commandClick" actionComplete="actionComplete"
                   allowExcelExport="true" allowGrouping="false" allowPdfExport="true"
-                  hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"
+                  hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                   allowSorting="true" allowMultiSorting="true" gridLines="Both"
                   toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
-                  contextMenuItems="@(new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending","Copy", "Edit", "Delete", "Save", "Cancel","PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage","LastPage", "NextPage"})"
+                  
                   allowPaging="true" allowResizing="true">
 
+            <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
             <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
             <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
             <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>

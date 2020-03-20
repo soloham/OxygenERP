@@ -82,11 +82,11 @@ namespace CERP.Web.Areas.HR.Pages.Employees
         public List<GridColumn> GetPrimaryGridColumns()
         {
             List<GridColumn> gridColumns = new List<GridColumn>() {
-                new GridColumn { Field = "GetReferenceId", HeaderText = "Id", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "GetReferenceId", MaxWidth="100", Width="100", HeaderText = "Id", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "Name", HeaderText = "Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "Position.Department.Name", HeaderText = "Department", TextAlign=TextAlign.Center, },
                 new GridColumn { Field = "Position.Title", HeaderText = "Position", TextAlign=TextAlign.Center,  },
-                new GridColumn { Field = "EmployeeStatus.Value", HeaderText = "Employee Status", TextAlign=TextAlign.Center  }
+                new GridColumn { Field = "EmployeeStatus.Value", HeaderText = "Employee Status", Template="#statusTemplate", Filter="@(new { type='CheckBox', itemTemplate='#StatusItemTemp' })", TextAlign=TextAlign.Center  }
             };
 
             gridColumns.AddRange(GetCommandsColumns());

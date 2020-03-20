@@ -326,12 +326,13 @@
         </div>
         <ejs-grid id="SecondaryContactsGrid" dataSource="@secondaryContactsDS" enableAutoFill="true" columns="@secondaryContactsColumns"
                   dataBound="dataBound" commandClick="commandClick"
-                  allowExcelExport="true" allowGrouping="true" allowPdfExport="true"
-                  hierarchyPrintMode="All" allowSelection="true" allowFiltering="true"
+                  allowExcelExport="true" allowGrouping="true" height="100%"allowPdfExport="true"
+                  hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                   allowSorting="true" allowMultiSorting="true" gridLines="Both"
                   toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
                   allowPaging="true" allowResizing="true">
 
+            <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
             <e-grid-editSettings showDeleteConfirmDialog="true" mode="Dialog" showConfirmDialog="true" allowAdding="false" allowDeleting="true" allowEditing="false" newRowPosition="Bottom"></e-grid-editSettings>
             <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
             <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
