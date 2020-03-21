@@ -39,7 +39,7 @@
             $("#closePaymentSheetBtn").on('click', function () {
                 console.log('Hellooo');
                 $('#paymentsSheetSection').slideUp(200);
-                $("#PayrunsGridContainer").stop().animate({ height: '-webkit-fill-available' }, 150);
+                $("#PayrunsGridContainer").stop().animate({ height: '100%', height: '-webkit-fill-available', height: '-moz-fill-available', height: 'fill-available' }, 150);
                 //$("#paymentsSheetSection").stop().animate({ height: '44%' }, 150);
             });
         });
@@ -50,7 +50,7 @@
 }
 <partial name="_DefaultPageHeader" />
 <div class="site-content customContentArea"style="padding-top:0; background-color: rgb(253,253,253); padding-bottom:70px">
-    <div id="PayrunsGridContainer" style="height:-webkit-fill-available; margin-top: 10px" >
+    <div id="PayrunsGridContainer" class="h-fill-available" style="margin-top: 10px" >
         <div class="control-section">
             <ejs-grid id="PayrunsHistoryGrid" dataSource="@ViewData["Payruns_DS"]" queryCellInfo="QueryCellInfo" childGrid="@Model.SecondaryDetailsGrid"
                       enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()" rowDataBound="rowDataBound"
@@ -296,7 +296,7 @@
                     //})
                 },
                 error: function (data) {
-                    $("#PayrunsGridContainer").stop().animate({ height: '-webkit-fill-available' }, 150);
+                    $("#PayrunsGridContainer").stop().animate({ height: '100%', height: '-webkit-fill-available', height: '-moz-fill-available', height: 'fill-available' }, 150);
                      $('#paymentsSheetSection').slideUp(200);
                     swal.fire('Failed', `Payment slip for this payrun couldn't be generated`, 'error');
                     //location.reload(true);

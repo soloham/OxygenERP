@@ -12,10 +12,10 @@ namespace CERP.Migrations
                 schema: "CERP",
                 table: "DictionaryValues");
 
-            //migrationBuilder.DropIndex(
-            //    name: "IX_DictionaryValues_DictionaryValueTypeId",
-            //    schema: "CERP",
-            //    table: "DictionaryValues");
+            migrationBuilder.DropIndex(
+                name: "IX_DictionaryValues_DictionaryValueTypeId",
+                schema: "CERP",
+                table: "DictionaryValues");
 
             migrationBuilder.DropColumn(
                 name: "DictionaryValueTypeId",
@@ -32,11 +32,11 @@ namespace CERP.Migrations
                 type: "uniqueidentifier",
                 nullable: true);
 
-            //migrationBuilder.CreateIndex(
-            //    name: "IX_DictionaryValues_DictionaryValueTypeId",
-            //    schema: "CERP",
-            //    table: "DictionaryValues",
-            //    column: "DictionaryValueTypeId");
+            migrationBuilder.CreateIndex(
+                name: "IX_DictionaryValues_DictionaryValueTypeId",
+                schema: "CERP",
+                table: "DictionaryValues",
+                column: "DictionaryValueTypeId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_DictionaryValues_DictionaryValueTypes_DictionaryValueTypeId",

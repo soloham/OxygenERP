@@ -12,6 +12,11 @@ namespace CERP.Migrations
                 schema: "FM",
                 table: "SubLedgerRequirements");
 
+            migrationBuilder.DropIndex(
+                name: "IX_SubLedgerRequirements_COA_AccountId",
+                schema: "FM",
+                table: "SubLedgerRequirements");
+
             migrationBuilder.DropColumn(
                 name: "COA_AccountId",
                 schema: "FM",
@@ -80,6 +85,12 @@ namespace CERP.Migrations
                 principalTable: "COAs",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
+            
+            migrationBuilder.CreateIndex(
+                name: "IX_SubLedgerRequirements_COA_AccountId",
+                schema: "FM",
+                table: "SubLedgerRequirements",
+                column: "COA_AccountId");
         }
     }
 }

@@ -31,7 +31,7 @@
 
 
 
-        .statustemp.e-terminatedcolor {
+        /*.statustemp.e-terminatedcolor {
             background-color: #ffd7cc;
         }
 
@@ -85,7 +85,7 @@
             height: 19px;
             border-radius: 5px;
             text-align: center
-        }
+        }*/
     </style>
 }
 @section scripts {
@@ -94,16 +94,15 @@
     <ejs-scripts></ejs-scripts>
 }
 <partial name="_DefaultPageHeader" />
-<div class="site-content customContentArea" style="        padding-top: 0;
+<div class="site-content customContentArea" style="padding-top: 0;
         background-color: rgb(253,253,253);">
     <div class="control-section">
         <ejs-grid id="Grid" dataSource="@ViewData["Employees_DS"]" enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()"
-                  dataBound="dataBound" commandClick="commandClick" queryCellInfo="queryCellInfo"
-                  allowExcelExport="true" allowGrouping="true" height="100%" allowPdfExport="true"
-                  hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                  dataBound="dataBound" commandClick="commandClick" queryCellInfo="queryCellInfo" showColumnChooser="true"
+                  allowExcelExport="true" allowGrouping="true" height="100%" allowPdfExport="true" allowReordering="true"
+                  hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" detailTemplate="#detailtemplate"
                   allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                  toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
-                  
+                  toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" })"
                   allowPaging="true" allowResizing="true">
 
             <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
@@ -112,14 +111,96 @@
             <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
         </ejs-grid>
     </div>
+    <style type="text/css" class="cssStyles">
+        .detailtable td {
+            font-size: 13px;
+            padding: 4px;
+            max-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50px;
+            box-shadow: inset 0 0 1px #e0e0e0, inset 0 0 14px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+    <script type="text/x-jsrender" id="detailtemplate">
+        @*${console.log(ExtraProperties)}*@
+        @*let GetProfilePic = (ProfilePic == null || ProfilePic == "") ? "noimage.jpg" : ProfilePic;*@
+        @*console.log(GetProfilePic);*@
+        <table class="detailtable" width="100%">
+            <colgroup>
+                <col width="35%" />
+                <col width="35%" />
+                <col width="30%" />
+            </colgroup>
+            <tbody>
+                <tr>
+                    <td rowspan="4" style="text-align: center;">
+                        <img class="photo" src="/Uploads/${ProfilePic}" alt="${Id}" />
+                    </td>
+                    <td>
+                        <span style="font-weight: 500;">First Name: </span> ${FirstName}
+                    </td>
+                    <td>
+                        <span style="font-weight: 500;">Gender: </span> ${Gender.Value}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span style="font-weight: 500;">Last Name: </span> ${LastName}
+                    </td>
+                    <td>
+                        <span style="font-weight: 500;">Email: </span> ${ExtraProperties['contactInformation'].PrimaryContact.Email}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span style="font-weight: 500;">Department: </span> ${Position.Department.Name}
+                    </td>
+                    <td>
+                        <span style="font-weight: 500;">Join Date: </span> ${JoiningDate}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span style="font-weight: 500;">Position: </span> ${Position.Title}
+                    </td>
+                    <td>
+                        <span style="font-weight: 500;">Phone: </span> ${ExtraProperties['contactInformation'].PrimaryContact.PhoneNumber}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </script>
     <script type="text/x-jsrender" id="statusTemplate">
+        @*<div id="status" class="statustemp">
+            <span class="statustxt">${EmployeeStatus.Value}</span>
+        </div>*@
         <div id="status" class="statustemp">
             <span class="statustxt">${EmployeeStatus.Value}</span>
         </div>
     </script>
+    <script type="text/x-jsrender" id="contractStatusTemplate">
+        <div id="contractStatus" class="statustemp">
+            <span class="statustxt">${ContractStatus.Value}</span>
+        </div>
+    </script>
+    <script type="text/x-jsrender" id="ContractStatusItemTemp">
+        ${contractStatusDetail(data)}
+    </script>
 
     <script type="text/x-jsrender" id="StatusItemTemp">
         ${statusDetail(data)}
+    </script>
+
+    <script id="coltemplate" type="text/x-template">
+        <span class="zmdi zmdi-pin" style="color:#797878"></span>
+        <span id="locationtext">&nbsp${Nationality.Value}</span>
     </script>
 </div>
 
@@ -138,23 +219,51 @@
     function queryCellInfo(args) {
         if (args.column.field === 'EmployeeStatus.Value') {
             if (args.cell.textContent === "Active") {
-                args.cell.querySelector(".statustxt").classList.add("e-activecolor");
+                args.cell.querySelector(".statustxt").classList.add("label", "label-outline-success");
                 args.cell.querySelector(".statustemp").classList.add("e-activecolor");
             }
             if (args.cell.textContent === "Terminated") {
-                console.log(args.cell.textContent);
-                args.cell.querySelector(".statustxt").classList.add("e-inactivecolor");
+                args.cell.querySelector(".statustxt").classList.add("label", "label-outline-danger");
                 args.cell.querySelector(".statustemp").classList.add("e-terminatedcolor");
             }
             if (args.cell.textContent === "Probation") {
-                args.cell.querySelector(".statustxt").classList.add("e-probationcolor");
+                args.cell.querySelector(".statustxt").classList.add("label", "label-outline-info");
                 args.cell.querySelector(".statustemp").classList.add("e-probationcolor");
             }
         }
+        else if (args.column.field === 'ContractStatus.Value') {
+            if (args.cell.textContent === "Active") {
+                args.cell.querySelector(".statustxt").classList.add("label", "label-outline-success");
+                args.cell.querySelector(".statustemp").classList.add("e-activecolor");
+            }
+            if (args.cell.textContent === "Inactive") {
+                args.cell.querySelector(".statustxt").classList.add("label", "label-outline-danger");
+                args.cell.querySelector(".statustemp").classList.add("e-terminatedcolor");
+            }
+        }
+    }
+    function contractStatusDetail(e) {
+        console.log(e);
+        console.log(e.ContractStatus.Value);
+        var div = document.createElement('div');
+        var span;
+        span = document.createElement('span');
+        if (e.ContractStatus.Value === "Active") {
+            span.className = 'statustxt e-activecolor';
+            span.textContent = "Active"
+            div.className = 'statustemp e-activecolor'
+        }
+        else if (e.ContractStatus.Value === "Inactive") {
+            span = document.createElement('span');
+            span.className = 'statustxt e-inactivecolor';
+            span.textContent = "Terminated"
+            div.className = 'statustemp e-inactivecolor'
+        }
+        div.appendChild(span);
+        return div.outerHTML;
     }
     function statusDetail(e) {
         console.log(e.EmployeeStatus.Value);
-        var grid = document.getElementById("Grid").ej2_instances[0]
         var div = document.createElement('div');
         var span;
         span = document.createElement('span');

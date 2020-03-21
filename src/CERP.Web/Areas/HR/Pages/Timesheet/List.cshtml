@@ -3,7 +3,7 @@
 @model CERP.Web.Areas.HR.Pages.TimeSheets.ListModel
 @{
     ViewData["Title"] = "Timesheets";
-    ViewData["IconClass"] = "fa fa-user-tie";
+    ViewData["IconClass"] = "fa fa-calendar-alt";
     ViewData["HeaderTitle"] = "TIMESHEETS";
     ViewData["SubTitle"] = "List of Timesheets";
     ViewData["Area"] = "HR";
@@ -179,14 +179,14 @@
     <div class="control-section">
         <ejs-grid id="TimesheetsGrid" dataSource="@ViewData["Timesheets_DS"]" childGrid="@Model.GetSecondaryGrid"
                   enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()" queryCellInfo="queryCellInfo"
-                  dataBound="dataBound" commandClick="commandClick" actionComplete="actionComplete"
+                  dataBound="dataBound" commandClick="commandClick" actionComplete="actionComplete" showColumnChooser="true"
                   allowExcelExport="true" allowGrouping="true" height="100%" allowPdfExport="true" allowPaging="true"
                   hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                   allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                  toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search",  new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
-                  
+                  toolbarClick="toolbarClick" toolbar="@(new List<object>() { "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" })"
                   allowResizing="true">
 
+            <e-grid-sortsettings columns="@(new List<object>() { new { field = "year", direction = "Descending" }, new { field = "getMonth", direction = "Descending" } })"></e-grid-sortsettings>
             <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
             <e-grid-editSettings allowAdding="false" allowDeleting="false" allowEditing="false"></e-grid-editSettings>
             <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
@@ -194,11 +194,44 @@
         </ejs-grid>
     </div>
     <script type="text/template" id="progressColTemplate">
-        <div id="myProgress" class="pbar">
+        <div class="progress progress-sm" style="margin-bottom: 0; height: 22px!important;">
+            <div id="main" class="progress-bar" style="padding-top:7px; width:0" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                <span class="sr-only pull-left" style="position: unset!important; padding-left:5px; height:100%; width:auto">${getProgress}%</span>
+            </div>
+        </div>
+        <div id="wProgress" class="progress progress-sm" style="margin-bottom: 0; margin-top: 3px; height: 5px!important;">
+            <div id="work" class="progress-bar" style="width: 0%;">
+                @*<span class="sr-only pull-left" style="position: unset!important; padding-left:5px; height:100%; width:auto">${totalMonthWorkHours}</span>*@
+            </div>
+            <div id="overtime" class="progress-bar" style="width: 0%;">
+                @*<span class="sr-only pull-left" style="position: unset!important; padding-left:5px; height:100%; width:auto">${totalMonthOvertimeHours}</span>*@
+            </div>
+        </div>
+        @*<div id="myProgress" class="pbar">
             <div id="myBar" class="bar">
                 <div id="label" class="barlabel"></div>
             </div>
+        </div>*@
+    </script>
+    <script type="text/template" id="secondaryProgressColTemplate">
+        <div class="progress progress-sm" style="margin-bottom: 0; height: 22px!important;">
+            <div id="secMain" class="progress-bar" style="padding-top:7px; width:0" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                <span class="sr-only pull-left" style="position: unset!important; padding-left:5px; height:100%; width:auto">${getProgress}%</span>
+            </div>
         </div>
+        <div id="secProgress" class="progress progress-sm" style="margin-bottom: 0; margin-top: 3px; height: 5px!important;">
+            <div id="secWork" class="progress-bar" style="padding-top:7px; width: 0%;">
+                @*<span class="sr-only pull-left" style="position: unset!important; padding-left:5px; height:100%; width:auto">${totalWeekWorkHours}</span>*@
+            </div>
+            <div id="secOvertime" class="progress-bar" style="padding-top:7px; width: 0%;">
+                @*<span class="sr-only pull-left" style="position: unset!important; padding-left:5px; height:100%; width:auto">${totalWeekOvertimeHours}</span>*@
+            </div>
+        </div>
+        @*<div id="myProgress" class="pbar">
+            <div id="myBar" class="bar">
+                <div id="label" class="barlabel"></div>
+            </div>
+        </div>*@
     </script>
     <script id="week1ColTemplate" type="text/template">
         <a href='@Url.Content("~")/HR/Timesheets/Edit?year=${year}&month=${month}&week=1&employeeId=${employeeId}'>${week1Hours}</a>
@@ -234,22 +267,142 @@
 </ejs-dialog>
 
 <script>
+    
+
     function queryCellInfo(args) {
         if (args.column.field === "getProgress") {
+            let curDate = new Date();
             //if (args.data.getProgress <= 20) {
             //    args.data.getProgress = args.data.getProgress + 30;
             //}
-            args.cell.querySelector(".bar").style.width = args.data.getProgress + "%";
-            args.cell.querySelector(".barlabel").textContent = args.data.getProgress + "%";
-            if (args.data.getProgress >= 28) {
-                args.cell.querySelector("#label").style.color = "rgb(253,253,253)";
+            args.cell.querySelector("#main").style.width = (args.data.totalMonthWorkHours / 225 * 100) + "%";
+            if (args.data.month == curDate.getMonth() + 1 && args.data.year == curDate.getFullYear()) {
+                if (args.data.totalMonthWorkHours == 225) {
+                    if (args.data.isPosted) {
+                        args.cell.querySelector("#main").classList.add('progress-bar-success', 'progress-bar-striped');
+                        args.cell.querySelector("#work").classList.add('progress-bar-success', 'progress-bar-striped');
+                        args.cell.querySelector("#overtime").classList.add('progress-bar-info', 'progress-bar-striped');
+                    } else {
+                        args.cell.querySelector("#main").classList.add('progress-bar-warning', 'progress-bar-striped', 'active');
+                        args.cell.querySelector("#work").classList.add('progress-bar-warning', 'progress-bar-striped', 'active');
+                        args.cell.querySelector("#overtime").classList.add('progress-bar-info', 'progress-bar-striped', 'active');
+                    }
+                }
+                else {
+                    args.cell.querySelector("#main").classList.add('progress-bar-striped', 'active');
+                    args.cell.querySelector("#work").classList.add('progress-bar-striped', 'active');
+                    args.cell.querySelector("#overtime").classList.add('progress-bar-info', 'progress-bar-striped', 'active');
+                }
             }
-            if (typeof args.data.isPosted != 'undefined' && !args.data.isPosted) {
-                args.cell.querySelector(".bar").classList.add("progressdisable");
+            else {
+                if (args.data.totalMonthWorkHours == 225) {
+                    if (args.data.isPosted) {
+                        args.cell.querySelector("#main").classList.add('progress-bar-success');
+                        args.cell.querySelector("#work").classList.add('progress-bar-success');
+                        args.cell.querySelector("#overtime").classList.add('progress-bar-info');
+                    }
+                    else {
+                        args.cell.querySelector("#main").classList.add('progress-bar-warning');
+                        args.cell.querySelector("#work").classList.add('progress-bar-warning');
+                        args.cell.querySelector("#overtime").classList.add('progress-bar-info');
+                    }
+                }
+                else {
+                    args.cell.querySelector("#main").classList.add('progress-bar-danger');
+                    args.cell.querySelector("#work").classList.add('progress-bar-danger');
+                    args.cell.querySelector("#overtime").classList.add('progress-bar-info');
+                }
             }
-            if (typeof args.data.isSubmitted != 'undefined' && !args.data.isSubmitted) {
-                args.cell.querySelector(".bar").classList.add("progressdisable");
+            let total = Math.max(args.data.totalMonthWorkHours + args.data.totalMonthOvertimeHours, args.data.totalMonthHours);
+            args.cell.querySelector("#work").style.width = ((args.data.totalMonthWorkHours / total) * 100) + "%";
+            args.cell.querySelector("#overtime").style.width = ((args.data.totalMonthOvertimeHours / total) * 100) + "%";
+            //args.cell.querySelector("#w3").style.width = ((Math.min(45, args.data.week3Hours) / 225) * 100) + "%";
+            //args.cell.querySelector("#w4").style.width = ((Math.min(45, args.data.week4Hours) / 225) * 100) + "%";
+            //args.cell.querySelector("#w5").style.width = ((Math.min(45, args.data.week5Hours) / 225) * 100) + "%";
+            //args.cell.querySelector(".progress-bar").aria['valuenow'] = args.data.getProgress;
+            //args.cell.querySelector(".bar").style.width = args.data.getProgress + "%";
+            //args.cell.querySelector(".barlabel").textContent = args.data.getProgress + "%";
+            if (args.data.getProgress >= 90) {
+                args.cell.querySelector(".sr-only").style.color = "rgb(253,253,253)";
             }
+            else {
+                args.cell.querySelector(".sr-only").style.color = "rgb(253,253,253)";
+            }
+            //if (typeof args.data.isPosted != 'undefined' && !args.data.isPosted) {
+            //    args.cell.querySelector(".bar").classList.add("progressdisable");
+            //}
+            //if (typeof args.data.isSubmitted != 'undefined' && !args.data.isSubmitted) {
+            //    args.cell.querySelector(".bar").classList.add("progressdisable");
+            //}
+        }
+    }
+    function secQueryCellInfo(args) {
+        if (args.column.field === "getProgress") {
+            let curDate = new Date();
+            var weekNumber = (new Date()).getWeekOfMonth();
+            //if (args.data.getProgress <= 20) {
+            //    args.data.getProgress = args.data.getProgress + 30;
+            //}
+            args.cell.querySelector("#secMain").style.width = args.data.getProgress + "%";
+            if (args.data.week == weekNumber && args.data.month == curDate.getMonth() + 1 && args.data.year == curDate.getFullYear()) {
+                if (args.data.totalWeekWorkHours == 45) {
+                    if (args.data.isSubmitted) {
+                        args.cell.querySelector("#secMain").classList.add('progress-bar-success', 'progress-bar-striped');
+                        args.cell.querySelector("#secWork").classList.add('progress-bar-success', 'progress-bar-striped');
+                        args.cell.querySelector("#secOvertime").classList.add('progress-bar-info', 'progress-bar-striped');
+                    }
+                    else {
+                        args.cell.querySelector("#secMain").classList.add('progress-bar-warning', 'progress-bar-striped');
+                        args.cell.querySelector("#secWork").classList.add('progress-bar-warning', 'progress-bar-striped');
+                        args.cell.querySelector("#secOvertime").classList.add('progress-bar-info', 'progress-bar-striped');
+                    }
+                }
+                else {
+                    args.cell.querySelector("#secMain").classList.add('progress-bar-striped', 'active');
+                    args.cell.querySelector("#secWork").classList.add('progress-bar-striped', 'active');
+                    args.cell.querySelector("#secOvertime").classList.add('progress-bar-info', 'progress-bar-striped', 'active');
+                }
+            }
+            else {
+                if (args.data.totalWeekWorkHours == 45) {
+                    if (args.data.isSubmitted) {
+                        args.cell.querySelector("#secMain").classList.add('progress-bar-success', 'progress-bar-striped');
+                        args.cell.querySelector("#secWork").classList.add('progress-bar-success', 'progress-bar-striped');
+                        args.cell.querySelector("#secOvertime").classList.add('progress-bar-info', 'progress-bar-striped');
+                    }
+                    else {
+                        args.cell.querySelector("#secMain").classList.add('progress-bar-warning', 'progress-bar-striped');
+                        args.cell.querySelector("#secWork").classList.add('progress-bar-warning', 'progress-bar-striped');
+                        args.cell.querySelector("#secOvertime").classList.add('progress-bar-info', 'progress-bar-striped');
+                    }
+                }
+                else {
+                    args.cell.querySelector("#secMain").classList.add('progress-bar-danger', 'progress-bar-striped');
+                    args.cell.querySelector("#secWork").classList.add('progress-bar-danger', 'progress-bar-striped');
+                    args.cell.querySelector("#secOvertime").classList.add('progress-bar-info', 'progress-bar-striped');
+                }
+            }
+            let total = args.data.totalWeekHours;
+            args.cell.querySelector("#secWork").style.width = ((args.data.totalWeekWorkHours / total) * 100) + "%";
+            args.cell.querySelector("#secOvertime").style.width = ((args.data.totalWeekOvertimeHours / total) * 100) + "%";
+            //args.cell.querySelector("#w3").style.width = ((Math.min(45, args.data.week3Hours) / 225) * 100) + "%";
+            //args.cell.querySelector("#w4").style.width = ((Math.min(45, args.data.week4Hours) / 225) * 100) + "%";
+            //args.cell.querySelector("#w5").style.width = ((Math.min(45, args.data.week5Hours) / 225) * 100) + "%";
+            //args.cell.querySelector(".progress-bar").aria['valuenow'] = args.data.getProgress;
+            //args.cell.querySelector(".bar").style.width = args.data.getProgress + "%";
+            //args.cell.querySelector(".barlabel").textContent = args.data.getProgress + "%";
+            //if (args.data.getProgress >= 90) {
+            //    args.cell.querySelector(".sr-only").style.color = "rgb(253,253,253)";
+            //}
+            //else {
+            //    args.cell.querySelector(".sr-only").style.color = "rgb(253,253,253)";
+            //}
+            //if (typeof args.data.isPosted != 'undefined' && !args.data.isPosted) {
+            //    args.cell.querySelector(".bar").classList.add("progressdisable");
+            //}
+            //if (typeof args.data.isSubmitted != 'undefined' && !args.data.isSubmitted) {
+            //    args.cell.querySelector(".bar").classList.add("progressdisable");
+            //}
         }
     }
     function onLoad(args) {

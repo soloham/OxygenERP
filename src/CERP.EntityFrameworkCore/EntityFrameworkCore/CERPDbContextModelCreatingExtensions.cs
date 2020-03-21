@@ -254,6 +254,7 @@ namespace CERP.EntityFrameworkCore
                 b.ToTable(CERPConsts.HRDbTablePrefix + "Employees", CERPConsts.HRDbSchema);
 
                 b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureSoftDelete();
                 b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 

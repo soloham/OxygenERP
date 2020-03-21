@@ -182,7 +182,7 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
                 new GridColumn { Field = "netTotal", HeaderText = "Net Total", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "note", HeaderText = "Note", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "isPosted", Width = "65", DisplayAsCheckBox = true, HeaderText = "Is Posted", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "postedDate", HeaderText = "Posted Date", Format="yMEd", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "postedDate", HeaderText = "Posted Date", Type="Date", Format="E, MMMM d, y", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "postedByTemp", HeaderText = "Posted By", TextAlign=TextAlign.Center,  MinWidth="10"  },
             };
 

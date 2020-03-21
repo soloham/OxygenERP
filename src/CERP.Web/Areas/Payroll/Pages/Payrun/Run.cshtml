@@ -43,103 +43,93 @@
     <ejs-scripts></ejs-scripts>
 
 }
-<div class="site-content" style="padding:0; background-color: rgb(253,253,253);">
-    <partial name="_DefaultPageHeader" />
+<partial name="_DefaultPageHeader" />
+<div class="site-content customContentArea" style="padding-top:0; background-color: rgb(253,253,253);">
 
     <form id="actionForm" class="">
         <input type="hidden" name="Year" id="TheYear" />
         <input type="hidden" name="Month" id="Month" />
     </form>
-    <div class="form">
-        <div class="">
-            <div class="col-lg-12 padding-left-0">
-                <div class="well" style="background-color: white">
 
-                    <div>
-                        <div id="divSearch" class="">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="form-inline">
-                                        <div class="form-group">
-                                            <label class="p-r-20 m-5 text-uppercase">Month:</label>
-                                            <select id="PERIOD" name="Period" class="form-control" required>
-                                                @if (Model.ForMonth > 0)
-                                                {
-                                                    <option data-year="@Model.ForYear" data-month="@Model.ForMonth" value="@Model.ForMonth" selected>
-                                                        @(Convert.ToDateTime(Model.ForMonth + "/1/" + Model.ForYear).ToString("MMMM yyyy"))
-                                                    </option>
-                                                }
-                                                else
-                                                {
-                                                    <option hidden selected></option>
+    <div class="well" style="background-color: white">
 
-                                                    for (int y = DateTime.Now.Year - 5; y <= DateTime.Now.Year; y++)
-                                                    {
-                                                        for (int m = 1; m <= 12; m++)
-                                                        {
-                                                            if (!(y == DateTime.Now.Year && m > DateTime.Now.Month))
-                                                            {
-                                                                @: <option data-year="@y" data-month="@m" value="@m" @(y == DateTime.Now.Year && m == DateTime.Now.Month ? "selected" : "")>
-                                                                    @:     @(Convert.ToDateTime(m + "/1/" + y).ToString("MMMM yyyy"))
-                                                                @: </option>
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
+        <div id="divSearch" class="">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-inline">
+                        <div class="form-group">
+                            <label class="p-r-20 m-5 text-uppercase">Month:</label>
+                            <select id="PERIOD" name="Period" class="form-control" required>
+                                @if (Model.ForMonth > 0)
+                                {
+                                    <option data-year="@Model.ForYear" data-month="@Model.ForMonth" value="@Model.ForMonth" selected>
+                                        @(Convert.ToDateTime(Model.ForMonth + "/1/" + Model.ForYear).ToString("MMMM yyyy"))
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option hidden selected></option>
 
-                                <div class="col-md-5 text-right pull-right">
-                                    <div id="postSection" class="col-md-12 control-section" style="display: none">
-                                        <form id="postPayrunForm">
-                                            <div class="col-md-4">
-                                                <input id="postNote" class="form-control" type="text" placeholder="Note" />
-                                            </div>
-                                            <div class="col-md-4">
-                                                <input id="postAttachment" class="form-control" type="file" placeholder="Note" />
-                                            </div>
-                                            <div class="col-md-4">
-                                                <input id="submitPostPayrun" type="submit" class="btn btn-primary btn-block" value="POST" />
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            @*<div class="clearfix"></div>*@
-                            <hr class="m-t-10 m-b-20">
-                        </div>
-                        <div class="well" style="background-color: white">
-                            <div class="control-section">
-                                <ejs-grid id="PayrunsHistoryGrid" dataSource="@ViewData["PayrunsDetails_DS"]" queryCellInfo="QueryCellInfo"
-                                          enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()"
-                                          dataBound="dataBound" commandClick="commandClick" actionComplete="actionComplete"
-                                          allowExcelExport="true" allowGrouping="true" height="100%"allowPdfExport="true"
-                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
-                                          allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                                          toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
-                                          
-                                          allowPaging="true" allowResizing="true">
-
-                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
-            <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
-                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
-                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
-                                </ejs-grid>
-                            </div>
-                            <div id="generateSection" class="col-md-12 control-section">
-                                <input id="submitGenPayrun" type="" class="btn btn-primary btn-block" value="GENERATE PAYRUN" />
-                            </div>
+                                    for (int y = DateTime.Now.Year - 5; y <= DateTime.Now.Year; y++)
+                                    {
+                                        for (int m = 1; m <= 12; m++)
+                                        {
+                                            if (!(y == DateTime.Now.Year && m > DateTime.Now.Month))
+                                            {
+                                                @: <option data-year="@y" data-month="@m" value="@m" @(y == DateTime.Now.Year && m == DateTime.Now.Month ? "selected" : "")>
+                                                    @:     @(Convert.ToDateTime(m + "/1/" + y).ToString("MMMM yyyy"))
+                                                @: </option>
+                                            }
+                                        }
+                                    }
+                                }
+                            </select>
                         </div>
                     </div>
                 </div>
+
+                <div class="col-md-5 text-right pull-right">
+                    <div id="postSection" class="col-md-12 control-section" style="display: none">
+                        <form id="postPayrunForm">
+                            <div class="col-md-4">
+                                <input id="postNote" class="form-control" type="text" placeholder="Note" />
+                            </div>
+                            <div class="col-md-5">
+                                <input id="postAttachment" class="form-control" type="file" placeholder="Note" />
+                            </div>
+                            <div class="col-md-3">
+                                <input id="submitPostPayrun" type="submit" class="btn btn-primary btn-block" value="POST" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
+            @*<div class="clearfix"></div>*@
+            @*<hr class="m-t-10 m-b-20">*@
         </div>
     </div>
 
+    <div class="well" style="background-color: white; height: -webkit-fill-available; margin-bottom: 100px">
+        <div class="control-section">
+            <ejs-grid id="PayrunsHistoryGrid" dataSource="@ViewData["PayrunsDetails_DS"]" queryCellInfo="QueryCellInfo"
+                      enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()"
+                      dataBound="dataBound" commandClick="commandClick" actionComplete="actionComplete"
+                      allowExcelExport="true" allowGrouping="true" height="100%" allowPdfExport="true"
+                      hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                      allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                      toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
+                      allowPaging="true" allowResizing="true">
 
-    <div class="clearfix"></div>
+                <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
+                <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+            </ejs-grid>
+        </div>
+        <div id="generateSection" class="col-md-12" style="display: none">
+            <input id="submitGenPayrun" type="" class="btn btn-primary btn-block" value="GENERATE PAYRUN" />
+        </div>
+    </div>
 
 </div>
 

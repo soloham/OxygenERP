@@ -8,7 +8,7 @@
         public const string PayrollDbTablePrefix = "";
         public const string SetupDbTablePrefix = "";
 
-        public const string DbSchema = "CERP";
+        public const string DbSchema = "AvalonERP";
         public const string FMDbSchema = "FM";
         public const string HRDbSchema = "HR";
         public const string PayrollDbSchema = "PR";

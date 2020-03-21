@@ -17,15 +17,15 @@
                         @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
                 </div>
             </div>
-            <div class="col-sm-4 col-xs-12 text-right padding-right-0" style="">
-                <div class="clearfix margin-15"></div>
+            <div class="col-sm-4 col-xs-12 text-right padding-right-0" style="height:100%">
+                @*<div class="clearfix margin-15"></div>*@
                 @if ((bool)ViewData["IsList"] == true)
                 {
 
                 }
                 else if ((bool)ViewData["IsCreate"] == true)
                 {
-                    <a asp-area="@ViewData["Area"]" asp-page="@ViewData["CreateNewLink"]" class="btn btn-outline-dark addBtn"><i class="fa fa-plus fa-fw"></i> <br /> @ViewData["CreateNewText"]</a>
+                    <a asp-area="@ViewData["Area"]" asp-page="@ViewData["CreateNewLink"]" class="btn btn-outline-dark addBtn" style="height:100%"><i class="fa fa-plus fa-fw"></i> <br /> @ViewData["CreateNewText"]</a>
                 }
             </div>
             <div class="clearfix " style=""></div>

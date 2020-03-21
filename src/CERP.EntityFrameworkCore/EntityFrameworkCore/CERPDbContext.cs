@@ -25,7 +25,7 @@ namespace CERP.EntityFrameworkCore
      * Don't use this DbContext for database migrations since it does not contain tables of the
      * used modules (as explained above). See CERPMigrationsDbContext for migrations.
      */
-    [ConnectionStringName("Default")]
+    [ConnectionStringName("AvalonERP")]
     public class CERPDbContext : AbpDbContext<CERPDbContext>
     {
         public DbSet<AppUser> Users { get; set; }

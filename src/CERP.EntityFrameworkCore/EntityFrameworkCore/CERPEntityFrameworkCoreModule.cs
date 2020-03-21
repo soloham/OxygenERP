@@ -72,6 +72,8 @@ namespace CERP.EntityFrameworkCore
                                                        .Include(p => p.Religion)
                                                        .Include(p => p.POB)
                                                        .Include(p => p.MaritalStatus)
+                                                       .Include(p => p.ContractStatus)
+                                                       .Include(p => p.WorkShift)
                                                        .Include(p => p.EmployeeStatus)
                                                        .Include(p => p.EmployeeType)
                                                        .Include(p => p.Position).ThenInclude(x => x.Department);

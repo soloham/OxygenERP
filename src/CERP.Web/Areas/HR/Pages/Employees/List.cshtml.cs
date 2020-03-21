@@ -29,7 +29,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
         public void OnGet()
         {
             List<Employee_Dto> Employees = employeeAppService.GetAllEmployees();
-
+            Employees.ForEach(x => x.ProfilePic = x.ProfilePic == "" ? x.ProfilePic = "noimage.jpg" : x.ProfilePic);
             List<PhysicalId<Guid>> physicalIDs = (Employees.Count > 0) ? (List<PhysicalId<Guid>>)Employees.SelectMany(x => (JsonSerializer.Deserialize<GeneralInfo>(x.ExtraProperties["generalInfo"].ToString()).PhysicalIds)).ToList() : new List<PhysicalId<Guid>>();
 
             SecondaryDetailsGrid = new Grid()
@@ -75,18 +75,31 @@ namespace CERP.Web.Areas.HR.Pages.Employees
 
             return new List<GridColumn>()
             {
-                new GridColumn { Width = "200", HeaderText = "Commands", TextAlign=TextAlign.Center, MinWidth="10", Commands = commands }
+                new GridColumn {HeaderText = "Commands", TextAlign=TextAlign.Center, MinWidth="90", Commands = commands }
             };
         }
 
         public List<GridColumn> GetPrimaryGridColumns()
         {
             List<GridColumn> gridColumns = new List<GridColumn>() {
-                new GridColumn { Field = "GetReferenceId", MaxWidth="100", Width="100", HeaderText = "Id", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "Name", HeaderText = "Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "GetReferenceId", MaxWidth="100", Width="100", HeaderText = "Id", TextAlign=TextAlign.Center,  MinWidth="90"  },
+                new GridColumn { Field = "Name", Width="150", HeaderText = "Name", TextAlign=TextAlign.Center,  MinWidth="90"  },
                 new GridColumn { Field = "Position.Department.Name", HeaderText = "Department", TextAlign=TextAlign.Center, },
                 new GridColumn { Field = "Position.Title", HeaderText = "Position", TextAlign=TextAlign.Center,  },
-                new GridColumn { Field = "EmployeeStatus.Value", HeaderText = "Employee Status", Template="#statusTemplate", Filter="@(new { type='CheckBox', itemTemplate='#StatusItemTemp' })", TextAlign=TextAlign.Center  }
+                new GridColumn { Field = "Nationality.Value", HeaderText = "Nationality", Template="#coltemplate", Filter="@(new { type=\"CheckBox\"})",  TextAlign=TextAlign.Center  },
+                new GridColumn { Field = "EmployeeStatus.Value", MinWidth="90", HeaderText = "Employee Status", Template="#statusTemplate", Filter="@(new { type='CheckBox', itemTemplate='#StatusItemTemp' })", TextAlign=TextAlign.Center  },
+                new GridColumn { Field = "ReportingTo.Name", MinWidth="90", HeaderText = "Reporting To", Visible=false, TextAlign=TextAlign.Center  },
+                new GridColumn { Field = "ContractStatus.Value", MinWidth="90", HeaderText = "Contract Status", Template="#contractStatusTemplate", Filter="@(new { type='CheckBox', itemTemplate='#ContractStatusItemTemp' })", Visible=false, TextAlign=TextAlign.Center  },
+                new GridColumn { Field = "WorkShift.Title", MinWidth="90", HeaderText = "Workshift", Visible=false, TextAlign=TextAlign.Center  },
+                new GridColumn { Field = "Religion.Value", MinWidth="90", HeaderText = "Religion", Visible=false, TextAlign=TextAlign.Center  },
+                new GridColumn { Field = "MaritalStatus.Value", MinWidth="90", HeaderText = "Marital Status", Visible=false, TextAlign=TextAlign.Center  },
+                new GridColumn { Field = "Gender.Value", MinWidth="90", HeaderText = "Gender", Visible=false, TextAlign=TextAlign.Center  },
+                new GridColumn { Field = "POB.Value",MinWidth="90",  HeaderText = "Birth Place", Visible=false, TextAlign=TextAlign.Center  },
+                new GridColumn { Field = "DOB", Format="", MinWidth="90", HeaderText = "Birth Date", Visible=false, TextAlign=TextAlign.Center  },
+                new GridColumn { Field = "JoiningDate", Format="", MinWidth="90", HeaderText = "Joining Date", Visible=false, TextAlign=TextAlign.Center  },
+                new GridColumn { Field = "EmployeeType.Value", Format="", MinWidth="90", HeaderText = "Type", Visible=false, TextAlign=TextAlign.Center  },
+                new GridColumn { Field = "NoOfDependents", Format="", MinWidth="90", HeaderText = "Total Dependants", Visible=false, TextAlign=TextAlign.Center  },
+                //new GridColumn { Field = "Creator.UserName", Format="", HeaderText = "Created By", Visible=false, TextAlign=TextAlign.Center  },
             };
 
             gridColumns.AddRange(GetCommandsColumns());
@@ -97,11 +110,11 @@ namespace CERP.Web.Areas.HR.Pages.Employees
         {
             List<GridColumn> gridColumns = new List<GridColumn>()
             {
-                new GridColumn { Field = "IDType.Value", HeaderText = "Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "IDNumber", HeaderText = "ID Number", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "IssuedFrom.Value", HeaderText = "Issued From", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "IssuedDate", Type = "date", Format = "dd/MM/yyyy", HeaderText = "Issue Date", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "EndDate", Type = "date", Format = "dd/MM/yyyy", HeaderText = "End Date", TextAlign=TextAlign.Center,  MinWidth="10"  }
+                new GridColumn { Field = "IDType.Value", HeaderText = "Type", TextAlign=TextAlign.Center,  MinWidth="90"  },
+                new GridColumn { Field = "IDNumber", HeaderText = "ID Number", TextAlign=TextAlign.Center,  MinWidth="90"  },
+                new GridColumn { Field = "IssuedFrom.Value", HeaderText = "Issued From", TextAlign=TextAlign.Center,  MinWidth="90"  },
+                new GridColumn { Field = "IssuedDate", Type = "date", Format = "dd/MM/yyyy", HeaderText = "Issue Date", TextAlign=TextAlign.Center,  MinWidth="90"  },
+                new GridColumn { Field = "EndDate", Type = "date", Format = "dd/MM/yyyy", HeaderText = "End Date", TextAlign=TextAlign.Center,  MinWidth="90"  }
             }; 
 
             return gridColumns;

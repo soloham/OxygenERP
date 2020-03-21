@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using Volo.Abp.Domain.Entities.Auditing;
+using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Identity;
 
 namespace CERP.HR.Employees
 {

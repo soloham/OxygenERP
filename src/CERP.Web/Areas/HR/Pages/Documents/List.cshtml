@@ -4,7 +4,7 @@
 @model CERP.Web.Areas.HR.Pages.Documents.ListModel
 @{
     ViewData["Title"] = "Documents";
-    ViewData["IconClass"] = "fa fa-user-tie";
+    ViewData["IconClass"] = "fa fa-file";
     ViewData["HeaderTitle"] = "DOCUMENTS";
     ViewData["SubTitle"] = "List of Documents";
     ViewData["Area"] = "HR";
@@ -44,6 +44,8 @@
         var isEditing = false;
         var curEditRow;
         $(document).ready(function () {
+
+            $(".control-section").stop().animate({ height: '87%' }, 150);
             function objectifyForm(formArray) {//serialize data function
                 var returnArray = {};
                 for (var i = 0; i < formArray.length; i++){
@@ -216,7 +218,7 @@
                 </div>
             </div>
         </div>
-        <div id="addDocSection" class="panel-body p-t-0" style="display:none;">
+        <div id="addDocSection" class="panel-body p-t-0 p-b-0" style="display:none;">
             <div class="m-l-0 m-t-0">
                 <h2 id="addSecTitle">Add Document</h2>
                 <p>
@@ -565,10 +567,13 @@
                 isEditing = false;
             }, 50);
 
+            $(".control-section").stop().animate({ height: '48%' }, 150);
             $('#addDocSection').slideDown(250);
         }
         else {
             $('#addDocSection').slideUp();
+
+            $(".control-section").stop().animate({ height: '87%' }, 150);
             $('#toggleAddSection').slideUp(50);
             setTimeout(function () {
                 $('#addSecToggleBtn').html('Add New Document');

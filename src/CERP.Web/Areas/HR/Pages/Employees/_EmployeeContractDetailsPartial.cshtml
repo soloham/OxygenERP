@@ -16,10 +16,17 @@
 }
 
 @section scripts{
-    <script>
-
-    </script>
 }
+<script>
+    $(document).ready(function () {
+        $("#contractStartDate").on('change', function () {
+            $("#bsFromDate").val($(this).val());
+        })
+        $("#contractEndDate").on('change', function () {
+            $("#bsToDate").val($(this).val());
+        })
+    });
+</script>
 
 <div class="m-l-20 m-t-0">
     <h2>Contract Details</h2>

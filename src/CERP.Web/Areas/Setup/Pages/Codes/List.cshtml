@@ -11,9 +11,9 @@
     ViewData["SubTitle"] = "List of Codes";
 
     ViewData["IsList"] = false;
-    ViewData["IsCreate"] = true;
+    ViewData["IsCreate"] = false;
 
-    List<DictionaryValueType_Dto> dictionaryValueTypes = (await Model.dictionaryValueTypeAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToArray().Where(x => x.Locked == false).OrderBy(x => x.ValueTypeCode).ToList();
+    List<DictionaryValueType_Dto> dictionaryValueTypes = (await Model.dictionaryValueTypeAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto() { MaxResultCount = 100 })).Items.ToArray().Where(x => x.Locked == false).OrderBy(x => x.ValueTypeCode).ToList();
     string CurValueTypeCode = (RouteData.Values["ValueType"] != null ? Convert.ToString(RouteData.Values["ValueType"]) : "");
 
     List<object> commands = new List<object>();
@@ -34,27 +34,26 @@
         new GridColumn { Width = "150", HeaderText = "Commands", TextAlign=TextAlign.Center, MinWidth="10", Commands = commands }
     };
     //Enum.GetValues(typeof(CERP.ValueTypeModules))
-    
+
     var DropDownList = new Syncfusion.EJ2.DropDowns.DropDownList() { CssClass = "moduleTypeDropDown", BeforeOpen = "loadModuleTypes", DataSource = Model.GetModulesDS(), Query = "new ej.data.Query()", AllowFiltering = true, ActionComplete = "actionComplete" };
 
     ViewData["DicValueTypeGridColumns"] = new List<GridColumn>()
-{
+    {
         //new GridColumn { Field = "Id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { AllowEditing = false, Field = "id", Visible = false, IsPrimaryKey = true, HeaderText = "Code", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { AllowEditing = false, Field = "valueTypeCode", HeaderText = "Code", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "valueTypeName", ValidationRules=new { required= true, minLength = 2 }, HeaderText = "Type Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "valueTypeNameLocalizationKey", HeaderText = "Name in Arabic", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "valueTypeForDescription", ValidationRules=new { required= true }, Type="string", EditType="dropdownedit", Edit=new {@@params = DropDownList }, HeaderText = "Module", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Width = "150", HeaderText = "Commands",  TextAlign=TextAlign.Center, MinWidth="10", Commands = commands
-    }
-};
+        new GridColumn { Width = "150", HeaderText = "Commands",  TextAlign=TextAlign.Center, MinWidth="10", Commands = commands }
+    };
 
-var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
-ViewData["alertbutton"] = new
-{
-content = "OK",
-isPrimary = true
-};
+    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+    ViewData["alertbutton"] = new
+    {
+    content = "OK",
+    isPrimary = true
+    };
 }
 @section styles {
     <link href="~/libs/syncfusion/ej2-grid/styles/fabric.css" rel="stylesheet" />
@@ -103,19 +102,19 @@ isPrimary = true
 
     <script type="text/javascript">
         $(document).ready(function () {
-
+            BindValueTypeGrid();
         });
     </script>
     <ejs-scripts></ejs-scripts>
 }
 
-<div class="site-content" style="padding:0; background-color: rgb(253,253,253);">
-    <partial name="_DefaultPageHeader" />
+<partial name="_DefaultPageHeader" />
+<div class="site-content customContentArea" style="padding-top:0;">
 
-    <div class="panel-body" style="padding-bottom:0">
-        <div class="col-lg-3 m-b-20 p-r-5">
+    <div class="panel-body h-fill-available" style="padding-bottom:0;">
+        <div class="col-lg-3 m-b-20 p-r-5  h-fill-available" style="overflow: auto;">
             <ul id="valueTypes" class="nav nav-tabs nav-pills nav-stacked">
-                <li class="nav-item">
+                <li class="nav-item active">
                     <a class="nav-link" data-toggle="tab" onclick="BindValueTypeGrid()">
                         Item Types
 
@@ -124,34 +123,34 @@ isPrimary = true
                 </li>
                 <hr />
                 @foreach (var item in dictionaryValueTypes)
-                                {
-                <li class="nav-item @(item.ValueTypeCode==CurValueTypeCode?"active":"")">
-                    <a class="nav-link" data-typeId="@item.Id" data-toggle="tab" onclick="BindGrid('@item.ValueTypeCode')">
-                        @item.ValueTypeName
+                {
+                    <li class="nav-item @(item.ValueTypeCode==CurValueTypeCode?"active":"")">
+                        <a class="nav-link" data-typeId="@item.Id" data-toggle="tab" onclick="BindGrid('@item.ValueTypeCode')">
+                            @item.ValueTypeName
 
-                        <i class="fa fa-search pull-right custom-nav-icon"></i>
-                    </a>
-                </li>
-                                }
+                            <i class="fa fa-search pull-right custom-nav-icon"></i>
+                        </a>
+                    </li>
+                }
             </ul>
         </div>
-        <div class="col-lg-9 p-b-20">
-            <div id="valueSection" class="well well-light" style="background-color: white; display: none">
+        <div class="col-lg-9 p-b-20 h-fill-available" style="">
+            <div id="valueSection" class="well well-light" style="background-color: white; display: none; height: inherit">
                 <h1 id="codeListTitle" class="margin-top-0 semi-bold text-uppercase text-primary" style="color:#0078D6">Code List</h1>
                 <hr style="border-width:4px;" />
-                <div class="control-section ">
+                <div class="control-section" style="margin-bottom:100px">
                     <ejs-grid id="CodesItemGrid" dataSource="@ViewData["CurDicValueGridDS"]" enableAutoFill="true" columns="@ViewData["DicValueGridColumns"]"
-                              dataBound="dataBound" commandClick="commandClick"
-                              allowExcelExport="true" allowGrouping="true" height="100%"allowPdfExport="true"
-                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
-                              allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                              toolbarClick="toolbarClick" actionComplete="actionComplete" actionBegin="actionBegin"
-                              toolbar="@(new List<object>() {"Add", "Cancel", "Edit", "Delete", "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
+                                dataBound="dataBound" commandClick="commandClick"
+                                allowExcelExport="true" allowGrouping="true" height="100%"allowPdfExport="true"
+                                hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                                toolbarClick="toolbarClick" actionComplete="actionComplete" actionBegin="actionBegin"
+                                toolbar="@(new List<object>() {"Add", "Cancel", "Edit", "Delete", "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
                               
-                              allowPaging="true" allowResizing="true">
+                                allowPaging="true" allowResizing="true">
 
                         <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
-            <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
                         <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
                         <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
                     </ejs-grid>
@@ -169,10 +168,10 @@ isPrimary = true
 
                 </div>
             </div>
-            <div id="valueTypeSection" class="well well-light" style="background-color: white">
+            <div id="valueTypeSection" class="well well-light" style="background-color: white; height: inherit">
                 <h1 id="codeListTitle" class="margin-top-0 semi-bold text-uppercase text-primary" style="color:#0078D6">Types List</h1>
                 <hr style="border-width:4px;" />
-                <div class="control-section ">
+                <div class="control-section" style="margin-bottom:100px">
                     <ejs-grid id="CodesValueTypeItemGrid" dataSource="@ViewData["CurDicValueTypeGridDS"]" enableAutoFill="true" columns="@ViewData["DicValueTypeGridColumns"]"
                               dataBound="dataBound" commandClick="commandClick"
                               allowExcelExport="true" allowGrouping="true" height="100%"allowPdfExport="true"
@@ -241,13 +240,16 @@ isPrimary = true
             }
             var grid = $("#CodesItemGrid")[0].ej2_instances[0];
             var ajax = new ej.base.Ajax('@Url.Content("~")Codes?handler=UpdateGrid&valueTypeCode=' + ValueTypeCode, 'GET');
-            $("#CodesItemGrid").slideUp(100);
+            grid.showSpinner();
             ajax.send();
             ajax.onSuccess = function (data) {
-
-                grid.dataSource = JSON.parse(data);
+                grid.hideSpinner();
+                $("#CodesItemGrid").slideUp(200);
+                setTimeout(function () {
+                    grid.dataSource = JSON.parse(data);
+                    $("#CodesItemGrid").slideDown(250);
+                }, 200);
                 //console.log(data);
-                $("#CodesItemGrid").slideDown();
                 $("#codeListTitle").text($("li.active > a", "#valueTypes").text());
             };
         }
@@ -260,13 +262,18 @@ isPrimary = true
         }
         var grid = $("#CodesValueTypeItemGrid")[0].ej2_instances[0];
         var ajax = new ej.base.Ajax('@Url.Content("~")Codes?handler=UpdateVTGrid', 'GET');
-        $("#CodesValueTypeItemGrid").slideUp(100);
+        //$("#CodesValueTypeItemGrid").slideUp(100);
+        grid.showSpinner();
         ajax.send();
         ajax.onSuccess = function (data) {
-
-            grid.dataSource = JSON.parse(data);
+            grid.hideSpinner();
+            $("#CodesValueTypeItemGrid").slideUp(100);
+            setTimeout(function () {
+                grid.dataSource = JSON.parse(data);
+                $("#CodesValueTypeItemGrid").slideDown(100);
+            }, 100);
             //console.log(data);
-            $("#CodesValueTypeItemGrid").slideDown();
+            //$("#CodesValueTypeItemGrid").slideDown();
         };
     }
     function toolbarClick(args) {

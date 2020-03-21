@@ -8,6 +8,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Entities.Auditing;
+using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Identity;
 
 namespace CERP.HR.Employees.DTOs
 {
@@ -96,6 +98,6 @@ namespace CERP.HR.Employees.DTOs
 
         public string ProfilePic { get; set; }
 
-        public IDictionary<string, object> ExtraProperties { get; set; } 
+        public IDictionary<string, object> ExtraProperties { get; set; }
     }
 }

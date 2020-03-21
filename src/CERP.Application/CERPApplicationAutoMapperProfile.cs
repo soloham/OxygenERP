@@ -104,9 +104,9 @@ namespace CERP
             CreateMap<WorkShift, WorkShift_Dto>();
             CreateMap<WorkShift_Dto, WorkShift>();
 
-            CreateMap<Timesheet, Timesheet_Dto>();
+            CreateMap<Timesheet, Timesheet_Dto>().AfterMap((ts, tsDto) => tsDto.Initialize());
             CreateMap<Timesheet_Dto, Timesheet>();
-            CreateMap<TimesheetWeekSummary, TimesheetWeekSummary_Dto>().ForMember(d => d.Timesheet, opt => opt.Ignore());
+            CreateMap<TimesheetWeekSummary, TimesheetWeekSummary_Dto>().ForMember(d => d.Timesheet, opt => opt.Ignore()).AfterMap((tws, twsDto) => twsDto.Initialize());
             CreateMap<TimesheetWeekSummary_Dto, TimesheetWeekSummary>().ForMember(d => d.Timesheet, opt => opt.Ignore());
             CreateMap<TimesheetWeekJobSummary, TimesheetWeekJobSummary_Dto>().ForMember(d => d.WeekSheet, opt => opt.Ignore());
             CreateMap<TimesheetWeekJobSummary_Dto, TimesheetWeekJobSummary>().ForMember(d => d.WeekSheet, opt => opt.Ignore());

@@ -72,6 +72,12 @@
     <Compile Remove="Migrations\20200314184640_UpdatedPayrunAllowancesSummaryAddedEmployee.Designer.cs" />
     <Compile Remove="Migrations\20200317231734_UpdatedPayrunStatusAgain.cs" />
     <Compile Remove="Migrations\20200317231734_UpdatedPayrunStatusAgain.Designer.cs" />
+    <Compile Remove="Migrations\20200320153346_AddedCreatorInEmployee.cs" />
+    <Compile Remove="Migrations\20200320153346_AddedCreatorInEmployee.Designer.cs" />
+    <Compile Remove="Migrations\20200320153712_AddedCreatorInEmployee.cs" />
+    <Compile Remove="Migrations\20200320153712_AddedCreatorInEmployee.Designer.cs" />
+    <Compile Remove="Migrations\20200321092941_InitialServer.cs" />
+    <Compile Remove="Migrations\20200321092941_InitialServer.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -40,6 +40,7 @@
         var isEditing = false;
         var curEditRow;
         $(document).ready(function () {
+            $(".control-section").stop().animate({ height: '87%' }, 150);
             $('#newWorkshiftForm').on('submit', function (e) {
                 e.preventDefault();
                 if (ValidateForm()) {
@@ -154,7 +155,7 @@
                 </div>
             </div>
         </div>
-        <div id="addWorkshiftSection" class="panel-body p-t-0" style="display:none;">
+        <div id="addWorkshiftSection" class="panel-body p-t-0 p-b-0" style="display:none;">
         <div class="m-l-0 m-t-0">
             <h2 id="addSecTitle">Add Workshift</h2>
             <p>
@@ -233,6 +234,7 @@
         </form>
         </div>
     </div>
+
     <div class="control-section">
         <ejs-grid id="AllWorkshiftsGrid" dataSource="@ViewData["Workshifts_DS"]" enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()"
                   dataBound="dataBound" commandClick="commandClick" actionComplete="actionComplete"
@@ -248,6 +250,7 @@
             <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
             <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
         </ejs-grid>
+    </div>
     </div>
 </div>
 
@@ -360,9 +363,13 @@
             }, 50);
 
             $('#addWorkshiftSection').slideDown(250);
+
+            $(".control-section").stop().animate({ height: '63%' }, 150);
         }
         else {
             $('#addWorkshiftSection').slideUp(250);
+
+            $(".control-section").stop().animate({ height: '87%' }, 150);
             $('#toggleAddSection').slideUp(50);
             setTimeout(function () {
                 $('#addSecToggleBtn').html('Add New Workshift');

@@ -32,12 +32,11 @@ namespace CERP.Web.Areas.HR.Pages.TimeSheets
             GetSecondaryGrid = new Grid()
             {
                 DataSource = ViewData["Timesheets_ChildDS"],
-                QueryCellInfo="queryCellInfo",
+                QueryCellInfo= "secQueryCellInfo",
                 Load = "onLoad",
                 QueryString = "timesheetId",
                 EditSettings = new Syncfusion.EJ2.Grids.GridEditSettings() { },
                 AllowExcelExport = true,
-                AllowGrouping = true,
                 AllowPdfExport = true,
                 HierarchyPrintMode = HierarchyGridPrintMode.All,
                 AllowSelection = true,
@@ -66,22 +65,22 @@ namespace CERP.Web.Areas.HR.Pages.TimeSheets
         public List<GridColumn> GetSecondaryGridColumns()
         {
             List<GridColumn> gridColumns = new List<GridColumn>() {
-                new GridColumn { Field = "week", HeaderText = "Week", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "description", DefaultValue="—", HeaderText = "Description", TextAlign=TextAlign.Center,  MinWidth="20"  },
+                new GridColumn { Field = "week", AutoFit=true, HeaderText = "Week", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "description", AutoFit=true, DefaultValue="—", HeaderText = "Description", TextAlign=TextAlign.Center,  MinWidth="20"  },
                 new GridColumn { Field = "", HeaderText = "Daily Hours", TextAlign=TextAlign.Center,  MinWidth="10",
                     Columns = new List<GridColumn>(){
-                        new GridColumn { Field = "sumSun", HeaderText = "Sunday", TextAlign=TextAlign.Center,  MinWidth="40"  },
-                        new GridColumn { Field = "sumMon", HeaderText = "Monday", TextAlign=TextAlign.Center,  MinWidth="40"  },
-                        new GridColumn { Field = "sumTue", HeaderText = "Tuesday", TextAlign=TextAlign.Center,  MinWidth="40"  },
-                        new GridColumn { Field = "sumWed", HeaderText = "Wednesday", TextAlign=TextAlign.Center,  MinWidth="40"  },
-                        new GridColumn { Field = "sumThu", HeaderText = "Thursday", TextAlign=TextAlign.Center,  MinWidth="40"  },
-                        new GridColumn { Field = "sumFri", HeaderText = "Friday", TextAlign=TextAlign.Center,  MinWidth="40"  },
-                        new GridColumn { Field = "sumSat", HeaderText = "Satday", TextAlign=TextAlign.Center,  MinWidth="40"  },
+                        new GridColumn { Field = "sumSun", MaxWidth="130", Width="95", HeaderText = "Sunday", TextAlign=TextAlign.Center,  MinWidth="40"  },
+                        new GridColumn { Field = "sumMon", MaxWidth="130", Width="95", HeaderText = "Monday", TextAlign=TextAlign.Center,  MinWidth="40"  },
+                        new GridColumn { Field = "sumTue", MaxWidth="130", Width="95", HeaderText = "Tuesday", TextAlign=TextAlign.Center,  MinWidth="40"  },
+                        new GridColumn { Field = "sumWed", MaxWidth="130", Width="95", HeaderText = "Wednesday", TextAlign=TextAlign.Center,  MinWidth="40"  },
+                        new GridColumn { Field = "sumThu", MaxWidth="130", Width="95", HeaderText = "Thursday", TextAlign=TextAlign.Center,  MinWidth="40"  },
+                        new GridColumn { Field = "sumFri", MaxWidth="130", Width="95", HeaderText = "Friday", TextAlign=TextAlign.Center,  MinWidth="40"  },
+                        new GridColumn { Field = "sumSat", MaxWidth="130", Width="95", HeaderText = "Saturday", TextAlign=TextAlign.Center,  MinWidth="40"  },
                     }
                 },
-                new GridColumn { Field = "totalWeekHours", HeaderText = "Total Hours", TextAlign=TextAlign.Center,  MinWidth="30" },
-                new GridColumn { Field = "isSubmitted", DisplayAsCheckBox=true, Width="100",  HeaderText = "Submitted", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "getProgress", DefaultValue="—", Template = "#progressColTemplate", HeaderText = "Progress", TextAlign=TextAlign.Center,  MinWidth="10"  }
+                new GridColumn { Field = "totalWeekHours", AutoFit=true, HeaderText = "Total Hours", TextAlign=TextAlign.Center,  MinWidth="30" },
+                new GridColumn { Field = "isSubmitted", AutoFit=true, DisplayAsCheckBox=true, Width="100",  HeaderText = "Submitted", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "getProgress", DefaultValue="—", Template = "#secondaryProgressColTemplate", HeaderText = "Progress", TextAlign=TextAlign.Center,  MinWidth="10"  }
             };
 
             return gridColumns;
@@ -90,23 +89,23 @@ namespace CERP.Web.Areas.HR.Pages.TimeSheets
         {
             List<GridColumn> gridColumns = new List<GridColumn>() {
                 new GridColumn { Field = "employee.getReferenceId", HeaderText = "Emp Id", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "employee.name", HeaderText = "Employee", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "employee.name", HeaderText = "Employee", TextAlign=TextAlign.Center,  MinWidth="100"  },
                 new GridColumn { Field = "employee.department.name", HeaderText = "Department", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "getMonth", HeaderText = "Month", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "year", HeaderText = "Year", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "description", DefaultValue="—", HeaderText = "Description", TextAlign=TextAlign.Center,  MinWidth="20"  },
                 new GridColumn { Field = "", HeaderText = "Weekly Hours", TextAlign=TextAlign.Center,  MinWidth="10",
                     Columns = new List<GridColumn>(){
-                        new GridColumn { Field = "week1Hours", Template = "#week1ColTemplate", HeaderText = "1st Week", TextAlign=TextAlign.Center,  MinWidth="40"  },
-                        new GridColumn { Field = "week2Hours", Template = "#week2ColTemplate", HeaderText = "2nd Week", TextAlign=TextAlign.Center,  MinWidth="40"  },
-                        new GridColumn { Field = "week3Hours", Template = "#week3ColTemplate", HeaderText = "3rd Week", TextAlign=TextAlign.Center,  MinWidth="40"  },
-                        new GridColumn { Field = "week4Hours", Template = "#week4ColTemplate", HeaderText = "4th Week", TextAlign=TextAlign.Center,  MinWidth="40"  },
-                        new GridColumn { Field = "week5Hours", Template = "#week5ColTemplate", HeaderText = "5th Week", TextAlign=TextAlign.Center,  MinWidth="40"  },
+                        new GridColumn { Field = "week1Hours", Template = "#week1ColTemplate", HeaderText = "1st", TextAlign=TextAlign.Center, MinWidth="40"  },
+                        new GridColumn { Field = "week2Hours", Template = "#week2ColTemplate", HeaderText = "2nd", TextAlign=TextAlign.Center, MinWidth="40"  },
+                        new GridColumn { Field = "week3Hours", Template = "#week3ColTemplate", HeaderText = "3rd", TextAlign=TextAlign.Center, MinWidth="40"  },
+                        new GridColumn { Field = "week4Hours", Template = "#week4ColTemplate", HeaderText = "4th", TextAlign=TextAlign.Center, MinWidth="40"  },
+                        new GridColumn { Field = "week5Hours", Template = "#week5ColTemplate", HeaderText = "5th", TextAlign=TextAlign.Center, MinWidth="40"  },
                     }
                 },
-                new GridColumn { Field = "totalMonthHours", DefaultValue="—", HeaderText = "Total Hours", TextAlign=TextAlign.Center,  MinWidth="30" },
+                new GridColumn { Field = "getProgress",Width="200", DefaultValue="—", Template = "#progressColTemplate", HeaderText = "Progress", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "totalMonthHours", Width="80", DefaultValue="—", HeaderText = "Total Hours", TextAlign=TextAlign.Center,  MinWidth="30" },
                 new GridColumn { Field = "isPosted", Width="100", DisplayAsCheckBox=true, HeaderText = "Posted", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "getProgress", DefaultValue="—", Template = "#progressColTemplate", HeaderText = "Progress", TextAlign=TextAlign.Center,  MinWidth="10"  }
             };
 
             gridColumns.AddRange(GetCommandsColumns());
