@@ -62,7 +62,7 @@ namespace CERP.IdentityServer
                 "role"
             };
 
-            await CreateApiResourceAsync("AvalonERP", commonApiUserClaims);
+            await CreateApiResourceAsync("CERP", commonApiUserClaims);
         }
 
         private async Task<ApiResource> CreateApiResourceAsync(string name, IEnumerable<string> claims)
@@ -101,7 +101,7 @@ namespace CERP.IdentityServer
                 "role",
                 "phone",
                 "address",
-                "AvalonERP"
+                "CERP"
             };
 
             var configurationSection = _configuration.GetSection("IdentityServer:Clients");

@@ -21,11 +21,11 @@ namespace CERP.Web
                     options.Conventions.AuthorizeFolder("/Pages");
                     options.Conventions.AuthorizePage("/Index");
 
-                    options.Conventions.AddPageRoute("/Account/Login", "/Login");
-                    options.Conventions.AddPageRoute("/Account/Register", "/Register");
-                    options.Conventions.AddPageRoute("/Account/Lockout", "/Lockout");
-                    options.Conventions.AddPageRoute("/Account/AccessDenied", "/AccessDenied");
-                    options.Conventions.AddPageRoute("/Account/Logout", "/Logout");
+                    //options.Conventions.AddPageRoute("/Account/Login", "/Login");
+                    //options.Conventions.AddPageRoute("/Account/Register", "/Register");
+                    //options.Conventions.AddPageRoute("/Account/Lockout", "/Lockout");
+                    //options.Conventions.AddPageRoute("/Account/AccessDenied", "/AccessDenied");
+                    //options.Conventions.AddPageRoute("/Account/Logout", "/Logout");
 
                     options.Conventions.AddAreaPageRoute("FM", "/COA/List", "/COA");
                     options.Conventions.AddAreaPageRoute("FM", "/COA/Create", "/COA/Create");

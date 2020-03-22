@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "AVALONE ERP.Web": {
+    "Avalon ERP.Web": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

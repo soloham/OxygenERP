@@ -54,41 +54,6 @@ namespace CERP.Web.Pages.Account
         {
         }
 
-        public override async Task<IActionResult> OnGetAsync()
-        {
-            Input = new LoginInputModel();
-
-            Input.UserNameOrEmailAddress = "SpaceX";
-            Input.Password = "Openit55%";
-            Input.RememberMe = true;
-
-            return await OnPostAsync("");
-
-
-            var schemes = await SchemeProvider.GetAllSchemesAsync();
-
-            var providers = schemes
-                .Where(x => x.DisplayName != null || x.Name.Equals(AccountOptions.WindowsAuthenticationSchemeName, StringComparison.OrdinalIgnoreCase))
-                .Select(x => new ExternalProviderModel
-                {
-                    DisplayName = x.DisplayName,
-                    AuthenticationScheme = x.Name
-                })
-                .ToList();
-
-            EnableLocalLogin = await SettingProvider.IsTrueAsync(AccountSettingNames.EnableLocalLogin);
-
-            ExternalProviders = providers.ToArray();
-
-            if (IsExternalLoginOnly)
-            {
-                //return await ExternalLogin(vm.ExternalLoginScheme, returnUrl);
-                throw new NotImplementedException();
-            }
-
-            return Page();
-        }
-
         [BindProperty]
         public LoginInputModel Input { get; set; }
 
@@ -108,59 +73,6 @@ namespace CERP.Web.Pages.Account
 
             [Display(Name = "Remember me?")]
             public bool RememberMe { get; set; }
-        }
-
-        [UnitOfWork] //TODO: Will be removed when we implement action filter
-        public override async Task<IActionResult> OnPostAsync(string action)
-        {
-            await CheckLocalLoginAsync();
-
-            ValidateModel();
-
-            await ReplaceEmailToUsernameOfInputIfNeeds();
-
-            var result = await SignInManager.PasswordSignInAsync(
-                Input.UserNameOrEmailAddress,
-                Input.Password,
-                Input.RememberMe,
-                true
-            );
-
-            if (result.RequiresTwoFactor)
-            {
-                return RedirectToPage("./SendSecurityCode", new
-                {
-                    returnUrl = ReturnUrl,
-                    returnUrlHash = ReturnUrlHash,
-                    rememberMe = Input.RememberMe
-                });
-            }
-
-            if (result.IsLockedOut)
-            {
-                Alerts.Warning(L["UserLockedOutMessage"]);
-                return Page();
-            }
-
-            if (result.IsNotAllowed)
-            {
-                Alerts.Warning(L["LoginIsNotAllowed"]);
-                return Page();
-            }
-
-            if (!result.Succeeded)
-            {
-                Alerts.Danger(L["InvalidUserNameOrPassword"]);
-                return Page();
-            }
-
-            //TODO: Find a way of getting user's id from the logged in user and do not query it again like that!
-            var user = await UserManager.FindByNameAsync(Input.UserNameOrEmailAddress) ??
-                       await UserManager.FindByEmailAsync(Input.UserNameOrEmailAddress);
-
-            Debug.Assert(user != null, nameof(user) + " != null");
-
-            return RedirectSafely(ReturnUrl, ReturnUrlHash);
         }
 
         [UnitOfWork]

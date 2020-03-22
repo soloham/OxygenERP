@@ -14,7 +14,7 @@ namespace CERP.EntityFrameworkCore
             var configuration = BuildConfiguration();
 
             var builder = new DbContextOptionsBuilder<CERPMigrationsDbContext>()
-                .UseSqlServer(configuration.GetConnectionString("AvalonERP"));
+                .UseSqlServer(configuration.GetConnectionString("Default"));
 
             return new CERPMigrationsDbContext(builder.Options);
         }
