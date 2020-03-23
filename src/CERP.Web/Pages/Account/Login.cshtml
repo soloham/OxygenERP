@@ -1,50 +1,81 @@
-﻿@page "/Login"
+﻿@page
+@using Volo.Abp.Account.Settings
+@using Volo.Abp.Settings
+@inherits Volo.Abp.Account.Web.Pages.Account.AccountPage
 @model CERP.Web.Pages.Account.CustomLoginModel
+@inject Volo.Abp.Settings.ISettingProvider SettingProvider
 
 @{
     ViewData["Title"] = "Log In";
 }
 
-<h1 class="m-t-0 m-b-0 text-center">@ViewData["Title"]</h1>
-<div class="row">
-    <div class="col-md-12">
-        <section>
-            <form id="account" method="post">
-                @*<h4>Use a local account to log in.</h4>*@
-                <hr />
-                <div asp-validation-summary="All" class="text-danger"></div>
+<h1 class="m-t-0 m-b-5 text-center">@ViewData["Title"]</h1>
+
+@if (Model.EnableLocalLogin)
+{
+    <div class="card m-t-3 shadow-sm rounded">
+        <div class="card-body p-t-15">
+            @*@if (await SettingProvider.IsTrueAsync(AccountSettingNames.IsSelfRegistrationEnabled))
+            {
+                <strong>
+                    @L["AreYouANewUser"]
+                    <a href="@Url.Page("./Register", new {returnUrl = Model.ReturnUrl, returnUrlHash = Model.ReturnUrlHash})" class="text-decoration-none">@L["Register"]</a>
+                </strong>
+            }*@
+            <form method="post" class="m-t-10">
+                <input asp-for="ReturnUrl" />
+                <input asp-for="ReturnUrlHash" />
                 <div class="form-group">
-                    <label asp-for="Input.UserNameOrEmailAddress"></label>
-                    <input asp-for="Input.UserNameOrEmailAddress" class="form-control" placeholder="Password" />
-                    <span asp-validation-for="Input.UserNameOrEmailAddress" class="text-danger"></span>
+                    <label asp-for="LoginInput.UserNameOrEmailAddress"></label>
+                    <input asp-for="LoginInput.UserNameOrEmailAddress" class="form-control" />
+                    <span asp-validation-for="LoginInput.UserNameOrEmailAddress" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Input.Password"></label>
-                    <input asp-for="Input.Password" class="form-control" placeholder="Password" />
-                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    <label asp-for="LoginInput.Password"></label>
+                    <input asp-for="LoginInput.Password" class="form-control" />
+                    <span asp-validation-for="LoginInput.Password" class="text-danger"></span>
                 </div>
+                @*<div class="form-check">
+                        <label asp-for="LoginInput.RememberMe" class="form-check-label">
+                            <input asp-for="LoginInput.RememberMe" class="form-check-input" />
+                            @Html.DisplayNameFor(m => m.LoginInput.RememberMe)
+                        </label>
+                    </div>*@
                 <div class="form-group">
-                    @*<div class="checkbox">
-                            <label asp-for="Input.RememberMe">
-                                <input asp-for="Input.RememberMe" />
-                                @Html.DisplayNameFor(m => m.Input.RememberMe)
-                            </label>
-                        </div>*@
-                    <label class="custom-control custom-control-info custom-checkbox active" asp-for="Input.RememberMe">
-                        <input class="custom-control-input" style="display:none; visibility:hidden" type="checkbox" visible="false" name="mode" checked="checked" asp-for="Input.RememberMe">
+                    <label class="custom-control custom-control-info custom-checkbox active" asp-for="LoginInput.RememberMe">
+                        <input class="custom-control-input" style="display:none; visibility:hidden" type="checkbox" visible="false" name="mode" checked="checked" asp-for="LoginInput.RememberMe">
                         <span class="custom-control-indicator"></span>
-                        <span class="custom-control-label" style="z-index:-1">@Html.DisplayNameFor(m => m.Input.RememberMe)</span>
+                        <span class="custom-control-label" style="z-index:-1">@Html.DisplayNameFor(m => m.LoginInput.RememberMe)</span>
                     </label>
                 </div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-info btn-block">Log in</button>
-                </div>
+                <abp-button type="submit" button-type="Primary" name="Action" value="Login" class="btn btn-info btn-block">@L["Login"]</abp-button>
             </form>
-        </section>
+        </div>
     </div>
+}
 
-</div>
+@if (Model.VisibleExternalProviders.Any())
+{
+    <div class="col-md-6">
+        <h4>@L["UseAnotherServiceToLogIn"]</h4>
+        <form asp-page="./Login" asp-page-handler="ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" asp-route-returnUrlHash="@Model.ReturnUrlHash" method="post">
+            <input asp-for="ReturnUrl" />
+            <input asp-for="ReturnUrlHash" />
+            @foreach (var provider in Model.VisibleExternalProviders)
+            {
+                <button type="submit" class="btn btn-primary" name="provider" value="@provider.AuthenticationScheme" title="@L["GivenTenantIsNotAvailable", provider.DisplayName]">@provider.DisplayName</button>
+            }
+        </form>
+    </div>
+}
 
+@if (!Model.EnableLocalLogin && !Model.VisibleExternalProviders.Any())
+{
+    <div class="alert alert-warning">
+        <strong>@L["InvalidLoginRequest"]</strong>
+        @L["ThereAreNoLoginSchemesConfiguredForThisClient"]
+    </div>
+}
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

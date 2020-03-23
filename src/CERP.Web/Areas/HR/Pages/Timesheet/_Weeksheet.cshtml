@@ -61,7 +61,7 @@
                             <th>S.No</th>
                             <th width="70px">Chargeable<br />/ Not chargeable</th>
                             <th width="70px">Department</th>
-                            <th width="90px">Client</th>
+                            @*<th width="90px">Client</th>*@
                             @*<th width="100px">Engagement</th>*@
                             <th>Sun</th>
                             <th>Mon</th>
@@ -140,7 +140,7 @@
 
                                     </select>
                                 </td>
-                                <td>
+                                @*<td>
                                     <select id="CLIENT_ID" name="CLIENT_ID" class="form-control input-sm">
                                         <option></option>
                                         @foreach (var item in clients)
@@ -151,7 +151,7 @@
                                         }
 
                                     </select>
-                                </td>
+                                </td>*@
                                 @*<td>
                                     <select id="ENGAGEMENT_ID" name="ENGAGEMENT_ID" class="form-control input-sm">
                                         <option></option>
@@ -247,7 +247,7 @@
     function setFirstRowValidation() {
         $("#tblTimeSheet tbody tr").find('input,select,textarea').removeAttr('required');
         $('form.disabled').find('input,select,textarea').attr('disabled', 'disabled');
-        $("#tblTimeSheet tbody tr:first").find('select').not('#CLIENT_ID,#ENGAGEMENT_ID').attr('required', 'required');
+        $("#tblTimeSheet tbody tr:first").find('select').not('##ENGAGEMENT_ID').attr('required', 'required');
         $("#tblTimeSheet tfoot tr.trSum").find('input').keypress(function () { return false; })
 
     }
@@ -267,21 +267,21 @@
             var thisParent = $(this).parent().parent();
             var inputName = this.id;
 
-            var CLIENT_ID = tr.find('#CLIENT_ID').val();
+            //var CLIENT_ID = tr.find('#CLIENT_ID').val();
 
             //------------------------------------------
             //-- To select client engagements
             //------------------------------------------
-            if (inputName == 'CLIENT_ID') {
-                tr.find('#ENGAGEMENT_ID').val('');
-                tr.find('#ENGAGEMENT_ID > option').each(function () {
-                    $(this).hide();
-                    var optionType = $(this).attr('data-type');
-                    if (optionType == CLIENT_ID) {
-                        $(this).show();
-                    }
-                });
-            };
+            //if (inputName == 'CLIENT_ID') {
+            //    tr.find('#ENGAGEMENT_ID').val('');
+            //    tr.find('#ENGAGEMENT_ID > option').each(function () {
+            //        $(this).hide();
+            //        var optionType = $(this).attr('data-type');
+            //        if (optionType == CLIENT_ID) {
+            //            $(this).show();
+            //        }
+            //    });
+            //};
 
             if (thisId == 'IS_CHARGEABLE') {
 
@@ -303,11 +303,11 @@
                 //-------------------------------------------------------------
                 if (thisValue == 'Chargeable') {
                     //$(thisParent).find('#CLIENT_ID,#ENGAGEMENT_ID').attr('required', 'required');
-                    $(thisParent).find('#CLIENT_ID').find('option').removeAttr('hidden');
+                    //$(thisParent).find('#CLIENT_ID').find('option').removeAttr('hidden');
                 } else {
-                    $(thisParent).find('#CLIENT_ID,#ENGAGEMENT_ID').removeAttr('required');
-                    $(thisParent).find('#CLIENT_ID,#ENGAGEMENT_ID').find('option').attr('hidden', 'hidden');
-                    $(thisParent).find('#CLIENT_ID,#ENGAGEMENT_ID').val('');
+                    //$(thisParent).find('#CLIENT_ID,#ENGAGEMENT_ID').removeAttr('required');
+                    //$(thisParent).find('#CLIENT_ID,#ENGAGEMENT_ID').find('option').attr('hidden', 'hidden');
+                    //$(thisParent).find('#CLIENT_ID,#ENGAGEMENT_ID').val('');
                 }
 
             };
@@ -344,7 +344,7 @@
                     "ChargeabilityId": tr.find('#IS_CHARGEABLE').val(),
                     "ServiceLineId": tr.find('#SERVICE_LINE_ID').val(),
                     //"ENGAGEMENT_ID": tr.find('#ENGAGEMENT_ID').val(),
-                    "ClientId": tr.find('#CLIENT_ID').val(),
+                    //"ClientId": tr.find('#CLIENT_ID').val(),
                     "Sun": tr.find('#SUN').val(),
                     "Mon": tr.find('#MON').val(),
                     "Tue": tr.find('#TUE').val(),
@@ -411,7 +411,7 @@
             var IS_CHARGEABLE = tr.find('#IS_CHARGEABLE').val();
             var SERVICE_LINE_ID = tr.find('#SERVICE_LINE_ID').val();
             var ENGAGEMENT_ID = tr.find('#ENGAGEMENT_ID').val();
-            var CLIENT_ID = tr.find('#CLIENT_ID').val();
+            //var CLIENT_ID = tr.find('#CLIENT_ID').val();
 
             var SUN = isNull(tr.find('#SUN').val());
             var MON = isNull(tr.find('#MON').val());
@@ -427,20 +427,20 @@
 
             calculateTotal();
 
-            tr.find('select,input').not('#CLIENT_ID,#ENGAGEMENT_ID').removeAttr('required');
-            var count = 0;
-            if (IS_CHARGEABLE !='') {
-                tr.find('select,input').not('#CLIENT_ID,#ENGAGEMENT_ID').attr('required', 'required');
+            //tr.find('select,input').not('#CLIENT_ID,#ENGAGEMENT_ID').removeAttr('required');
+            //var count = 0;
+            //if (IS_CHARGEABLE !='') {
+            //    tr.find('select,input').not('#CLIENT_ID,#ENGAGEMENT_ID').attr('required', 'required');
 
-                count++;
-                tr.find('input').each(function () {
-                    if ($(this).val() == '') {
-                        $(this).val(0);
-                    }
-                });
+            //    count++;
+            //    tr.find('input').each(function () {
+            //        if ($(this).val() == '') {
+            //            $(this).val(0);
+            //        }
+            //    });
 
                 
-            }
+            //}
             //console.log("-------------------------------------");
             //console.log(count);
             //if (count == $('#tblTimeSheet').find('tbody tr').length) newRow(1);
