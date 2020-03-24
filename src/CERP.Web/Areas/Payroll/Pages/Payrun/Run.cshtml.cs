@@ -225,11 +225,11 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
                     }
                     catch (Exception ex)
                     {
-                        return new NotFoundObjectResult(new { message = $"Timesheet for the employee {curEmployee.Name} for the period {month.ToString().PadLeft(2, '0')}/{year.ToString().PadLeft(2, '0')}<br/>doesn't exist." });
+                        return new NotFoundObjectResult(new { message = $"Timesheet of the employee {curEmployee.Name} for the period {month.ToString().PadLeft(2, '0')}/{year.ToString().PadLeft(2, '0')}<br/>doesn't exist." });
                     }
                     if (empTimesheet == null)
                     {
-                        return new BadRequestObjectResult(new { message = $"Timesheet for the employee {curEmployee.Name}<br/>for the period {month.ToString().PadLeft(2, '0')}/{year.ToString().PadLeft(2, '0')}<br/>doesn't exist." });
+                        return new BadRequestObjectResult(new { message = $"Timesheet of the employee {curEmployee.Name}<br/>for the period {month.ToString().PadLeft(2, '0')}/{year.ToString().PadLeft(2, '0')}<br/>doesn't exist." });
                     }
                     isNewEmployee = payrunPrevious != null && empPayrunDetailPrevious == null;
 

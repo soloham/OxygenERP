@@ -95,12 +95,27 @@
                                 <input id="postNote" class="form-control" type="text" placeholder="Note" />
                             </div>
                             <div class="col-md-5">
-                                <input id="postAttachment" class="form-control" type="file" placeholder="Note" />
+                                <input id="postAttachment" class="form-control" type="file" placeholder="" />
                             </div>
                             <div class="col-md-3">
                                 <input id="submitPostPayrun" type="submit" class="btn btn-primary btn-block" value="POST" />
                             </div>
                         </form>
+                    </div>
+                    <div id="posted" class="col-md-3 pull-right" style="display:none">
+                        <div class="alert alert-outline-success alert-icon-bg alert-dismissable" style="margin-bottom:0" role="alert">
+                            <div class="alert-icon">
+                                <i class="zmdi zmdi-check"></i>
+                            </div>
+                            <div class="alert-message">
+                                @*<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">
+                                        <i class="zmdi zmdi-close"></i>
+                                    </span>
+                                </button>*@
+                                <strong>Posted</strong>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -197,6 +212,7 @@
                 error: function (data) {
                     $(".control-section").slideUp(200);
                     $("#postSection").slideUp(200);
+                    $("#posted").slideUp(200);
                     $("#generateSection").slideDown(200);
 
                     console.log(data);
@@ -236,9 +252,15 @@
                     success: function (data) {
                         swal.fire('Success', 'Payrun successfully posted', 'success')
                         $("#postSection").slideUp(200);
+                        setTimeout(function () {
+                            $("#posted").slideDown(200);
+                        }, 200);
                     },
                     error: function (data) {
-                        $("#postSection").slideDown(200);
+                        $("#posted").slideUp(200);
+                        setTimeout(function () {
+                            $("#postSection").slideDown(200);
+                        }, 200);
                         swal.fire('Failed', `Payrun couldn't be posted`, 'error')
                     }
                 });
@@ -279,10 +301,16 @@
                     $(".control-section").slideDown(200);
                     $("#generateSection").slideUp(200);
                     if (!data.isPosted) {
-                        $("#postSection").slideDown(200);
+                        $("#posted").slideUp(200);
+                        setTimeout(function () {
+                            $("#postSection").slideDown(200);
+                        }, 200);
                     }
                     else {
                         $("#postSection").slideUp(200);
+                        setTimeout(function () {
+                            $("#posted").slideDown(200);
+                        }, 200);
                     }
                     //if (!data[0].payrun.isPosted)i
                     //els
@@ -300,12 +328,14 @@
                 else {
                     $(".control-section").slideUp(200);
                     $("#postSection").slideUp(200);
+                    $("#posted").slideUp(200);
                     $("#generateSection").slideDown(200);
                 }
             },
             error: function (data) {
                 $(".control-section").slideUp(200);
                 $("#postSection").slideUp(200);
+                $("#posted").slideUp(200);
                 $("#generateSection").slideDown(200);
 
                 console.log(data);
