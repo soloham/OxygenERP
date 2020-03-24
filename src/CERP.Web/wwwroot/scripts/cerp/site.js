@@ -105,6 +105,18 @@ function writeIslamicDate(date, adjustment) {
 }
 
 function initSettings() {
+    $('.navbar-toggler').on('click', function () {
+        let hB = $('#header-brand');
+        if (hB.attr('src') != '/img/logos/OxygenERPLogo.png') {
+            hB.attr('src', '/img/logos/OxygenERPLogo.png');
+
+            hB.animate({ height: '113%' }, 500);
+        }
+        else {
+            hB.animate({ height: '100%' }, 300);
+            hB.attr('src', '/img/logos/OxygenERP 2.3.png');
+        }
+    });
     Date.prototype.getWeekOfMonth = function (exact) {
         var month = this.getMonth()
             , year = this.getFullYear()

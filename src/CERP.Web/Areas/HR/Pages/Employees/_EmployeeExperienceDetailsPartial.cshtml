@@ -7,16 +7,20 @@
 
     bool isEditing = (bool)ViewData["IsEditing"] == true;
     QualificationDetail qualificationDetail = isEditing ? (QualificationDetail)Model.QualificationDetail : null;
+    ExperienceDetail experienceDetail = isEditing ? (ExperienceDetail)Model.ExperiencesDetail : null;
 
     List<GridColumn> qualificationsColumns = (List<GridColumn>)ViewData["qualificationsColumns"];
     IList<Qualification> qualificationsDS = ((bool)ViewData["IsEditing"] == true) ? qualificationDetail.Qualifications : new List<Qualification>();
+
+    List<GridColumn> experiencesColumns = (List<GridColumn>)ViewData["experiencesColumns"];
+    IList<Experience> experiencesDS = ((bool)ViewData["IsEditing"] == true) ? experienceDetail.Experiences : new List<Experience>();
 }
 
 @section scripts{
 }
 <script>
     $(document).ready(function () {
-    $('#addQualificationSectionBtn').on('click', function () {
+        $('#addQualificationSectionBtn').on('click', function () {
             var isCollapsed = $('#form-step-4-2').css('display') == 'none';
 
             if (isCollapsed) {
@@ -31,13 +35,28 @@
                 $('#addQualificationBtnSection').slideDown(200);
             }
         });
+        $('#addExperienceSectionBtn').on('click', function () {
+            var isCollapsed = $('#form-step-4-3').css('display') == 'none';
+
+            if (isCollapsed) {
+                $('#addExperienceBtnSection').slideUp(200);
+                $('#form-step-4-3').slideDown(200);
+                setTimeout(function () { $('#addExperienceSectionBtn', '#addExperienceBtnSection').html('<i class="fa fa-arrow-up p-r-5"></i> Cancel Add') }, 200)
+                $('#addExperienceBtnSection').slideDown(200);
+            } else {
+                $('#addExperienceBtnSection').slideUp(200);
+                $('#form-step-4-3').slideUp(200);
+                setTimeout(function () { $('#addExperienceSectionBtn', '#addExperienceBtnSection').html('<i class="fa fa-plus p-r-5"></i> Add Experience') }, 200)
+                $('#addExperienceBtnSection').slideDown(200);
+            }
+        });
     })
 </script>
 
 <div class="m-l-20 m-t-0">
-    <h2>Qualification Details</h2>
+    <h2>Experience Details</h2>
     <p>
-        Provide qualification details of the employee
+        Provide experience details of the employee
     </p>
 </div>
 <hr class="m-b-0" />
@@ -122,15 +141,97 @@
         <div class="control-section m-t-20">
             <ejs-grid id="QualificationsGrid" dataSource="@qualificationsDS" enableAutoFill="true" columns="@qualificationsColumns"
                       dataBound="dataBound" commandClick="commandClick"
-                      allowExcelExport="true" allowGrouping="true" height="100%"allowPdfExport="true"
+                      allowExcelExport="true" allowGrouping="true" height="100%" allowPdfExport="true"
                       hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                       allowSorting="true" allowMultiSorting="true" gridLines="Both"
                       toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
-                      
                       allowPaging="true" allowResizing="true">
 
                 <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
-            <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
+                <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
+                <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+            </ejs-grid>
+        </div>
+    </div>
+
+    <div class="col-lg-12 padding-right-0 p-t-20">
+
+        <div id="addExperienceBtnSection" class="row">
+            <div class="col-lg-12">
+                <button id="addExperienceSectionBtn" type="button" class="btn btn-primary btn-block"><i class="fa fa-plus p-r-5"></i> Add Experience</button>
+            </div>
+        </div>
+        <div id="form-step-4-3" role="form" data-toggle="validator" style="display: none; margin-top:10px">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5  control-label">Place:</label>
+                        <input type="text" id="experiencePlace" name="ExperiencePlace" @*value="@(empInfo!=null? empInfo.JOINING_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left" required>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5  control-label">Description:</label>
+                        <input type="text" id="experienceDesc" name="ExperienceDescription" @*value="@(empInfo!=null? empInfo.JOINING_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left" required>
+
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5">From:</label>
+                            <input type="text" id="expFromDate" name="ExpFromDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
+                        </div>
+                    </div>
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 pull-right ">Hijri Date</label>
+                            <input type="text" id="expFromHDate" name="ExpFromHDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5">To:</label>
+                            <input type="text" id="expToDate" name="ExpToDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
+                        </div>
+                    </div>
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 pull-right ">Hijri Date</label>
+                            <input type="text" id="expToHDate" name="ExpToHDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <button id="submitExperience" type="button" class="btn btn-primary btn-block">Add Experience</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="clearfix margin-5"></div>
+
+        <div class="control-section m-t-20">
+            <ejs-grid id="ExperiencesGrid" dataSource="@experiencesDS" enableAutoFill="true" columns="@experiencesColumns"
+                      dataBound="dataBound" commandClick="expCommandClick"
+                      allowExcelExport="true" allowGrouping="true" height="100%" allowPdfExport="true"
+                      hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                      allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                      toolbarClick="expToolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
+                      allowPaging="true" allowResizing="true">
+
+                <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
                 <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
                 <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
             </ejs-grid>
@@ -142,6 +243,34 @@
 
     function toolbarClick(args) {
         var gridObj = document.getElementById("QualificationsGrid").ej2_instances[0];
+        if (args.item.id === 'Grid_pdfexport') {
+            gridObj.pdfExport();
+        }
+        if (args.item.id === 'Grid_excelexport') {
+            gridObj.excelExport();
+        }
+        if (args.item.id === 'Grid_csvexport') {
+            gridObj.csvExport();
+        }
+        if (this.getSelectedRecords().length > 0) {
+            var withHeader = false;
+            if (args.item.id === 'copyHeader') {
+                withHeader = true;
+            }
+            this.copy(withHeader);
+        } else {
+            if (args.item.id === 'copyHeader') {
+                var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+                dialogObj.show();
+            }
+            else if (args.item.id === 'copy') {
+                var dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+                dialogObj.show();
+            }
+        }
+    }
+    function expToolbarClick(args) {
+        var gridObj = document.getElementById("ExperiencesGrid").ej2_instances[0];
         if (args.item.id === 'Grid_pdfexport') {
             gridObj.pdfExport();
         }
@@ -184,6 +313,29 @@
         console.log(args);
     }
 
+    function expCommandClick(args) {
+        console.log(args);
+        if (args.commandColumn.type == "Edit") {
+            var params_ = JSON.stringify(args.rowData);  // display row data
+            window.location = "@Url.Content("~")/GL/Edit?Id=" + args.rowData.Id;
+            @*$.ajax({
+                url: "/?handler=EditAccountkj&Guid_=" + params_.Id,
+                async: true,
+                type: "GET",
+                data: "",
+                success: function (data) {
+                    console.log(data);
+                    //window.location = "@Url.Content("~")/COA/Edit";
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            })*@
+        }
+        else if (args.commandColumn.type == "Copy") {
+            this.copy(false);
+        }
+    }
     function commandClick(args) {
         console.log(args);
         if (args.commandColumn.type == "Edit") {

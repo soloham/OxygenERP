@@ -83,6 +83,13 @@
         new GridColumn { Field = "FromDate", Width = "80", HeaderText = "From", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "ToDate", Width = "80", HeaderText = "To", TextAlign=TextAlign.Center,  MinWidth="10"  },
     };
+    ViewData["experiencesColumns"] = new List<GridColumn>() {
+        new GridColumn { Field = "Id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "GetExpPlace", Width = "110", HeaderText = "Place", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "GetExpDescription", Width = "110", HeaderText = "Description", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "FromDate", Width = "80", HeaderText = "From", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "ToDate", Width = "80", HeaderText = "To", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    };
 
     ViewData["dependantRelationshipTypes"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Relationship).OrderBy(x => x.Key).ToList();
     ViewData["dependantsColumns"] = new List<GridColumn>() {
@@ -435,6 +442,8 @@
                 var scGrid = $("#SecondaryContactsGrid")[0].ej2_instances[0]
                 //Qualification
                 var qfGrid = $("#QualificationsGrid")[0].ej2_instances[0]
+                //--Experiences
+                var expsGrid = $("#ExperiencesGrid")[0].ej2_instances[0]
                 //Dependants
                 var dpGrid = $("#DependantsGrid")[0].ej2_instances[0]
                 var dpIdsGrid = $("#DependantsPhysicalIdsGrid")[0].ej2_instances[0]
@@ -510,6 +519,15 @@
                     //qualificationsDto[i].Degree = null;
                     //qualificationsDto[i].Institution = null;
                 }
+                var experiences = expsGrid.dataSource;
+                var experiencesDto = [];
+                for (var i = 0; i < experiences.length; i++) {
+                    //qualifications[i].degreeId = qualifications[i].Degree.Id;
+                    //qualifications[i].institutionId = qualifications[i].Institution.Id;
+                    experiencesDto.push(JSON.parse(JSON.stringify(experiences[i])));
+                    //qualificationsDto[i].Degree = null;
+                    //qualificationsDto[i].Institution = null;
+                }
                 var dependants = dpGrid.dataSource;
                 var dependantsDto = [];
                 for (var i = 0; i < dependants.length; i++) {
@@ -566,8 +584,12 @@
                 console.log("Secondary Contacts");
                 console.log(secondaryContactsDto);
                 console.log("----------------------------------------------------------------");
-                console.log("Qualification");
+                console.log("Experience");
+                console.log("-- Qualification");
                 console.log(qualificationsDto);
+                console.log("----------------------------------------------------------------");
+                console.log("-- Expereicne");
+                console.log(experiencesDto);
                 console.log("----------------------------------------------------------------");
                 console.log("Dependants");
                 console.log(dependantsDto);
@@ -605,6 +627,7 @@
                 formData.append("nationalAddress", JSON.stringify(nationalAddressInfo));
                 formData.append("secondaryContacts", JSON.stringify(secondaryContactsDto));
                 formData.append("qualifications", JSON.stringify(qualificationsDto));
+                formData.append("experiences", JSON.stringify(experiencesDto));
                 formData.append("dependants", JSON.stringify(dependantsDto));
                 formData.append("dependantsIds", JSON.stringify(dependantsIdsDto));
                 formData.append("workShifts", JSON.stringify(workShifts));
@@ -860,6 +883,12 @@
                             console.log("ERROR" + err);
                         }
                     })*@
+                    if (idTypeValue == "Iqama") {
+                        $('#idNo').attr('readonly', 'readonly');
+                    }
+                    else {
+                        $('#idNo').removeAttr('readonly');
+                    }
                     grid.dataSource.push({
                         Id: id + 1,
                         IDTypeId: idType,
@@ -1236,6 +1265,63 @@
                 }
                 return true;
             })
+            $("#submitExperience").on("click", function (e) {
+                // Navigate previous
+                e.preventDefault();
+                var elmForm = $("#form-step-4-3");
+                // stepDirection === 'forward' :- this condition allows to do the form validation
+                // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
+                var valid = true;
+                elmForm.validator('validate');
+                if (elmForm) {
+                    //elmForm.validate({
+                    //    submitHandler: function (form) {
+                    //        console.log("Submit")
+                    //        valid = true;
+                    //    },
+                    //    invalidHandler: function (form) {
+                    //        console.log("Invalid")
+                    //        valid = false;
+                    //    }
+                    //})
+                    var elmErr = elmForm.find('.has-error');
+                    if (elmErr) {
+                        if (elmErr.length > 0) {
+                            // Form validation failed
+                            valid = false;
+                        }
+                        else {
+                            valid = true;
+                        }
+                    }
+                }
+
+                var params = "";
+                var grid = $("#ExperiencesGrid")[0].ej2_instances[0];
+                var id = 0;
+                if (grid.dataSource.length > 0)
+                    id = grid.dataSource[grid.dataSource.length - 1].Id;
+                var experiencePlace = $("#experiencePlace").val();
+                var experienceDesc = $("#experienceDesc").val();
+                var fromDate = $("#expFromDate").val();
+                var toDate = $("#expToDate").val();
+                var antiForg = $('input:hidden[name="__RequestVerificationToken"]').val();
+                params += "&__RequestVerificationToken=" + antiForg;
+                if (valid) {
+
+                    grid.dataSource.push({
+                        Id: id + 1,
+                        GetExpPlace: experiencePlace,
+                        GetExpDescription: experienceDesc,
+                        FromDate: fromDate,
+                        ToDate: toDate,
+                    });
+                    grid.refresh(); // refresh the Grid.
+                    
+                    toastr.info(`${experiencePlace} Experience Added`);
+                }
+                return true;
+            })
             $("#submitAddDependant").on("click", function (e) {
                 // Navigate previous
                 e.preventDefault();
@@ -1544,7 +1630,7 @@
                 <li><a href="#step-3">@TabPlaceholder 3<br /><p style="font-size: 15px">Contract Detail</p></a></li>
                 <li><a href="#step-4">@TabPlaceholder 4<br /><p style="font-size: 15px">Financial Detail</p></a></li>
                 <li><a href="#step-5">@TabPlaceholder 5<br /><p style="font-size: 15px">Contact Information</p></a></li>
-                <li><a href="#step-6">@TabPlaceholder 6<br /><p style="font-size: 15px">Qualification</p></a></li>
+                <li><a href="#step-6">@TabPlaceholder 6<br /><p style="font-size: 15px">Experience</p></a></li>
                 <li><a href="#step-7">@TabPlaceholder 7<br /><p style="font-size: 15px">Dependants</p></a></li>
                 <li><a href="#step-8">@TabPlaceholder 8<br /><p style="font-size: 15px">Work Shifts</p></a></li>
             </ul>
@@ -1576,7 +1662,7 @@
                 </div>
                 <div id="step-6">
                     <div id="form-step-5" role="form" data-toggle="validator">
-                        <partial name="_EmployeeQualificationDetailsPartial" />
+                        <partial name="_EmployeeExperienceDetailsPartial" />
                     </div>
                 </div>
                 <div id="step-7">

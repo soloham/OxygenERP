@@ -8,6 +8,7 @@
     int recId = currentWeekSheetInfo.Id;
     var weeks = currentWeekSheetInfo.WeeklyJobSummaries.ToList();
 
+    DateTime curDateTime = new DateTime(currentWeekSheetInfo.Year, currentWeekSheetInfo.Month, 1);
     //var codes = dbContext.CODES_VIEW.ToList();
     //var clients = dbContext.CONTACTS_VIEWS.Where(c => c.CONTACT_TYPE_ID == 1).OrderBy(c => c.CONTACT_NAME);
     //var engagments = dbContext.ENGAGEMENT_VIEW.OrderBy(c => c.ENGAGEMENT_NAME);
@@ -26,9 +27,49 @@
     //{
     //    _allowEdit = true;
     //}
-
+    DayOfWeek firstDayOfWeek = curDateTime.Date.DayOfWeek;
+    int firstDOW = (int)firstDayOfWeek;
 }
+<style>
+    #tblTimeSheet thead th {
+        text-align: center !important;
+        font-size: 12px !important;
+        vertical-align: bottom;
+        white-space: nowrap;
+        background-color: #5d98d1;
+        color: #e8e8e8;
+        padding: 10px 0px;
+    }
 
+    #tblTimeSheet tbody td, #tblTimeSheet tfoot td {
+        padding: 0px;
+        width: 42px;
+    }
+
+    #tblTimeSheet tbody td .form-control {
+        padding: 1px;
+        border: 0px !important;
+        margin: 0px;
+        font-size: 13px;
+        text-align: center;
+        background-color: transparent;
+    }
+
+    #tblTimeSheet tbody td .form-control[readonly], tblTimeSheet tbody td .form-control[readonly] {
+        background-color: #ededed !important;
+    }
+
+    .lastMonthDay {
+        background-color: #5084b6 !important;
+        color: #e0e0e0;
+    }
+
+    #tblTimeSheet .trSum td .form-control {
+        font-weight: bold;
+        background-color: #fafafa;
+        border-radius: 0px !important;
+    }
+</style>
 <form id="frmTimeSheet" class="@(_allowEdit?"":"disabled")">
     <div id="divMaster">
         <input type="hidden" name="REC_ID" id="REC_ID" value="@(currentWeekSheetInfo.Id)" />
@@ -59,19 +100,22 @@
                     <thead>
                         <tr>
                             <th>S.No</th>
-                            <th width="70px">Chargeable<br />/ Not chargeable</th>
+                            <th width="70px">Category</th>
                             <th width="70px">Department</th>
                             @*<th width="90px">Client</th>*@
                             @*<th width="100px">Engagement</th>*@
-                            <th>Sun</th>
-                            <th>Mon</th>
-                            <th>Tue</th>
-                            <th>Wed</th>
-                            <th>Thu</th>
-                            <th>Fri</th>
-                            <th>Sat</th>
+                            <th @(firstDOW > 0? "class=lastMonthDay" : "") >Sun</th>
+                            <th @(firstDOW > 1? "class=lastMonthDay" : "") >Mon</th>
+                            <th @(firstDOW > 2? "class=lastMonthDay" : "") >Tue</th>
+                            <th @(firstDOW > 3? "class=lastMonthDay" : "") >Wed</th>
+                            <th @(firstDOW > 4? "class=lastMonthDay" : "") >Thu</th>
+                            <th @(firstDOW > 5? "class=lastMonthDay" : "") >Fri</th>
+                            <th @(firstDOW > 6? "class=lastMonthDay" : "") >Sat</th>
                             <th>Total</th>
-                            <th></th>
+                            @if (_allowEdit)
+                            {
+                                <th></th>
+                            }
                         </tr>
                     </thead>
                     <tbody>
@@ -165,20 +209,20 @@
 
                                     </select>
                                 </td>*@
-                                <td><input id="SUN" name="SUN" type="number" step="any" class="form-control input-sm" min="0" max="24" value="@(lineItem != null ? lineItem.Sun : 0)" /></td>
-                                <td><input id="MON" name="MON" type="number" step="any" class="form-control input-sm" min="0" max="24" value="@(lineItem != null ? lineItem.Mon : 0)" /></td>
-                                <td><input id="TUE" name="TUE" type="number" step="any" class="form-control input-sm" min="0" max="24" value="@(lineItem != null ? lineItem.Tue : 0)" /></td>
-                                <td><input id="WED" name="WED" type="number" step="any" class="form-control input-sm" min="0" max="24" value="@(lineItem != null ? lineItem.Wed : 0)" /></td>
-                                <td><input id="THU" name="THU" type="number" step="any" class="form-control input-sm" min="0" max="24" value="@(lineItem != null ? lineItem.Thu : 0)" /></td>
-                                <td><input id="FRI" name="FRI" type="number" step="any" class="form-control input-sm" min="0" max="24" value="@(lineItem != null ? lineItem.Fri : 0)" /></td>
-                                <td><input id="SAT" name="SAT" type="number" step="any" class="form-control input-sm" min="0" max="24" value="@(lineItem != null ? lineItem.Sat : 0)" /></td>
+                                <td><input id="SUN" name="SUN" type="number" step="any" class="form-control input-sm" min="0" max="24" value="@(lineItem != null ? lineItem.Sun : 0)" @((firstDayOfWeek > DayOfWeek.Sunday)? "readonly" :  "") /></td>
+                                <td><input id="MON" name="MON" type="number" step="any" class="form-control input-sm" min="0" max="24" value="@(lineItem != null ? lineItem.Mon : 0)"  @((firstDayOfWeek > DayOfWeek.Monday)? "readonly" :  "") /></td>
+                                <td><input id="TUE" name="TUE" type="number" step="any" class="form-control input-sm" min="0" max="24" value="@(lineItem != null ? lineItem.Tue : 0)"  @((firstDayOfWeek > DayOfWeek.Tuesday)? "readonly" :  "") /></td>
+                                <td><input id="WED" name="WED" type="number" step="any" class="form-control input-sm" min="0" max="24" value="@(lineItem != null ? lineItem.Wed : 0)"  @((firstDayOfWeek > DayOfWeek.Wednesday)? "readonly" :  "") /></td>
+                                <td><input id="THU" name="THU" type="number" step="any" class="form-control input-sm" min="0" max="24" value="@(lineItem != null ? lineItem.Thu : 0)"  @((firstDayOfWeek > DayOfWeek.Thursday)? "readonly" :  "") /></td>
+                                <td><input id="FRI" name="FRI" type="number" step="any" class="form-control input-sm" min="0" max="24" value="@(lineItem != null ? lineItem.Fri : 0)"  @((firstDayOfWeek > DayOfWeek.Friday)? "readonly" :  "") /></td>
+                                <td><input id="SAT" name="SAT" type="number" step="any" class="form-control input-sm" min="0" max="24" value="@(lineItem != null ? lineItem.Sat : 0)"  @((firstDayOfWeek > DayOfWeek.Saturday)? "readonly" :  "")/></td>
                                 <td><input id="TOTAL" name="TOTAL" type="number" step="any" class="form-control input-sm" min="0" readonly value="@(lineItem != null ? lineItem.TotalJobWeekHours : 0)" /></td>
-                                <td>
-                                    @if (_allowEdit)
-                                    {
-                                        <button type="button" id="delete" name="delete" class="btn btn-block btn-danger"><i class="fa fa-times"></i></button>
-                                    }
-                                </td>
+                                @if (_allowEdit)
+                                {
+                                    <td>
+                                            <button type="button" id="delete" name="delete" class="btn btn-block btn-danger"><i class="fa fa-times"></i></button>
+                                    </td>
+                                }
                             </tr>
 
                         }
@@ -187,7 +231,7 @@
                     </tbody>
                     <tfoot>
                         <tr class="trSum">
-                            <td colspan="4"><input type="text" value="Total:" class="form-control  input-sm" readonly style="text-align:right !important; font-weight:bold; padding-right:10px" /></td>
+                            <td colspan="3"><input type="text" value="Total:" class="form-control  input-sm" readonly style="text-align:right !important; font-weight:bold; padding-right:10px" /></td>
                             <td><input id="SUM_SUN" max="24" name="SUM_SUN" type="number" step="any" class="form-control input-sm" value="@(weeks.Sum(c=>c.Sun))" /></td>
                             <td><input id="SUM_MON" max="24" name="SUM_MON" type="number" step="any" class="form-control input-sm" value="@(weeks.Sum(c=>c.Mon))" /></td>
                             <td><input id="SUM_TUE" max="24" name="SUM_TUE" type="number" step="any" class="form-control input-sm" value="@(weeks.Sum(c=>c.Tue))" /></td>
@@ -196,7 +240,10 @@
                             <td><input id="SUM_FRI" max="24" name="SUM_FRI" type="number" step="any" class="form-control input-sm" value="@(weeks.Sum(c=>c.Fri))" /></td>
                             <td><input id="SUM_SAT" max="24" name="SUM_SAT" type="number" step="any" class="form-control input-sm" value="@(weeks.Sum(c=>c.Sat))" /></td>
                             <td><input id="SUM_TOTAL" name="SUM_TOTAL" type="number" step="any" class="form-control input-sm" readonly value="@(weeks.Sum(c=>c.TotalJobWeekHours))" /></td>
-                            <td><input type="text" readonly value="" class="form-control input-sm" /></td>
+                            @if (_allowEdit)
+                            {
+                                <td><input type="text" readonly value="" class="form-control input-sm" /></td>
+                            }
                         </tr>
                     </tfoot>
                 </table>
@@ -240,6 +287,8 @@
 
 <script>
     $(document).ready(function () {
+        let fisrtDOW = @(firstDOW);
+        console.log(fisrtDOW);
         setFirstRowValidation();
         bindCalcFn();
     });
@@ -247,7 +296,7 @@
     function setFirstRowValidation() {
         $("#tblTimeSheet tbody tr").find('input,select,textarea').removeAttr('required');
         $('form.disabled').find('input,select,textarea').attr('disabled', 'disabled');
-        $("#tblTimeSheet tbody tr:first").find('select').not('##ENGAGEMENT_ID').attr('required', 'required');
+        $("#tblTimeSheet tbody tr:first").find('select').not('#ENGAGEMENT_ID').attr('required', 'required');
         $("#tblTimeSheet tfoot tr.trSum").find('input').keypress(function () { return false; })
 
     }
@@ -328,10 +377,26 @@
 
         var weekJobs = new Array();
         $("#tblTimeSheet tbody tr").each(function (i, v) {
+            fisrtDOW = @(firstDOW);
             var tr = $(this);
             var isDelete = $(this).hasClass('bg-danger');
             var IS_CHARGEABLE = tr.find('#IS_CHARGEABLE').val();
             var weekJobId = tr.attr('data-id');
+            var SUN = fisrtDOW > 0 ? 0 : isNull(tr.find('#SUN').val());
+            tr.find('#SUN').val(SUN);
+            var MON = fisrtDOW > 1 ? 0 : isNull(tr.find('#MON').val());
+            tr.find('#MON').val(SUN);
+            var TUE = fisrtDOW > 2 ? 0 : isNull(tr.find('#TUE').val());
+            tr.find('#TUE').val(SUN);
+            var WED = fisrtDOW > 3 ? 0 : isNull(tr.find('#WED').val());
+            tr.find('#WED').val(SUN);
+            var THU = fisrtDOW > 4 ? 0 : isNull(tr.find('#THU').val());
+            tr.find('#THU').val(SUN);
+            var FRI = fisrtDOW > 5 ? 0 : isNull(tr.find('#FRI').val());
+            tr.find('#FRI').val(SUN);
+            var SAT = fisrtDOW > 6 ? 0 : isNull(tr.find('#SAT').val());
+            tr.find('#SAT').val(SUN);
+            let TOTAL = SUN + MON + TUE + WED + THU + FRI + SAT;
             if (IS_CHARGEABLE != '') {
                 weekJobs.push({
                     "Id": @(currentWeekSheetInfo.Id == -1? "0" : "weekJobId"),
@@ -345,20 +410,21 @@
                     "ServiceLineId": tr.find('#SERVICE_LINE_ID').val(),
                     //"ENGAGEMENT_ID": tr.find('#ENGAGEMENT_ID').val(),
                     //"ClientId": tr.find('#CLIENT_ID').val(),
-                    "Sun": tr.find('#SUN').val(),
-                    "Mon": tr.find('#MON').val(),
-                    "Tue": tr.find('#TUE').val(),
-                    "Wed": tr.find('#WED').val(),
-                    "Thu": tr.find('#THU').val(),
-                    "Fri": tr.find('#FRI').val(),
-                    "Sat": tr.find('#SAT').val(),
+                    "Sun": SUN,
+                    "Mon": MON,
+                    "Tue": TUE,
+                    "Wed": WED,
+                    "Thu": THU,
+                    "Fri": FRI,
+                    "Sat": SAT,
                     'IsSubmitted': $('#IS_SUBMITTED').val(),
-                    "TotalJobWeekHours": tr.find('#TOTAL').val(),
+                    "TotalJobWeekHours": TOTAL,
                     "IsDeleted": isDelete
                 });
             }
         });
         var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+        calculateTotal();
         var params = {
             'Id': $('#REC_ID').val(),
             'Year': $('#YEAR_ID').val(),
@@ -404,7 +470,7 @@
         setServiceLineValidation();
 
         $('#tblTimeSheet tbody').find('input,select').on('change', function () {
-
+            fisrtDOW = @(firstDOW);
             var tr = $(this).parent().parent();
 
 
@@ -412,14 +478,14 @@
             var SERVICE_LINE_ID = tr.find('#SERVICE_LINE_ID').val();
             var ENGAGEMENT_ID = tr.find('#ENGAGEMENT_ID').val();
             //var CLIENT_ID = tr.find('#CLIENT_ID').val();
-
-            var SUN = isNull(tr.find('#SUN').val());
-            var MON = isNull(tr.find('#MON').val());
-            var TUE = isNull(tr.find('#TUE').val());
-            var WED = isNull(tr.find('#WED').val());
-            var THU = isNull(tr.find('#THU').val());
-            var FRI = isNull(tr.find('#FRI').val());
-            var SAT = isNull(tr.find('#SAT').val());
+            console.log(fisrtDOW);
+            var SUN = fisrtDOW > 0? 0 : isNull(tr.find('#SUN').val());
+            var MON = fisrtDOW > 1? 0 : isNull(tr.find('#MON').val());
+            var TUE = fisrtDOW > 2? 0 : isNull(tr.find('#TUE').val());
+            var WED = fisrtDOW > 3? 0 : isNull(tr.find('#WED').val());
+            var THU = fisrtDOW > 4? 0 : isNull(tr.find('#THU').val());
+            var FRI = fisrtDOW > 5? 0 : isNull(tr.find('#FRI').val());
+            var SAT = fisrtDOW > 6? 0 : isNull(tr.find('#SAT').val());
 
 
             tr.find('#TOTAL').val(SUN + MON + TUE + WED + THU + FRI + SAT);
@@ -439,7 +505,7 @@
             //        }
             //    });
 
-                
+
             //}
             //console.log("-------------------------------------");
             //console.log(count);
@@ -552,34 +618,4 @@
 
 </script>
 
-<style>
-    #tblTimeSheet thead th {
-        text-align: center !important;
-        font-size: 12px !important;
-        vertical-align: bottom;
-        white-space: nowrap;
-        background-color: #efefef;
-        color: #a1a4aa;
-        padding: 10px 0px;
-    }
 
-    #tblTimeSheet tbody td, #tblTimeSheet tfoot td {
-        padding: 0px;
-        width: 42px;
-    }
-
-        #tblTimeSheet tbody td .form-control {
-            padding: 1px;
-            border: 0px !important;
-            margin: 0px;
-            font-size: 13px;
-            text-align: center;
-            background-color: transparent;
-        }
-
-    #tblTimeSheet .trSum td .form-control {
-        font-weight: bold;
-        background-color: #fafafa;
-        border-radius: 0px !important;
-    }
-</style>

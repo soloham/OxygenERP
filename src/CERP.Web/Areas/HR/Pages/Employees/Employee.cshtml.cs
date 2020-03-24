@@ -58,6 +58,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
         public FinancialDetails FinancialDetails { get; set; }
         public ContactInformation ContactInformation { get; set; }
         public QualificationDetail QualificationDetail { get; set; }
+        public ExperienceDetail ExperiencesDetail { get; set; }
         public DependantsDetail DependantsDetail { get; set; }
         public WorkShiftDetail WorkShiftDetail { get; set; }
 
@@ -101,6 +102,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                 DependantsDetail.Initialize(DictionaryValuesRepo, documentAppService);
                 QualificationDetail = JsonSerializer.Deserialize<QualificationDetail>(EmployeeToEdit.ExtraProperties["qualificationDetail"].ToString());
                 QualificationDetail.Initialize(DictionaryValuesRepo);
+                ExperiencesDetail = EmployeeToEdit.ExtraProperties.ContainsKey("experienceDetail")? JsonSerializer.Deserialize<ExperienceDetail>(EmployeeToEdit.ExtraProperties["experienceDetail"].ToString()) : new ExperienceDetail();
                 WorkShiftDetail = JsonSerializer.Deserialize<WorkShiftDetail>(EmployeeToEdit.ExtraProperties["workShiftDetail"].ToString());
                 WorkShiftDetail.Initialize(workShiftsAppService.Repository);
 
@@ -121,6 +123,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                                                 NationalAddress nationalAddress, 
                                                 IList<Contact> secondaryContacts, 
                                                 IList<Qualification> qualifications, 
+                                                IList<Experience> experiences, 
                                                 IList<Dependant> dependants, 
                                                 IList<PhysicalId<int>> dependantsIds, 
                                                 IList<WorkShiftRDto> workShifts)
@@ -138,6 +141,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                 nationalAddress = JsonSerializer.Deserialize<NationalAddress>(FormData["nationalAddress"]);
                 secondaryContacts = JsonSerializer.Deserialize<IList<Contact>>(FormData["secondaryContacts"]);
                 qualifications = JsonSerializer.Deserialize<IList<Qualification>>(FormData["qualifications"]);
+                experiences = JsonSerializer.Deserialize<IList<Experience>>(FormData["experiences"]);
                 dependants = JsonSerializer.Deserialize<IList<Dependant>>(FormData["dependants"]);
                 dependantsIds = JsonSerializer.Deserialize<IList<PhysicalId<int>>>(FormData["dependantsIds"]);
                 workShifts = JsonSerializer.Deserialize<IList<WorkShiftRDto>>(FormData["workShifts"]);
@@ -161,6 +165,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                 FinancialDetails financialDetails = new FinancialDetails(basicSalaries, allowances, banks);
                 ContactInformation contactInformation = new ContactInformation(primaryContact, nationalAddress, secondaryContacts);
                 QualificationDetail qualificationDetail = new QualificationDetail(qualifications);
+                ExperienceDetail experienceDetail = new ExperienceDetail(experiences);
                 DependantsDetail dependantsDetail = new DependantsDetail(dependants, dependantsIds);
                 WorkShiftDetail workShiftDetail = new WorkShiftDetail(workShifts);
 
@@ -168,6 +173,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                 employee.ExtraProperties.Add("financialDetails", financialDetails);
                 employee.ExtraProperties.Add("contactInformation", contactInformation);
                 employee.ExtraProperties.Add("qualificationDetail", qualificationDetail);
+                employee.ExtraProperties.Add("experienceDetail", experienceDetail);
                 employee.ExtraProperties.Add("dependantsDetail", dependantsDetail);
                 employee.ExtraProperties.Add("workShiftDetail", workShiftDetail);
 
