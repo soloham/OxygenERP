@@ -168,8 +168,8 @@ i.fab {
     font-weight: 300;   
 }
 .addBtn {
-    padding:11.5px;
-    background-color: #4e87ba;
+    padding: 11.5px;
+    background-color: #53cef2;
     box-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.1), 0 0px 0px 0 rgba(0, 0, 0, 0.19);
     color: white;
     font-size: 15px;
@@ -178,7 +178,7 @@ i.fab {
     margin-top: 0px
 }
 .addBtn:hover {
-    background-color: #4e87ba;
+    background-color: #53cef2;
     box-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.1), 0 0px 20px 0 rgba(0, 0, 0, 0.19);
     color: white;
     font-size: 15.1px;
@@ -187,7 +187,7 @@ i.fab {
     margin-top: 0px
 }
 .addBtn:active {
-    background-color: #4e87ba;
+    background-color: #53cef2;
     box-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.1), 0 0px 10px 0 rgba(0, 0, 0, 0.19);
     color: white;
     font-size: 15px;
@@ -196,7 +196,7 @@ i.fab {
     margin-top: 0px
 }
 .addBtn:visited {
-    background-color: #4e87ba;
+    background-color: #53cef2;
     box-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.1), 0 0px 10px 0 rgba(0, 0, 0, 0.19);
     color: white;
     font-size: 15px;
