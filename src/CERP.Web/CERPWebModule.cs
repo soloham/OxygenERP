@@ -19,6 +19,7 @@ using Volo.Abp.AspNetCore.Mvc.Localization;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared;
 using Volo.Abp.AspNetCore.Serilog;
+using Microsoft.AspNetCore.HttpOverrides;
 using Volo.Abp.Autofac;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.Identity.Web;
@@ -190,6 +191,10 @@ namespace CERP.Web
                 app.UseMultiTenancy();
             }
             app.UseIdentityServer();
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
             app.UseAuthorization();
             app.UseAbpRequestLocalization();
             app.UseSwagger();

@@ -33,6 +33,24 @@
                 $('#addBtnSection').slideDown(200);
             }
         });
+        $('#idTypeId').on('change', function () {
+            let idType = $('option:selected', '#idTypeId').attr('data-value');
+            console.log(idType);
+            if (idType == "Iqama") {
+                let iqamaIdGrid = $('#PhysicalIdsGrid')[0].ej2_instances[0].dataSource;
+                if (typeof iqamaIdGrid.find(x => x.GetIDTypeValue == "Iqama") != 'undefined') {
+                    let idNo = iqamaIdGrid.find(x => x.GetIDTypeValue == "Iqama").IDNumber;
+                    $('#idNo').val(idNo);
+                    $('#idNo').attr('readonly', 'readonly');
+                }
+                else {
+                    $('#idNo').removeAttr('readonly');
+                }
+            }
+            else {
+                $('#idNo').removeAttr('readonly');
+            }
+        });
     })
 </script>
 <div class="m-l-20 m-t-0">

@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Avalon ERP.Web": {
+    "Oxygen ERP.Web": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
