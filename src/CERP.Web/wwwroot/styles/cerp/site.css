@@ -416,6 +416,16 @@ ul.step-anchor > li.danger > a {
 ul.step-anchor > li.danger > a:after {
     border-left: 30px solid #ee504c !important;
 }
+ul.step-anchor > li.danger > a:after {
+    border-left: 30px solid #ee504c !important;
+}
+ul.step-anchor > li.clickable > a:hover {
+    color: #e8e8e8 !important;
+    background-color: #70ceec !important;
+}
+ul.step-anchor > li.clickable > a:hover:after {
+    border-left: 30px solid #70ceec !important;
+}
 p{
     font-size:15px;
     font-weight: 400

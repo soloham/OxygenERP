@@ -85,8 +85,8 @@
 }
 
 .sw-theme-default > ul.step-anchor > li.clickable > a:hover {
-    color: #4285F4 !important;
-    background: transparent !important;
+    color: #4285F4;
+    background: transparent;
     cursor: pointer;
 }
 

@@ -56,6 +56,7 @@ namespace CERP.Web
 
                 options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
                 options.SlidingExpiration = true;
+
             });
             services.Configure<ForwardedHeadersOptions>(options =>
             {

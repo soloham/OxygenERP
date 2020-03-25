@@ -208,7 +208,7 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
                 Payrun_Dto payrun = PayrunAppService.GetPayrun(month, year, CompanyId);
                 bool exists = payrun != null;
 
-                List<Employee_Dto> employees = EmployeeAppService.GetAllEmployees(x => x.EmployeeStatus.Key != AppSettings.TerminatedEmployeeStatusKey);
+                List<Employee_Dto> employees = EmployeeAppService.GetAllEmployees().Where(x => x.EmployeeStatus.Key != AppSettings.TerminatedEmployeeStatusKey).ToList();
 
                 List<PayrunDetail_Dto> payrunDetails = new List<PayrunDetail_Dto>();
 
