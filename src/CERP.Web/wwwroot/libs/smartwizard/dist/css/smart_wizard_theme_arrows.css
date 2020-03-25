@@ -143,17 +143,17 @@
 
 .sw-theme-arrows > ul.step-anchor > li.done > a:after {
     border-left: 30px solid #b1dfbb;
- /* c3e6cb */;
+ /* c3e6cb */
 }
 
 .sw-theme-arrows > ul.step-anchor > li.danger > a {
-    border-color: #d9534f !important;
-    color: #fff !important;
-    background: #d9534f !important;
+    border-color: #d9534f;
+    color: #fff;
+    background: #d9534f;
 }
 
 .sw-theme-arrows > ul.step-anchor > li.danger > a:after {
-    border-left: 30px solid #d9534f !important;
+    border-left: 30px solid #d9534f;
 }
 
 .sw-theme-arrows > ul.step-anchor > li.disabled > a, .sw-theme-arrows > ul.step-anchor > li.disabled > a:hover {

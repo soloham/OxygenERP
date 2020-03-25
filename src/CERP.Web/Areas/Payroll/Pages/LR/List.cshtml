@@ -105,8 +105,8 @@
 
 }
 <partial name="_DefaultPageHeader" />
-<div class="site-content customContentArea" style="padding-top:0; background-color: rgb(253,253,253);">
-    <div class="well" style="background-color: white">
+<div class="site-content customContentArea">
+    <div class="well">
         <h3 class="m-t-0 p-t-0">
             Provide Period
         </h3>
@@ -172,7 +172,7 @@
         </div>
     </div>
 
-    <div id="reconSection" class="well" style="background-color: white; display:none">
+    <div id="reconSection" class="well" style="display:none">
         <div class="control-section">
             <ejs-grid id="reconGrid" dataSource="@ViewData["Payruns_DS"]" queryCellInfo="QueryCellInfo" childGrid="@Model.SecondaryDetailsGrid"
                   enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()" rowDataBound="rowDataBound"

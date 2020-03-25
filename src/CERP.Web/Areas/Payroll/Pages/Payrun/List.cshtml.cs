@@ -103,7 +103,7 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
                 {
                     PayrunDetail curDetail = payrunDetails[i];
                     List<PayrunAllowanceSummary> payrunAllowances = curDetail.PayrunAllowancesSummaries.ToList();
-                    PayrunAllowanceSummary housingAllowance = payrunAllowances.SingleOrDefault(x => x.AllowanceType.Value == "Housing");
+                    PayrunAllowanceSummary housingAllowance = payrunAllowances.LastOrDefault(x => x.AllowanceType.Value == "Housing");
                     string otherAllowancesSum = "SAR " + (payrunAllowances.Sum(x => x.Value) - (housingAllowance == null ? 0 : housingAllowance.Value)).ToString("N2");
                     DateTime curPeriod = new DateTime(curDetail.Year, curDetail.Month, 1);
 

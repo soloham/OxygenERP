@@ -44,14 +44,14 @@
 
 }
 <partial name="_DefaultPageHeader" />
-<div class="site-content customContentArea" style="padding-top:0; background-color: rgb(253,253,253);">
+<div class="site-content customContentArea">
 
     <form id="actionForm" class="">
         <input type="hidden" name="Year" id="TheYear" />
         <input type="hidden" name="Month" id="Month" />
     </form>
 
-    <div class="well" style="background-color: white">
+    <div class="well">
 
         <div id="divSearch" class="">
             <div class="row">
@@ -102,18 +102,18 @@
                             </div>
                         </form>
                     </div>
-                    <div id="posted" class="col-md-3 pull-right" style="display:none">
+                    <div id="posted" class="pull-right font-roboto" style="display:none; width: 160px">
                         <div class="alert alert-outline-success alert-icon-bg alert-dismissable" style="margin-bottom:0" role="alert">
                             <div class="alert-icon">
                                 <i class="zmdi zmdi-check"></i>
                             </div>
-                            <div class="alert-message">
+                            <div class="" style="padding: 5px 25px 5px 0; font-size:15px; font-weight:400">
                                 @*<button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                     <span aria-hidden="true">
                                         <i class="zmdi zmdi-close"></i>
                                     </span>
                                 </button>*@
-                                <strong>Posted</strong>
+                                Posted
                             </div>
                         </div>
                     </div>
@@ -124,7 +124,7 @@
         </div>
     </div>
 
-    <div class="well" style="background-color: white; height: -webkit-fill-available; margin-bottom: 100px">
+    <div class="well h-fill-available">
         <div class="control-section">
             <ejs-grid id="PayrunsHistoryGrid" dataSource="@ViewData["PayrunsDetails_DS"]" queryCellInfo="QueryCellInfo"
                       enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()"

@@ -49,8 +49,8 @@
 
 }
 <partial name="_DefaultPageHeader" />
-<div class="site-content customContentArea"style="padding-top:0; background-color: rgb(253,253,253); padding-bottom:70px">
-    <div id="PayrunsGridContainer" class="h-fill-available" style="margin-top: 10px" >
+<div class="site-content customContentArea">
+    <div id="payrunsSection" class="col-md-12 h-fill-available">
         <div class="control-section">
             <ejs-grid id="PayrunsHistoryGrid" dataSource="@ViewData["Payruns_DS"]" queryCellInfo="QueryCellInfo" childGrid="@Model.SecondaryDetailsGrid"
                       enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()" rowDataBound="rowDataBound"
@@ -68,7 +68,12 @@
             </ejs-grid>
         </div>
     </div>
-    <partial name="_PaymentSheet" model="null" />
+    <div id="sectionDiv" class="col-xs-2 h-fill-available" style="display:none">
+        <vhr />
+    </div>
+    <div id="paymentsSheetSection" class="col-md-4 h-fill-available" style="padding-top:0; background-color: rgb(253,253,253); display:none">
+        <partial name="_PaymentSheet" model="null" />
+    </div>
 </div>
 
 <ejs-dialog id="alert_dialog" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy with Header" content="Atleast one row should be selected to copy with header">
@@ -253,22 +258,32 @@
                         waitAnim = 200;
                         $('#paymentsSheetSection').slideUp(200);
                         if (grid.dataSource != null && grid.dataSource[0].payrunId == params.id) {
-                            $("#paymentsSheetSection").stop().animate({ height: '0' }, 150);
-
-                            $("#PayrunsGridContainer").stop().animate({ height: '100%' }, 150);
+                            $("#paymentsSheetSection").stop().animate({ width: '0' }, 150);
+                            $("#sectionDiv").stop().animate({ width: '0' }, 150);
+                            $('#sectionDiv').slideUp(200);
+                            $("#payrunsSection").stop().animate({ width: '100%' }, 150);
                             $('#paymentsSheetSection').slideUp(200);
                             return;
                         }
                     }
                     setTimeout(function () {
-                        $("#PayrunsGridContainer").stop().animate({ height: '44%' }, 150);
-                        $("#paymentsSheetSection").stop().animate({ height: '44%' }, 150);
-                        $('#paymentsSheetSection').slideDown(200);
+                        //$("#payrunsSection").stop().animate({ width: '50%' }, 150);
+                        //$("#sectionDiv").stop().animate({ width: '20px' }, 150);
+                        //$("#paymentsSheetSection").stop().animate({ width: '100%' }, 150);
+
+                        var grid = $('#PaymentSheetGrid')[0].ej2_instances[0];
                         setTimeout(function () {
-                            var grid = $('#PaymentSheetGrid')[0].ej2_instances[0];
                             grid.dataSource = data;
                             grid.refresh();
                         }, 50);
+
+                        $("#payrunsSection").removeClass('col-md-12');
+                        $("#payrunsSection").addClass('col-md-6');
+                        //$("#payrunsSection").stop().animate({ width: '100%' }, 150);
+
+                        $('#paymentsSheetSection').slideDown(200);
+
+                        $('#sectionDiv').slideDown(200);
                     }, waitAnim)
                     
                     //var html = ``;
