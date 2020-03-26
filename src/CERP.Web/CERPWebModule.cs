@@ -42,7 +42,8 @@ namespace CERP.Web
         typeof(AbpAspNetCoreMvcUiBasicThemeModule),
         typeof(AbpAspNetCoreAuthenticationJwtBearerModule),
         typeof(AbpTenantManagementWebModule),
-        typeof(AbpAspNetCoreSerilogModule)
+        typeof(AbpAspNetCoreSerilogModule),
+        typeof(AbpVirtualFileSystemModule)
         )]
     public class CERPWebModule : AbpModule
     {
@@ -106,6 +107,11 @@ namespace CERP.Web
 
         private void ConfigureVirtualFileSystem(IWebHostEnvironment hostingEnvironment)
         {
+            Configure<AbpVirtualFileSystemOptions>(options =>
+            {
+                options.FileSets.AddEmbedded<CERPWebModule>("CERP.Web");
+            });
+
             if (hostingEnvironment.IsDevelopment())
             {
                 Configure<AbpVirtualFileSystemOptions>(options =>

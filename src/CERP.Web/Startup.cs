@@ -22,7 +22,7 @@ namespace CERP.Web
                     options.Conventions.AuthorizeFolder("/Pages");
                     options.Conventions.AuthorizePage("/Index");
 
-                    options.Conventions.AddPageRoute("/Account/Login", "/Login");
+                    //options.Conventions.AddPageRoute("/Account/Login", "/Login");
                     //options.Conventions.AddPageRoute("/Account/Register", "/Register");
                     //options.Conventions.AddPageRoute("/Account/Lockout", "/Lockout");
                     //options.Conventions.AddPageRoute("/Account/AccessDenied", "/AccessDenied");
@@ -48,11 +48,11 @@ namespace CERP.Web
             {
                 options.Cookie.Name = "cerpC";
                 options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(100);
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(1);
 
-                options.AccessDeniedPath = "/AccessDenied";
-                options.LoginPath = "/Login";
-                options.LogoutPath = "/Logout";
+                //options.AccessDeniedPath = "/AccessDenied";
+                //options.LoginPath = "/Login";
+                //options.LogoutPath = "/Logout";
 
                 options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
                 options.SlidingExpiration = true;

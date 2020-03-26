@@ -387,8 +387,10 @@ vhr {
 .e-grid .e-groupdroparea {
     background-color: #00b2f0!important;
 }
-
-h1{
+.custom-control-indicator {
+    background-color: #35c6f5 !important;
+}
+h1 {
     font-weight: 600;
 }
 h2{

@@ -9,6 +9,10 @@
     ViewData["Title"] = "Log In";
 }
 
+<div class="row">
+    <img src="~/img/logos/OxygenERP 2.3.png" style="display: block; margin:auto;" alt="" height="50" asp-append-version="true">
+</div>
+
 <h1 class="m-t-0 m-b-5 text-center">@ViewData["Title"]</h1>
 
 @if (Model.EnableLocalLogin)
@@ -38,7 +42,7 @@
                 @*<div class="form-check">
                         <label asp-for="LoginInput.RememberMe" class="form-check-label">
                             <input asp-for="LoginInput.RememberMe" class="form-check-input" />
-                            @Html.DisplayNameFor(m => m.LoginInput.RememberMe)
+                            @Html.DisplayNa meFor(m => m.LoginInput.RememberMe)
                         </label>
                     </div>*@
                 <div class="form-group">
@@ -48,7 +52,7 @@
                         <span class="custom-control-label" style="z-index:-1">@Html.DisplayNameFor(m => m.LoginInput.RememberMe)</span>
                     </label>
                 </div>
-                <abp-button type="submit" button-type="Primary" name="Action" value="Login" class="btn btn-info btn-block">@L["Login"]</abp-button>
+                <abp-button type="submit" button-type="Primary" name="Action" value="Login" class="btn btn-primary btn-block">@L["Login"]</abp-button>
             </form>
         </div>
     </div>

@@ -31,37 +31,40 @@
 </head>
 <body class="authentication-body" style="background-image:url(/img/photos/bg.jpg); background-repeat:no-repeat; background-size:cover; background-position:center">
     <div style="height:100%; display:flex; overflow-x:hidden; flex-direction: column">
-        <div class="container-fluid" style="margin:10px">
+        <div class="row" style="justify-content:center; flex-grow:1; display:flex;">
+            <div class="col-md-7">
+                <div class="container-fluid" style="margin:10px">
             <div class="authentication-header m-b-30">
                 <div style="clear:both; overflow: auto;">
                     <div class="pull-left">
                         <a class="authentication-logo" asp-page="/">
-                            <img src="~/img/logo.png" alt="" height="25" asp-append-version="true">
-                            <span style="color:white">&nbsp Oxygen ERP</span>
+                            <img src="~/img/logos/OxygenERP 2.3.png" alt="" height="25" asp-append-version="true">
                         </a>
                     </div>
                     <div class="pull-right">
-                        @if ((string)ViewData["Title"] == "Log In")
+                        @if ((string)ViewData["Title"] == "Register")
                         {
-                            <a style="color:white" asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="btn btn-outline-info">Sign up</a>
-                        }
-                        else if ((string)ViewData["Title"] == "Register")
-                        {
-                            <a style="color:white" asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl" class="btn btn-outline-info">Log In</a>
+                            <a style="color:white" asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl" class="btn btn-outline-primary">Log In</a>
                         }
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row" style="justify-content:center; flex-grow:1; display:flex;">
-            <div style="margin:auto; width:50%; max-width: 30%; min-width:400px;">
-                <div class="authentication-content m-b-30" style=" background-color:white; opacity:0.95">
-                    @RenderBody()
+                <div class="row" style="justify-content:center; flex-grow:1; display:flex;">
+                    
+                </div>
+                <div class="row justify-content-center bg-purple authentication-footer">
+                    <span style="height:50px; color:white" class="text-muted">&copy; 2020 &nbsp; — &nbsp; Oxygen ERP</span>
                 </div>
             </div>
-        </div>
-        <div class="row justify-content-center bg-purple authentication-footer">
-            <span style="height:50px; color:white" class="text-muted">&copy; 2020 &nbsp; — &nbsp; Oxygen ERP</span>
+            <div class="col-md-5 authentication-content" style="padding:0; background-color: white; opacity: 0.95;">
+                <div class="row justify-content-center align-items-center" style="height: 100%;">
+                    <div class="" style="padding:50px;">
+                        @RenderBody()
+                    </div>
+                </div>
+            </div>
+            
         </div>
     </div>
 
