@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="description" content="">
     <title>@ViewData["Title"] - Oxygen ERP</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.html">
     <link rel="icon" type="image/png" href="~/img/logos/OxygenERPLogo.png" sizes="32x32">
     <link rel="manifest" href="manifest.html">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500,700" rel="stylesheet">
@@ -102,16 +101,11 @@ background: radial-gradient(circle, rgba(42,143,245,1) 0%, rgba(132,234,255,1) 1
     @*<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true"></script>*@
     @*<script src="~/js/application.min.js"></script>*@
     <script src="~/libs/jquery/jquery.js" asp-append-version="true"></script>
-    <script src="~/scripts/cerp/cosmos.min.js"></script>
-    <script src="~/scripts/cerp/site.js" asp-append-version="true"></script>
+    @*<script src="~/scripts/cerp/cosmos.min.js"></script>*@
+    @*<script src="~/scripts/cerp/site.js" asp-append-version="true"></script>*@
     <script>
-        $(document).ready(function () {
-            
-            //$('.authentication-content').fadeIn(400);
-            $('.authentication-content').slideDown(200);
-            setTimeout(function () {
-            }, 200);
-        });
+        $('.authentication-content').slideDown(200);
+        
     </script>
 
     @*<script type="text/javascript">

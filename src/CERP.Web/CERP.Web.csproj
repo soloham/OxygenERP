@@ -36,6 +36,14 @@
     <EmbeddedResource Include="Pages\Account\*.cshtml" />
     <Content Remove="Pages\Account\*.cshtml" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Pages\Account\Register.cshtml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Pages\Account\Register.cshtml" />
+  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.WebPages" Version="3.2.7" />

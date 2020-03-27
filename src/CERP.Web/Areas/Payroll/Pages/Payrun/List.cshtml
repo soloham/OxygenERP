@@ -29,6 +29,33 @@
             color: rgb(253,253,253);
             /*font-size: 18px;*/
         }
+        #payrunsSection {
+            transition: all .2s;
+        }
+        .dividePayrun{
+            position: absolute;
+        }
+        @@media screen and (max-width:780px) {
+            #paymentsSheetSection {
+                margin-top: 20px;
+            }
+        }
+        @@media screen and (max-width:1000px) {
+            #paymentsSheetSection {
+                margin-top: 20px;
+                margin-left: 0!important;
+                padding-left: 0px;
+            }
+
+            .dividePayrun {
+                position: unset;
+                padding-right: 0px;
+            }
+
+            /*.customContentArea{
+                position: unset;
+            }*/
+        }
     </style>
 }
 @section scripts {
@@ -37,7 +64,6 @@
     <script>
         $(document).ready(function () {
             $("#closePaymentSheetBtn").on('click', function () {
-                console.log('Hellooo');
                 $('#paymentsSheetSection').slideUp(200);
                 $("#PayrunsGridContainer").stop().animate({ height: '100%', height: '-webkit-fill-available', height: '-moz-fill-available', height: 'fill-available' }, 150);
                 //$("#paymentsSheetSection").stop().animate({ height: '44%' }, 150);
@@ -50,29 +76,31 @@
 }
 <partial name="_DefaultPageHeader" />
 <div class="site-content customContentArea">
-    <div id="payrunsSection" class="col-md-12 h-fill-available">
-        <div class="control-section">
-            <ejs-grid id="PayrunsHistoryGrid" dataSource="@ViewData["Payruns_DS"]" queryCellInfo="QueryCellInfo" childGrid="@Model.SecondaryDetailsGrid"
-                      enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()" rowDataBound="rowDataBound"
-                      dataBound="dataBound" commandClick="commandClick" actionComplete="actionComplete"
-                      allowExcelExport="true" allowGrouping="true" height="100%" allowPdfExport="true"
-                      hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
-                      allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                      toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
-                      allowPaging="true" allowResizing="true">
+    <div class="col-md-12 h-fill-available">
+        <div id="payrunsSection" class="col-md-12 h-fill-available p-l-0">
+            <div class="control-section">
+                <ejs-grid id="PayrunsHistoryGrid" dataSource="@ViewData["Payruns_DS"]" queryCellInfo="QueryCellInfo" childGrid="@Model.SecondaryDetailsGrid"
+                          enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()" rowDataBound="rowDataBound"
+                          dataBound="dataBound" commandClick="commandClick" actionComplete="actionComplete"
+                          allowExcelExport="true" allowGrouping="true" height="100%" allowPdfExport="true"
+                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                          allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                          toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
+                          allowPaging="true" allowResizing="true">
 
-                <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
-                <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
-                <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
-                <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
-            </ejs-grid>
+                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
+                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                </ejs-grid>
+            </div>
         </div>
-    </div>
-    <div id="sectionDiv" class="col-xs-2 h-fill-available" style="display:none">
-        <vhr />
-    </div>
-    <div id="paymentsSheetSection" class="col-md-4 h-fill-available" style="padding-top:0; background-color: rgb(253,253,253); display:none">
+        <div id="paymentsSheetSection" class="col-md-6 h-fill-available p-r-0" style="padding-top:0; background-color: rgb(253,253,253); display:none">
         <partial name="_PaymentSheet" model="null" />
+    </div>
+    </div>
+    <div id="indemnitySheetSection" class="col-md-12 m-t-20" style="padding-top:0; background-color: rgb(253,253,253); display:none">
+        <partial name="_PayrunIndemnity" model="@Model.GetIndemnityModel()" />
     </div>
 </div>
 
@@ -113,19 +141,31 @@
 
     function rowDataBound(args) {
         if (args.data.isPosted) {
-            if (args.data.attachmentFile != '')
-                $(".e-" + "View Attachment" + "Button", args.row).removeClass("e-hide");
-            $(".e-" + "View Payments Sheet" + "Button", args.row).removeClass("e-hide");
-            $(".e-" + "View Reconciliation" + "Button", args.row).removeClass("e-hide");
+            if (args.data.attachmentFile != null) {
+                $(".e-" + "View-Attach-" + "Button", args.row).removeClass("e-hide");
+                console.log("Yupi");
+            } else {
+                $(".e-" + "View-Attach-" + "Button", args.row).addClass("e-hide");
+                console.log("Yup");
+            }
+            $(".e-" + "View-Payments-Sheet-" + "Button", args.row).removeClass("e-hide");
+            var gridObj = document.getElementById("PayrunsHistoryGrid").ej2_instances[0]; 
+            var lastPayrun = gridObj.dataSource.find(x => x.month == args.data.month - 1 && x.year == args.data.year);
+            if (typeof lastPayrun != 'undefined') {
+                $(".e-" + "View-Reconciliation-" + "Button", args.row).removeClass("e-hide");
+            }
+            else {
+                $(".e-" + "View-Reconciliation-" + "Button", args.row).addClass("e-hide");
+            }
             $(".e-" + "View" + "Button", args.row).removeClass("e-hide");
 
             $(".e-" + "Edit" + "Button", args.row).addClass("e-hide");
             $(".e-" + "Delete" + "Button", args.row).addClass("e-hide");
         }
         else {
-            $(".e-" + "View Attachment" + "Button", args.row).addClass("e-hide");
-            $(".e-" + "View Payments Sheet" + "Button", args.row).addClass("e-hide");
-            $(".e-" + "View Reconciliation" + "Button", args.row).addClass("e-hide");
+            $(".e-" + "View-Attachment-" + "Button", args.row).addClass("e-hide");
+            $(".e-" + "View-Payment-Sheet-" + "Button", args.row).addClass("e-hide");
+            $(".e-" + "View-Reconciliation-" + "Button", args.row).addClass("e-hide");
             $(".e-" + "View" + "Button", args.row).addClass("e-hide");
 
             $(".e-" + "Edit" + "Button", args.row).removeClass("e-hide");
@@ -244,46 +284,68 @@
         }
         else if (args.commandColumn.type == "View Payments Sheet") {
             var params = args.rowData;  // display row data
-        
+            var grid = $('#PaymentSheetGrid')[0].ej2_instances[0];
+            let isVisible = $("#paymentsSheetSection").css('display') != 'none';
+            if (isVisible && grid.dataSource != null && grid.dataSource[0].payrunId == params.id) {
+                //$("#paymentsSheetSection").stop().animate({ width: '0' }, 150);
+
+                $('#paymentsSheetSection').slideUp(200);
+                setTimeout(function () {
+                    $("#payrunsSection").removeClass('col-md-6');
+                    $("#payrunsSection").addClass('col-md-12');
+                    $("#paymentsSheetSection").removeClass('col-md-6');
+                }, 200);
+                //$("#sectionDiv").stop().animate({ width: '0' }, 150);
+                //$('#sectionDiv').slideUp(200);
+                //$("#payrunsSection").stop().animate({ width: '100%' }, 150);
+                return;
+            }
+            grid.showSpinner();
+            var gridMain = $('#PayrunsHistoryGrid')[0].ej2_instances[0];
+            if (!isVisible) {
+                gridMain.showSpinner();
+            }
             $.ajax({
                 url: '@Url.Content("~")/Payroll/Payrun?handler=PaymentsSheet',
                 async: true,
                 type: "GET",
                 data: { payrunId: params.id },
                 success: function (data) {
-                    let isVisible = $("#paymentsSheetSection").css('display') != 'none';
+
                     let waitAnim = 0;
                     if (isVisible) {
-                        var grid = $('#PaymentSheetGrid')[0].ej2_instances[0];
-                        waitAnim = 200;
-                        $('#paymentsSheetSection').slideUp(200);
-                        if (grid.dataSource != null && grid.dataSource[0].payrunId == params.id) {
-                            $("#paymentsSheetSection").stop().animate({ width: '0' }, 150);
-                            $("#sectionDiv").stop().animate({ width: '0' }, 150);
-                            $('#sectionDiv').slideUp(200);
-                            $("#payrunsSection").stop().animate({ width: '100%' }, 150);
-                            $('#paymentsSheetSection').slideUp(200);
-                            return;
-                        }
+
+                        waitAnim = 100;
+                        $('#paymentsSheetSection').slideUp(waitAnim);
+
+                    }
+                    else {
+                        gridMain.hideSpinner();
                     }
                     setTimeout(function () {
-                        //$("#payrunsSection").stop().animate({ width: '50%' }, 150);
-                        //$("#sectionDiv").stop().animate({ width: '20px' }, 150);
-                        //$("#paymentsSheetSection").stop().animate({ width: '100%' }, 150);
+                        $("#payrunsSection").removeClass('col-md-12');
+                        $("#payrunsSection").addClass('col-md-6');
+
+                        $("#paymentsSheetSection").show();
+                        $("#paymentsSheetSection").addClass('col-md-6');
+                        setTimeout(function () {
+                            $("#paymentsSheetSection").hide();
+                            $('#paymentsSheetSection').slideDown(200);
+
+                            setTimeout(function () {
+                                if ($('#indemnitySheetSection').css('display') != 'none') {
+                                    $('#payrunsSection').addClass('dividePayrun');
+                                    $('#paymentsSheetSection').css('margin-left', '50%');
+                                }
+                            }, 200);
+                        }, 200);
 
                         var grid = $('#PaymentSheetGrid')[0].ej2_instances[0];
                         setTimeout(function () {
                             grid.dataSource = data;
                             grid.refresh();
+                            gridMain.refresh();
                         }, 50);
-
-                        $("#payrunsSection").removeClass('col-md-12');
-                        $("#payrunsSection").addClass('col-md-6');
-                        //$("#payrunsSection").stop().animate({ width: '100%' }, 150);
-
-                        $('#paymentsSheetSection').slideDown(200);
-
-                        $('#sectionDiv').slideDown(200);
                     }, waitAnim)
                     
                     //var html = ``;
@@ -311,9 +373,70 @@
                     //})
                 },
                 error: function (data) {
+                    grid.hideSpinner();
+                    gridMain.hideSpinner();
                     $("#PayrunsGridContainer").stop().animate({ height: '100%', height: '-webkit-fill-available', height: '-moz-fill-available', height: 'fill-available' }, 150);
                      $('#paymentsSheetSection').slideUp(200);
-                    swal.fire('Failed', `Payment slip for this payrun couldn't be generated`, 'error');
+                    swal.fire('Failed', `Payment sheet for this payrun couldn't be generated`, 'error');
+                    //location.reload(true);
+                }
+            });
+            //window.location = `@Url.Content("~")/Payroll/Reconciliation?fromYear=${params.year-1}&fromMonth=${params.month-1}&toYear=${params.year}&toMonth=${params.month}`;
+        }
+        else if (args.commandColumn.type == "Generate Indemnity") {
+            var params = args.rowData;  // display row data
+            let isVisible = $("#indemnitySheetSection").css('display') != 'none';
+            var gridMain = $('#PayrunsHistoryGrid')[0].ej2_instances[0];
+            var grid = $('#EOSBGrid')[0].ej2_instances[0];
+            if (isVisible && grid.dataSource != null && grid.dataSource[0].payrunId == params.id) {
+                //$("#paymentsSheetSection").stop().animate({ width: '0' }, 150);
+
+                $('#indemnitySheetSection').slideUp(100);
+                setTimeout(function () {
+                    $(".customContentArea").css('position', 'absolute');
+                    gridMain.refresh();
+                    $('#payrunsSection').removeClass('dividePayrun');
+                    $('#paymentsSheetSection').css('margin-left', '0');
+                }, 200);
+                //$("#sectionDiv").stop().animate({ width: '0' }, 150);
+                //$('#sectionDiv').slideUp(200);
+                //$("#payrunsSection").stop().animate({ width: '100%' }, 150);
+                return;
+            }
+            if (!isVisible) {
+                gridMain.showSpinner();
+            }
+            $('#indemnitySheetSection').slideUp(150);
+            $(".customContentArea").css('position', 'absolute');
+            $('#payrunsSection').removeClass('dividePayrun');
+            $.ajax({
+                url: '@Url.Content("~")/Payroll/Payrun?handler=IndemnitySheet',
+                async: true,
+                type: "GET",
+                data: { payrunId: params.id },
+                success: function (data) {
+                    console.log(data);
+                    gridMain.hideSpinner();
+                    setTimeout(function () {
+                        setTimeout(function () {
+                            grid.dataSource = data.EOSBDS;
+                            grid.refresh();
+                        }, 50);
+
+                        $(".customContentArea").css('position', 'unset');
+                        $('#indemnitySheetSection').slideDown(100);
+                        setTimeout(function () {
+                            if($('#paymentsSheetSection').css('display') != 'none'){
+                                $('#payrunsSection').addClass('dividePayrun');
+                                $('#paymentsSheetSection').css('margin-left', '50%');
+                            }
+                        }, 100)
+                    }, 150);
+                },
+                error: function (data) {
+                    gridMain.hideSpinner();
+                    $('#indemnitySheetSection').slideUp(200);
+                    swal.fire('Failed', `Indemnity for this payrun couldn't be generated`, 'error');
                     //location.reload(true);
                 }
             });

@@ -31,7 +31,7 @@
                     <i class="zmdi zmdi-power m-r-10"></i> Logout
                 </a>
             </li>
-            <form id="logoutForm" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
+            <form id="logoutForm" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Dashboard", new { area = "Main" })" method="post">
                 <input type="hidden" />
             </form>
         </ul>

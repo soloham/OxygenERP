@@ -3,7 +3,7 @@
 
 // Write your Javascript code.
 $(document).ready(function () {
-    console.log("fddfs"); initSettings(); 
+    initSettings(); 
 });
 
 // Returns mathematic mod, not javascript mod

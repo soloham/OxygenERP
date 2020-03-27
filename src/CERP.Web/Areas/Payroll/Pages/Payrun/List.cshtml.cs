@@ -36,6 +36,7 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
 
         public void OnGet()
         {
+            Allowances = DicValuesRepo.Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.AllowanceType).ToList();
             List<Payrun_Dto> payruns = ObjectMapper.Map<List<Payrun>, List<Payrun_Dto>>(PayrunAppService.Repository.WithDetails().ToList());
             ViewData["Payruns_DS"] = JsonSerializer.Serialize(payruns);
 
@@ -68,7 +69,6 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
 
                 payrunSummaryDynamicDS.Add(payrunSummaryDDSRow);
             }
-
             SecondaryDetailsGrid = new Grid()
             {
                 DataSource = payrunSummaryDynamicDS,
@@ -131,6 +131,70 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
             }
             return StatusCode(500);
         }
+
+        public dynamic GetIndemnityModel()
+        {
+            dynamic Model = new ExpandoObject();
+            Model.EOSBAllowances = Allowances;
+            Model.EOSBDS = null;
+            return Model;
+        }
+        public IActionResult OnGetIndemnitySheet(int payrunId)
+        {
+            Payrun_Dto payrun = ObjectMapper.Map<Payrun, Payrun_Dto>(PayrunAppService.Repository.WithDetails().SingleOrDefault(x => x.Id == payrunId));
+            Payrun_Dto payrunLast = ObjectMapper.Map<Payrun, Payrun_Dto>(PayrunAppService.Repository.WithDetails().SingleOrDefault(x => x.Month == payrun.Month-1 && x.Year == payrun.Year));
+            if (payrun != null && payrun.IsPosted)
+            {
+                List<PayrunDetail_Dto> payrunDetails = payrun.PayrunDetails.ToList();
+                List<dynamic> dynamicDS = new List<dynamic>();
+
+                for (int i = 0; i < payrunDetails.Count; i++)
+                {
+                    PayrunDetail_Dto curDetail = payrunDetails[i];
+                    PayrunDetail_Dto curDetailLast = payrunLast == null? null : payrunLast.PayrunDetails.FirstOrDefault(x => x.EmployeeId == curDetail.EmployeeId);
+
+                    PayrunDetailIndemnity_Dto employeeIndemnity = curDetail.GetIndemnity();
+                    PayrunDetailIndemnity_Dto employeeIndemnityLast = curDetailLast != null? curDetailLast.GetIndemnity() : null;
+                    if (employeeIndemnityLast != null)
+                    {
+                        employeeIndemnity.LastMonthEOSB = employeeIndemnityLast.TotalEOSB;
+                        employeeIndemnity.Difference = employeeIndemnity.LastMonthEOSB - employeeIndemnity.TotalEOSB;
+                    }
+                    
+                    dynamic indemnityDSRow = new ExpandoObject();
+                    indemnityDSRow.payrunId = employeeIndemnity.PayrunId;
+                    indemnityDSRow.sNo = i + 1;
+                    indemnityDSRow.getEmpRefCode = employeeIndemnity.Employee.GetReferenceId;
+                    indemnityDSRow.getEmpName = employeeIndemnity.Employee.Name;
+                    indemnityDSRow.getEmpDepartment = employeeIndemnity.Employee.Department.Name;
+                    indemnityDSRow.getEmpDOJ = employeeIndemnity.Employee.JoiningDate;
+                    indemnityDSRow.getBasicSalary = "SAR " + employeeIndemnity.BasicSalary.ToString("N2");
+
+                    foreach (PayrunAllowanceSummary_Dto eosbAllowance in employeeIndemnity.PayrunEOSBAllowancesSummaries)
+                    {
+                        DynamicHelper.AddProperty(indemnityDSRow, $"{eosbAllowance.AllowanceType.Value}_Value", "SAR " + eosbAllowance.Value.ToString("N2"));
+                    }
+
+                    indemnityDSRow.getEmpGrossSalary = "SAR " + employeeIndemnity.GrossSalary.ToString("N2");
+                    indemnityDSRow.getEmpTotalDays = employeeIndemnity.TotalEmploymentDays;
+                    indemnityDSRow.getEmpDaysBelow = employeeIndemnity.TotalPre5EmploymentDays;
+                    indemnityDSRow.getEmpDaysAbove = employeeIndemnity.TotalPost5EmploymentDays;
+                    indemnityDSRow.getEmpTotalEOSB = "SAR " + employeeIndemnity.TotalEOSB.ToString("N2");
+                    indemnityDSRow.getEmpLastMonthEOSB = "SAR " + employeeIndemnity.LastMonthEOSB.ToString("N2");
+                    indemnityDSRow.getEmpEOSBDifference = "SAR " + employeeIndemnity.Difference.ToString("N2");
+
+                    dynamicDS.Add(indemnityDSRow);
+                }
+
+                //JsonResult eosbDSJson = new JsonResult(dynamicDS);
+
+                dynamic Model = new ExpandoObject();
+                Model.EOSBAllowances = payrunDetails[0].PayrunAllowancesSummaries;
+                Model.EOSBDS = dynamicDS;
+                return new JsonResult(Model);
+            }
+            return StatusCode(500);
+        }
         public async Task<IActionResult> OnDeletePayrun(int month, int year)
         {
             Payrun payrun = PayrunAppService.Repository.WithDetails().SingleOrDefault(x => x.Month == month && x.Year == year);
@@ -158,9 +222,10 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
         {
             List<object> commands = new List<object>();
             commands.Add(new { type = "View", buttonOption = new { iconCss = "zmdi zmdi-search", cssClass = "e-flat e-ViewButton" } });
-            commands.Add(new { type = "View Reconciliation", buttonOption = new { iconCss = "zmdi zmdi-assignment-alert", cssClass = "e-flat e-ViewButton" } });
-            commands.Add(new { type = "View Payments Sheet", buttonOption = new { iconCss = "zmdi zmdi-receipt", cssClass = "e-flat e-ViewButton" } });
-            commands.Add(new { type = "View Attachment", buttonOption = new { iconCss = "zmdi zmdi-attachment-alt", cssClass = "e-flat e-ViewButton" } });
+            commands.Add(new { type = "View Reconciliation", buttonOption = new { iconCss = "zmdi zmdi-assignment-alert", cssClass = "e-flat e-View-Reconciliation-Button" } });
+            commands.Add(new { type = "View Payments Sheet", buttonOption = new { iconCss = "zmdi zmdi-receipt", cssClass = "e-flat e-View-Payments-Sheet-Button" } });
+            commands.Add(new { type = "Generate Indemnity", buttonOption = new { iconCss = "zmdi zmdi-case", cssClass = "e-flat e-Gen-Indemnity-Button" } });
+            commands.Add(new { type = "View Attachment", buttonOption = new { iconCss = "zmdi zmdi-attachment-alt", cssClass = "e-flat e-View-Attach-Button" } });
             commands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat e-EditButton" } });
             commands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat e-DeleteButton" } });
             //commands.Add(new { type = "Save", buttonOption = new { iconCss = "e-icons e-update", cssClass = "e-flat" } });

@@ -1,0 +1,123 @@
+﻿@using CERP;
+@using CERP.App;
+@using CERP.HR.EMPLOYEE.DTOs;
+@using CERP.Payroll.DTOs;
+@using Volo.Abp.Domain.Repositories;
+@using Syncfusion.EJ2.Grids;
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Syncfusion.EJ2
+@{
+        List<GridColumn> primaryGridColumns = new List<GridColumn>()
+    {
+        new GridColumn { Field = "sNo", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "getEmpRefCode", HeaderText = "Id", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "getEmpName", HeaderText = "Employee Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "getEmpDepartment", HeaderText = "Department", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "getEmpDOJ", HeaderText = "Joining Date", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "getBasicSalary", HeaderText = "Basic Salary", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    };
+
+        List<DictionaryValue> EOSBAllowancesSummaries = Model.EOSBAllowances;
+
+        for (int i = 0; i < EOSBAllowancesSummaries.Count; i++)
+        {
+            primaryGridColumns.Add(new GridColumn { Field = $"{EOSBAllowancesSummaries[i].Value}_Value", HeaderText = $"{EOSBAllowancesSummaries[i].Value}", TextAlign = TextAlign.Center, MinWidth = "10" });
+        }
+
+        primaryGridColumns.AddRange(new List<GridColumn>() {
+            new GridColumn { Field = "getEmpGrossSalary", HeaderText = "Gross Salary", TextAlign=TextAlign.Center,  MinWidth="10"  },
+            new GridColumn { Field = "getEmpTotalDays", HeaderText = "Employment Days", TextAlign=TextAlign.Center,  MinWidth="10", Columns=new List<GridColumn>(){ 
+                new GridColumn { Field = "getEmpDaysBelow", HeaderText = "PRE 5", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "getEmpDaysAbove", HeaderText = "POST 5", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "getEmpTotalDays", HeaderText = "TOTAL", TextAlign=TextAlign.Center,  MinWidth="10"  }
+            }}, 
+            new GridColumn { Field = "getEmpTotalEOSB", HeaderText = "Total EOSB", TextAlign=TextAlign.Center,  MinWidth="10"  },
+            new GridColumn { Field = "getEmpLastMonthEOSB", HeaderText = "Balance", TextAlign=TextAlign.Center,  MinWidth="10"  },
+            new GridColumn { Field = "", HeaderText = "Actuarial Value", TextAlign=TextAlign.Center,  MinWidth="10"  },
+            new GridColumn { Field = "getEmpEOSBDifference", HeaderText = "Net Change", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        });
+
+    var DS = Model.EOSBDS;
+
+    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+}
+
+
+<div class="control-section">
+    <ejs-grid id="EOSBGrid"
+                enableAutoFill="true" columns="@primaryGridColumns" dataSource="@DS"
+                dataBound="dataBound" commandClick="commandClick" actionComplete="actionComplete"
+                allowExcelExport="true" allowGrouping="true" height="100%"allowPdfExport="true"
+                hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                toolbarClick="EOSBtoolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
+                contextMenuItems="@(new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending","Copy", "Edit", "PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage","LastPage", "NextPage"})"
+                allowPaging="true" allowResizing="true">
+
+        <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
+        <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+        <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+    </ejs-grid>
+</div>
+
+
+@*<ejs-dialog id="alert_dialog" animationSettings="@alertanimation" visible="false" target=".control-section" width="300px" header="Copy with Header" content="Atleast one row should be selected to copy with header">
+    <e-dialog-buttons>
+        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+    </e-dialog-buttons>
+</ejs-dialog>
+<ejs-dialog id="alert_dialog_1" animationSettings="@alertanimation" visible="false" target=".control-section" width="300px" header="Copy" content="Atleast one row should be selected to copy">
+    <e-dialog-buttons>
+        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+    </e-dialog-buttons>
+</ejs-dialog>*@
+
+<script>
+    //function QueryCellInfo(args) {
+    //    if (args.cell.innerText == '') {
+    //        if(typeof args.column.field != 'undefined')
+    //            args.cell.innerText = '—';
+    //    }
+    //    else {
+    //        if (args.column.field.includes("Value") || args.column.field.includes("BasicSalar") || args.column.field == 'totalEarnings' || args.column.field == 'totalDeductions' || args.column.field == 'netTotal') {
+    //            const options = {
+    //                minimumFractionDigits: 2,
+    //                maximumFractionDigits: 2
+    //            };
+    //            var value = parseFloat(args.cell.innerText);
+    //            const formatted = Number(value).toLocaleString('en', options);
+    //            args.cell.innerText = 'SAR ' + formatted // change decimal ;
+    //        }
+    //    }
+    //}
+    
+    function EOSBtoolbarClick(args) {
+        var gridObj = document.getElementById("EOSBGrid").ej2_instances[0];
+        if (args.item.id === 'EOSBGrid_pdfexport') {
+            gridObj.pdfExport();
+        }
+        if (args.item.id === 'EOSBGrid_excelexport') {
+            gridObj.excelExport();
+        }
+        if (args.item.id === 'EOSBGrid_csvexport') {
+            gridObj.csvExport();
+        }
+        if (this.getSelectedRecords().length > 0) {
+            var withHeader = false;
+            if (args.item.id === 'copyHeader') {
+                withHeader = true;
+            }
+            this.copy(withHeader);
+        } else {
+            if (args.item.id === 'copyHeader') {
+                var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+                dialogObj.show();
+            }
+            else if (args.item.id === 'copy') {
+                var dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+                dialogObj.show();
+            }
+        }
+    }
+</script>

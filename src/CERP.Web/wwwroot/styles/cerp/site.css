@@ -147,7 +147,7 @@ i.fab {
     transform: rotate(90deg)
 }
 
-@media screen and (max-width:600px) {
+@media screen and (max-width:780px) {
     .customPageHeader {
         position: unset !important; /*margin: 0;*/
         padding: 0;
@@ -264,14 +264,14 @@ i.fab {
     height: 100%;
     height: -webkit-fill-available;
     height: -moz-fill-available;
-    height: -moz-available;
+    /*height: -moz-available;*/
     height: fill-available;
 
     padding-top: 0;
     background-color: rgb(253,253,253);
     padding-bottom: 70px
 }
-@media screen and (max-width:600px) {
+@media screen and (max-width:780px) {
     .customContentArea {
         padding-top: 20px !important;
         position: relative !important;
@@ -283,7 +283,7 @@ i.fab {
         height: 100%;
         height: -webkit-fill-available;
         height: -moz-fill-available;
-        height: -moz-available;
+        /*height: -moz-available;*/
         height: fill-available;
         padding-top: 0;
         background-color: rgb(253,253,253);
@@ -302,7 +302,7 @@ i.fab {
         height: 100%;
         height: -webkit-fill-available;
         height: -moz-fill-available;
-        height: -moz-available;
+        /*height: -moz-available;*/
         height: fill-available;
         padding-top: 0;
         background-color: rgb(253,253,253);
@@ -342,7 +342,7 @@ i.fab {
     height: 100%;
     height: -webkit-fill-available;
     height: -moz-fill-available;
-    height: -moz-available;
+    /*height: -moz-available;*/
     height: fill-available;
 }
 .w-fill-available {

@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Syncfusion.EJ2.Linq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using Volo.Abp.Domain.Repositories;
@@ -26,6 +27,30 @@ namespace CERP.HR.EMPLOYEE.RougeDTOs
         {
             Banks.ForEach(x => x.Banks = dictionaryValuesRepo);
             AllowancesDetails.ForEach(x => x.Allowances = dictionaryValuesRepo);
+        }
+
+        internal double GetBasicSalaryAt(DateTime at)
+        {
+            try
+            {
+                return BasicSalaries.Count == 0? -1 : BasicSalaries.FirstOrDefault(x => at > DateTime.Parse(x.FromDate).Date && at < DateTime.Parse(x.ToDate).Date).Salary;
+            }
+            catch(Exception ex)
+            {
+                return -2;
+            }
+        }
+
+        internal List<AllowanceRDTO> GetActiveAllowncesAt(DateTime curDateTime)
+        {
+            try
+            {
+                return AllowancesDetails.Count == 0 ? new List<AllowanceRDTO>() : AllowancesDetails.Where(x => curDateTime.Date >= DateTime.Parse(x.FromDate).Date && curDateTime.Date <= DateTime.Parse(x.EndDate).Date).ToList();
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
     }
 

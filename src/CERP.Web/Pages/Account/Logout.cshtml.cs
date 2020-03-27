@@ -23,11 +23,7 @@ namespace CERP.Web.Pages.Account
             _logger = logger;
         }
 
-        public void OnGet()
-        {
-        }
-
-        public virtual async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnPostAsync()
         {
             await SignInManager.SignOutAsync();
             if (ReturnUrl != null)

@@ -212,6 +212,7 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
 
                 List<PayrunDetail_Dto> payrunDetails = new List<PayrunDetail_Dto>();
 
+                DateTime curDateTime = new DateTime(year, month, DateTime.Now.Day);
                 for (int i = 0; i < employees.Count; i++)
                 {
                     bool isNewEmployee = false;
@@ -249,13 +250,12 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
                     financialDetails.Initialize(DicValuesRepo);
 
                     //Calculate Basic Salary
-                    double curBasicSalary = financialDetails.BasicSalaries.Last().Salary;
+                    double curBasicSalary = financialDetails.GetBasicSalaryAt(curDateTime);
                     empPayrunDetail.BasicSalary = (decimal)curBasicSalary;
                     grossEarnings += empPayrunDetail.BasicSalary;
 
                     //Calculate Allowances
-                    DateTime curDateTime = DateTime.Now;
-                    List<AllowanceRDTO> allowances = financialDetails.AllowancesDetails.Count == 0 ? new List<AllowanceRDTO>() : financialDetails.AllowancesDetails.Where(x => curDateTime.Date >= DateTime.Parse(x.FromDate).Date && curDateTime.Date <= DateTime.Parse(x.EndDate).Date).ToList();
+                    List<AllowanceRDTO> allowances = financialDetails.GetActiveAllowncesAt(curDateTime);
                     for (int j = 0; j < allowances.Count; j++)
                     {
                         PayrunAllowanceSummary_Dto payrunAllowanceSummaryPrevious = empPayrunDetailPrevious == null ? null : empPayrunDetailPrevious.PayrunAllowancesSummaries.SingleOrDefault(x => x.AllowanceTypeId == allowances[i].AllowanceTypeId);
@@ -354,7 +354,7 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
             var formData = Request.Form;
 
             Payrun payrun = PayrunAppService.Repository.SingleOrDefault(x => x.Month == month && x.Year == year);
-            IFormFile attachment = formData.Files[0];
+            IFormFile attachment = formData.Files.Count > 0? formData.Files[0] : null;
             if (attachment != null)
             {
                 string uploadedFileName = UploadedFile(attachment);

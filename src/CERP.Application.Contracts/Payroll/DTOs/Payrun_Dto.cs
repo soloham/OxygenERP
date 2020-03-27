@@ -5,6 +5,7 @@ using CERP.HR.Employees.DTOs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text;
 using Volo.Abp.Application.Dtos;
 
@@ -76,6 +77,34 @@ namespace CERP.Payroll.DTOs
 
         public decimal AmountPaid { get; set; }
         public decimal DifferAmount { get; set; }
+
+        public PayrunDetailIndemnity_Dto GetIndemnity()
+        {
+            List<PayrunAllowanceSummary_Dto> payrunAllowances = PayrunAllowancesSummaries.ToList();
+
+            PayrunDetailIndemnity_Dto indemnityDSRow = new PayrunDetailIndemnity_Dto();
+            indemnityDSRow.Payrun = Payrun;
+            indemnityDSRow.PayrunId = PayrunId;
+            indemnityDSRow.Employee = Employee;
+            indemnityDSRow.EmployeeId = EmployeeId;
+            double curBasicSalary = (double)BasicSalary;
+            indemnityDSRow.BasicSalary = curBasicSalary;
+
+            indemnityDSRow.PayrunDate = new DateTime(Year, Month, CreationTime.Day);
+            indemnityDSRow.PayrunEOSBAllowancesSummaries = payrunAllowances;//payrunAllowances.Select(x => x.a);
+            indemnityDSRow.GrossSalary = (double)payrunAllowances.Sum(x => x.Value);
+            indemnityDSRow.GrossSalary += curBasicSalary;
+
+            int totalDays = (DateTime.Parse(Employee.JoiningDate) - indemnityDSRow.PayrunDate).Days;
+            indemnityDSRow.TotalEmploymentDays = totalDays;
+            int daysBelow5 = Math.Min(totalDays, 1825);
+            int daysAbove5 = Math.Max(0, totalDays - 1825);
+            double totalEOSB = ((daysBelow5 * indemnityDSRow.GrossSalary / 365) / 2) + (daysAbove5 * indemnityDSRow.GrossSalary / 365);
+            indemnityDSRow.TotalEOSB = totalEOSB;
+            indemnityDSRow.Difference = totalEOSB;
+
+            return indemnityDSRow;
+        }
     }
 
     public class PayrunAllowanceSummary_Dto : FullAuditedEntityDto<int>

@@ -17,16 +17,20 @@ namespace CERP.Web
                 .AddRazorRuntimeCompilation()
                 .AddRazorPagesOptions(options =>
                 {
-                    options.Conventions.AuthorizeAreaFolder("Account", "/Account/Manage");
-                    options.Conventions.AuthorizeAreaPage("Account", "/Account/Logout");
-                    options.Conventions.AuthorizeFolder("/Pages");
+                    options.Conventions.AuthorizeAreaFolder("Account", "/Pages/Account/Manage");
+                    options.Conventions.AuthorizeAreaPage("Account", "/Pages/Account/Logout");
+                    options.Conventions.AuthorizeAreaFolder("FM", "/");
+                    options.Conventions.AuthorizeAreaFolder("HR", "/");
+                    options.Conventions.AuthorizeAreaFolder("Main", "/");
+                    options.Conventions.AuthorizeAreaFolder("Payroll", "/");
+                    options.Conventions.AuthorizeAreaFolder("Setup", "/");
                     options.Conventions.AuthorizePage("/Index");
 
-                    //options.Conventions.AddPageRoute("/Account/Login", "/Login");
-                    //options.Conventions.AddPageRoute("/Account/Register", "/Register");
-                    //options.Conventions.AddPageRoute("/Account/Lockout", "/Lockout");
-                    //options.Conventions.AddPageRoute("/Account/AccessDenied", "/AccessDenied");
-                    //options.Conventions.AddPageRoute("/Account/Logout", "/Logout");
+                    options.Conventions.AddPageRoute("/Account/Login", "/Login");
+                    options.Conventions.AddPageRoute("/Account/Register", "/Login");
+                    options.Conventions.AddPageRoute("/Account/Lockout", "/Lockout");
+                    options.Conventions.AddPageRoute("/Account/AccessDenied", "/AccessDenied");
+                    options.Conventions.AddPageRoute("/Account/Logout", "/Logout");
 
                     options.Conventions.AddAreaPageRoute("FM", "/COA/List", "/COA");
                     options.Conventions.AddAreaPageRoute("FM", "/COA/Create", "/COA/Create");
@@ -37,7 +41,7 @@ namespace CERP.Web
 
                     options.Conventions.AddAreaPageRoute("Main", "/Dashboard", "/Dashboard");
 
-                    //options.Conventions.AddPageRoute("/index", "{*url}");
+                    options.Conventions.AddPageRoute("/index", "{*url}");
                 })
                 .AddNewtonsoftJson(options =>
                 {
@@ -46,9 +50,9 @@ namespace CERP.Web
 
             services.ConfigureApplicationCookie(options =>
             {
-                options.Cookie.Name = "cerpC";
+                options.Cookie.Name = "oxyC";
                 options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(1);
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
 
                 //options.AccessDeniedPath = "/AccessDenied";
                 //options.LoginPath = "/Login";
@@ -57,10 +61,6 @@ namespace CERP.Web
                 options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
                 options.SlidingExpiration = true;
 
-            });
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.KnownProxies.Add(IPAddress.Parse("10.0.0.100"));
             });
         }
 
