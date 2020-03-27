@@ -387,6 +387,28 @@ vhr {
 .e-grid .e-groupdroparea {
     background-color: #00b2f0!important;
 }
+.e-hscroll .e-scroll-nav {
+    background-color: #85d5ee !important;
+}
+.e-hscroll .e-scroll-nav:hover{
+    background-color: #a7e0f2 !important;
+}
+.e-toolbar .e-tbar-btn:hover {
+    background-color: #85d5ee !important;
+}
+.e-toolbar .e-tbar-btn {
+    background-color: #a7e0f2 !important;
+    color: #5b6568 !important;
+}
+.e-toolbar .e-toolbar-items .e-toolbar-item .e-tbar-btn-text {
+    color: #5b6568 !important;
+}
+.e-grid .e-icons {
+    color: #5b6568 !important;
+}
+.e-toolbar, .e-toolbar .e-toolbar-items {
+    background-color: #c0e4ef !important;
+}
 .custom-control-indicator {
     background-color: #35c6f5 !important;
 }

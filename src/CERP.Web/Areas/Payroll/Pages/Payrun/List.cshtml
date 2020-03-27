@@ -14,6 +14,9 @@
     ViewData["CreateNewLink"] = "/Payrun/Run";
 
     var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+
+    var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-chevron-right", id = "showActions" } };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-chevron-left", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "e-chevron-up", id = "hideActions" }, "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } };
 }
 @section styles {
     <link href="~/libs/syncfusion/ej2-grid/styles/fabric.css" rel="stylesheet" />
@@ -85,7 +88,7 @@
                           allowExcelExport="true" allowGrouping="true" height="100%" allowPdfExport="true"
                           hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                           allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                          toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
+                          toolbarClick="toolbarClick" toolbar="@initialToolBar"
                           allowPaging="true" allowResizing="true">
 
                     <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
@@ -149,7 +152,7 @@
                 console.log("Yup");
             }
             $(".e-" + "View-Payments-Sheet-" + "Button", args.row).removeClass("e-hide");
-            var gridObj = document.getElementById("PayrunsHistoryGrid").ej2_instances[0]; 
+            var gridObj = document.getElementById("PayrunsHistoryGrid").ej2_instances[0];
             var lastPayrun = gridObj.dataSource.find(x => x.month == args.data.month - 1 && x.year == args.data.year);
             if (typeof lastPayrun != 'undefined') {
                 $(".e-" + "View-Reconciliation-" + "Button", args.row).removeClass("e-hide");
@@ -347,7 +350,7 @@
                             gridMain.refresh();
                         }, 50);
                     }, waitAnim)
-                    
+
                     //var html = ``;
                     //html += `<hr class='m-t-0 p-t-0'/>`
                     //if (data == '') {
@@ -449,6 +452,18 @@
     }
     function toolbarClick(args) {
         var gridObj = document.getElementById("PayrunsHistoryGrid").ej2_instances[0];
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [ { text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-chevron-left", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-chevron-up", id: "toggleGrouping" }, "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" } ];
+            gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-chevron-left", id: "showActions" }];
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
+        }
         if (args.item.id === 'PayrunsHistoryGrid_pdfexport') {
             gridObj.pdfExport();
         }
@@ -483,6 +498,8 @@
     }
     var initial = true;
     function dataBound(args) {
+        //this.toolbarModule.enableItems(['copy', 'copyHeader', 'PayrunsHistoryGrid_Search', 'PayrunsHistoryGrid_Delete', 'PayrunsHistoryGrid_Print', 'PayrunsHistoryGrid_pdfexport', 'PayrunsHistoryGrid_excelexport', 'PayrunsHistoryGrid_csvexport'], false);
+        //this.toolbarModule.enableItems(['showActions',], true);
         //this.autoFitColumns();
         //if (initial == true) {
         //    this.groupModule.collapseAll();
