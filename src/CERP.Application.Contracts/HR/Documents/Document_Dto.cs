@@ -1,4 +1,5 @@
 ﻿using CERP.App;
+using CERP.Base;
 using CERP.HR.Employees.DTOs;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace CERP.CERP.HR.Documents
 {
-    public class Document_Dto : AuditedEntityDto<Guid>
+    public class Document_Dto : AuditedEntityTenantDto<Guid>
     {
 
         public Document_Dto()

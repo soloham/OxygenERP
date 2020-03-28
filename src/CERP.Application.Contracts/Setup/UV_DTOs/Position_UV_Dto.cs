@@ -1,11 +1,12 @@
-﻿using CERP.HR.Employees.DTOs;
+﻿using CERP.Base;
+using CERP.HR.Employees.DTOs;
 using System;
 using Volo.Abp.Application.Dtos;
 
 namespace CERP.Setup.DTOs
 {
 
-    public class Position_UV_Dto : AuditedEntityDto<Guid>
+    public class Position_UV_Dto : AuditedEntityTenantDto<Guid>
     {
         public Position_UV_Dto()
         {

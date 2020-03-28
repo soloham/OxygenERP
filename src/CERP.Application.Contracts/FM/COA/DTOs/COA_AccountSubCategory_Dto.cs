@@ -6,10 +6,11 @@ using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Entities.Auditing;
 using CERP.App.Helpers;
+using CERP.Base;
 
 namespace CERP.FM.COA.DTOs
 {
-    public class COA_AccountSubCategory_Dto : FullAuditedEntityDto<Guid> 
+    public class COA_AccountSubCategory_Dto : FullAuditedEntityTenantDto<Guid> 
     {
         public COA_AccountSubCategory_Dto()
         {

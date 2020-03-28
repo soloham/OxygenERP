@@ -1,4 +1,5 @@
 ﻿using CERP.App;
+using CERP.Base;
 using CERP.FM.DTOs;
 using CERP.HR.EMPLOYEE.DTOs;
 using CERP.Setup.DTOs;
@@ -13,7 +14,7 @@ using Volo.Abp.Identity;
 
 namespace CERP.HR.Employees.DTOs
 {
-    public class Employee_Dto : FullAuditedEntityDto<Guid>
+    public class Employee_Dto : FullAuditedEntityTenantDto<Guid>
     {
         public Employee_Dto()
         {

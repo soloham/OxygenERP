@@ -1,11 +1,12 @@
-﻿using System;
+﻿using CERP.Base;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace CERP.FM.COA
 {
-    public class COA_SubLedgerRequirement_Account : AuditedAggregateRoot<Guid>
+    public class COA_SubLedgerRequirement_Account : AuditedAggregateTenantRoot<Guid>
     {
         public COA_SubLedgerRequirement_Account()
         {

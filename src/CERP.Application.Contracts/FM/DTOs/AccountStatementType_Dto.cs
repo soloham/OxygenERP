@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CERP.Base;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Volo.Abp;
@@ -7,7 +8,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace CERP.FM.DTOs
 {
-    public class AccountStatementType_Dto : AuditedEntityDto<Guid> 
+    public class AccountStatementType_Dto : AuditedEntityTenantDto<Guid> 
     {
         public AccountStatementType_Dto()
         {

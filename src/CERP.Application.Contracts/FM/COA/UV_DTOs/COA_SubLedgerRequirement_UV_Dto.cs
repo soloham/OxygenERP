@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CERP.Base;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
@@ -8,7 +9,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace CERP.FM.COA.UV_DTOs
 {
-    public class COA_SubLedgerRequirement_UV_Dto : FullAuditedEntityDto<Guid> 
+    public class COA_SubLedgerRequirement_UV_Dto : FullAuditedEntityTenantDto<Guid> 
     {
         public COA_SubLedgerRequirement_UV_Dto()
         {

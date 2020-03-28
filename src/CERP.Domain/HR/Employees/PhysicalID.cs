@@ -1,4 +1,5 @@
 ﻿using CERP.App;
+using CERP.Base;
 using CERP.HR.Employee.Enums;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace CERP.HR.Employees
 {
-    public class PhysicalID : AuditedAggregateRoot<int>
+    public class PhysicalID : AuditedAggregateTenantRoot<int>
     {
         public PhysicalID()
         {

@@ -1,15 +1,17 @@
-﻿using System;
+﻿using CERP.Base;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
+using Volo.Abp.MultiTenancy;
 
 namespace CERP.FM.COA
 {
     
-    public class COA_AccountSubCategory : FullAuditedAggregateRoot<Guid> 
+    public class COA_AccountSubCategory : FullAuditedAggregateTenantRoot<Guid>
     {
         public COA_AccountSubCategory()
         {
@@ -34,6 +36,5 @@ namespace CERP.FM.COA
         [ForeignKey("CompanyId")]
         public Company Company { get; set; }
         public Guid CompanyId { get; set; }
-        public bool? IsDeleted { get; set; }
     }
 }

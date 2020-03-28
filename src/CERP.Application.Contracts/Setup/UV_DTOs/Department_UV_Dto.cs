@@ -1,4 +1,5 @@
-﻿using CERP.FM.DTOs;
+﻿using CERP.Base;
+using CERP.FM.DTOs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,7 +8,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace CERP.Setup.DTOs
 {
-    public class Department_UV_Dto : AuditedEntityDto<Guid>
+    public class Department_UV_Dto : AuditedEntityTenantDto<Guid>
     {
         public Department_UV_Dto()
         {

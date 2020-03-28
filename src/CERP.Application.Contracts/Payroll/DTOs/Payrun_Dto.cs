@@ -1,4 +1,5 @@
 ﻿using CERP.App;
+using CERP.Base;
 using CERP.FM.DTOs;
 using CERP.HR.EMPLOYEE.DTOs;
 using CERP.HR.Employees.DTOs;
@@ -12,7 +13,7 @@ using Volo.Abp.Application.Dtos;
 namespace CERP.Payroll.DTOs
 {
 
-    public class Payrun_Dto : FullAuditedEntityDto<int>
+    public class Payrun_Dto : FullAuditedEntityTenantDto<int>
     {
         public Payrun_Dto()
         {
@@ -45,7 +46,7 @@ namespace CERP.Payroll.DTOs
         public Guid? PostedById { get; set; }
     }
 
-    public class PayrunDetail_Dto : FullAuditedEntityDto<int>
+    public class PayrunDetail_Dto : FullAuditedEntityTenantDto<int>
     {
         public Payrun_Dto Payrun { get; set; }
         [Required]
@@ -107,7 +108,7 @@ namespace CERP.Payroll.DTOs
         }
     }
 
-    public class PayrunAllowanceSummary_Dto : FullAuditedEntityDto<int>
+    public class PayrunAllowanceSummary_Dto : FullAuditedEntityTenantDto<int>
     {
         public decimal Value { get; set; }
 
@@ -120,7 +121,7 @@ namespace CERP.Payroll.DTOs
         public Guid EmployeeId { get; set; }
     }
 
-    public class Payslip_Dto : FullAuditedEntityDto<int>
+    public class Payslip_Dto : FullAuditedEntityTenantDto<int>
     {
         public PayrunDetail_Dto PayrunDetail { get; set; }
         [Required]

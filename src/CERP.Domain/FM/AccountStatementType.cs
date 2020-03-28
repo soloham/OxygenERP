@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CERP.Base;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Volo.Abp;
@@ -6,7 +7,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace CERP.FM
 {
-    public class AccountStatementType : AuditedAggregateRoot<Guid> 
+    public class AccountStatementType : AuditedAggregateTenantRoot<Guid> 
     {
         public AccountStatementType()
         {

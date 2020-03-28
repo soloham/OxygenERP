@@ -1,4 +1,5 @@
-﻿using CERP.FM;
+﻿using CERP.Base;
+using CERP.FM;
 using CERP.HR.Employees;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace CERP.Setup
 {
-    public class Department : FullAuditedAggregateRoot<Guid>
+    public class Department : FullAuditedAggregateTenantRoot<Guid>
     {
         public Department()
         {

@@ -8,10 +8,11 @@ using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Entities.Auditing;
 using CERP.FM.DTOs;
+using CERP.Base;
 
 namespace CERP.FM.COA.UV_DTOs
 {
-    public class COA_Account_UV_Dto : FullAuditedEntityDto<Guid> 
+    public class COA_Account_UV_Dto : FullAuditedEntityTenantDto<Guid> 
     {
         public COA_Account_UV_Dto()
         {

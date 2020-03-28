@@ -1,4 +1,5 @@
-﻿using CERP.HR.Employees.DTOs;
+﻿using CERP.Base;
+using CERP.HR.Employees.DTOs;
 using CERP.Setup.DTOs;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace CERP.HR.EMPLOYEE.DTOs
 {
-    public class WorkShift_Dto : FullAuditedEntityDto<int>
+    public class WorkShift_Dto : FullAuditedEntityTenantDto<int>
     {
         public WorkShift_Dto()
         {

@@ -1,4 +1,5 @@
 ﻿using CERP.App;
+using CERP.Base;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,7 +8,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace CERP.HR.Timesheets
 {
-    public class Timesheet : FullAuditedAggregateRoot<int>
+    public class Timesheet : FullAuditedAggregateTenantRoot<int>
     {
         [ForeignKey("EmployeeId")]
         public virtual Employees.Employee Employee { get; set; }

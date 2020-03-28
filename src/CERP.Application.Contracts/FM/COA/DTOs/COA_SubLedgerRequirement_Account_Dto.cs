@@ -1,11 +1,12 @@
-﻿using System;
+﻿using CERP.Base;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Volo.Abp.Application.Dtos;
 
 namespace CERP.FM.COA.DTOs
 {
-    public class COA_SubLedgerRequirement_Account_Dto : AuditedEntityDto<Guid>
+    public class COA_SubLedgerRequirement_Account_Dto : AuditedEntityTenantDto<Guid>
     {
         public COA_SubLedgerRequirement_Account_Dto()
         {

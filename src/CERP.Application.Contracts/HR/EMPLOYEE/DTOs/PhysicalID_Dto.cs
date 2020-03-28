@@ -1,4 +1,5 @@
 ﻿using CERP.App;
+using CERP.Base;
 using CERP.HR.Employee.Enums;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace CERP.HR.Employees.DTOs
 {
-    public class PhysicalID_Dto : AuditedEntityDto<int>
+    public class PhysicalID_Dto : AuditedEntityTenantDto<int>
     {
         public PhysicalID_Dto()
         {

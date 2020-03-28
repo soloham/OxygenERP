@@ -1,4 +1,5 @@
-﻿using CERP.FM;
+﻿using CERP.Base;
+using CERP.FM;
 using CERP.FM.DTOs;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace CERP.App
 {
-    public class DictionaryValue_Dto : AuditedEntityDto<Guid>
+    public class DictionaryValue_Dto : AuditedEntityTenantDto<Guid>
     {
         public DictionaryValue_Dto()
         {

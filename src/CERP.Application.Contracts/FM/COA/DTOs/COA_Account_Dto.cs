@@ -1,4 +1,5 @@
 ﻿using CERP.App;
+using CERP.Base;
 using CERP.FM.DTOs;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace CERP.FM.COA.DTOs
 {
-    public class COA_Account_Dto : FullAuditedEntityDto<Guid> 
+    public class COA_Account_Dto : FullAuditedEntityTenantDto<Guid> 
     {
         public COA_Account_Dto()
         {

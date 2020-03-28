@@ -5,10 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using Volo.Abp.Domain.Entities.Auditing;
 using CERP.HR.Employees;
+using CERP.Base;
 
 namespace CERP.HR.Workshifts
 {
-    public class WorkShift : FullAuditedAggregateRoot<int>
+    public class WorkShift : FullAuditedAggregateTenantRoot<int>
     {
         public WorkShift()
         {

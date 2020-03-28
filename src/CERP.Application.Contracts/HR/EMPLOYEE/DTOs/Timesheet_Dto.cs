@@ -1,4 +1,5 @@
 ﻿using CERP.App;
+using CERP.Base;
 using CERP.HR.Employees.DTOs;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using Volo.Abp.Application.Dtos;
 namespace CERP.HR.EMPLOYEE.DTOs
 {
     
-    public class Timesheet_Dto : FullAuditedEntityDto<int>
+    public class Timesheet_Dto : FullAuditedEntityTenantDto<int>
     {
         public void Initialize()
         {
@@ -57,7 +58,7 @@ namespace CERP.HR.EMPLOYEE.DTOs
         public DateTime Dated { get; set; }
     }
 
-    public class TimesheetWeekSummary_Dto : FullAuditedEntityDto<int>
+    public class TimesheetWeekSummary_Dto : FullAuditedEntityTenantDto<int>
     {
         public void Initialize()
         {
@@ -98,7 +99,7 @@ namespace CERP.HR.EMPLOYEE.DTOs
         public DateTime Dated { get; set; }
     }
 
-    public class TimesheetWeekJobSummary_Dto : FullAuditedEntityDto<int>
+    public class TimesheetWeekJobSummary_Dto : FullAuditedEntityTenantDto<int>
     {
         public virtual TimesheetWeekSummary_Dto WeekSheet { get; set; }
         [Required]

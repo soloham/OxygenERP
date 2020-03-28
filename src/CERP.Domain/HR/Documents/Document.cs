@@ -1,4 +1,5 @@
 ﻿using CERP.App;
+using CERP.Base;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -8,7 +9,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace CERP.HR.Documents
 {
-    public class Document : AuditedAggregateRoot<Guid>, ISoftDelete
+    public class Document : AuditedAggregateTenantRoot<Guid>, ISoftDelete
     {
         public Document()
         {

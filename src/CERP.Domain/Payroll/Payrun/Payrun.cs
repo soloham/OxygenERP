@@ -1,4 +1,5 @@
 ﻿using CERP.App;
+using CERP.Base;
 using CERP.FM;
 using CERP.HR.Employees;
 using CERP.HR.Timesheets;
@@ -11,7 +12,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace CERP.Payroll.Payrun
 {
-    public class Payrun : FullAuditedAggregateRoot<int>
+    public class Payrun : FullAuditedAggregateTenantRoot<int>
     {
         public Payrun()
         {

@@ -1,13 +1,15 @@
-﻿using CERP.FM;
+﻿using CERP.Base;
+using CERP.FM;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using Volo.Abp.Domain.Entities.Auditing;
+using Volo.Abp.MultiTenancy;
 
 namespace CERP.App
 {
-    public class DictionaryValueType : AuditedAggregateRoot<Guid>
+    public class DictionaryValueType : AuditedAggregateTenantRoot<Guid>
     {
         public DictionaryValueType()
         {

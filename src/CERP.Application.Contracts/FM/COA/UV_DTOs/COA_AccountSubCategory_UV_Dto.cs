@@ -1,4 +1,5 @@
-﻿using CERP.FM.COA.DTOs;
+﻿using CERP.Base;
+using CERP.FM.COA.DTOs;
 using CERP.FM.UV_DTOs;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace CERP.FM.COA.UV_DTOs
 {
-    public class COA_AccountSubCategory_UV_Dto : AuditedEntityDto<Guid> 
+    public class COA_AccountSubCategory_UV_Dto : AuditedEntityTenantDto<Guid> 
     {
         public COA_AccountSubCategory_UV_Dto()
         {
