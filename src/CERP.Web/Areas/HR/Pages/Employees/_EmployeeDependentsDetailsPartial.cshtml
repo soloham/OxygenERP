@@ -173,10 +173,10 @@
         </div>
         <ejs-grid id="DependantsGrid" dataSource="@dependantsDS" enableAutoFill="true" columns="@dependantsColumns"
                   dataBound="dataBound" commandClick="commandClick"
-                  allowExcelExport="true" allowGrouping="true" height="100%"allowPdfExport="true"
+                  allowExcelExport="true" height="100%"allowPdfExport="true"
                   hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                   allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                  toolbarClick="toolbarClick" actionComplete="actionCompleteDependant" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
+                  toolbarClick="toolbarClick" actionComplete="actionCompleteDependant" showColumnChooser="true" toolbar="@ViewData["initialToolBar"]"
                   
                   allowPaging="true" allowResizing="true">
 
@@ -337,10 +337,10 @@
             </div>
             <ejs-grid id="DependantsPhysicalIdsGrid" dataSource="@DependantIdsListDs" enableAutoFill="true" columns="@DependantsIdsListColumns"
                       dataBound="dataBound" commandClick="commandClick"
-                      allowExcelExport="true" allowGrouping="true" height="100%"allowPdfExport="true"
+                      allowExcelExport="true" height="100%"allowPdfExport="true"
                       hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                       allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                      toolbarClick="toolbarClickDependantIds" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
+                      toolbarClick="toolbarClickDependantIds" showColumnChooser="true" toolbar="@ViewData["initialToolBar"]"
                       allowPaging="true" allowResizing="true">
 
                 <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
@@ -358,10 +358,10 @@
                 <h3 class="m-t-0">Dependants Passports</h3>
                 <ejs-grid id="DependantsPassportIdsGrid" dataSource="@ViewData["PassportIdsListDS"]" enableAutoFill="true" columns="@PassportIdsListColumns"
                           dataBound="dataBound" commandClick="commandClick"
-                          allowExcelExport="true" allowGrouping="true" height="100%"allowPdfExport="true"
+                          allowExcelExport="true" height="100%"allowPdfExport="true"
                           hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                           allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                          toolbarClick="toolbarClickDependantPassports" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })" allowPaging="true" allowResizing="true">
+                          toolbarClick="toolbarClickDependantPassports" showColumnChooser="true" toolbar="@ViewData["initialToolBar"]" allowPaging="true" allowResizing="true">
 
                     <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
             <e-grid-editSettings showDeleteConfirmDialog="true" mode="Dialog" showConfirmDialog="true" allowAdding="false" allowDeleting="true" allowEditing="false" newRowPosition="Bottom"></e-grid-editSettings>
@@ -472,13 +472,13 @@
 
     function toolbarClickDependent(args) {
         var gridObj = document.getElementById("DependantsGrid").ej2_instances[0];
-        if (args.item.id === 'Grid_pdfexport') {
+        if (args.item.id === 'DependantsGrid_pdfexport') {
             gridObj.pdfExport();
         }
-        if (args.item.id === 'Grid_excelexport') {
+        if (args.item.id === 'DependantsGrid_excelexport') {
             gridObj.excelExport();
         }
-        if (args.item.id === 'Grid_csvexport') {
+        if (args.item.id === 'DependantsGrid_csvexport') {
             gridObj.csvExport();
         }
         if (this.getSelectedRecords().length > 0) {
@@ -496,17 +496,30 @@
                 var dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
                 dialogObj.show();
             }
+        }
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, "ExcelExport", "CsvExport", "Print", "Search",{ text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+	gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.showColumnChooser = true;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
         }
     }
     function toolbarClickDependantIds(args) {
         var gridObj = document.getElementById("DependantsPhysicalIdsGrid").ej2_instances[0];
-        if (args.item.id === 'Grid_pdfexport') {
+        if (args.item.id === 'DependantsPhysicalIdsGrid_pdfexport') {
             gridObj.pdfExport();
         }
-        if (args.item.id === 'Grid_excelexport') {
+        if (args.item.id === 'DependantsPhysicalIdsGrid_excelexport') {
             gridObj.excelExport();
         }
-        if (args.item.id === 'Grid_csvexport') {
+        if (args.item.id === 'DependantsPhysicalIdsGrid_csvexport') {
             gridObj.csvExport();
         }
         if (this.getSelectedRecords().length > 0) {
@@ -524,17 +537,30 @@
                 var dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
                 dialogObj.show();
             }
+        }
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, "ExcelExport", "CsvExport", "Print", "Search",{ text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+	gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.showColumnChooser = true;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
         }
     }
     function toolbarClickDependantPassports(args) {
         var gridObj = document.getElementById("DependantsPassportIdsGrid").ej2_instances[0];
-        if (args.item.id === 'Grid_pdfexport') {
+        if (args.item.id === 'DependantsPhysicalIdsGrid_pdfexport') {
             gridObj.pdfExport();
         }
-        if (args.item.id === 'Grid_excelexport') {
+        if (args.item.id === 'DependantsPhysicalIdsGrid_excelexport') {
             gridObj.excelExport();
         }
-        if (args.item.id === 'Grid_csvexport') {
+        if (args.item.id === 'DependantsPhysicalIdsGrid_csvexport') {
             gridObj.csvExport();
         }
         if (this.getSelectedRecords().length > 0) {
@@ -552,6 +578,19 @@
                 var dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
                 dialogObj.show();
             }
+        }
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, "ExcelExport", "CsvExport", "Print", "Search",{ text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+	gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.showColumnChooser = true;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
         }
     }
 

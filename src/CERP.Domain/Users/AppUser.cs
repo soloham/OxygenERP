@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CERP.HR.Employees;
+using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.Users;
 
@@ -44,6 +46,9 @@ namespace CERP.Users
          *
          * public virtual string MyProperty { get; set; }
          */
+        //[ForeignKey("EmployeeId")]
+        //public virtual Employee Employee { get; set; }
+        //public Guid? EmployeeId { get; set; }
 
         private AppUser()
         {

@@ -78,6 +78,8 @@
     <Compile Remove="Migrations\20200320153712_AddedCreatorInEmployee.Designer.cs" />
     <Compile Remove="Migrations\20200321092941_InitialServer.cs" />
     <Compile Remove="Migrations\20200321092941_InitialServer.Designer.cs" />
+    <Compile Remove="Migrations\20200328032120_UpdatedUserAndEmployeeAddedPortalDetails.cs" />
+    <Compile Remove="Migrations\20200328032120_UpdatedUserAndEmployeeAddedPortalDetails.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

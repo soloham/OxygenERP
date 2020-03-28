@@ -2,6 +2,7 @@
 using CERP.FM;
 using CERP.HR.Workshifts;
 using CERP.Setup;
+using CERP.Users;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -111,6 +112,10 @@ namespace CERP.HR.Employees
         #endregion
 
         public string ProfilePic { get; set; }
+
+        //[ForeignKey("PortalId")]
+        //public AppUser Portal { get; set; }
+        //public Guid? PortalId { get; set; }
 
         public void UpdateExtraProperties(IDictionary<string, object> extraProperties)
         {

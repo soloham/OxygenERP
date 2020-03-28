@@ -126,7 +126,8 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                                                 IList<Experience> experiences, 
                                                 IList<Dependant> dependants, 
                                                 IList<PhysicalId<int>> dependantsIds, 
-                                                IList<WorkShiftRDto> workShifts)
+                                                IList<WorkShiftRDto> workShifts,
+                                                SelfPortalDetail selfPortalDetail)
         {
             try
             {
@@ -145,6 +146,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                 dependants = JsonSerializer.Deserialize<IList<Dependant>>(FormData["dependants"]);
                 dependantsIds = JsonSerializer.Deserialize<IList<PhysicalId<int>>>(FormData["dependantsIds"]);
                 workShifts = JsonSerializer.Deserialize<IList<WorkShiftRDto>>(FormData["workShifts"]);
+                selfPortalDetail = JsonSerializer.Deserialize<SelfPortalDetail>(FormData["selfPortalDetail"]);
                 //for (int i = 0; i < physicalIDs.Count; i++)
                 //{
                 //    //physicalIDs[i].SetId(GuidGenerator.Create());

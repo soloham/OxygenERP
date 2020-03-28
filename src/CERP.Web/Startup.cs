@@ -52,7 +52,7 @@ namespace CERP.Web
             {
                 options.Cookie.Name = "oxyC";
                 options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
 
                 //options.AccessDeniedPath = "/AccessDenied";
                 //options.LoginPath = "/Login";

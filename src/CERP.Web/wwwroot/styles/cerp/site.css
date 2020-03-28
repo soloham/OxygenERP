@@ -388,26 +388,52 @@ vhr {
     background-color: #00b2f0!important;
 }
 .e-hscroll .e-scroll-nav {
-    background-color: #85d5ee !important;
+    background-color: #99d6e9 !important;
 }
 .e-hscroll .e-scroll-nav:hover{
     background-color: #a7e0f2 !important;
 }
 .e-toolbar .e-tbar-btn:hover {
-    background-color: #85d5ee !important;
+    background-color: #6dd4f3 !important;
 }
 .e-toolbar .e-tbar-btn {
-    background-color: #a7e0f2 !important;
-    color: #5b6568 !important;
+    background-color: #5bcff3 !important;
+    color: #ffffff !important;
 }
 .e-toolbar .e-toolbar-items .e-toolbar-item .e-tbar-btn-text {
-    color: #5b6568 !important;
+    color: #ffffff !important;
 }
-.e-grid .e-icons {
-    color: #5b6568 !important;
+.e-toolbar .e-icons {
+    color: #ffffff !important;
+}
+.e-grid .e-ccdlg .e-checkbox-wrapper .e-frame {
+    /*background-color: #0078d6;
+    border-color: #0078d6;*/
+    color: #fff!important;
 }
 .e-toolbar, .e-toolbar .e-toolbar-items {
     background-color: #c0e4ef !important;
+}
+.e-custom-hide-actions:before {
+    content: '\e60a';
+}
+.e-custom-show-actions:before {
+    content: '\e679';
+}
+/*button[id$='_columnchooser']:before {
+    font-family: "e-icons";
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    line-height: 1;
+    speak: none;
+    text-transform: none;
+    margin-left:15px;
+    content: '\e21e';
+
+}*/
+.e-custom-group-toggle:before {
+    content: '\e926';
 }
 .custom-control-indicator {
     background-color: #35c6f5 !important;

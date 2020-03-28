@@ -14,7 +14,10 @@
 
     ViewData["IsList"] = false;
     ViewData["IsCreate"] = false;
-    string TabPlaceholder = (bool)ViewData["IsEditing"]? "Area" : "Step"; 
+    string TabPlaceholder = (bool)ViewData["IsEditing"]? "Area" : "Step";
+
+    var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "hideActions" }, "ExcelExport", "CsvExport", "Print", "Search",new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
 
     ViewData["birthPlaces"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Country).OrderBy(x => x.Key).ToList();
     ViewData["nationalities"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Country).OrderBy(x => x.Key).ToList();
@@ -24,7 +27,7 @@
     ViewData["booldGroups"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.BloodGroup).OrderBy(x => x.Key).ToList();
 
     ViewData["religions"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Religion).OrderBy(x => x.Key).ToList();
-    
+
     ViewData["employeeTypes"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.EmployeeType).OrderBy(x => x.Key).ToList();
 
     ViewData["idTypes"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.IDType).OrderBy(x => x.Key).ToList();
@@ -36,7 +39,6 @@
     ViewData["contractStatuses"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.ContractStatus).OrderBy(x => x.Key).ToList();
 
     ViewData["employees"] = Model.employeeAppService.Repository.ToList();
-
 
     ViewData["banks"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Bank).OrderBy(x => x.Key).ToList();
     ViewData["banksColumns"] = new List<GridColumn>() {
@@ -166,7 +168,7 @@
         <link href="~/libs/smartwizard/dist/css/smart_wizard_theme_arrows.min.css" rel="stylesheet" />
     @if ((bool)ViewData["IsEditing"])
     {
-        <link href="~/libs/smartwizard/dist/css/smart_wizard_theme_dots.min.css" rel="stylesheet" />
+        <link href="~/libs/smartwizard/dist/css/smart_wizard_theme_circles.min.css" rel="stylesheet" />
     }
     else
     {
@@ -456,6 +458,7 @@
                 form = form.concat(generalInfo);
                 var contractDetails = $('#form-step-2').find("select, textarea, input").serializeArray();
                 form = form.concat(contractDetails);
+                
                 var fileInput = $('#imageUpload')[0];
                 var params = objectifyForm(form);
                 var profilePic = fileInput.files[0];
@@ -469,6 +472,9 @@
                 params.profilePic = "@(IsEditing? Model.EmployeeToEdit.ProfilePic ?? "" : "")";
                 var primaryContactInfo = objectifyForm($('#primaryContactForm').find("select, textarea, input").serializeArray());
                 var nationalAddressInfo = objectifyForm($('#nationalAddressInfo').find("select, textarea, input").serializeArray());
+                var portalDetail = objectifyForm($('#form-step-7-1').find("select, textarea, input").serializeArray());
+                portalDetail.CreatePortal = createPortal;
+                portalDetail.IsUsernameEmpId = isUsernameEmpId;
 
                 var physicalIds = piGrid.dataSource;
                 var physicalIdsDto = [];
@@ -598,6 +604,9 @@
                 console.log("----------------------------------------------------------------");
                 console.log("Workshifts");
                 console.log(workShifts);
+                console.log("----------------------------------------------------------------");
+                console.log("Portal Detail");
+                console.log(portalDetail);
                 //var companyCode = $('option:selected', $('#company')).attr('data-companyCode');
                 //console.log(companyCode);
                 //params += "&companyCode=" + companyCode;
@@ -631,6 +640,7 @@
                 formData.append("dependants", JSON.stringify(dependantsDto));
                 formData.append("dependantsIds", JSON.stringify(dependantsIdsDto));
                 formData.append("workShifts", JSON.stringify(workShifts));
+                formData.append("selfPortalDetail", JSON.stringify(portalDetail));
                 formData.append("__RequestVerificationToken", $('input:hidden[name="__RequestVerificationToken"]').val());
 
                 $.ajax({
@@ -1579,6 +1589,71 @@
             //// Set selected theme on page refresh
             //$("#theme_selector").change();
 
+            $("#firstName").on("change", function () {
+                let firstName = $("#firstName").val(); 
+                let middleName = $("#MiddleName").val(); 
+                let lastName = $("#grandName").val();
+
+                $("#bankAccountTitle").val(firstName + ' ' + middleName + ' ' + lastName);
+
+                if (firstName == '' || lastName == '') {
+                    $("#usernameSuggestion").hide();
+                }
+                else {
+                    $("#usernameSuggestion").show();
+
+                    $("#usernameSuggestion").data('value', firstName + lastName);
+                    $("#usernameSuggestion").html(firstName + lastName);
+                }
+            })
+            $("#MiddleName").on("change", function () {
+                let firstName = $("#firstName").val(); 
+                let middleName = $("#MiddleName").val(); 
+                let lastName = $("#grandName").val();
+
+                $("#bankAccountTitle").val(firstName + ' ' + middleName + ' ' + lastName);
+
+                if (firstName == '' || lastName == '') {
+                    $("#usernameSuggestion").hide();
+                }
+                else {
+                    $("#usernameSuggestion").show();
+
+                    $("#usernameSuggestion").data('value', firstName + lastName);
+                    $("#usernameSuggestion").html(firstName + lastName);
+                }
+            })
+            $("#grandName").on("change", function () {
+                let firstName = $("#firstName").val(); 
+                let middleName = $("#MiddleName").val(); 
+                let lastName = $("#grandName").val();
+
+                $("#bankAccountTitle").val(firstName + ' ' + middleName + ' ' + lastName);
+
+                if (firstName == '' || lastName == '') {
+                    $("#usernameSuggestion").hide();
+                }
+                else {
+                    $("#usernameSuggestion").show();
+
+                    $("#usernameSuggestion").data('value', firstName + lastName);
+                    $("#usernameSuggestion").html(firstName + lastName);
+                }
+            })
+
+
+            $("#email").on("change", function () {
+                let email = $(this).val();
+                if (email == '') {
+                    $("#emailSuggestion").hide();
+                }
+                else {
+                    $("#emailSuggestion").show();
+                    $("#emailSuggestion").data('value', $(this).val());
+                    $("#emailSuggestion").html($(this).val());
+                }
+            })
+
             $("#departmentId").on("change", function () {
                 SelectDepartmentPositions();
             });
@@ -1633,6 +1708,7 @@
                 <li><a href="#step-6">@TabPlaceholder 6<br /><p style="font-size: 15px">Experience</p></a></li>
                 <li><a href="#step-7">@TabPlaceholder 7<br /><p style="font-size: 15px">Dependants</p></a></li>
                 <li><a href="#step-8">@TabPlaceholder 8<br /><p style="font-size: 15px">Work Shifts</p></a></li>
+                <li><a href="#step-9">@TabPlaceholder 9<br /><p style="font-size: 15px">Self Portal</p></a></li>
             </ul>
             <div>
                 <div id="step-1">
@@ -1671,8 +1747,13 @@
                     </div>
                 </div>
                 <div id="step-8">
-                    <div id="form-step-0" role="form" data-toggle="validator">
+                    <div id="form-step-7" role="form" data-toggle="validator">
                         <partial name="_EmployeeWorkShiftsDetailsPartial" />
+                    </div>
+                </div>
+                <div id="step-9">
+                    <div id="form-step-8" role="form" data-toggle="validator">
+                        <partial name="_EmployeeSelfPortalDetailsPartial" />
 
                         @if (!IsEditing)
                         {

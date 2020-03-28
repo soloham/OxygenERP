@@ -14,6 +14,9 @@
     ViewData["CreateNewLink"] = "/Timesheet/Edit";
 
     var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+
+    var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "hideActions" }, "ExcelExport", "CsvExport", "Print", "Search",new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
 }
 @section styles {
     <link href="~/libs/syncfusion/ej2-grid/styles/fabric.css" rel="stylesheet" />
@@ -180,10 +183,10 @@
         <ejs-grid id="TimesheetsGrid" dataSource="@ViewData["Timesheets_DS"]" childGrid="@Model.GetSecondaryGrid"
                   enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()" queryCellInfo="queryCellInfo"
                   dataBound="dataBound" commandClick="commandClick" actionComplete="actionComplete" showColumnChooser="true"
-                  allowExcelExport="true" allowGrouping="true" height="100%" allowPdfExport="true" allowPaging="true"
+                  allowExcelExport="true" height="100%" allowPdfExport="true" allowPaging="true"
                   hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                   allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                  toolbarClick="toolbarClick" toolbar="@(new List<object>() { "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" })"
+                  toolbarClick="toolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
                   allowResizing="true">
 
             <e-grid-sortsettings columns="@(new List<object>() { new { field = "year", direction = "Descending" }, new { field = "getMonth", direction = "Descending" } })"></e-grid-sortsettings>
@@ -525,7 +528,20 @@
                 dialogObj.show();
             }
         }
-    }
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, "ExcelExport", "CsvExport", "Print", "Search",{ text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+    gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.showColumnChooser = true;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
+        }
+}
     function alertBtnClick() {
         var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
         var dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];

@@ -29,6 +29,8 @@ using Volo.Abp.TenantManagement.Web;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.VirtualFileSystem;
+using Volo.Abp.MultiTenancy;
+using Volo.Abp.AspNetCore.MultiTenancy;
 
 namespace CERP.Web
 {
@@ -43,8 +45,10 @@ namespace CERP.Web
         typeof(AbpAspNetCoreAuthenticationJwtBearerModule),
         typeof(AbpTenantManagementWebModule),
         typeof(AbpAspNetCoreSerilogModule),
-        typeof(AbpVirtualFileSystemModule)
-        )]
+        typeof(AbpVirtualFileSystemModule),
+        typeof(AbpMultiTenancyModule), 
+        typeof(AbpAspNetCoreMultiTenancyModule)
+    )]
     public class CERPWebModule : AbpModule
     {
         public override void PreConfigureServices(ServiceConfigurationContext context)
@@ -75,6 +79,14 @@ namespace CERP.Web
             ConfigureNavigationServices();
             ConfigureAutoApiControllers();
             ConfigureSwaggerServices(context.Services);
+
+            Configure<AbpTenantResolveOptions>(options =>
+            {
+                //Subdomain format: {0}.mydomain.com 
+                //Adding as the second highest priority resolver after 'CurrentUserTenantResolveContributor' to
+                //ensure the user cannot impersonate a different tenant.
+                options.AddDomainTenantResolver("{0}.oxygenerp.com");
+            });
         }
 
         private void ConfigureUrls(IConfiguration configuration)

@@ -78,6 +78,10 @@ namespace CERP.EntityFrameworkCore
                 b.ToTable("AbpUsers"); //Sharing the same table "AbpUsers" with the IdentityUser
                 b.ConfigureByConvention();
                 b.ConfigureAbpUser();
+                //b.ConfigureFullAuditedAggregateRoot();
+                //b.ConfigureSoftDelete();
+                //b.ConfigureExtraProperties();
+                //b.ConfigureConcurrencyStamp();
 
                 //Moved customization to a method so we can share it with the CERPMigrationsDbContext class
                 b.ConfigureCustomUserProperties();

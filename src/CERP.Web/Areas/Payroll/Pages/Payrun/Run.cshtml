@@ -129,10 +129,10 @@
             <ejs-grid id="PayrunsHistoryGrid" dataSource="@ViewData["PayrunsDetails_DS"]" queryCellInfo="QueryCellInfo"
                       enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()"
                       dataBound="dataBound" commandClick="commandClick" actionComplete="actionComplete"
-                      allowExcelExport="true" allowGrouping="true" height="100%" allowPdfExport="true"
+                      allowExcelExport="true" height="100%" allowPdfExport="true"
                       hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                       allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                      toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
+                      toolbarClick="toolbarClick" toolbar="@ViewData["initialToolBar"]"
                       allowPaging="true" allowResizing="true">
 
                 <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
@@ -444,6 +444,19 @@
                 var dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
                 dialogObj.show();
             }
+        }
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, "ExcelExport", "CsvExport", "Print", "Search",{ text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+	gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.showColumnChooser = true;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
         }
     }
     function alertBtnClick() {

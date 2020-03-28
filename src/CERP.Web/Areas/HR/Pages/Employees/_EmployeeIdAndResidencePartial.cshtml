@@ -194,10 +194,10 @@
             <hr />
             <ejs-grid id="PhysicalIdsGrid" dataSource="@IdsListDs" enableAutoFill="true" columns="@IdsListColumns"
                       dataBound="dataBound" commandClick="commandClick"
-                      allowExcelExport="true" allowGrouping="true" height="100%"allowPdfExport="true"
+                      allowExcelExport="true" height="100%"allowPdfExport="true"
                       hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                       allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                      toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
+                      toolbarClick="toolbarClick" showColumnChooser="true" toolbar="@ViewData["initialToolBar"]"
                       allowPaging="true" allowResizing="true">
 
                 <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
@@ -211,10 +211,10 @@
             <h3 class="m-t-0">Employee Passports</h3>
             <ejs-grid id="PassportIdsGrid" dataSource="@ViewData["PassportIdsListDS"]" enableAutoFill="true" columns="@PassportIdsListColumns"
                       dataBound="dataBound" commandClick="commandClick"
-                      allowExcelExport="true" allowGrouping="true" height="100%"allowPdfExport="true"
+                      allowExcelExport="true" height="100%"allowPdfExport="true"
                       hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                       allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                      toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"                      allowPaging="true" allowResizing="true">
+                      toolbarClick="toolbarClick" showColumnChooser="true" toolbar="@ViewData["initialToolBar"]"                      allowPaging="true" allowResizing="true">
 
                 <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
             <e-grid-editSettings showDeleteConfirmDialog="true" mode="Dialog" showConfirmDialog="true" allowAdding="false" allowDeleting="true" allowEditing="false" newRowPosition="Bottom"></e-grid-editSettings>

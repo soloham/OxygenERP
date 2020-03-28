@@ -326,10 +326,10 @@
         </div>
         <ejs-grid id="SecondaryContactsGrid" dataSource="@secondaryContactsDS" enableAutoFill="true" columns="@secondaryContactsColumns"
                   dataBound="dataBound" commandClick="commandClick"
-                  allowExcelExport="true" allowGrouping="true" height="100%"allowPdfExport="true"
+                  allowExcelExport="true" height="100%"allowPdfExport="true"
                   hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                   allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                  toolbarClick="toolbarClick" toolbar="@(new List<object>() {"ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
+                  toolbarClick="toolbarClick" showColumnChooser="true" toolbar="@ViewData["initialToolBar"]"
                   allowPaging="true" allowResizing="true">
 
             <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>

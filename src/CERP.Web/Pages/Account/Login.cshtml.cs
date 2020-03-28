@@ -30,6 +30,8 @@ namespace CERP.Web.Pages.Account
     {
         public CustomLoginModel(IAuthenticationSchemeProvider schemeProvider, IOptions<AbpAccountOptions> accountOptions) : base(schemeProvider, accountOptions)
         {
+            
         }
+
     }
 }

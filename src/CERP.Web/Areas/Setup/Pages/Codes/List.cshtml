@@ -141,11 +141,11 @@
                 <div class="control-section" style="margin-bottom:100px">
                     <ejs-grid id="CodesItemGrid" dataSource="@ViewData["CurDicValueGridDS"]" enableAutoFill="true" columns="@ViewData["DicValueGridColumns"]"
                                 dataBound="dataBound" commandClick="commandClick"
-                                allowExcelExport="true" allowGrouping="true" height="100%"allowPdfExport="true"
+                                allowExcelExport="true" height="100%"allowPdfExport="true"
                                 hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                                 allowSorting="true" allowMultiSorting="true" gridLines="Both"
                                 toolbarClick="toolbarClick" actionComplete="actionComplete" actionBegin="actionBegin"
-                                toolbar="@(new List<object>() {"Add", "Cancel", "Edit", "Delete", "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
+                                toolbar="@(new List<object>() {"Add", "Cancel", "Edit", "Delete", "ExcelExport", "CsvExport", "Print", "Search",new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
                               
                                 allowPaging="true" allowResizing="true">
 
@@ -174,11 +174,11 @@
                 <div class="control-section" style="margin-bottom:100px">
                     <ejs-grid id="CodesValueTypeItemGrid" dataSource="@ViewData["CurDicValueTypeGridDS"]" enableAutoFill="true" columns="@ViewData["DicValueTypeGridColumns"]"
                               dataBound="dataBound" commandClick="commandClick"
-                              allowExcelExport="true" allowGrouping="true" height="100%"allowPdfExport="true"
+                              allowExcelExport="true" height="100%"allowPdfExport="true"
                               hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                               allowSorting="true" allowMultiSorting="true" gridLines="Both"
                               toolbarClick="toolbarClick" actionComplete="actionCompleteValueType" actionBegin="actionBeginValueType"
-                              toolbar="@(new List<object>() {"Add", "Cancel", "Edit", "Delete", "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
+                              toolbar="@(new List<object>() {"Add", "Cancel", "Edit", "Delete", "ExcelExport", "CsvExport", "Print", "Search",new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } })"
                               
                               allowPaging="true" allowResizing="true">
 
@@ -278,13 +278,13 @@
     }
     function toolbarClick(args) {
         var gridObj = document.getElementById("CodesItemGrid").ej2_instances[0];
-        if (args.item.id === 'Grid_pdfexport') {
+        if (args.item.id === 'CodesItemGrid_pdfexport') {
             gridObj.pdfExport();
         }
-        if (args.item.id === 'Grid_excelexport') {
+        if (args.item.id === 'CodesItemGrid_excelexport') {
             gridObj.excelExport();
         }
-        if (args.item.id === 'Grid_csvexport') {
+        if (args.item.id === 'CodesItemGrid_csvexport') {
             gridObj.csvExport();
         }
         if (this.getSelectedRecords().length > 0) {

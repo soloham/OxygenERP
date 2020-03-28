@@ -1,0 +1,97 @@
+﻿@using CERP.App;
+@using Syncfusion.EJ2.Grids;
+@using CERP.HR.Employees.DTOs;
+@using CERP.HR.EMPLOYEE.RougeDTOs
+@{
+    bool isEditing = (bool)ViewData["IsEditing"];
+    Employee_Dto employee = isEditing ? Model.EmployeeToEdit : null;
+    bool hasPortal = isEditing;// && employee.Portal != null;
+}
+
+@section scripts{
+}
+
+<script>
+    let createPortal = false;
+    $(document).ready(function () {
+        $('#addEmployeePortalSectionBtn').on('click', function () {
+            var isCollapsed = $('#form-step-7-1').css('display') == 'none';
+
+            if (isCollapsed) {
+                $('#addEmployeePortalSection').slideUp(200);
+                $('#form-step-7-1').slideDown(200);
+                setTimeout(function () { $('#addEmployeePortalSectionBtn', '#addEmployeePortalSection').html('<i class="fa fa-arrow-up p-r-5"></i> Create without a portal') }, 200)
+                $('#addEmployeePortalSection').slideDown(200);
+
+                createPortal = true;
+            } else {
+                $('#addEmployeePortalSection').slideUp(200);
+                $('#form-step-7-1').slideUp(200);
+                setTimeout(function () { $('#addEmployeePortalSectionBtn', '#addEmployeePortalSection').html('<i class="fa fa-plus p-r-5"></i> Create Portal') }, 200)
+                $('#addEmployeePortalSection').slideDown(200);
+
+                createPortal = false;
+            }
+        });
+    });
+</script>
+
+<div class="m-l-20 m-t-0">
+    <h2>Self Portal Details</h2>
+    <p>
+        Provide detail for self portal of the employee
+    </p>
+</div>
+<hr class="m-b-0" />
+<div class="panel-body" style="padding-bottom:0">
+    <div class="col-lg-12 padding-right-0">
+        @if (!isEditing)
+        {
+        @:   <div id="addEmployeePortalSection" class="row" style="margin-bottom:10px;">
+        @:       <div class="col-lg-12">
+        @:           <button id="addEmployeePortalSectionBtn" type="button" class="btn btn-primary btn-block"><i class="fa fa-plus p-r-5"></i> Assign Portal</button>
+        @:       </div>
+        @:   </div>
+        }
+        <div id="form-step-7-1" role="form" data-toggle="validator" style="@(isEditing? "" : "display: none")">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label class="margin-bottom-5  control-label">Portal ID:</label>
+                            <input type="text" id="portalId" value='@(isEditing && hasPortal? $"{employee.Name}" : "")' name="Username" @*value="@(empInfo!=null? empInfo.JOINING_DATE : "")"*@ style="width:100% !important" @(isEditing && hasPortal ? "readonly" : "") class="text-left form-control inline pull-left" required>
+                            @if (!isEditing || !hasPortal)
+                            {
+                                @:    <div id="usernameSuggestions">
+                                    @:        <button style="display: none" data-value="" id="usernameSuggestion" onclick="return selectSuggestion(this);" class="btn btn-default btn-suggestion m-r-5 m-t-5">
+                                        @:
+                                    @:        </button>
+                                    @:        <button style="display: none" data-value="" id="emailSuggestion" onclick="return selectSuggestion(this);" class="btn btn-default btn-suggestion m-r-5 m-t-5">
+                                        @:
+                                    @:        </button>
+                                    @:        <button id="empIdSuggestion" onclick="return selectSuggestion(this);" class="btn btn-default btn-suggestion m-r-5 m-t-5">
+                                        @:            Employee ID
+                                    @:        </button>
+                                @:    </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+
+<script>
+    let isUsernameEmpId = false;
+    function selectSuggestion(suggestion) {
+        if ($(suggestion).attr('id') == 'empIdSuggestion') {
+            $('#portalId').val('Auto Assigned')
+            $('#portalId').attr('readonly', 'readonly')
+        }
+        else {
+            isUsernameEmpId = false;
+            $('#portalId').removeAttr('readonly')
+            $('#portalId').val($(suggestion).data('value'));
+        }
+        return false;
+    }
+</script>

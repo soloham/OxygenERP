@@ -49,7 +49,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                 AllowResizing = true,
                 GridLines = GridLine.Both,
                 SearchSettings = new GridSearchSettings() { },
-                //Toolbar = new List<object>() { "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } },
+                //Toolbar = new List<object>() { "ExcelExport", "CsvExport", "Print", "Search",new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } },
                 ContextMenuItems = new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending", "Copy", "Edit", "Delete", "Save", "Cancel", "PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage", "LastPage", "NextPage" },
                 Columns = GetSecondaryGridColumns()
 
@@ -75,7 +75,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
 
             return new List<GridColumn>()
             {
-                new GridColumn {HeaderText = "Commands", TextAlign=TextAlign.Center, MinWidth="90", Commands = commands }
+                new GridColumn {HeaderText = "Actions", TextAlign=TextAlign.Center, MinWidth="90", Commands = commands }
             };
         }
 

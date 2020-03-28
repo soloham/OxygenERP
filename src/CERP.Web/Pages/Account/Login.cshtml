@@ -87,3 +87,21 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+
+@*<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '@Url.Content("~")/Index?handler=UpdatePW',
+            async: true,
+            type: "GET",
+            data: {  },
+            success: function (data) {
+                console.log(data);
+                swal.fire('Success', 'User password changed', 'success')
+            },
+            error: function (data) {
+                swal.fire('Failed', `Password couldn't be changed`, 'error');
+            }
+        });
+    });
+</script>*@
