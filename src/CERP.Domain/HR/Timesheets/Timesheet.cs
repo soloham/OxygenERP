@@ -33,7 +33,7 @@ namespace CERP.HR.Timesheets
         public DateTime Dated { get; set; }
     }
 
-    public class TimesheetWeekSummary : FullAuditedAggregateRoot<int>
+    public class TimesheetWeekSummary : FullAuditedAggregateTenantRoot<int>
     {
         [ForeignKey("TimesheetId")]
         public virtual Timesheet Timesheet { get; set; }
@@ -64,7 +64,7 @@ namespace CERP.HR.Timesheets
         public DateTime Dated { get; set; }
     }
 
-    public class TimesheetWeekJobSummary : FullAuditedAggregateRoot<int>
+    public class TimesheetWeekJobSummary : FullAuditedAggregateTenantRoot<int>
     {
         [ForeignKey("WeekSheetId")]
         public virtual TimesheetWeekSummary WeekSheet { get; set; }

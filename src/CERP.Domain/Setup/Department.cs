@@ -29,7 +29,7 @@ namespace CERP.Setup
         public ICollection<Position> Positions { get; set; }
     }
 
-    public class Position : FullAuditedAggregateRoot<Guid>
+    public class Position : FullAuditedAggregateTenantRoot<Guid>
     {
         public Position()
         {
