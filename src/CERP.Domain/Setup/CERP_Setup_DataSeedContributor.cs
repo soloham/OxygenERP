@@ -39,15 +39,16 @@ namespace CERP.App
                     {
                         Guid departmentId = _guidGenerator.Create();
                         List<Position> adminPositions = new List<Position>() {
-                            new Position(_guidGenerator.Create()){ Title = "Administrator", DepartmentId = departmentId },
-                            new Position(_guidGenerator.Create()){ Title = "Manager", DepartmentId = departmentId },
-                            new Position(_guidGenerator.Create()){ Title = "Assistant Manager", DepartmentId = departmentId }
+                            new Position(_guidGenerator.Create()){ Title = "Administrator", DepartmentId = departmentId, TenantId = context.TenantId },
+                            new Position(_guidGenerator.Create()){ Title = "Manager", DepartmentId = departmentId, TenantId = context.TenantId },
+                            new Position(_guidGenerator.Create()){ Title = "Assistant Manager", DepartmentId = departmentId, TenantId = context.TenantId },
                         };
                         Department adminDepartment = new Department(departmentId)
                         {
                             Name = "Admin",
                             Company = curCompanies.First(x => x.Name == "TestCorp"),
-                            Positions = adminPositions
+                            Positions = adminPositions,
+                            TenantId = context.TenantId
                         };
 
                         await _DepartmentsRepo.InsertAsync(adminDepartment);
@@ -56,14 +57,15 @@ namespace CERP.App
                     {
                         Guid departmentId = _guidGenerator.Create();
                         List<Position> positions = new List<Position>() {
-                            new Position(_guidGenerator.Create()){ Title = "Manager", DepartmentId = departmentId },
-                            new Position(_guidGenerator.Create()){ Title = "Assistant Manager", DepartmentId = departmentId }
+                            new Position(_guidGenerator.Create()){ Title = "Manager", DepartmentId = departmentId, TenantId = context.TenantId },
+                            new Position(_guidGenerator.Create()){ Title = "Assistant Manager", DepartmentId = departmentId, TenantId = context.TenantId },
                         };
                         Department department = new Department(departmentId)
                         {
                             Name = "Audit and Advisory Services",
                             Company = curCompanies.First(x => x.Name == "TestCorp"),
-                            Positions = positions
+                            Positions = positions,
+                            TenantId = context.TenantId
                         };
 
                         await _DepartmentsRepo.InsertAsync(department);
@@ -72,15 +74,16 @@ namespace CERP.App
                     {
                         Guid departmentId = _guidGenerator.Create();
                         List<Position> positions = new List<Position>() {
-                            new Position(_guidGenerator.Create()){ Title = "IT Manager", DepartmentId = departmentId },
-                            new Position(_guidGenerator.Create()){ Title = "Manager", DepartmentId = departmentId },
-                            new Position(_guidGenerator.Create()){ Title = "Assistant Manager", DepartmentId = departmentId }
+                            new Position(_guidGenerator.Create()){ Title = "IT Manager", DepartmentId = departmentId, TenantId = context.TenantId },
+                            new Position(_guidGenerator.Create()){ Title = "Manager", DepartmentId = departmentId, TenantId = context.TenantId },
+                            new Position(_guidGenerator.Create()){ Title = "Assistant Manager", DepartmentId = departmentId, TenantId = context.TenantId },
                         };
                         Department department = new Department(departmentId)
                         {
                             Name = "IT",
                             Company = curCompanies.First(x => x.Name == "TestCorp"),
-                            Positions = positions
+                            Positions = positions,
+                            TenantId = context.TenantId
                         };
 
                         await _DepartmentsRepo.InsertAsync(department);
@@ -89,15 +92,16 @@ namespace CERP.App
                     {
                         Guid departmentId = _guidGenerator.Create();
                         List<Position> positions = new List<Position>() {
-                            new Position(_guidGenerator.Create()){ Title = "CEO", DepartmentId = departmentId },
-                            new Position(_guidGenerator.Create()){ Title = "CTO", DepartmentId = departmentId },
-                            new Position(_guidGenerator.Create()){ Title = "CFO", DepartmentId = departmentId }
+                            new Position(_guidGenerator.Create()){ Title = "CEO", DepartmentId = departmentId, TenantId = context.TenantId },
+                            new Position(_guidGenerator.Create()){ Title = "CTO", DepartmentId = departmentId, TenantId = context.TenantId },
+                            new Position(_guidGenerator.Create()){ Title = "CFO", DepartmentId = departmentId, TenantId = context.TenantId }
                         };
                         Department department = new Department(departmentId)
                         {
                             Name = "Corporate",
                             Company = curCompanies.First(x => x.Name == "TestCorp"),
-                            Positions = positions
+                            Positions = positions,
+                            TenantId = context.TenantId
                         };
 
                         await _DepartmentsRepo.InsertAsync(department);
@@ -106,14 +110,15 @@ namespace CERP.App
                     {
                         Guid departmentId = _guidGenerator.Create();
                         List<Position> positions = new List<Position>() {
-                            new Position(_guidGenerator.Create()){ Title = "Manager", DepartmentId = departmentId },
-                            new Position(_guidGenerator.Create()){ Title = "Assistant Manager", DepartmentId = departmentId }
+                            new Position(_guidGenerator.Create()){ Title = "Manager", DepartmentId = departmentId, TenantId = context.TenantId },
+                            new Position(_guidGenerator.Create()){ Title = "Assistant Manager", DepartmentId = departmentId, TenantId = context.TenantId },
                         };
                         Department department = new Department(departmentId)
                         {
                             Name = "Tax / Zakat Service",
                             Company = curCompanies.First(x => x.Name == "TestCorp"),
-                            Positions = positions
+                            Positions = positions,
+                            TenantId = context.TenantId,
                         };
 
                         await _DepartmentsRepo.InsertAsync(department);

@@ -38,6 +38,7 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
+                b.ConfigureSoftDelete();
 
                 b.Property(p => p.AccountId)
                     .IsRequired();
@@ -71,6 +72,7 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureAudited();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
+                b.ConfigureSoftDelete();
                 b.Property(p => p.SubCategoryCode)
                     .IsRequired();
                 b.Property(p => p.LocalizationKey)
@@ -95,6 +97,7 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureFullAudited();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
+                b.ConfigureSoftDelete();
 
                 b.Property(p => p.HeadCode)
                     .IsRequired();
@@ -185,6 +188,7 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureFullAudited();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
+                b.ConfigureSoftDelete();
 
                 b.Property(p => p.Title)
                     .IsRequired();

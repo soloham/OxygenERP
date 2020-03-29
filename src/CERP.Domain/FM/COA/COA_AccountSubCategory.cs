@@ -36,5 +36,6 @@ namespace CERP.FM.COA
         [ForeignKey("CompanyId")]
         public Company Company { get; set; }
         public Guid CompanyId { get; set; }
+        public bool? IsDeleted { get; set; }
     }
 }

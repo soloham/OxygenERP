@@ -50,7 +50,8 @@ namespace CERP.App
                             StartHour = 0900,
                             EndHour = 1700,
                             Department = curDepartments.First(x => x.Name == "Admin"),
-                            DepartmentId = curDepartments.First(x => x.Name == "Admin").Id
+                            DepartmentId = curDepartments.First(x => x.Name == "Admin").Id,
+                            TenantId = context.TenantId
                         };
 
                         await _WorkShiftsRepo.InsertAsync(workShift);

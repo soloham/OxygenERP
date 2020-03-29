@@ -85,7 +85,7 @@ namespace CERP.Web
                 //Subdomain format: {0}.mydomain.com 
                 //Adding as the second highest priority resolver after 'CurrentUserTenantResolveContributor' to
                 //ensure the user cannot impersonate a different tenant.
-                options.AddDomainTenantResolver("{0}.oxygenerp.com");
+                options.AddDomainTenantResolver("{0}.localhost");
             });
         }
 

@@ -48,7 +48,11 @@ namespace CERP.FM
         [UnitOfWork]
         public async Task SeedAsync(DataSeedContext context)
         {
+            bool deleteDuplicates = true;
+            
             var curCompanies = await _CompanyRepo.GetListAsync();
+            if(deleteDuplicates)  curCompanies.ForEach(async (Company c) => { if (curCompanies.Count(x => x.Name == c.Name) > 1) { await _CompanyRepo.DeleteAsync(c.Id); } });
+            
             if (curCompanies == null || !curCompanies.Any(x => x.Name == "TestCorp"))
             {
                 await _CompanyRepo.InsertAsync(new Company(_guidGenerator.Create())
@@ -72,6 +76,7 @@ namespace CERP.FM
                     Language = "EN",
                     VATNumber = "1234567819912000031",
                     CRNumber = "1234567",
+                    TenantId = context.TenantId
                 });
             }
 
@@ -86,7 +91,8 @@ namespace CERP.FM
                         Location = "Riyadh, KSA",
                         BranchCode = 01,
                         IsDeleted = false,
-                        Company = curCompanies.First(x => x.Name == "TestCorp")
+                        Company = curCompanies.First(x => x.Name == "TestCorp"),
+                        TenantId = context.TenantId
                     });
                 }
             }
@@ -98,8 +104,8 @@ namespace CERP.FM
                 {
                     HeadCode = HeadAccountType.Asset,
                     AccountName = "Assets",
-                    LocalizationKey = "FM:COA:HeadAccount:Asset"
-
+                    LocalizationKey = "FM:COA:HeadAccount:Asset",
+                      TenantId =context.TenantId
                 });
             }
             if (curCOAHAs == null || !curCOAHAs.Any(x => x.AccountName == "Liabilities"))
@@ -108,8 +114,8 @@ namespace CERP.FM
                 {
                     HeadCode = HeadAccountType.Liability,
                     AccountName = "Liabilities",
-                    LocalizationKey = "FM:COA:HeadAccount:Liabilities"
-
+                    LocalizationKey = "FM:COA:HeadAccount:Liabilities",
+                      TenantId =context.TenantId
                 });
             }
             if (curCOAHAs == null || !curCOAHAs.Any(x => x.AccountName == "Capital"))
@@ -118,8 +124,8 @@ namespace CERP.FM
                 {
                     HeadCode = HeadAccountType.Capital,
                     AccountName = "Capital",
-                    LocalizationKey = "FM:COA:HeadAccount:Capital"
-
+                    LocalizationKey = "FM:COA:HeadAccount:Capital",
+                      TenantId =context.TenantId
                 });
             }
             if (curCOAHAs == null || !curCOAHAs.Any(x => x.AccountName == "Equity"))
@@ -128,8 +134,8 @@ namespace CERP.FM
                 {
                     HeadCode = HeadAccountType.Equity,
                     AccountName = "Equity",
-                    LocalizationKey = "FM:COA:HeadAccount:Equity"
-
+                    LocalizationKey = "FM:COA:HeadAccount:Equity",
+                      TenantId =context.TenantId
                 });
             }
             if (curCOAHAs == null || !curCOAHAs.Any(x => x.AccountName == "Revenues"))
@@ -139,8 +145,8 @@ namespace CERP.FM
                 {
                     HeadCode = HeadAccountType.Revenue,
                     AccountName = "Revenues",
-                    LocalizationKey = "FM:COA:HeadAccount:Revenues"
-
+                    LocalizationKey = "FM:COA:HeadAccount:Revenues",
+                      TenantId =context.TenantId
                 });
             }
             if (curCOAHAs == null || !curCOAHAs.Any(x => x.AccountName == "Direct Costs"))
@@ -149,8 +155,8 @@ namespace CERP.FM
                 {
                     HeadCode = HeadAccountType.DirectCost,
                     AccountName = "Direct Costs",
-                    LocalizationKey = "FM:COA:HeadAccount:Direct Costs"
-
+                    LocalizationKey = "FM:COA:HeadAccount:Direct Costs",
+                      TenantId =context.TenantId
                 });
             }
             if (curCOAHAs == null || !curCOAHAs.Any(x => x.AccountName == "Expenses"))
@@ -159,8 +165,8 @@ namespace CERP.FM
                 {
                     HeadCode = HeadAccountType.Expenses,
                     AccountName = "Expenses",
-                    LocalizationKey = "FM:COA:HeadAccount:Expenses"
-
+                    LocalizationKey = "FM:COA:HeadAccount:Expenses",
+                      TenantId =context.TenantId
                 });
             }
             if (curCOAHAs == null || !curCOAHAs.Any(x => x.AccountName == "Other Income"))
@@ -169,8 +175,8 @@ namespace CERP.FM
                 {
                     HeadCode = HeadAccountType.OtherIncome,
                     AccountName = "Other Income",
-                    LocalizationKey = "FM:COA:HeadAccount:OtherIncome"
-
+                    LocalizationKey = "FM:COA:HeadAccount:OtherIncome",
+                      TenantId =context.TenantId
                 });
             }
 
@@ -189,7 +195,8 @@ namespace CERP.FM
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "101",
                         LocalizationKey = "FM:COA:SubCategory:101",
-                        IsDeleted = false
+                        IsDeleted = false,
+	         TenantId = context.TenantId
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Fixed Assets"))
@@ -204,7 +211,8 @@ namespace CERP.FM
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "102",
                         LocalizationKey = "FM:COA:SubCategory:102",
-                        IsDeleted = false
+                        IsDeleted = false,
+	         TenantId = context.TenantId
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Current Liabilities"))
@@ -219,7 +227,8 @@ namespace CERP.FM
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "201",
                         LocalizationKey = "FM:COA:SubCategory:201",
-                        IsDeleted = false
+                        IsDeleted = false,
+	         TenantId = context.TenantId
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Long Term Liabilities"))
@@ -234,7 +243,8 @@ namespace CERP.FM
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "202",
                         LocalizationKey = "FM:COA:SubCategory:202",
-                        IsDeleted = false
+                        IsDeleted = false,
+	         TenantId = context.TenantId
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Share Capital"))
@@ -249,7 +259,8 @@ namespace CERP.FM
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "301",
                         LocalizationKey = "FM:COA:SubCategory:301",
-                        IsDeleted = false
+                        IsDeleted = false,
+	         TenantId = context.TenantId
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Partner's Current Account"))
@@ -264,7 +275,8 @@ namespace CERP.FM
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "302",
                         LocalizationKey = "FM:COA:SubCategory:302",
-                        IsDeleted = false
+                        IsDeleted = false,
+	         TenantId = context.TenantId
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Retained Earning"))
@@ -279,7 +291,8 @@ namespace CERP.FM
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "303",
                         LocalizationKey = "FM:COA:SubCategory:303",
-                        IsDeleted = false
+                        IsDeleted = false,
+	         TenantId = context.TenantId
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Equity"))
@@ -294,7 +307,8 @@ namespace CERP.FM
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "401",
                         LocalizationKey = "FM:COA:SubCategory:401",
-                        IsDeleted = false
+                        IsDeleted = false,
+	         TenantId = context.TenantId
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Revenue"))
@@ -309,7 +323,8 @@ namespace CERP.FM
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "501",
                         LocalizationKey = "FM:COA:SubCategory:501",
-                        IsDeleted = false
+                        IsDeleted = false,
+	         TenantId = context.TenantId
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Direct Cost Items"))
@@ -324,7 +339,8 @@ namespace CERP.FM
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "601",
                         LocalizationKey = "FM:COA:SubCategory:601",
-                        IsDeleted = false
+                        IsDeleted = false,
+	         TenantId = context.TenantId
                     });
                 }
 
@@ -340,7 +356,8 @@ namespace CERP.FM
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "602",
                         LocalizationKey = "FM:COA:SubCategory:602",
-                        IsDeleted = false
+                        IsDeleted = false,
+	         TenantId = context.TenantId
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "G&A"))
@@ -355,7 +372,8 @@ namespace CERP.FM
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "701",
                         LocalizationKey = "FM:COA:SubCategory:701",
-                        IsDeleted = false
+                        IsDeleted = false,
+	         TenantId = context.TenantId
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Other Income"))
@@ -370,7 +388,8 @@ namespace CERP.FM
                         Company = curCompanies.First(x => x.Name == "TestCorp"),
                         SubCategoryCode = "801",
                         LocalizationKey = "FM:COA:SubCategory:801",
-                        IsDeleted = false
+                        IsDeleted = false,
+	         TenantId = context.TenantId
                     });
                 }
             }
@@ -382,8 +401,8 @@ namespace CERP.FM
                 {
                     AccountStatementTypeId = AccountStatementTypeEnum.BalanceSheet,
                     Title = "Balance Sheet",
-                    TitleLocalizationKey = "FM:AccountStatementType:BalanceSheet"
-
+                    TitleLocalizationKey = "FM:AccountStatementType:BalanceSheet",
+                      TenantId =context.TenantId
                 });
             }
             if (curCOAASTs == null || !curCOAASTs.Any(x => x.Title == "Profit & Loss"))
@@ -392,8 +411,8 @@ namespace CERP.FM
                 {
                     AccountStatementTypeId = AccountStatementTypeEnum.ProfitAndLoss,
                     Title = "Profit & Loss",
-                    TitleLocalizationKey = "FM:AccountStatementType:ProfitAndLoss"
-
+                    TitleLocalizationKey = "FM:AccountStatementType:ProfitAndLoss",
+                      TenantId =context.TenantId
                 });
             }
             if (curCOAASTs != null && curCOAASTs.Any(x => x.Title == "Profit & Loss") && curCOAASTs.Any(x => x.Title == "Balance Sheet"))
@@ -571,6 +590,7 @@ namespace CERP.FM
 
 
             var curSLR = await _SubLedgerRequirements.GetListAsync();
+
             //if (curSLR == null || !curSLR.Any(x => x.Title == "Employee"))
             //{
             //    await _SubLedgerRequirements.InsertAsync(new COA_SubLedgerRequirement(_guidGenerator.Create())
@@ -585,8 +605,8 @@ namespace CERP.FM
                 await _SubLedgerRequirements.InsertAsync(new COA_SubLedgerRequirement(_guidGenerator.Create())
                 {
                     Title = "Address Book",
-                    TitleLocalizationKey = "FM:SubLedgerRequirements:AddressBook"
-
+                    TitleLocalizationKey = "FM:SubLedgerRequirements:AddressBook",
+                      TenantId =context.TenantId
                 });
             }
             //if (curSLR == null || !curSLR.Any(x => x.Title == "Project"))
@@ -603,8 +623,8 @@ namespace CERP.FM
                 await _SubLedgerRequirements.InsertAsync(new COA_SubLedgerRequirement(_guidGenerator.Create())
                 {
                     Title = "Fixed Assets",
-                    TitleLocalizationKey = "FM:SubLedgerRequirements:FixedAssets"
-
+                    TitleLocalizationKey = "FM:SubLedgerRequirements:FixedAssets",
+                      TenantId =context.TenantId
                 });
             }
             //if (curSLR == null || !curSLR.Any(x => x.Title == "Vendor"))
@@ -621,8 +641,8 @@ namespace CERP.FM
                 await _SubLedgerRequirements.InsertAsync(new COA_SubLedgerRequirement(_guidGenerator.Create())
                 {
                     Title = "Customer",
-                    TitleLocalizationKey = "FM:SubLedgerRequirements:Customer"
-
+                    TitleLocalizationKey = "FM:SubLedgerRequirements:Customer",
+                      TenantId =context.TenantId
                 });
             }
             //if (curSLR == null || !curSLR.Any(x => x.Title == "Item"))
@@ -644,7 +664,7 @@ namespace CERP.FM
             //    });
             //}
 
-            var coas = await _COAsRepo.GetListAsync();
+            //var coas = await _COAsRepo.GetListAsync();
 
             //if (!coas.Any(x => x.AccountName == "TestAccount"))
             //{
