@@ -91,7 +91,6 @@ namespace CERP.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Value")
@@ -158,7 +157,6 @@ namespace CERP.Migrations
                         .HasColumnType("bit");
 
                     b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ValueTypeCode")
@@ -228,7 +226,6 @@ namespace CERP.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Title")
@@ -291,7 +288,6 @@ namespace CERP.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -403,7 +399,6 @@ namespace CERP.Migrations
                         .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -501,7 +496,6 @@ namespace CERP.Migrations
                         .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Title")
@@ -576,10 +570,6 @@ namespace CERP.Migrations
                     b.Property<string>("LocalizationKey")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.ToTable("COAHeadAccounts","FM");
@@ -631,7 +621,6 @@ namespace CERP.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Title")
@@ -683,7 +672,6 @@ namespace CERP.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("AccountId", "SubLedgerRequirementId");
@@ -776,7 +764,6 @@ namespace CERP.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("VATNumber")
@@ -868,7 +855,6 @@ namespace CERP.Migrations
                         .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -1022,10 +1008,6 @@ namespace CERP.Migrations
                     b.Property<Guid?>("ReportingToId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("VacationDays")
                         .HasColumnType("int");
 
@@ -1136,7 +1118,6 @@ namespace CERP.Migrations
                         .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("TotalMonthHours")
@@ -1248,10 +1229,6 @@ namespace CERP.Migrations
 
                     b.Property<int>("Sun")
                         .HasColumnType("int");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Thu")
                         .HasColumnType("int");
@@ -1371,10 +1348,6 @@ namespace CERP.Migrations
                     b.Property<int>("SumWed")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("TimesheetId")
                         .HasColumnType("int");
 
@@ -1452,7 +1425,6 @@ namespace CERP.Migrations
                         .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Title")
@@ -1540,7 +1512,6 @@ namespace CERP.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("TotalDeductions")
@@ -1615,10 +1586,6 @@ namespace CERP.Migrations
 
                     b.Property<int?>("PayrunDetailId")
                         .HasColumnType("int");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("Value")
                         .HasColumnType("decimal(18,2)");
@@ -1722,10 +1689,6 @@ namespace CERP.Migrations
                     b.Property<int>("PayrunId")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
@@ -1815,10 +1778,6 @@ namespace CERP.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
@@ -1886,7 +1845,6 @@ namespace CERP.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -1945,10 +1903,6 @@ namespace CERP.Migrations
 
                     b.Property<Guid?>("LastModifierId")
                         .HasColumnName("LastModifierId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Title")

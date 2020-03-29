@@ -1,5 +1,4 @@
-﻿using CERP.Base;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
@@ -8,7 +7,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace CERP.FM.COA
 {
-    public class COA_HeadAccount : FullAuditedAggregateTenantRoot<Guid> 
+    public class COA_HeadAccount : FullAuditedAggregateRoot<Guid> 
     {
         public COA_HeadAccount()
         {

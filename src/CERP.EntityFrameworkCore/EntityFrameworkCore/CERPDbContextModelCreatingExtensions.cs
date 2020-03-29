@@ -36,7 +36,7 @@ namespace CERP.EntityFrameworkCore
                 b.ToTable(CERPConsts.FMDbTablePrefix + "COAs", CERPConsts.FMDbSchema);
 
                 b.ConfigureFullAuditedAggregateRoot();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
                 b.Property(p => p.AccountId)
@@ -69,7 +69,7 @@ namespace CERP.EntityFrameworkCore
                 b.ToTable(CERPConsts.FMDbTablePrefix + "COASubCategories", CERPConsts.FMDbSchema);
 
                 b.ConfigureAudited();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
                 b.Property(p => p.SubCategoryCode)
                     .IsRequired();
@@ -93,7 +93,7 @@ namespace CERP.EntityFrameworkCore
                 b.ToTable(CERPConsts.FMDbTablePrefix + "COAHeadAccounts", CERPConsts.FMDbSchema);
 
                 b.ConfigureFullAudited();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
                 b.Property(p => p.HeadCode)
@@ -109,7 +109,7 @@ namespace CERP.EntityFrameworkCore
                 b.ToTable(CERPConsts.DbTablePrefix + "Companies", CERPConsts.DbSchema);
 
                 b.ConfigureAudited();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
                 b.Property(p => p.CompanyCode)
@@ -152,7 +152,7 @@ namespace CERP.EntityFrameworkCore
                 b.ToTable(CERPConsts.DbTablePrefix + "Branches", CERPConsts.DbSchema);
 
                 b.ConfigureAudited();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
                 b.Property(p => p.Name)
@@ -167,7 +167,7 @@ namespace CERP.EntityFrameworkCore
                 b.ToTable(CERPConsts.FMDbTablePrefix + "AccountStatementTypes", CERPConsts.FMDbSchema);
 
                 b.ConfigureAudited();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
                 b.Property(p => p.Title)
@@ -183,7 +183,7 @@ namespace CERP.EntityFrameworkCore
                 b.ToTable(CERPConsts.FMDbTablePrefix + "SubLedgerRequirements", CERPConsts.FMDbSchema);
 
                 b.ConfigureFullAudited();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
                 b.Property(p => p.Title)
@@ -196,7 +196,7 @@ namespace CERP.EntityFrameworkCore
                 b.ToTable(CERPConsts.DbTablePrefix + "DictionaryValueTypes", CERPConsts.DbSchema);
 
                 b.ConfigureAudited();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
                 b.Property(x => x.ValueTypeCode)
@@ -219,7 +219,7 @@ namespace CERP.EntityFrameworkCore
                 b.ToTable(CERPConsts.DbTablePrefix + "DictionaryValues", CERPConsts.DbSchema);
 
                 b.ConfigureAudited();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
                 b.Property(x => x.Key)
@@ -235,7 +235,7 @@ namespace CERP.EntityFrameworkCore
                 b.ToTable(CERPConsts.FMDbTablePrefix + "SubLedgerRequirement_Account", CERPConsts.FMDbSchema);
 
                 b.ConfigureAudited();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
             });
 
@@ -256,7 +256,7 @@ namespace CERP.EntityFrameworkCore
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
                 b.HasOne(p => p.EmployeeStatus).WithMany().OnDelete(DeleteBehavior.Restrict);
@@ -284,7 +284,7 @@ namespace CERP.EntityFrameworkCore
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
                 b.Property(p => p.Name)
@@ -299,7 +299,7 @@ namespace CERP.EntityFrameworkCore
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
                 b.Property(x => x.Title)
@@ -313,7 +313,7 @@ namespace CERP.EntityFrameworkCore
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
                 b.Property(x => x.Title)
@@ -328,7 +328,7 @@ namespace CERP.EntityFrameworkCore
 
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
                 b.Property(x => x.ReferenceNo)
@@ -357,7 +357,7 @@ namespace CERP.EntityFrameworkCore
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
                 b.Property(x => x.Year)
@@ -393,7 +393,7 @@ namespace CERP.EntityFrameworkCore
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
                 b.Property(x => x.TimesheetId)
@@ -436,7 +436,7 @@ namespace CERP.EntityFrameworkCore
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
                 b.Property(x => x.WeekSheetId)
@@ -490,7 +490,7 @@ namespace CERP.EntityFrameworkCore
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
                 b.Property(x => x.CompanyId)
@@ -530,7 +530,7 @@ namespace CERP.EntityFrameworkCore
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
                 b.Property(x => x.PayrunId)
@@ -574,7 +574,7 @@ namespace CERP.EntityFrameworkCore
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
                 b.Property(x => x.PayrunDetailId)
@@ -609,7 +609,7 @@ namespace CERP.EntityFrameworkCore
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
                 b.Property(x => x.Value)

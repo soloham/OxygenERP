@@ -9,12 +9,6 @@ namespace CERP.Base
 {
     public class AuditedAggregateTenantRoot<TKey> : AuditedAggregateRoot<TKey>, IMultiTenant
     {
-        //public ICurrentTenant CurrentTenant { get; set; }
-        //public AuditedAggregateTenantRoot(ICurrentTenant currentTenant)
-        //{
-        //    CurrentTenant = currentTenant;
-        //    TenantId = CurrentTenant.Id;
-        //}
         public Guid? TenantId { get; set; }
     }
 }
