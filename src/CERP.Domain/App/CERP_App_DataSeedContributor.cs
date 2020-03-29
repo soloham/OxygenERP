@@ -9,70 +9,37 @@ using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Guids;
 using Volo.Abp.Uow;
-using Volo.Abp.TenantManagement;
-using Volo.Abp.MultiTenancy;
 
 namespace CERP.App
 {
     public class CERP_App_DataSeedContributor : IDataSeedContributor, ITransientDependency
     {
-        private ITenantRepository TenantRepo;
-        private ITenantManager TenantManager;
-        private ICurrentTenant CurrentTenant;
-        private IDataSeeder DataSeeder;
         private IRepository<DictionaryValue, Guid> DictionaryValuesRepo;
         private IRepository<DictionaryValueType, Guid> DictionaryValueTypesRepo;
         private IRepository<Company, Guid> _CompaniesRepo;
         private IRepository<Branch, Guid> _BranchesRepo;
         private readonly IGuidGenerator _guidGenerator;
 
-        public CERP_App_DataSeedContributor(IGuidGenerator guidGenerator, IRepository<DictionaryValue, Guid> dictionaryValuesRepo, IRepository<DictionaryValueType, Guid> dictionaryValueTypesRepo, IRepository<Company, Guid> companiesRepo, IRepository<Branch, Guid> branchesRepo, ITenantManager tenantManager, ITenantRepository tenantRepo, ICurrentTenant currentTenant, IDataSeeder dataSeeder)
+        public CERP_App_DataSeedContributor(IGuidGenerator guidGenerator, IRepository<DictionaryValue, Guid> dictionaryValuesRepo, IRepository<DictionaryValueType, Guid> dictionaryValueTypesRepo, IRepository<Company, Guid> companiesRepo, IRepository<Branch, Guid> branchesRepo)
         {
             _guidGenerator = guidGenerator;
             DictionaryValuesRepo = dictionaryValuesRepo;
             DictionaryValueTypesRepo = dictionaryValueTypesRepo;
             _CompaniesRepo = companiesRepo;
             _BranchesRepo = branchesRepo;
-            TenantManager = tenantManager;
-            TenantRepo = tenantRepo;
-            CurrentTenant = currentTenant;
-            DataSeeder = dataSeeder;
         }
 
         [UnitOfWork]
         public async Task SeedAsync(DataSeedContext context)
         {
-            var curTenants = await TenantRepo.GetListAsync();
-            if (!curTenants.Any(x => x.Name == "PIF"))
+            var curCompanies = await _CompaniesRepo.GetListAsync();
+            var curBranches = await _BranchesRepo.GetListAsync();
+            if (curCompanies.Any(x => x.Name == "TestCorp" && curBranches.Any(x => x.Name == "Head")))
             {
-                var tenant = await TenantManager.CreateAsync("PIF");
-                await TenantRepo.InsertAsync(tenant, true);
-
-                using (CurrentTenant.Change(tenant.Id, tenant.Name))
+                if (!DictionaryValueTypesRepo.Any(x => x.ValueTypeName == "Cashflow Statement Types"))
                 {
-                    //TODO: Handle database creation?
-
-                    await DataSeeder.SeedAsync(
-                                    new DataSeedContext(tenant.Id)
-                                        .WithProperty("AdminEmail", "pif@gmail.com")
-                                        .WithProperty("AdminPassword", "Pif555@")
-                                    );
-                }
-            }
-            else
-            {
-                for (int i = 0; i < curTenants.Count; i++)
-                {
-                    using (CurrentTenant.Change(curTenants[i].Id, curTenants[i].Name))
-                    {
-                        var curCompanies = await _CompaniesRepo.GetListAsync();
-                        var curBranches = await _BranchesRepo.GetListAsync();
-                        if (curCompanies.Any(x => x.Name == "TestCorp" && curBranches.Any(x => x.Name == "Head")))
-                        {
-                            if (!DictionaryValueTypesRepo.Any(x => x.ValueTypeName == "Cashflow Statement Types"))
-                            {
-                                Guid guid = _guidGenerator.Create();
-                                List<DictionaryValue> cashflowDicValues = new List<DictionaryValue>() {
+                    Guid guid = _guidGenerator.Create();
+                    List<DictionaryValue> cashflowDicValues = new List<DictionaryValue>() {
                         new DictionaryValue(_guidGenerator.Create())
                         {
                             Key = "01001",
@@ -80,8 +47,7 @@ namespace CERP.App
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -90,8 +56,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -100,8 +65,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -110,8 +74,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -120,8 +83,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -130,27 +92,25 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
-                        },
+                            ValueTypeId = guid
+                        }
                     };
 
-                                await DictionaryValueTypesRepo.InsertAsync(new DictionaryValueType(guid)
-                                {
-                                    ValueTypeFor = ValueTypeModules.CashflowStatementType,
-                                    ValueTypeCode = "01",
-                                    ValueTypeName = "Cashflow Statement Types",
-                                    ActiveStatus = true,
-                                    Values = cashflowDicValues,
-                                    Branch = null,
-                                    Company = _CompaniesRepo.First(),
-TenantId = CurrentTenant.Id
-                                });
-                            }
-                            if (!DictionaryValueTypesRepo.Any(x => x.ValueTypeName == "Country"))
-                            {
-                                Guid guid = _guidGenerator.Create();
-                                List<DictionaryValue> locationsDicValues = new List<DictionaryValue>() {
+                    await DictionaryValueTypesRepo.InsertAsync(new DictionaryValueType(guid)
+                    {
+                        ValueTypeFor = ValueTypeModules.CashflowStatementType,
+                        ValueTypeCode = "01",
+                        ValueTypeName = "Cashflow Statement Types",
+                        ActiveStatus = true,
+                        Values = cashflowDicValues,
+                        Branch = null,
+                        Company = _CompaniesRepo.First()
+                    });
+                }
+                if (!DictionaryValueTypesRepo.Any(x => x.ValueTypeName == "Country"))
+                {
+                    Guid guid = _guidGenerator.Create();
+                    List<DictionaryValue> locationsDicValues = new List<DictionaryValue>() {
                         new DictionaryValue(_guidGenerator.Create())
                         {
                             Key = "02001",
@@ -158,8 +118,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -168,8 +127,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -178,8 +136,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -188,8 +145,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -198,8 +154,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -208,8 +163,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -218,8 +172,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -228,8 +181,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -238,8 +190,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -248,8 +199,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -258,8 +208,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -268,8 +217,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -278,8 +226,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -288,8 +235,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -298,8 +244,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -308,8 +253,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -318,27 +262,25 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
-                        },
+                            ValueTypeId = guid
+                        }
                     };
 
-                                await DictionaryValueTypesRepo.InsertAsync(new DictionaryValueType(guid)
-                                {
-                                    ValueTypeFor = ValueTypeModules.Country,
-                                    ValueTypeCode = "02",
-                                    ValueTypeName = "Country",
-                                    ActiveStatus = true,
-                                    Values = locationsDicValues,
-                                    Branch = null,
-                                    Company = _CompaniesRepo.First(),
-TenantId = CurrentTenant.Id
-                                });
-                            }
-                            if (!DictionaryValueTypesRepo.Any(x => x.ValueTypeName == "Gender"))
-                            {
-                                Guid guid = _guidGenerator.Create();
-                                List<DictionaryValue> genderDicValues = new List<DictionaryValue>() {
+                    await DictionaryValueTypesRepo.InsertAsync(new DictionaryValueType(guid)
+                    {
+                        ValueTypeFor = ValueTypeModules.Country,
+                        ValueTypeCode = "02",
+                        ValueTypeName = "Country",
+                        ActiveStatus = true,
+                        Values = locationsDicValues,
+                        Branch = null,
+                        Company = _CompaniesRepo.First()
+                    });
+                }
+                if (!DictionaryValueTypesRepo.Any(x => x.ValueTypeName == "Gender"))
+                {
+                    Guid guid = _guidGenerator.Create();
+                    List<DictionaryValue> genderDicValues = new List<DictionaryValue>() {
                         new DictionaryValue(_guidGenerator.Create())
                         {
                             Key = "03001",
@@ -346,8 +288,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -356,27 +297,25 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
-                        },
+                            ValueTypeId = guid
+                        }
                     };
 
-                                await DictionaryValueTypesRepo.InsertAsync(new DictionaryValueType(guid)
-                                {
-                                    ValueTypeFor = ValueTypeModules.Gender,
-                                    ValueTypeCode = "03",
-                                    ValueTypeName = "Gender",
-                                    ActiveStatus = true,
-                                    Values = genderDicValues,
-                                    Branch = null,
-                                    Company = _CompaniesRepo.First(),
-TenantId = CurrentTenant.Id
-                                });
-                            }
-                            if (!DictionaryValueTypesRepo.Any(x => x.ValueTypeName == "Marital Status"))
-                            {
-                                Guid guid = _guidGenerator.Create();
-                                List<DictionaryValue> maritalStatusDicValues = new List<DictionaryValue>() {
+                    await DictionaryValueTypesRepo.InsertAsync(new DictionaryValueType(guid)
+                    {
+                        ValueTypeFor = ValueTypeModules.Gender,
+                        ValueTypeCode = "03",
+                        ValueTypeName = "Gender",
+                        ActiveStatus = true,
+                        Values = genderDicValues,
+                        Branch = null,
+                        Company = _CompaniesRepo.First()
+                    });
+                }
+                if (!DictionaryValueTypesRepo.Any(x => x.ValueTypeName == "Marital Status"))
+                {
+                    Guid guid = _guidGenerator.Create();
+                    List<DictionaryValue> maritalStatusDicValues = new List<DictionaryValue>() {
                         new DictionaryValue(_guidGenerator.Create())
                         {
                             Key = "04001",
@@ -384,8 +323,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -394,27 +332,25 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
-                        },
+                            ValueTypeId = guid
+                        }
                     };
 
-                                await DictionaryValueTypesRepo.InsertAsync(new DictionaryValueType(guid)
-                                {
-                                    ValueTypeFor = ValueTypeModules.MaritalStatus,
-                                    ValueTypeCode = "04",
-                                    ValueTypeName = "Marital Status",
-                                    ActiveStatus = true,
-                                    Values = maritalStatusDicValues,
-                                    Branch = null,
-                                    Company = _CompaniesRepo.First(),
-TenantId = CurrentTenant.Id
-                                });
-                            }
-                            if (!DictionaryValueTypesRepo.Any(x => x.ValueTypeName == "Blood Group"))
-                            {
-                                Guid guid = _guidGenerator.Create();
-                                List<DictionaryValue> bloodGroupsDicValues = new List<DictionaryValue>() {
+                    await DictionaryValueTypesRepo.InsertAsync(new DictionaryValueType(guid)
+                    {
+                        ValueTypeFor = ValueTypeModules.MaritalStatus,
+                        ValueTypeCode = "04",
+                        ValueTypeName = "Marital Status",
+                        ActiveStatus = true,
+                        Values = maritalStatusDicValues,
+                        Branch = null,
+                        Company = _CompaniesRepo.First()
+                    });
+                }
+                if (!DictionaryValueTypesRepo.Any(x => x.ValueTypeName == "Blood Group"))
+                {
+                    Guid guid = _guidGenerator.Create();
+                    List<DictionaryValue> bloodGroupsDicValues = new List<DictionaryValue>() {
                         new DictionaryValue(_guidGenerator.Create())
                         {
                             Key = "05001",
@@ -422,8 +358,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -432,8 +367,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -442,8 +376,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -452,8 +385,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -462,8 +394,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -472,8 +403,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -482,8 +412,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -492,27 +421,25 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
-                        },
+                            ValueTypeId = guid
+                        }
                     };
 
-                                await DictionaryValueTypesRepo.InsertAsync(new DictionaryValueType(guid)
-                                {
-                                    ValueTypeFor = ValueTypeModules.BloodGroup,
-                                    ValueTypeCode = "05",
-                                    ValueTypeName = "Blood Group",
-                                    ActiveStatus = true,
-                                    Values = bloodGroupsDicValues,
-                                    Branch = null,
-                                    Company = _CompaniesRepo.First(),
-TenantId = CurrentTenant.Id
-                                });
-                            }
-                            if (!DictionaryValueTypesRepo.Any(x => x.ValueTypeName == "Religion"))
-                            {
-                                Guid guid = _guidGenerator.Create();
-                                List<DictionaryValue> religionDicValues = new List<DictionaryValue>() {
+                    await DictionaryValueTypesRepo.InsertAsync(new DictionaryValueType(guid)
+                    {
+                        ValueTypeFor = ValueTypeModules.BloodGroup,
+                        ValueTypeCode = "05",
+                        ValueTypeName = "Blood Group",
+                        ActiveStatus = true,
+                        Values = bloodGroupsDicValues,
+                        Branch = null,
+                        Company = _CompaniesRepo.First()
+                    });
+                }
+                if (!DictionaryValueTypesRepo.Any(x => x.ValueTypeName == "Religion"))
+                {
+                    Guid guid = _guidGenerator.Create();
+                    List<DictionaryValue> religionDicValues = new List<DictionaryValue>() {
                         new DictionaryValue(_guidGenerator.Create())
                         {
                             Key = "06001",
@@ -520,8 +447,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -530,8 +456,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -540,8 +465,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -550,29 +474,27 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
-                        },
+                            ValueTypeId = guid
+                        }
                     };
 
-                                await DictionaryValueTypesRepo.InsertAsync(new DictionaryValueType(guid)
-                                {
-                                    ValueTypeFor = ValueTypeModules.Religion,
-                                    ValueTypeCode = "06",
-                                    ValueTypeName = "Religion",
-                                    ActiveStatus = true,
-                                    Values = religionDicValues,
-                                    Branch = null,
-                                    Company = _CompaniesRepo.First(),
-TenantId = CurrentTenant.Id
-                                });
-                            }
+                    await DictionaryValueTypesRepo.InsertAsync(new DictionaryValueType(guid)
+                    {
+                        ValueTypeFor = ValueTypeModules.Religion,
+                        ValueTypeCode = "06",
+                        ValueTypeName = "Religion",
+                        ActiveStatus = true,
+                        Values = religionDicValues,
+                        Branch = null,
+                        Company = _CompaniesRepo.First()
+                    });
+                }
 
-                            if (!DictionaryValueTypesRepo.Any(x => x.ValueTypeName == "ID Type"))
-                            {
-                                Guid guid = _guidGenerator.Create();
+                if (!DictionaryValueTypesRepo.Any(x => x.ValueTypeName == "ID Type"))
+                {
+                    Guid guid = _guidGenerator.Create();
 
-                                List<DictionaryValue> idTypesDicValues = new List<DictionaryValue>() {
+                    List<DictionaryValue> idTypesDicValues = new List<DictionaryValue>() {
                         new DictionaryValue(_guidGenerator.Create())
                         {
                             Key = "07001",
@@ -580,8 +502,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -590,8 +511,7 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
+                            ValueTypeId = guid
                         },
                         new DictionaryValue(_guidGenerator.Create())
                         {
@@ -600,88 +520,83 @@ TenantId = CurrentTenant.Id
                             ActiveStatus = true,
                             Branch = null,
                             Company = _CompaniesRepo.First(),
-                            ValueTypeId = guid,
-TenantId = CurrentTenant.Id
-                        },
+                            ValueTypeId = guid
+                        }
                     };
 
-                                await DictionaryValueTypesRepo.InsertAsync(new DictionaryValueType(guid)
-                                {
-                                    ValueTypeFor = ValueTypeModules.IDType,
-                                    ValueTypeCode = "07",
-                                    ValueTypeName = "ID Type",
-                                    ActiveStatus = true,
-                                    Values = idTypesDicValues,
-                                    Branch = null,
-                                    Company = _CompaniesRepo.First(),
-TenantId = CurrentTenant.Id
-                                });
-                            }
+                    await DictionaryValueTypesRepo.InsertAsync(new DictionaryValueType(guid)
+                    {
+                        ValueTypeFor = ValueTypeModules.IDType,
+                        ValueTypeCode = "07",
+                        ValueTypeName = "ID Type",
+                        ActiveStatus = true,
+                        Values = idTypesDicValues,
+                        Branch = null,
+                        Company = _CompaniesRepo.First()
+                    });
+                }
 
-                            if (DictionaryValueTypesRepo.Count() == -1)
-                            {
-                                if (!DictionaryValuesRepo.Any(x => x.Value == "Cash Generated From Operations"))
-                                {
-                                    await DictionaryValuesRepo.InsertAsync(new DictionaryValue(_guidGenerator.Create())
-                                    {
-                                        Key = "01",
-                                        Value = "Cash Generated From Operations",                                        ActiveStatus = true,
-                                        TenantId = CurrentTenant.Id,
-                                        ValueType = DictionaryValueTypesRepo.First(x => x.ValueTypeName == "Cashflow Statement Types")
-                                    });
-                                }
-                                if (!DictionaryValuesRepo.Any(x => x.Value == "Cash Flow From Operating Activities"))
-                                {
-                                    await DictionaryValuesRepo.InsertAsync(new DictionaryValue(_guidGenerator.Create())
-                                    {
-                                        Key = "01",
-                                        Value = "Cash Flow From Operating Activities",                                        ActiveStatus = true,
-                                        TenantId = CurrentTenant.Id,
-                                        ValueType = DictionaryValueTypesRepo.First(x => x.ValueTypeName == "Cashflow Statement Types")
-                                    });
-                                }
-                                if (!DictionaryValuesRepo.Any(x => x.Value == "Cash Generated From Financing Activities"))
-                                {
-                                    await DictionaryValuesRepo.InsertAsync(new DictionaryValue(_guidGenerator.Create())
-                                    {
-                                        Key = "01",
-                                        Value = "Cash Generated From Financing Activities",                                        ActiveStatus = true,
-                                        TenantId = CurrentTenant.Id,
-                                        ValueType = DictionaryValueTypesRepo.First(x => x.ValueTypeName == "Cashflow Statement Types")
-                                    });
-                                }
-                                if (!DictionaryValuesRepo.Any(x => x.Value == "Net Profit Before Tax"))
-                                {
-                                    await DictionaryValuesRepo.InsertAsync(new DictionaryValue(_guidGenerator.Create())
-                                    {
-                                        Key = "01",
-                                        Value = "Net Profit Before Tax",                                        ActiveStatus = true,
-                                        TenantId = CurrentTenant.Id,
-                                        ValueType = DictionaryValueTypesRepo.First(x => x.ValueTypeName == "Cashflow Statement Types")
-                                    });
-                                }
-                                if (!DictionaryValuesRepo.Any(x => x.Value == "Operating Profit Before Working Capital"))
-                                {
-                                    await DictionaryValuesRepo.InsertAsync(new DictionaryValue(_guidGenerator.Create())
-                                    {
-                                        Key = "01",
-                                        Value = "Operating Profit Before Working Capital",                                        ActiveStatus = true,
-                                        TenantId = CurrentTenant.Id,
-                                        ValueType = DictionaryValueTypesRepo.First(x => x.ValueTypeName == "Cashflow Statement Types")
-                                    });
-                                }
-                                if (!DictionaryValuesRepo.Any(x => x.Value == "Cash and Cash Equivalents"))
-                                {
-                                    await DictionaryValuesRepo.InsertAsync(new DictionaryValue(_guidGenerator.Create())
-                                    {
-                                        Key = "01",
-                                        Value = "Cash and Cash Equivalents",                                        ActiveStatus = true,
-                                        TenantId = CurrentTenant.Id,
-                                        ValueType = DictionaryValueTypesRepo.First(x => x.ValueTypeName == "Cashflow Statement Types")
-                                    });
-                                }
-                            }
-                        }
+                if (DictionaryValueTypesRepo.Count() == -1)
+                {
+                    if (!DictionaryValuesRepo.Any(x => x.Value == "Cash Generated From Operations"))
+                    {
+                        await DictionaryValuesRepo.InsertAsync(new DictionaryValue(_guidGenerator.Create())
+                        {
+                            Key = "01",
+                            Value = "Cash Generated From Operations",
+                            ActiveStatus = true,
+                            ValueType = DictionaryValueTypesRepo.First(x => x.ValueTypeName == "Cashflow Statement Types")
+                        });
+                    }
+                    if (!DictionaryValuesRepo.Any(x => x.Value == "Cash Flow From Operating Activities"))
+                    {
+                        await DictionaryValuesRepo.InsertAsync(new DictionaryValue(_guidGenerator.Create())
+                        {
+                            Key = "01",
+                            Value = "Cash Flow From Operating Activities",
+                            ActiveStatus = true,
+                            ValueType = DictionaryValueTypesRepo.First(x => x.ValueTypeName == "Cashflow Statement Types")
+                        });
+                    }
+                    if (!DictionaryValuesRepo.Any(x => x.Value == "Cash Generated From Financing Activities"))
+                    {
+                        await DictionaryValuesRepo.InsertAsync(new DictionaryValue(_guidGenerator.Create())
+                        {
+                            Key = "01",
+                            Value = "Cash Generated From Financing Activities",
+                            ActiveStatus = true,
+                            ValueType = DictionaryValueTypesRepo.First(x => x.ValueTypeName == "Cashflow Statement Types")
+                        });
+                    }
+                    if (!DictionaryValuesRepo.Any(x => x.Value == "Net Profit Before Tax"))
+                    {
+                        await DictionaryValuesRepo.InsertAsync(new DictionaryValue(_guidGenerator.Create())
+                        {
+                            Key = "01",
+                            Value = "Net Profit Before Tax",
+                            ActiveStatus = true,
+                            ValueType = DictionaryValueTypesRepo.First(x => x.ValueTypeName == "Cashflow Statement Types")
+                        });
+                    }
+                    if (!DictionaryValuesRepo.Any(x => x.Value == "Operating Profit Before Working Capital"))
+                    {
+                        await DictionaryValuesRepo.InsertAsync(new DictionaryValue(_guidGenerator.Create())
+                        {
+                            Key = "01",
+                            Value = "Operating Profit Before Working Capital",
+                            ActiveStatus = true,
+                            ValueType = DictionaryValueTypesRepo.First(x => x.ValueTypeName == "Cashflow Statement Types")
+                        });
+                    }
+                    if (!DictionaryValuesRepo.Any(x => x.Value == "Cash and Cash Equivalents"))
+                    {
+                        await DictionaryValuesRepo.InsertAsync(new DictionaryValue(_guidGenerator.Create())
+                        {
+                            Key = "01",
+                            Value = "Cash and Cash Equivalents",
+                            ActiveStatus = true,
+                            ValueType = DictionaryValueTypesRepo.First(x => x.ValueTypeName == "Cashflow Statement Types")
+                        });
                     }
                 }
             }
