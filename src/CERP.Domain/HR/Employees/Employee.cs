@@ -1,4 +1,5 @@
 ﻿using CERP.App;
+using CERP.Base;
 using CERP.FM;
 using CERP.HR.Workshifts;
 using CERP.Setup;
@@ -13,7 +14,7 @@ using Volo.Abp.Identity;
 
 namespace CERP.HR.Employees
 {
-    public class Employee : FullAuditedAggregateRoot<Guid>
+    public class Employee : FullAuditedAggregateTenantRoot<Guid>
     {
         public Employee()
         {

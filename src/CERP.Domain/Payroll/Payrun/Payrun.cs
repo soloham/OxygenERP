@@ -45,7 +45,7 @@ namespace CERP.Payroll.Payrun
         public Guid? PostedById { get; set; }
     }
 
-    public class PayrunDetail : FullAuditedAggregateRoot<int>
+    public class PayrunDetail : FullAuditedAggregateTenantRoot<int>
     {
         [ForeignKey("PayrunId")]
         public Payrun Payrun { get; set; }
@@ -79,7 +79,7 @@ namespace CERP.Payroll.Payrun
         public decimal DifferAmount { get; set; }
     }
 
-    public class PayrunAllowanceSummary : FullAuditedAggregateRoot<int> 
+    public class PayrunAllowanceSummary : FullAuditedAggregateTenantRoot<int> 
     {
         public decimal Value { get; set; }
 
@@ -93,7 +93,7 @@ namespace CERP.Payroll.Payrun
 
     }
 
-    public class Payslip : FullAuditedAggregateRoot<int>
+    public class Payslip : FullAuditedAggregateTenantRoot<int>
     {
         [ForeignKey("PayrunDetailId")]
         public PayrunDetail PayrunDetail { get; set; }
