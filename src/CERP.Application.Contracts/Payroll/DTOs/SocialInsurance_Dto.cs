@@ -1,0 +1,53 @@
+﻿using CERP.Base;
+using CERP.HR.Employees.DTOs;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Text;
+
+namespace CERP.Payroll.DTOs
+{
+    public class SIContributionCategory_Dto : AuditedEntityTenantDto<int>
+    {
+        public string Title { get; set; }
+        public bool IsExpense { get; set; }
+
+        public virtual ICollection<SIContribution_Dto> SIContributions { get; set; }
+
+        public SIContributionCategory_Dto()
+        {
+
+        }
+    }
+
+    public class SIContribution_Dto : AuditedEntityTenantDto<int>
+    {
+        public SIContributionCategory_Dto SICategory { get; set; }
+        [Required]
+        public int SICategoryId { get; set; }
+
+        public string Title { get; set; }
+        public double Value { get; set; }
+        public bool IsPercentage { get; set; }
+    }
+
+    public class SocialInsuranceReport_Dto
+    {
+        public Payrun_Dto Payrun { get; set; }
+        [Required]
+        public int PayrunId { get; set; }
+        
+        public Employee_Dto Employee { get; set; }
+        [Required]
+        public Guid EmployeeId { get; set; }
+
+        public string EmpID { get; set; }
+        public string EmpSIId { get; set; }
+
+        public double BasicSalary { get; set; }
+        public virtual ICollection<PayrunAllowanceSummary_Dto> PayrunSIAllowancesSummaries { get; set; }
+
+        public double TotalSISalary { get; set; }
+        public DateTime PayrunDate { get; set; }
+    }
+}

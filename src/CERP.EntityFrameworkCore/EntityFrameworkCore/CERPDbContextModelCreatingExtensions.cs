@@ -626,6 +626,38 @@ namespace CERP.EntityFrameworkCore
                 b.HasOne(x => x.Employee).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(x => x.AllowanceType).WithMany().OnDelete(DeleteBehavior.Restrict);
             });
+            builder.Entity<SIContributionCategory>(b =>
+            {
+                b.ToTable(CERPConsts.PayrollDbTablePrefix + "SICategories", CERPConsts.PayrollDbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.Property(x => x.Title)
+                    .IsRequired();
+                b.Property(x => x.IsExpense)
+                    .IsRequired();
+
+                b.HasMany(x => x.SIContributions).WithOne(x => x.SICategory).OnDelete(DeleteBehavior.ClientCascade);
+            });
+            builder.Entity<SIContribution>(b =>
+            {
+                b.ToTable(CERPConsts.PayrollDbTablePrefix + "SIContributions", CERPConsts.PayrollDbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.Property(x => x.Title)
+                    .IsRequired();
+                b.Property(x => x.Value)
+                    .IsRequired();
+                b.Property(x => x.IsPercentage)
+                    .IsRequired();
+
+                b.HasOne(x => x.SICategory).WithMany(x => x.SIContributions).OnDelete(DeleteBehavior.Restrict);
+            });
         }
 
         public static void ConfigureCustomUserProperties<TUser>(this EntityTypeBuilder<TUser> b)

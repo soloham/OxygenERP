@@ -435,6 +435,10 @@ vhr {
 .e-custom-group-toggle:before {
     content: '\e926';
 }
+.e-gosi-report:before {
+    content: '\e310';
+}
+
 .custom-control-indicator {
     background-color: #35c6f5 !important;
 }

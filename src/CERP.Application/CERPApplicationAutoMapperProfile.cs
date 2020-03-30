@@ -120,6 +120,10 @@ namespace CERP
             //CreateMap<Payslip, Payslip_Dto>().ForMember(d => d.Payrun, opt => opt.Ignore());
             //CreateMap<Payslip_Dto, Payslip>().ForMember(d => d.Payrun, opt => opt.Ignore());
 
+            CreateMap<SIContributionCategory, SIContributionCategory_Dto>();
+            CreateMap<SIContributionCategory_Dto, SIContributionCategory>();
+            CreateMap<SIContribution, SIContribution_Dto>().ForMember(d => d.SICategory, opt => opt.Ignore());
+            CreateMap<SIContribution_Dto, SIContribution>().ForMember(d => d.SICategory, opt => opt.Ignore());
         }
     }
 }

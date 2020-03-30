@@ -75,6 +75,7 @@ namespace CERP.HR.Employees
         #endregion
 
         #region ID & Residence
+        public string SocialInsuranceId { get; set; }
         #endregion
 
         #region Contract Details

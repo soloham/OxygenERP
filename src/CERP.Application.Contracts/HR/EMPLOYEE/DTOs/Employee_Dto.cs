@@ -6,7 +6,9 @@ using CERP.Setup.DTOs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Text;
+using System.Text.Json;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.Domain.Repositories;
@@ -67,8 +69,9 @@ namespace CERP.HR.Employees.DTOs
 
 
         #region ID & Residence
-        #endregion
+        public string SocialInsuranceId { get; set; }
 
+        #endregion
 
         #region Contract Details
         public string JoiningDate { get; set; }

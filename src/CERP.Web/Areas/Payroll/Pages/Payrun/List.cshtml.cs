@@ -21,17 +21,19 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
     {
         public IJsonSerializer JsonSerializer { get; set; }
         public PayrunAppService PayrunAppService { get; set; }
+        public SocialInsuranceAppService SocialInsuranceAppService { get; set; }
 
         public IRepository<DictionaryValue, Guid> DicValuesRepo { get; set; }
         public List<DictionaryValue> Allowances { get; set; }
 
         public Grid SecondaryDetailsGrid { get; set; }
 
-        public ListModel(IJsonSerializer jsonSerializer, PayrunAppService payrunAppService, IRepository<DictionaryValue, Guid> dicValuesRepo)
+        public ListModel(IJsonSerializer jsonSerializer, PayrunAppService payrunAppService, IRepository<DictionaryValue, Guid> dicValuesRepo, SocialInsuranceAppService socialInsuranceAppService)
         {
             JsonSerializer = jsonSerializer;
             PayrunAppService = payrunAppService;
             DicValuesRepo = dicValuesRepo;
+            SocialInsuranceAppService = socialInsuranceAppService;
         }
 
         public void OnGet()
@@ -188,8 +190,103 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
                 //JsonResult eosbDSJson = new JsonResult(dynamicDS);
 
                 dynamic Model = new ExpandoObject();
-                Model.EOSBAllowances = payrunDetails[0].PayrunAllowancesSummaries;
                 Model.EOSBDS = dynamicDS;
+                return new JsonResult(Model);
+            }
+            return StatusCode(500);
+        }
+
+        public dynamic GetSIReportModel()
+        {
+            dynamic Model = new ExpandoObject();
+            List<SIContributionCategory_Dto> SIContributionCategories = ObjectMapper.Map<List<SIContributionCategory>, List<SIContributionCategory_Dto>>(SocialInsuranceAppService.Repository.WithDetails().ToList());
+            Model.SIContributionCategories = SIContributionCategories;
+            Model.SIAllowances = Allowances;
+            Model.SIDS = null;
+            return Model;
+        }
+        public SocialInsuranceReport_Dto GetSIReport(PayrunDetail_Dto detail)
+        {
+            List<PayrunAllowanceSummary_Dto> payrunAllowances = detail.PayrunAllowancesSummaries.ToList();
+
+            GeneralInfo generalInfo = JsonSerializer.Deserialize<GeneralInfo>(detail.Employee.ExtraProperties["generalInfo"].ToString());
+            PhysicalId<Guid> currentPhysicalId = generalInfo.PhysicalIds.Last(x => x.GetIDTypeValue == "Iqama" && x.EndDate <= DateTime.Now);
+            string empPhysicalIdNumber = currentPhysicalId.IDNumber;
+
+            SocialInsuranceReport_Dto siDSRow = new SocialInsuranceReport_Dto();
+            siDSRow.Payrun = detail.Payrun;
+            siDSRow.PayrunId = detail.PayrunId;
+            siDSRow.Employee = detail.Employee;
+            siDSRow.EmployeeId = detail.EmployeeId;
+            siDSRow.EmpID = empPhysicalIdNumber;
+            siDSRow.EmpSIId = detail.Employee.SocialInsuranceId;
+            double curBasicSalary = (double)detail.BasicSalary;
+            siDSRow.BasicSalary = curBasicSalary;
+
+            siDSRow.PayrunDate = new DateTime(detail.Year, detail.Month, detail.CreationTime.Day);
+            siDSRow.PayrunSIAllowancesSummaries = payrunAllowances;//payrunAllowances.Select(x => x.a);
+            siDSRow.TotalSISalary = (double)siDSRow.PayrunSIAllowancesSummaries.Sum(x => x.Value);
+            siDSRow.TotalSISalary += curBasicSalary;
+
+            return siDSRow;
+        }
+
+        public IActionResult OnGetSIReport(int payrunId)
+        {
+            Payrun_Dto payrun = ObjectMapper.Map<Payrun, Payrun_Dto>(PayrunAppService.Repository.WithDetails().SingleOrDefault(x => x.Id == payrunId));
+            List<SIContributionCategory_Dto> SIContributionCategories = ObjectMapper.Map<List<SIContributionCategory>, List<SIContributionCategory_Dto>>(SocialInsuranceAppService.Repository.WithDetails().ToList());
+            if (payrun != null && payrun.IsPosted)
+            {
+                List<PayrunDetail_Dto> payrunDetails = payrun.PayrunDetails.ToList();
+                List<dynamic> dynamicDS = new List<dynamic>();
+
+                for (int i = 0; i < payrunDetails.Count; i++)
+                {
+                    PayrunDetail_Dto curDetail = payrunDetails[i];
+
+                    SocialInsuranceReport_Dto employeeSIReport = GetSIReport(curDetail);
+                    
+                    dynamic siDSRow = new ExpandoObject();
+                    siDSRow.payrunId = employeeSIReport.PayrunId;
+                    siDSRow.sNo = i + 1;
+                    siDSRow.getEmpName = employeeSIReport.Employee.Name;
+                    siDSRow.getEmpIdentityNumber = employeeSIReport.EmpID;
+                    siDSRow.getEmpNationality = employeeSIReport.Employee.Nationality.Value;
+                    siDSRow.getEmpSIID = employeeSIReport.EmpSIId;
+                    siDSRow.getBasicSalary = "SAR " + employeeSIReport.BasicSalary.ToString("N2");
+
+                    foreach (PayrunAllowanceSummary_Dto siAllowance in employeeSIReport.PayrunSIAllowancesSummaries)
+                    {
+                        DynamicHelper.AddProperty(siDSRow, $"{siAllowance.AllowanceType.Value}_Value", "SAR " + siAllowance.Value.ToString("N2"));
+                    }
+
+                    double totalSISalary = employeeSIReport.TotalSISalary;
+                    siDSRow.getEmpTotalSalaryForSI = "SAR " + totalSISalary.ToString("N2");
+
+                    List<(string title, double value)> Contributions = new List<(string title, double value)>();
+                    foreach (SIContributionCategory_Dto SIC in SIContributionCategories)
+                    {
+                        foreach (SIContribution_Dto SICC in SIC.SIContributions)
+                        {
+                            double SICCCV = SICC.IsPercentage ? totalSISalary * (SICC.Value / 100) : SICC.Value;
+                            int contribIndex = Contributions.FindIndex(x => x.title == SICC.Title);
+                            if (contribIndex != -1) Contributions[contribIndex] = (SICC.Title, Contributions[contribIndex].value + SICCCV); else Contributions.Add((SICC.Title, SICCCV));
+                            DynamicHelper.AddProperty(siDSRow, $"{SIC.Title}_{SICC.Title}_Value", $"SAR {SICCCV.ToString("N2")}");
+                        }
+                    }
+
+                    foreach ((string title, double value) SICC in Contributions)
+                    {
+                        List<SIContribution_Dto> sIContributions = SIContributionCategories.SelectMany(x => x.SIContributions).ToList();
+                        DynamicHelper.AddProperty(siDSRow, $"Overall_{SICC.title}_Value", $"SAR {SICC.value.ToString("N2")}");
+                    }
+                    dynamicDS.Add(siDSRow);
+                }
+
+                //JsonResult eosbDSJson = new JsonResult(dynamicDS);
+
+                dynamic Model = new ExpandoObject();
+                Model.SIDS = dynamicDS;
                 return new JsonResult(Model);
             }
             return StatusCode(500);
@@ -223,7 +320,8 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
             commands.Add(new { type = "View", buttonOption = new { iconCss = "zmdi zmdi-search", cssClass = "e-flat e-ViewButton" } });
             commands.Add(new { type = "View Reconciliation", buttonOption = new { iconCss = "zmdi zmdi-assignment-alert", cssClass = "e-flat e-View-Reconciliation-Button" } });
             commands.Add(new { type = "View Payments Sheet", buttonOption = new { iconCss = "zmdi zmdi-receipt", cssClass = "e-flat e-View-Payments-Sheet-Button" } });
-            commands.Add(new { type = "Generate Indemnity", buttonOption = new { iconCss = "zmdi zmdi-case", cssClass = "e-flat e-Gen-Indemnity-Button" } });
+            commands.Add(new { type = "View Indemnity", buttonOption = new { iconCss = "zmdi zmdi-case", cssClass = "e-flat e-Gen-Indemnity-Button" } });
+            commands.Add(new { type = "View GOSI Report", buttonOption = new { iconCss = "e-icons e-gosi-report", cssClass = "e-flat e-View-GOSI-Button" } });
             commands.Add(new { type = "View Attachment", buttonOption = new { iconCss = "zmdi zmdi-attachment-alt", cssClass = "e-flat e-View-Attach-Button" } });
             commands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat e-EditButton" } });
             commands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat e-DeleteButton" } });

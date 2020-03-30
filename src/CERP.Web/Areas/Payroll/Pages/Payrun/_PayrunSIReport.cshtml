@@ -1,0 +1,161 @@
+﻿@using CERP;
+@using CERP.App;
+@using CERP.HR.EMPLOYEE.DTOs;
+@using CERP.Payroll.DTOs;
+@using Volo.Abp.Domain.Repositories;
+@using Syncfusion.EJ2.Grids;
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Syncfusion.EJ2
+@{
+    List<GridColumn> primaryGridColumns = new List<GridColumn>()
+    {
+        new GridColumn { Field = "sNo", HeaderText = "#", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+        new GridColumn { Field = "getEmpName", HeaderText = "Employee Name", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+        new GridColumn { Field = "getEmpIdentityNumber", HeaderText = "ID", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+        new GridColumn { Field = "getEmpNationality", HeaderText = "Nationality", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+        new GridColumn { Field = "getEmpSIID", HeaderText = "Social Insurance ID", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+        new GridColumn { Field = "getBasicSalary", HeaderText = "Basic Salary", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+    };
+
+    List<DictionaryValue> SIAllowancesSummaries = Model.SIAllowances;
+
+    for (int i = 0; i < SIAllowancesSummaries.Count; i++)
+    {
+        primaryGridColumns.Add(new GridColumn { Field = $"{SIAllowancesSummaries[i].Value}_Value", HeaderText = $"{SIAllowancesSummaries[i].Value}", TextAlign = TextAlign.Center, AllowEditing=false,  MinWidth = "10" });
+    }
+
+    primaryGridColumns.AddRange(new List<GridColumn>() {
+        new GridColumn { Field = "getEmpTotalSalaryForSI", HeaderText = "Net Salary", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+
+    });
+
+
+    List<SIContributionCategory_Dto> SIContributionCategories = Model.SIContributionCategories;
+
+    int maxContribColumns = 0;
+    SIContributionCategory_Dto maxContribCategory = null;
+    for (int i = 0; i < SIContributionCategories.Count; i++)
+    {
+        SIContributionCategory_Dto SIC = SIContributionCategories[i];
+        List<GridColumn> SICColumns = new List<GridColumn>();
+
+        List<SIContribution_Dto> SIContributions = SIC.SIContributions.ToList();
+        if(SIContributions.Count > maxContribColumns) { maxContribCategory = SIC; }
+        for (int j = 0; j < SIContributions.Count; j++)
+        {
+            SICColumns.Add(new GridColumn { Field = $"{SIC.Title}_{SIContributions[j].Title}_Value", HeaderText = $"{SIContributions[j].Title} {(!SIContributions[j].IsPercentage ? "(SAR " + SIContributions[j].Value.ToString("N2") + ")" : "@ " + SIContributions[j].Value + "%")}", TextAlign = TextAlign.Center, AllowEditing = false, MinWidth = "10" });
+        }
+        GridColumn categoryColumn = new GridColumn { HeaderText = $"{SIC.Title}", TextAlign = TextAlign.Center, AllowEditing = false, MinWidth = "10", Columns = SICColumns };
+        primaryGridColumns.Add(categoryColumn);
+    }
+
+    List<GridColumn> OverallSICColumns = new List<GridColumn>();
+
+    List<SIContribution_Dto> OverallSIContributions = maxContribCategory.SIContributions.ToList();
+    for (int j = 0; j < OverallSIContributions.Count; j++)
+    {
+        OverallSICColumns.Add(new GridColumn { Field = $"Overall_{OverallSIContributions[j].Title}_Value", HeaderText = $"{OverallSIContributions[j].Title} {(!OverallSIContributions[j].IsPercentage ? "(SAR " + OverallSIContributions[j].Value.ToString("N2") + ")" : "@ " + OverallSIContributions[j].Value + "%")}", TextAlign = TextAlign.Center, AllowEditing = false, MinWidth = "10" });
+    }
+    GridColumn OverallSICs = new GridColumn { HeaderText = "Overall", TextAlign = TextAlign.Center, AllowEditing = false, MinWidth = "10", Columns = OverallSICColumns };
+    primaryGridColumns.Add(OverallSICs); 
+
+    var DS = Model.SIDS;
+
+    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+
+    var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "hideActions" }, "ExcelExport", "CsvExport", "Print", "Search",new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
+    }
+
+
+<div class="control-section">
+    <ejs-grid id="SIGrid"
+              enableAutoFill="true" columns="@primaryGridColumns" dataSource="@DS"
+              dataBound="dataBound" commandClick="commandClick" actionComplete="actionComplete"
+              allowExcelExport="true" height="100%" allowPdfExport="true"
+              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+              allowSorting="true" allowMultiSorting="true" gridLines="Both"
+              toolbarClick="SItoolbarClick" showColumnChooser="true" toolbar="@initialToolBar" allowTextWrap="true" textWrapSettings="@new GridTextWrapSettings() { WrapMode = WrapMode.Header }"
+              contextMenuItems="@(new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending","Copy", "Edit", "PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage","LastPage", "NextPage"})"
+              allowPaging="true" allowResizing="true">
+
+        <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="false" allowAdding="false" allowDeleting="false" allowEditing="true"></e-grid-editSettings>
+        <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+        <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+    </ejs-grid>
+</div>
+
+
+@*<ejs-dialog id="alert_dialog" animationSettings="@alertanimation" visible="false" target=".control-section" width="300px" header="Copy with Header" content="Atleast one row should be selected to copy with header">
+        <e-dialog-buttons>
+            <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+        </e-dialog-buttons>
+    </ejs-dialog>
+    <ejs-dialog id="alert_dialog_1" animationSettings="@alertanimation" visible="false" target=".control-section" width="300px" header="Copy" content="Atleast one row should be selected to copy">
+        <e-dialog-buttons>
+            <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+        </e-dialog-buttons>
+    </ejs-dialog>*@
+
+<script>
+    //function QueryCellInfo(args) {
+    //    if (args.cell.innerText == '') {
+    //        if(typeof args.column.field != 'undefined')
+    //            args.cell.innerText = '—';
+    //    }
+    //    else {
+    //        if (args.column.field.includes("Value") || args.column.field.includes("BasicSalar") || args.column.field == 'totalEarnings' || args.column.field == 'totalDeductions' || args.column.field == 'netTotal') {
+    //            const options = {
+    //                minimumFractionDigits: 2,
+    //                maximumFractionDigits: 2
+    //            };
+    //            var value = parseFloat(args.cell.innerText);
+    //            const formatted = Number(value).toLocaleString('en', options);
+    //            args.cell.innerText = 'SAR ' + formatted // change decimal ;
+    //        }
+    //    }
+    //}
+
+    function SItoolbarClick(args) {
+        var gridObj = document.getElementById("SIGrid").ej2_instances[0];
+        if (args.item.id === 'SIGrid_pdfexport') {
+            gridObj.pdfExport();
+        }
+        if (args.item.id === 'SIGrid_excelexport') {
+            gridObj.excelExport();
+        }
+        if (args.item.id === 'SIGrid_csvexport') {
+            gridObj.csvExport();
+        }
+        if (this.getSelectedRecords().length > 0) {
+            var withHeader = false;
+            if (args.item.id === 'copyHeader') {
+                withHeader = true;
+            }
+            this.copy(withHeader);
+        } else {
+            if (args.item.id === 'copyHeader') {
+                var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+                dialogObj.show();
+            }
+            else if (args.item.id === 'copy') {
+                var dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+                dialogObj.show();
+            }
+        }
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, "ExcelExport", "CsvExport", "Print", "Search",{ text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.showColumnChooser = true;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
+        }
+    }
+</script>

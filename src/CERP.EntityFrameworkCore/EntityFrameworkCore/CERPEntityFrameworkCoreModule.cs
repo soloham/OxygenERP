@@ -125,6 +125,8 @@ namespace CERP.EntityFrameworkCore
                                                        .Include(p => p.PayrunDetails)
                                                         .ThenInclude(p => p.Employee)
                                                         .ThenInclude(p => p.Position)
+                                                        .ThenInclude(p => p.Employee)
+                                                        .ThenInclude(p => p.Nationality)
                                                        .Include(p => p.PayrunDetails)
                                                         .ThenInclude(x => x.EmployeeTimesheet)
                                                        .Include(p => p.PostedBy);
@@ -139,6 +141,14 @@ namespace CERP.EntityFrameworkCore
                                                        .Include(p => p.PayrunAllowancesSummaries)
                                                         .ThenInclude(x => x.AllowanceType)
                                                        .Include(p => p.EmployeeTimesheet);
+                });
+                options.Entity<SIContributionCategory>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.SIContributions);
+                });
+                options.Entity<SIContribution>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.SICategory);
                 });
             });
 

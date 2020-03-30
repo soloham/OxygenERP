@@ -61,6 +61,9 @@ namespace CERP.EntityFrameworkCore
         public DbSet<PayrunDetail> PayrunDetails { get; set; }
         public DbSet<Payslip> Payslips { get; set; }
 
+        public DbSet<SIContributionCategory> SIContributionCategories { get; set; }
+        public DbSet<SIContribution> SIContributions { get; set; }
+
         public CERPDbContext(DbContextOptions<CERPDbContext> options)
             : base(options)
         {

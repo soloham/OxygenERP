@@ -93,7 +93,7 @@ namespace CERP.Payroll.DTOs
 
             indemnityDSRow.PayrunDate = new DateTime(Year, Month, CreationTime.Day);
             indemnityDSRow.PayrunEOSBAllowancesSummaries = payrunAllowances;//payrunAllowances.Select(x => x.a);
-            indemnityDSRow.GrossSalary = (double)payrunAllowances.Sum(x => x.Value);
+            indemnityDSRow.GrossSalary = (double)indemnityDSRow.PayrunEOSBAllowancesSummaries.Sum(x => x.Value);
             indemnityDSRow.GrossSalary += curBasicSalary;
 
             int totalDays = (DateTime.Parse(Employee.JoiningDate) - indemnityDSRow.PayrunDate).Days;

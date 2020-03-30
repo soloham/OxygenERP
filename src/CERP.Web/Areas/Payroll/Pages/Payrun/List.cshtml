@@ -105,6 +105,9 @@
     <div id="indemnitySheetSection" class="col-md-12 m-t-20" style="padding-top:0; background-color: rgb(253,253,253); display:none">
         <partial name="_PayrunIndemnity" model="@Model.GetIndemnityModel()" />
     </div>
+    <div id="siReportSection" class="col-md-12 m-t-20" style="padding-top:0; background-color: rgb(253,253,253); display:none">
+        <partial name="_PayrunSIReport" model="@Model.GetSIReportModel()" />
+    </div>
 </div>
 
 <ejs-dialog id="alert_dialog" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy with Header" content="Atleast one row should be selected to copy with header">
@@ -386,8 +389,9 @@
             });
             //window.location = `@Url.Content("~")/Payroll/Reconciliation?fromYear=${params.year-1}&fromMonth=${params.month-1}&toYear=${params.year}&toMonth=${params.month}`;
         }
-        else if (args.commandColumn.type == "Generate Indemnity") {
+        else if (args.commandColumn.type == "View Indemnity") {
             var params = args.rowData;  // display row data
+            let isSIVisible = $("#siReportSection").css('display') != 'none';
             let isVisible = $("#indemnitySheetSection").css('display') != 'none';
             var gridMain = $('#PayrunsHistoryGrid')[0].ej2_instances[0];
             var grid = $('#EOSBGrid')[0].ej2_instances[0];
@@ -395,12 +399,14 @@
                 //$("#paymentsSheetSection").stop().animate({ width: '0' }, 150);
 
                 $('#indemnitySheetSection').slideUp(100);
-                setTimeout(function () {
-                    $(".customContentArea").css('position', 'absolute');
-                    gridMain.refresh();
-                    $('#payrunsSection').removeClass('dividePayrun');
-                    $('#paymentsSheetSection').css('margin-left', '0');
-                }, 200);
+                if (!isSIVisible) {
+                    setTimeout(function () {
+                        $(".customContentArea").css('position', 'absolute');
+                        gridMain.refresh();
+                        $('#payrunsSection').removeClass('dividePayrun');
+                        $('#paymentsSheetSection').css('margin-left', '0');
+                    }, 200);
+                }
                 //$("#sectionDiv").stop().animate({ width: '0' }, 150);
                 //$('#sectionDiv').slideUp(200);
                 //$("#payrunsSection").stop().animate({ width: '100%' }, 150);
@@ -409,9 +415,11 @@
             if (!isVisible) {
                 gridMain.showSpinner();
             }
-            $('#indemnitySheetSection').slideUp(150);
-            $(".customContentArea").css('position', 'absolute');
-            $('#payrunsSection').removeClass('dividePayrun');
+            if (!isSIVisible) {
+                $('#indemnitySheetSection').slideUp(150);
+                $(".customContentArea").css('position', 'absolute');
+                $('#payrunsSection').removeClass('dividePayrun');
+            }
             $.ajax({
                 url: '@Url.Content("~")/Payroll/Payrun?handler=IndemnitySheet',
                 async: true,
@@ -440,6 +448,71 @@
                     gridMain.hideSpinner();
                     $('#indemnitySheetSection').slideUp(200);
                     swal.fire('Failed', `Indemnity for this payrun couldn't be generated`, 'error');
+                    //location.reload(true);
+                }
+            });
+            //window.location = `@Url.Content("~")/Payroll/Reconciliation?fromYear=${params.year-1}&fromMonth=${params.month-1}&toYear=${params.year}&toMonth=${params.month}`;
+        }
+        else if (args.commandColumn.type == "View GOSI Report") {
+            var params = args.rowData;  // display row data
+            let isVisible = $("#siReportSection").css('display') != 'none';
+            let isEOSBVisible = $("#indemnitySheetSection").css('display') != 'none';
+            var gridMain = $('#PayrunsHistoryGrid')[0].ej2_instances[0];
+            var grid = $('#SIGrid')[0].ej2_instances[0];
+            if (isVisible && grid.dataSource != null && grid.dataSource[0].payrunId == params.id) {
+                //$("#paymentsSheetSection").stop().animate({ width: '0' }, 150);
+
+                $('#siReportSection').slideUp(100);
+
+                if (!isEOSBVisible) {
+                    setTimeout(function () {
+                        $(".customContentArea").css('position', 'absolute');
+                        gridMain.refresh();
+                        $('#payrunsSection').removeClass('dividePayrun');
+                        $('#paymentsSheetSection').css('margin-left', '0');
+                    }, 200);
+                }
+                //$("#sectionDiv").stop().animate({ width: '0' }, 150);
+                //$('#sectionDiv').slideUp(200);
+                //$("#payrunsSection").stop().animate({ width: '100%' }, 150);
+                return;
+            }
+            if (!isVisible) {
+                gridMain.showSpinner();
+            }
+            if (!isEOSBVisible) {
+                $('#siReportSection').slideUp(150);
+                $(".customContentArea").css('position', 'absolute');
+                $('#payrunsSection').removeClass('dividePayrun');
+            }
+            $.ajax({
+                url: '@Url.Content("~")/Payroll/Payrun?handler=SIReport',
+                async: true,
+                type: "GET",
+                data: { payrunId: params.id },
+                success: function (data) {
+                    console.log(data);
+                    gridMain.hideSpinner();
+                    setTimeout(function () {
+                        setTimeout(function () {
+                            grid.dataSource = data.SIDS;
+                            grid.refresh();
+                        }, 50);
+
+                        $(".customContentArea").css('position', 'unset');
+                        $('#siReportSection').slideDown(100);
+                        setTimeout(function () {
+                            if($('#paymentsSheetSection').css('display') != 'none'){
+                                $('#payrunsSection').addClass('dividePayrun');
+                                $('#paymentsSheetSection').css('margin-left', '50%');
+                            }
+                        }, 100)
+                    }, 150);
+                },
+                error: function (data) {
+                    gridMain.hideSpinner();
+                    $('#siReportSection').slideUp(200);
+                    swal.fire('Failed', `Social Insurance Report for this payrun couldn't be generated`, 'error');
                     //location.reload(true);
                 }
             });
