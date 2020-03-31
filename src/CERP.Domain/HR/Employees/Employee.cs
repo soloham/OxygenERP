@@ -76,6 +76,14 @@ namespace CERP.HR.Employees
 
         #region ID & Residence
         public string SocialInsuranceId { get; set; }
+
+        [ForeignKey("SITypeId")]
+        public DictionaryValue SIType { get; set; }
+        public Guid? SITypeId { get; set; }
+
+        [ForeignKey("IndemnityTypeId")]
+        public DictionaryValue IndemnityType { get; set; }
+        public Guid? IndemnityTypeId { get; set; }
         #endregion
 
         #region Contract Details

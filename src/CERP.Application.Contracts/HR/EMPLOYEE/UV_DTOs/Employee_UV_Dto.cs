@@ -73,6 +73,15 @@ namespace CERP.HR.Employees.UV_DTOs
         #endregion
 
         #region ID & Residence
+        public string SocialInsuranceId { get; set; }
+
+        [ForeignKey("SITypeId")]
+        public DictionaryValue_Dto SIType { get; set; }
+        public Guid SITypeId { get; set; }
+
+        [ForeignKey("IndemnityTypeId")]
+        public DictionaryValue_Dto IndemnityType { get; set; }
+        public Guid IndemnityTypeId { get; set; }
         #endregion
 
         #region Contract Details

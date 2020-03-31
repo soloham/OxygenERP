@@ -2,22 +2,23 @@
 @using CERP.Payroll.Payrun;
 @using CERP.Payroll.DTOs;
 @{  
-    SISetup_Dto Setup = Model.SISetup;
-    List<SIContribution_Dto> contributions = Setup.ContributionCategories.SelectMany(x => x.SIContributions).ToList();
+    SISetup Setup = Model.SISetup;
+    var contributionsCats = Model.GetContributionCatsDS();
+    var contributions = Model.GetContributionsDS();
     List<GridColumn> SICColumns = new List<GridColumn>() {
         new GridColumn { Field = "Id", HeaderText = "", TextAlign=TextAlign.Center, Visible=false, ShowInColumnChooser=false,  MinWidth="10"  },
         new GridColumn { Field = "Title", HeaderText = "Title", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "IsExpense", HeaderText = "Is Expense", EditType="booleanedit", TextAlign=TextAlign.Center, DisplayAsCheckBox=true, MinWidth="10"  },
     };
 
-    var DropDownList = new Syncfusion.EJ2.DropDowns.DropDownList() { CssClass = "categoriesDropDown", BeforeOpen = "loadCategories", DataSource = Model.GetCategoriesDS(), Query = "new ej.data.Query()", AllowFiltering = true, ActionComplete = "actionComplete" };
+    var DropDownList = new Syncfusion.EJ2.DropDowns.DropDownList() { CssClass = "categoriesDropDown", BeforeOpen = "loadCategories", DataSource = Model.GetCategoriesDS(), Query = "new ej.data.Query()", AllowFiltering = true};
 
     List<GridColumn> SICCColumns = new List<GridColumn>() {        
         new GridColumn { Field = "Id", HeaderText = "", TextAlign=TextAlign.Center, Visible=false, ShowInColumnChooser=false,  MinWidth="10"  },
         new GridColumn { Field = "Title", HeaderText = "Title", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "Value", HeaderText = "Value", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "SICategory.Title", HeaderText = "Category", EditType="dropdownedit", TextAlign=TextAlign.Center,  MinWidth="10", Edit=new {@@params = DropDownList }  },
-        new GridColumn { Field = "IsPercentage", HeaderText = "Is Percentage", EditType="booleanedit", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "CategoryTitle", HeaderText = "Category", EditType="dropdownedit", TextAlign=TextAlign.Center,  MinWidth="10", Edit=new {@@params = DropDownList }  },
+        new GridColumn { Field = "IsPercentage", HeaderText = "Is Percentage", EditType="booleanedit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
     };
 }
 
@@ -38,48 +39,54 @@
 <hr />
 <div class="panel-body p-t-0" style="padding-bottom:0;">
     <div class="col-lg-12 padding-right-0">
+        <label class="control-label m-b-5 ">Upper Limit:</label>
         <div class="row">
-            <div class="col-sm-12" style="padding:0">
+            <div class="col-sm-7" style="padding:0">
                 <div class="form-group">
-                    <label class="control-label m-b-5 ">Upper Limit:</label>
                     <input type="number" value="@(Setup.SI_UpperLimit)" id="upperLimit" name="UpperLimit" @*value="@(empInfo!=null? empInfo.PHONE_NO : "")"*@ style="width:100% !important" class="form-control inline">
+                </div>
+            </div>
+
+            <div class="col-sm-5" style="padding:0">
+                <div class="form-group">
+                    <button id="submitUpperLimit" onclick="return setUpperLimit();" type="submit" class="btn btn-success btn-block">SET</button>
                 </div>
             </div>
         </div>
         <div class="clearfix margin-5"></div>
 
-        <div class="row">
-            <div class="col-md-12">
-                <div class="col-md-6">
-                    <ejs-grid id="SICGrid" dataSource="@Setup.ContributionCategories" enableAutoFill="true" columns="@SICColumns"
-                              dataBound="dataBound" commandClick="commandClick" actionBegin="actionBeginCat"
-                              allowExcelExport="true" height="100%" allowPdfExport="true" actionComplete="actionCompleteCat"
-                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
-                              allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                              toolbarClick="SICtoolbarClick" showColumnChooser="true" toolbar="@ViewData["initialToolBar"]"
-                              allowPaging="true" allowResizing="true">
+        <div class="col-sm-12">
+            <div class="col-sm-6">
+                <h3 class="control-label m-b-5 font-roboto" style="width: 100%; text-align:center; background-color: #5BCFF3; color:white; padding:10px">Contribution Categories</h3>
+                <ejs-grid id="SICGrid" dataSource="@contributionsCats.Value" enableAutoFill="true" columns="@SICColumns"
+                          dataBound="dataBound" commandClick="commandClick" actionBegin="actionBeginCat"
+                          allowExcelExport="true" height="100%" allowPdfExport="true" actionComplete="actionCompleteCat"
+                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                          allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                          toolbarClick="SICtoolbarClick" showColumnChooser="true" toolbar="@ViewData["initialToolBar"]"
+                          allowPaging="true" allowResizing="true">
 
-                        <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
-                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" newRowPosition="Bottom"></e-grid-editSettings>
-                        <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
-                        <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
-                    </ejs-grid>
-                </div>
-                <div class="col-md-6">
-                    <ejs-grid id="SICCGrid" dataSource="@contributions" enableAutoFill="true" columns="@SICCColumns"
-                              dataBound="dataBound" commandClick="commandClick" actionBegin="actionBeginContrib"
-                              allowExcelExport="true" height="100%" allowPdfExport="true" actionComplete="actionCompleteContrib"
-                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
-                              allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                              toolbarClick="SICCtoolbarClick" showColumnChooser="true" toolbar="@ViewData["initialToolBar"]"
-                              allowPaging="true" allowResizing="true">
+                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" newRowPosition="Bottom"></e-grid-editSettings>
+                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                </ejs-grid>
+            </div>
+            <div class="col-sm-6">
+                <h3 class="control-label m-b-5 font-roboto" style="width: 100%; text-align:center;background-color: #5BCFF3; color:white; padding:10px">Contributions</h3>
+                <ejs-grid id="SICCGrid" dataSource="@contributions.Value" enableAutoFill="true" columns="@SICCColumns"
+                          dataBound="dataBound" commandClick="commandClick" actionBegin="actionBeginContrib"
+                          allowExcelExport="true" height="100%" allowPdfExport="true" actionComplete="actionCompleteContrib"
+                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                          allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                          toolbarClick="SICCtoolbarClick" showColumnChooser="true" toolbar="@ViewData["initialToolBar"]"
+                          allowPaging="true" allowResizing="true">
 
-                        <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
-                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" newRowPosition="Bottom"></e-grid-editSettings>
-                        <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
-                        <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
-                    </ejs-grid>
-                </div>
+                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" newRowPosition="Bottom"></e-grid-editSettings>
+                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                </ejs-grid>
             </div>
         </div>
 
@@ -90,6 +97,30 @@
 </div>
 
 <script>
+    function setUpperLimit() {
+        console.log($('#upperLimit').val());
+        $.ajax({
+            url: '@Url.Content("~")Setup?handler=UpperLimit',
+            async: false,
+            type: "POST",
+            data: {
+                limit: $('#upperLimit').val(),
+                __RequestVerificationToken: $('input:hidden[name="__RequestVerificationToken"]').val()
+            },
+            success: function (data) {
+                console.log(data.Value);
+                $('upperLimit').val(data.Value);
+                //BindGrid(data.body.key);
+                toastr.info(`Social Insurance Upper Limit Set To: ${data.Value}`);
+            },
+            error: function (err) {
+                console.log(err);
+
+            }
+        });
+
+        return false;
+    }
     function SICtoolbarClick(args) {
         var gridObj = document.getElementById("SICGrid").ej2_instances[0];
         if (args.item.id === 'SICGrid_pdfexport') {
@@ -118,11 +149,11 @@
             }
         }
         if (args.item.id === 'showActions') {
-            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, "ExcelExport", "CsvExport", "Add", "Save", "Delete", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, "Add", "Cancel", "Edit", "Delete", { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, "ExcelExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
             gridObj.refresh();
         }
         if (args.item.id === 'hideActions') {
-            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Add", "Cancel", "Edit", "Delete", "Search", "ColumnChooser"];
             gridObj.showColumnChooser = true;
             gridObj.refresh();
         }
@@ -159,11 +190,11 @@
             }
         }
         if (args.item.id === 'showActions') {
-            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, "ExcelExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, "Add", "Cancel", "Edit", "Delete", { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, "ExcelExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
             gridObj.refresh();
         }
         if (args.item.id === 'hideActions') {
-            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Add", "Cancel", "Edit", "Delete", "Search", "ColumnChooser"];
             gridObj.showColumnChooser = true;
             gridObj.refresh();
         }
@@ -173,10 +204,6 @@
         }
     }
 
-    function commandClick(args)
-    {
-
-    }
     function dataBound(args)
     {
 
@@ -188,7 +215,6 @@
         if (args.requestType == "save") {
             console.log(args.data);
             if (typeof args.data.Title === '') {
-                console.log('Hello');
                 args.cancel = false;
             }
             else
@@ -254,6 +280,7 @@
                     type: "POST",
                     data: {
                         contrib: args.data,
+                        categoryName: args.data.CategoryTitle,
                         __RequestVerificationToken: $('input:hidden[name="__RequestVerificationToken"]').val()
                     },
                     success: function (data) {
@@ -318,12 +345,15 @@
                 async: false,
                 type: "DELETE",
                 data: {
-                    contribCat: args.data,
+                    categories: args.data,
                     __RequestVerificationToken: $('input:hidden[name="__RequestVerificationToken"]').val()
                 },
                 success: function (data) {
                     //console.log(data.success);
+                    var Obj = $("#SICCGrid")[0].ej2_instances[0];
 
+                    Obj.columns[4].edit.params.dataSource = JSON.parse(data);
+                    console.log(Obj.columns[4].edit.params.dataSource);
                 },
                 error: function (err) {
                     console.log(err);
@@ -348,14 +378,7 @@
                 },
                 success: function (data) {
                     //console.log(data.success);
-                    var Obj = $("#SICGrid")[0].ej2_instances[0];
 
-                    var ajax = new ej.base.Ajax('@Url.Content("~")Setup?handler=SICs', 'GET');
-                    ajax.send();
-                    ajax.onSuccess = function (data) {
-                        Obj.columns[4].edit.params.dataSource = JSON.parse(data);
-                        console.log(Obj.columns[4].edit.params.dataSource)
-                    };
                 },
                 error: function (err) {
                     console.log(err);

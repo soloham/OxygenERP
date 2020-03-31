@@ -40,6 +40,8 @@
 
     ViewData["employees"] = Model.employeeAppService.Repository.ToList();
 
+    ViewData["eosbTypes"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.IndemnityType).OrderBy(x => x.Key).ToList();
+    ViewData["siTypes"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.SocialInsuranceType).OrderBy(x => x.Key).ToList();
     ViewData["banks"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Bank).OrderBy(x => x.Key).ToList();
     ViewData["banksColumns"] = new List<GridColumn>() {
         new GridColumn { Field = "Id", Width = "110", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
@@ -456,6 +458,8 @@
                 var form = [];
                 var generalInfo = $('#generalInfo').find("select, textarea, input").serializeArray();
                 form = form.concat(generalInfo);
+                var fdGeneralInfo = $('#fdGeneralInfo').find("select, textarea, input").serializeArray();
+                form = form.concat(fdGeneralInfo);
                 var contractDetails = $('#form-step-2').find("select, textarea, input").serializeArray();
                 form = form.concat(contractDetails);
                 
@@ -470,6 +474,9 @@
                 //}
                 params.Id = "@(IsEditing? Model.EmployeeId : Guid.Empty)";
                 params.profilePic = "@(IsEditing? Model.EmployeeToEdit.ProfilePic ?? "" : "")";
+                params.socialInsuranceId = $('#socialInsuranceId').val();
+                params.indemnityTypeId = $('#eosbTypeId').val();
+                params.sITypeId = $('#sITypeId').val();
                 var primaryContactInfo = objectifyForm($('#primaryContactForm').find("select, textarea, input").serializeArray());
                 var nationalAddressInfo = objectifyForm($('#nationalAddressInfo').find("select, textarea, input").serializeArray());
                 var portalDetail = objectifyForm($('#form-step-7-1').find("select, textarea, input").serializeArray());

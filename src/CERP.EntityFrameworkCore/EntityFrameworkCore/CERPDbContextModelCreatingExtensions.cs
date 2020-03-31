@@ -275,6 +275,8 @@ namespace CERP.EntityFrameworkCore
                 b.HasOne(p => p.ContractType).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.EmployeeStatus).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.Department).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(p => p.SIType).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(p => p.IndemnityType).WithMany().OnDelete(DeleteBehavior.Restrict);
 
                 b.HasOne(p => p.Position).WithOne(pos => pos.Employee).OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.WorkShift).WithMany(p => p.Employees).OnDelete(DeleteBehavior.Restrict);

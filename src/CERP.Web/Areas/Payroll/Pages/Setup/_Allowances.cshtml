@@ -3,10 +3,11 @@
 @using CERP.Payroll.Payrun;
 @{
     List<DictionaryValue_Dto> AllowancesDS = Model.AllowancesDS;
+
     List<GridColumn> AllowancesColumns = new List<GridColumn>() {
         new GridColumn { Field = "Value", HeaderText = "Title", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "Dimension_1", HeaderText = "SI Eligibility", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "Dimension_2", HeaderText = "Indemnity Eligibility", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "Dimension_1_Value", HeaderText = "SI Eligibility",EditType="booleanedit", Type="boolean", DisplayAsCheckBox=true, DefaultValue=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "Dimension_2_Value", HeaderText = "Indemnity Eligibility",EditType="booleanedit", Type="boolean",  DisplayAsCheckBox=true, DefaultValue=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
     };
 }
 
@@ -29,11 +30,11 @@
     <div class="col-lg-12 padding-right-0">
         <div class="row">
             <ejs-grid id="AllowancesGrid" dataSource="@AllowancesDS" enableAutoFill="true" columns="@AllowancesColumns"
-                      dataBound="dataBound" commandClick="commandClick"
-                      allowExcelExport="true" height="100%" allowPdfExport="true"
+                      dataBound="dataBound" commandClick="allowancesCommandClick" actionBegin="allowanceActionBegin"
+                      allowExcelExport="true" height="100%" allowPdfExport="true" actionComplete="allowanceActionComplete"
                       hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                       allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                      toolbarClick="toolbarClick" showColumnChooser="true" toolbar="@ViewData["initialToolBar"]"
+                      toolbarClick="allowancesToolbarClick" showColumnChooser="true" toolbar="@ViewData["initialToolBar"]"
                       allowPaging="true" allowResizing="true">
 
                 <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
@@ -46,7 +47,7 @@
 </div>
 
 <script>
-    function toolbarClick(args) {
+    function allowancesToolbarClick(args) {
         var gridObj = document.getElementById("AllowancesGrid").ej2_instances[0];
         if (args.item.id === 'AllowancesGrid_pdfexport') {
             gridObj.pdfExport();
@@ -87,34 +88,80 @@
             gridObj.refresh();
         }
     }
-
-    function commandClick(args)
-    {
-
-    }
-    function dataBound(args)
-    {
-
-    }
-    function actionComplete(args) {
+    function allowanceActionComplete(args) {
         if (args.requestType == "save") {
 
         }
         else if (args.requestType == "delete")
         {
-            DeletePayrun(args.data[0].year, args.data[0].month);
+            $.ajax({
+                url: '@Url.Content("~")Setup?handler=Allowance',
+                async: false,
+                type: "DELETE",
+                data: {
+                    allowances: args.data,
+                    __RequestVerificationToken: $('input:hidden[name="__RequestVerificationToken"]').val()
+                },
+                success: function (data) {
+                    //console.log(data.success); 
+                    toastr.info(`${args.data.Value} Allowance Deleted`);
+                },
+                error: function (err) {
+                    console.log(err);
+                    toastr.info(`Unable to delete ${args.data.Value} Allowance`);
+                }
+            });
         }
     }
-    function actionBegin(args) {
+    function allowanceActionBegin(args) {
         if (args.requestType == "save") {
+            if (typeof args.data.Value === '') {
+                args.cancel = false;
+            }
+            else
+            {
+                var isAdd = typeof args.data.Id === 'undefined';
+                console.log(args.data.Id);
+                var url = '';
+                if (isAdd)
+                    url = '@Url.Content("~")Setup?handler=NewAllowance';
+                else
+                    url = '@Url.Content("~")Setup?handler=Allowance';
 
+                $.ajax({
+                    url: url,
+                    async: false,
+                    type: "POST",
+                    data: {
+                        allowance: args.data,
+                        __RequestVerificationToken: $('input:hidden[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        args.data.Id = data.id;
+                        args.data.Value = data.value;
+                        args.data.Dimension_1_Value = data.dimension_1_Value;
+                        args.data.Dimension_2_Value = data.dimension_2_Value;
+
+                        if (isAdd)
+                            toastr.info(`${data.value} Allowance Created`);
+                        else
+                            toastr.info(`${data.value} Allowance Updated`);
+                        //BindGrid(data.body.key);
+                    },
+                    error: function (err) {
+                        console.log(err);
+
+                    }
+                });
+            }
         }
         else if (args.requestType == "delete")
         {
             //DeletePayrun(args.data[0].year, args.data[0].month);
         }
     }
-    function commandClick(args)
+    function allowancesCommandClick(args)
     {
         console.log(args);
         if (args.commandColumn.type == "Edit")
@@ -137,12 +184,6 @@
         else if (args.commandColumn.type == "Delete") {
 
         }
-    }
-    function alertBtnClick() {
-        var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
-        var dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
-        dialogObj.hide();
-        dialogObj1.hide();
     }
 
 </script>

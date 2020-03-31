@@ -76,7 +76,9 @@ namespace CERP.EntityFrameworkCore
                                                        .Include(p => p.WorkShift)
                                                        .Include(p => p.EmployeeStatus)
                                                        .Include(p => p.EmployeeType)
-                                                       .Include(p => p.Position).ThenInclude(x => x.Department);
+                                                       .Include(p => p.Position).ThenInclude(x => x.Department)
+                                                       .Include(p => p.SIType)
+                                                       .Include(p => p.IndemnityType);
                 });
 
                 options.Entity<PhysicalID>(opt =>
@@ -128,6 +130,12 @@ namespace CERP.EntityFrameworkCore
                                                         .ThenInclude(p => p.Employee)
                                                         .ThenInclude(p => p.Nationality)
                                                        .Include(p => p.PayrunDetails)
+                                                        .ThenInclude(p => p.Employee)
+                                                        .ThenInclude(p => p.SIType)
+                                                       .Include(p => p.PayrunDetails)
+                                                        .ThenInclude(p => p.Employee)
+                                                        .ThenInclude(p => p.IndemnityType)
+                                                       .Include(p => p.PayrunDetails)
                                                         .ThenInclude(x => x.EmployeeTimesheet)
                                                        .Include(p => p.PostedBy);
                 });
@@ -138,6 +146,10 @@ namespace CERP.EntityFrameworkCore
                                                         .ThenInclude(x => x.Company)
                                                        .Include(p => p.Employee)
                                                         .ThenInclude(p => p.Position)
+                                                       .Include(p => p.Employee)
+                                                        .ThenInclude(p => p.SIType)
+                                                       .Include(p => p.Employee)
+                                                        .ThenInclude(p => p.IndemnityType)
                                                        .Include(p => p.PayrunAllowancesSummaries)
                                                         .ThenInclude(x => x.AllowanceType)
                                                        .Include(p => p.EmployeeTimesheet);

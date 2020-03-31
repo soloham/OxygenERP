@@ -136,7 +136,7 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
         public dynamic GetIndemnityModel()
         {
             dynamic Model = new ExpandoObject();
-            Model.EOSBAllowances = Allowances;
+            Model.EOSBAllowances = Allowances.Where(x => x.Dimension_1_Value.ToUpper() == "TRUE").ToList();
             Model.EOSBDS = null;
             return Model;
         }
@@ -152,6 +152,7 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
                 for (int i = 0; i < payrunDetails.Count; i++)
                 {
                     PayrunDetail_Dto curDetail = payrunDetails[i];
+                    if (curDetail.Employee.IndemnityType == null || curDetail.Employee.IndemnityType.Value != "Eligible") continue;
                     PayrunDetail_Dto curDetailLast = payrunLast == null? null : payrunLast.PayrunDetails.FirstOrDefault(x => x.EmployeeId == curDetail.EmployeeId);
 
                     PayrunDetailIndemnity_Dto employeeIndemnity = curDetail.GetIndemnity();
@@ -201,13 +202,13 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
             dynamic Model = new ExpandoObject();
             List<SIContributionCategory_Dto> SIContributionCategories = ObjectMapper.Map<List<SIContributionCategory>, List<SIContributionCategory_Dto>>(SocialInsuranceAppService.Repository.WithDetails().First().ContributionCategories.ToList());
             Model.SIContributionCategories = SIContributionCategories;
-            Model.SIAllowances = Allowances;
+            Model.SIAllowances = Allowances.Where(x => x.Dimension_2_Value.ToUpper() == "TRUE").ToList();
             Model.SIDS = null;
             return Model;
         }
         public SocialInsuranceReport_Dto GetSIReport(PayrunDetail_Dto detail)
         {
-            List<PayrunAllowanceSummary_Dto> payrunAllowances = detail.PayrunAllowancesSummaries.ToList();
+            List<PayrunAllowanceSummary_Dto> payrunAllowances = detail.PayrunAllowancesSummaries.Where(x => x.AllowanceType.Dimension_1_Value.ToUpper() == "TRUE").ToList();
 
             GeneralInfo generalInfo = JsonSerializer.Deserialize<GeneralInfo>(detail.Employee.ExtraProperties["generalInfo"].ToString());
             PhysicalId<Guid> currentPhysicalId = generalInfo.PhysicalIds.Last(x => x.GetIDTypeValue == "Iqama" && x.EndDate <= DateTime.Now);
@@ -244,6 +245,7 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
                 {
                     PayrunDetail_Dto curDetail = payrunDetails[i];
 
+                    if (curDetail.Employee.SIType == null || curDetail.Employee.SIType.Value != "Eligible") continue;
                     SocialInsuranceReport_Dto employeeSIReport = GetSIReport(curDetail);
                     
                     dynamic siDSRow = new ExpandoObject();

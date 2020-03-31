@@ -81,7 +81,7 @@ namespace CERP.Payroll.DTOs
 
         public PayrunDetailIndemnity_Dto GetIndemnity()
         {
-            List<PayrunAllowanceSummary_Dto> payrunAllowances = PayrunAllowancesSummaries.ToList();
+            List<PayrunAllowanceSummary_Dto> payrunAllowances = PayrunAllowancesSummaries.Where(x => x.AllowanceType.Dimension_2_Value.ToUpper() == "TRUE").ToList();
 
             PayrunDetailIndemnity_Dto indemnityDSRow = new PayrunDetailIndemnity_Dto();
             indemnityDSRow.Payrun = Payrun;

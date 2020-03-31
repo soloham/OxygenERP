@@ -20,9 +20,18 @@ namespace CERP.AppServices.Payroll.PayrunService
 
         public IRepository<SISetup, int> Repository { get; }
 
+        public SISetup GetEntitySetupWDAsync()
+        {
+            return Repository.WithDetails().First();
+        }
         public SISetup_Dto GetSetupWDAsync()
         {
             return ObjectMapper.Map<SISetup, SISetup_Dto>(Repository.WithDetails().First());
+        }
+
+        public SISetup_Dto GetCurrentSetup()
+        {
+            return ObjectMapper.Map<SISetup, SISetup_Dto>(Repository.First());
         }
     }
 }
