@@ -85,8 +85,8 @@ namespace CERP
             CreateMap<DictionaryValue, DictionaryValue_Dto>();
             CreateMap<DictionaryValue_Dto, DictionaryValue>();
 
-            CreateMap<DictionaryValueType, DictionaryValueType_Dto>();
-            CreateMap<DictionaryValueType_Dto, DictionaryValueType>();
+            CreateMap<DictionaryValueType, DictionaryValueType_Dto>().ForMember(d => d.Values, opt => opt.Ignore());
+            CreateMap<DictionaryValueType_Dto, DictionaryValueType>().ForMember(d => d.Values, opt => opt.Ignore());
 
             CreateMap<Employee, Employee_Dto>();
             CreateMap<Employee_Dto, Employee>();
@@ -120,8 +120,10 @@ namespace CERP
             //CreateMap<Payslip, Payslip_Dto>().ForMember(d => d.Payrun, opt => opt.Ignore());
             //CreateMap<Payslip_Dto, Payslip>().ForMember(d => d.Payrun, opt => opt.Ignore());
 
-            CreateMap<SIContributionCategory, SIContributionCategory_Dto>();
-            CreateMap<SIContributionCategory_Dto, SIContributionCategory>();
+            CreateMap<SISetup, SISetup_Dto>();
+            CreateMap<SISetup_Dto, SISetup>();
+            CreateMap<SIContributionCategory, SIContributionCategory_Dto>().ForMember(d => d.Setup, opt => opt.Ignore());
+            CreateMap<SIContributionCategory_Dto, SIContributionCategory>().ForMember(d => d.Setup, opt => opt.Ignore());
             CreateMap<SIContribution, SIContribution_Dto>().ForMember(d => d.SICategory, opt => opt.Ignore());
             CreateMap<SIContribution_Dto, SIContribution>().ForMember(d => d.SICategory, opt => opt.Ignore());
         }

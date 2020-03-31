@@ -90,4 +90,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\a\" />
+  </ItemGroup>
+
 </Project>

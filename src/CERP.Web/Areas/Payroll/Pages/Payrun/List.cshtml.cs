@@ -199,7 +199,7 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
         public dynamic GetSIReportModel()
         {
             dynamic Model = new ExpandoObject();
-            List<SIContributionCategory_Dto> SIContributionCategories = ObjectMapper.Map<List<SIContributionCategory>, List<SIContributionCategory_Dto>>(SocialInsuranceAppService.Repository.WithDetails().ToList());
+            List<SIContributionCategory_Dto> SIContributionCategories = ObjectMapper.Map<List<SIContributionCategory>, List<SIContributionCategory_Dto>>(SocialInsuranceAppService.Repository.WithDetails().First().ContributionCategories.ToList());
             Model.SIContributionCategories = SIContributionCategories;
             Model.SIAllowances = Allowances;
             Model.SIDS = null;
@@ -234,7 +234,7 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
         public IActionResult OnGetSIReport(int payrunId)
         {
             Payrun_Dto payrun = ObjectMapper.Map<Payrun, Payrun_Dto>(PayrunAppService.Repository.WithDetails().SingleOrDefault(x => x.Id == payrunId));
-            List<SIContributionCategory_Dto> SIContributionCategories = ObjectMapper.Map<List<SIContributionCategory>, List<SIContributionCategory_Dto>>(SocialInsuranceAppService.Repository.WithDetails().ToList());
+            List<SIContributionCategory_Dto> SIContributionCategories = ObjectMapper.Map<List<SIContributionCategory>, List<SIContributionCategory_Dto>>(SocialInsuranceAppService.Repository.WithDetails().First().ContributionCategories.ToList());
             if (payrun != null && payrun.IsPosted)
             {
                 List<PayrunDetail_Dto> payrunDetails = payrun.PayrunDetails.ToList();

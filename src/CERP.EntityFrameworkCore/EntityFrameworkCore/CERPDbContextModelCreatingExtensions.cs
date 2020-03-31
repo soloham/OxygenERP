@@ -626,6 +626,19 @@ namespace CERP.EntityFrameworkCore
                 b.HasOne(x => x.Employee).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(x => x.AllowanceType).WithMany().OnDelete(DeleteBehavior.Restrict);
             });
+            builder.Entity<SISetup>(b =>
+            {
+                b.ToTable(CERPConsts.PayrollDbTablePrefix + "SISetup", CERPConsts.PayrollDbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.Property(x => x.SI_UpperLimit)
+                    .IsRequired();
+
+                b.HasMany(x => x.ContributionCategories).WithOne(x => x.Setup).OnDelete(DeleteBehavior.ClientCascade);
+            });
             builder.Entity<SIContributionCategory>(b =>
             {
                 b.ToTable(CERPConsts.PayrollDbTablePrefix + "SICategories", CERPConsts.PayrollDbSchema);
@@ -640,6 +653,7 @@ namespace CERP.EntityFrameworkCore
                     .IsRequired();
 
                 b.HasMany(x => x.SIContributions).WithOne(x => x.SICategory).OnDelete(DeleteBehavior.ClientCascade);
+                b.HasOne(x => x.Setup).WithMany(x => x.ContributionCategories).OnDelete(DeleteBehavior.ClientCascade);
             });
             builder.Entity<SIContribution>(b =>
             {

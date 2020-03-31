@@ -13,8 +13,17 @@ using Volo.Abp.MultiTenancy;
 
 namespace CERP.Payroll.Payrun
 {
+    public class SISetup : AuditedAggregateTenantRoot<int>
+    {
+        public double SI_UpperLimit { get; set; }
+
+        public virtual ICollection<SIContributionCategory> ContributionCategories { get; set; }
+    }
     public class SIContributionCategory : AuditedAggregateTenantRoot<int>
     {
+        [ForeignKey("SetupId")]
+        public SISetup Setup { get; set; }
+        public int SetupId { get; set; }
 
         public string Title { get; set; }
 

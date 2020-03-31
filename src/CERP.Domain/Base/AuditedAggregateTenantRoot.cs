@@ -16,5 +16,6 @@ namespace CERP.Base
         //    TenantId = CurrentTenant.Id;
         //}
         public Guid? TenantId { get; set; }
+        //public Guid? CompanyId { get; set; }
     }
 }

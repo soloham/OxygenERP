@@ -1,0 +1,148 @@
+﻿@using CERP.App;
+@using Syncfusion.EJ2.Grids;
+@using CERP.Payroll.Payrun;
+@{
+    List<DictionaryValue_Dto> AllowancesDS = Model.AllowancesDS;
+    List<GridColumn> AllowancesColumns = new List<GridColumn>() {
+        new GridColumn { Field = "Value", HeaderText = "Title", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "Dimension_1", HeaderText = "SI Eligibility", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "Dimension_2", HeaderText = "Indemnity Eligibility", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+    };
+}
+
+@section scripts{
+}
+<script>
+    $(document).ready(function () {
+
+    })
+</script>
+
+<div class="m-l-20 m-t-0">
+    <h2>Allowances</h2>
+    <p>
+        Manage Allowances
+    </p>
+</div>
+<hr />
+<div class="panel-body p-t-0" style="padding-bottom:0;">
+    <div class="col-lg-12 padding-right-0">
+        <div class="row">
+            <ejs-grid id="AllowancesGrid" dataSource="@AllowancesDS" enableAutoFill="true" columns="@AllowancesColumns"
+                      dataBound="dataBound" commandClick="commandClick"
+                      allowExcelExport="true" height="100%" allowPdfExport="true"
+                      hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                      allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                      toolbarClick="toolbarClick" showColumnChooser="true" toolbar="@ViewData["initialToolBar"]"
+                      allowPaging="true" allowResizing="true">
+
+                <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" newRowPosition="Bottom"></e-grid-editSettings>
+                <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+            </ejs-grid>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toolbarClick(args) {
+        var gridObj = document.getElementById("AllowancesGrid").ej2_instances[0];
+        if (args.item.id === 'AllowancesGrid_pdfexport') {
+            gridObj.pdfExport();
+        }
+        if (args.item.id === 'AllowancesGrid_excelexport') {
+            gridObj.excelExport();
+        }
+        if (args.item.id === 'AllowancesGrid_csvexport') {
+            gridObj.csvExport();
+        }
+        if (this.getSelectedRecords().length > 0) {
+            var withHeader = false;
+            if (args.item.id === 'copyHeader') {
+                withHeader = true;
+            }
+            this.copy(withHeader);
+        } else {
+            if (args.item.id === 'copyHeader') {
+                var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+                dialogObj.show();
+            }
+            else if (args.item.id === 'copy') {
+                var dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+                dialogObj.show();
+            }
+        }
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, "ExcelExport", "CsvExport", "Add", "Save", "Delete", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.showColumnChooser = true;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
+        }
+    }
+
+    function commandClick(args)
+    {
+
+    }
+    function dataBound(args)
+    {
+
+    }
+    function actionComplete(args) {
+        if (args.requestType == "save") {
+
+        }
+        else if (args.requestType == "delete")
+        {
+            DeletePayrun(args.data[0].year, args.data[0].month);
+        }
+    }
+    function actionBegin(args) {
+        if (args.requestType == "save") {
+
+        }
+        else if (args.requestType == "delete")
+        {
+            //DeletePayrun(args.data[0].year, args.data[0].month);
+        }
+    }
+    function commandClick(args)
+    {
+        console.log(args);
+        if (args.commandColumn.type == "Edit")
+        {
+            var params = args.rowData;  // display row data
+            console.log(params);
+
+            window.location = `@Url.Content("~")/Payroll/Payrun/Run?foryear=${params.year}&formonth=${params.month}`;
+        }
+        else if (args.commandColumn.type == "View")
+        {
+            var params = args.rowData;  // display row data
+            console.log(params);
+
+            window.location = `@Url.Content("~")/Payroll/Payrun/Run?foryear=${params.year}&formonth=${params.month}`;
+        }
+        else if (args.commandColumn.type == "Copy") {
+            this.copy(false);
+        }
+        else if (args.commandColumn.type == "Delete") {
+
+        }
+    }
+    function alertBtnClick() {
+        var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+        var dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
+        dialogObj.hide();
+        dialogObj1.hide();
+    }
+
+</script>

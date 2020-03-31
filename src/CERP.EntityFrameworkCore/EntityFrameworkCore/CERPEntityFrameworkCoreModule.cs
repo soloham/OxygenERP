@@ -142,6 +142,10 @@ namespace CERP.EntityFrameworkCore
                                                         .ThenInclude(x => x.AllowanceType)
                                                        .Include(p => p.EmployeeTimesheet);
                 });
+                options.Entity<SISetup>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.ContributionCategories).ThenInclude(x => x.SIContributions);
+                });
                 options.Entity<SIContributionCategory>(opt =>
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.SIContributions);

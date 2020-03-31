@@ -17,21 +17,27 @@ namespace CERP.App
     {
         private readonly IGuidGenerator _guidGenerator;
 
-        public CERP_Payroll_DataSeedContributor(IGuidGenerator guidGenerator, IRepository<SIContributionCategory> sIContribCatRepo, IRepository<SIContribution> sIContribsRepo)
+        public CERP_Payroll_DataSeedContributor(IGuidGenerator guidGenerator, IRepository<SIContributionCategory> sIContribCatRepo, IRepository<SIContribution> sIContribsRepo, IRepository<SISetup> sISetup)
         {
             _guidGenerator = guidGenerator;
             SIContribCatRepo = sIContribCatRepo;
             SIContribsRepo = sIContribsRepo;
+            SISetupRepo = sISetup;
         }
 
+        public IRepository<SISetup> SISetupRepo { get; set; }
         public IRepository<SIContributionCategory> SIContribCatRepo { get; set; }
         public IRepository<SIContribution> SIContribsRepo { get; set; }
 
         [UnitOfWork]
         public async Task SeedAsync(DataSeedContext context)
         {
-            var curSIContribCats = await SIContribCatRepo.GetListAsync();
-            if(!curSIContribCats.Any(x => x.Title == "Employee"))
+            bool isUpdate = false;
+            var sISetup = SISetupRepo.WithDetails().FirstOrDefault();
+            isUpdate = sISetup != null;
+            sISetup = !isUpdate ? new SISetup() { ContributionCategories = new List<SIContributionCategory>(), TenantId = context.TenantId } : null;
+
+            if (!sISetup.ContributionCategories.Any(x => x.Title == "Employee"))
             {
                 SIContributionCategory category = new SIContributionCategory();
                 category.Title = "Employee";
@@ -43,9 +49,9 @@ namespace CERP.App
                     new SIContribution(){ Title = "Unemployment Contribution", Value = 1, IsPercentage = true, TenantId = context.TenantId }
                 };
 
-                await SIContribCatRepo.InsertAsync(category);
+                sISetup.ContributionCategories.Add(category);
             }
-            if(!curSIContribCats.Any(x => x.Title == "Employer"))
+            if (!sISetup.ContributionCategories.Any(x => x.Title == "Employer"))
             {
                 SIContributionCategory category = new SIContributionCategory();
                 category.Title = "Employer";
@@ -58,8 +64,13 @@ namespace CERP.App
                     new SIContribution(){ Title = "Occupational Hazard", Value = 2, IsPercentage = true, TenantId = context.TenantId }
                 };
 
-                await SIContribCatRepo.InsertAsync(category);
+                sISetup.ContributionCategories.Add(category);
             }
+
+            if (!isUpdate)
+                await SISetupRepo.InsertAsync(sISetup);
+            else
+                await SISetupRepo.UpdateAsync(sISetup);
         }
     }
 }

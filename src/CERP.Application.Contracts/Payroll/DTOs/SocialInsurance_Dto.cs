@@ -3,12 +3,20 @@ using CERP.HR.Employees.DTOs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace CERP.Payroll.DTOs
 {
+    public class SISetup_Dto : AuditedEntityTenantDto<int>
+    {
+        public double SI_UpperLimit { get; set; }
+
+        public virtual ICollection<SIContributionCategory_Dto> ContributionCategories { get; set; }
+    }
+
     public class SIContributionCategory_Dto : AuditedEntityTenantDto<int>
     {
+        public SISetup_Dto Setup { get; set; }
+        public int SetupId { get; set; }
         public string Title { get; set; }
         public bool IsExpense { get; set; }
 

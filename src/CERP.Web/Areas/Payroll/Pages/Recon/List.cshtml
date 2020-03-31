@@ -326,6 +326,12 @@
             
         }
     }
+    function alertBtnClick() {
+        var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+        var dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
+        dialogObj.hide();
+        dialogObj1.hide();
+    }
 
     function onLoad() {
         this.parentDetails.parentKeyFieldValue = this.parentDetails.parentRowData['Id'];
@@ -371,12 +377,6 @@
             gridObj.refresh();
         }
 }
-    function alertBtnClick() {
-        var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
-        var dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
-        dialogObj.hide();
-        dialogObj1.hide();
-    }
     var initial = true;
     function dataBound(args) {
         //this.autoFitColumns();
