@@ -59,8 +59,8 @@
             <div class="col-sm-6">
                 <h3 class="control-label m-b-5 font-roboto" style="width: 100%; text-align:center; background-color: #5BCFF3; color:white; padding:10px">Contribution Categories</h3>
                 <ejs-grid id="SICGrid" dataSource="@contributionsCats.Value" enableAutoFill="true" columns="@SICColumns"
-                          dataBound="dataBound" commandClick="commandClick" actionBegin="actionBeginCat"
-                          allowExcelExport="true" height="100%" allowPdfExport="true" actionComplete="actionCompleteCat"
+                          dataBound="dataBoundResponsive"commandClick="commandClick" actionBegin="actionBeginCat"
+                          allowExcelExport="true" height="100%" allowPdfExport="true" load="onLoad" actionComplete="actionCompleteCat"
                           hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                           allowSorting="true" allowMultiSorting="true" gridLines="Both"
                           toolbarClick="SICtoolbarClick" showColumnChooser="true" toolbar="@ViewData["initialToolBar"]"
@@ -75,8 +75,8 @@
             <div class="col-sm-6">
                 <h3 class="control-label m-b-5 font-roboto" style="width: 100%; text-align:center;background-color: #5BCFF3; color:white; padding:10px">Contributions</h3>
                 <ejs-grid id="SICCGrid" dataSource="@contributions.Value" enableAutoFill="true" columns="@SICCColumns"
-                          dataBound="dataBound" commandClick="commandClick" actionBegin="actionBeginContrib"
-                          allowExcelExport="true" height="100%" allowPdfExport="true" actionComplete="actionCompleteContrib"
+                          dataBound="dataBoundResponsive"commandClick="commandClick" actionBegin="actionBeginContrib"
+                          allowExcelExport="true" height="100%" allowPdfExport="true" load="onLoad" actionComplete="actionCompleteContrib"
                           hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                           allowSorting="true" allowMultiSorting="true" gridLines="Both"
                           toolbarClick="SICCtoolbarClick" showColumnChooser="true" toolbar="@ViewData["initialToolBar"]"
@@ -108,10 +108,10 @@
                 __RequestVerificationToken: $('input:hidden[name="__RequestVerificationToken"]').val()
             },
             success: function (data) {
-                console.log(data.Value);
-                $('upperLimit').val(data.Value);
+                console.log(data);
+                $('upperLimit').val(data);
                 //BindGrid(data.body.key);
-                toastr.info(`Social Insurance Upper Limit Set To: ${data.Value}`);
+                toastr.info(`Social insurance upper limit: ${data}`);
             },
             error: function (err) {
                 console.log(err);
@@ -149,7 +149,7 @@
             }
         }
         if (args.item.id === 'showActions') {
-            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, "Add", "Cancel", "Edit", "Delete", { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, "ExcelExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, "Add", "Cancel", "Edit", "Delete", { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
             gridObj.refresh();
         }
         if (args.item.id === 'hideActions') {
@@ -159,6 +159,28 @@
         }
         if (args.item.id === 'toggleGrouping') {
             gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            var visCount = 0;
+            for (var i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
             gridObj.refresh();
         }
     }
@@ -190,7 +212,7 @@
             }
         }
         if (args.item.id === 'showActions') {
-            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, "Add", "Cancel", "Edit", "Delete", { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, "ExcelExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, "Add", "Cancel", "Edit", "Delete", { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
             gridObj.refresh();
         }
         if (args.item.id === 'hideActions') {
@@ -200,6 +222,28 @@
         }
         if (args.item.id === 'toggleGrouping') {
             gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            var visCount = 0;
+            for (var i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
             gridObj.refresh();
         }
     }

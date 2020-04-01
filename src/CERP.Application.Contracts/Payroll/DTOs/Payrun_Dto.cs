@@ -44,6 +44,10 @@ namespace CERP.Payroll.DTOs
 
         public Employee_Dto? PostedBy { get; set; }
         public Guid? PostedById { get; set; }
+
+        public bool IsPSPosted { get; set; }
+        public bool IsSIPosted { get; set; }
+        public bool IsIndemnityPosted { get; set; }
     }
 
     public class PayrunDetail_Dto : FullAuditedEntityTenantDto<int>

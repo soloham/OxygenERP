@@ -36,6 +36,66 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
             SocialInsuranceAppService = socialInsuranceAppService;
         }
 
+        public async Task<IActionResult> OnPostSocialInsurance(int id)
+        {
+            try
+            {
+                Payrun payrun = PayrunAppService.Repository.WithDetails().SingleOrDefault(x => x.Id == id);
+                if (payrun != null && payrun.IsPosted)
+                {
+                    payrun.IsSIPosted = true;
+                    await PayrunAppService.Repository.UpdateAsync(payrun);
+                }
+                else
+                    return StatusCode(500);
+
+                return StatusCode(200);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500);
+            }
+        }
+        public async Task<IActionResult> OnPostIndemnity(int id)
+        {
+            try
+            {
+                Payrun payrun = PayrunAppService.Repository.WithDetails().SingleOrDefault(x => x.Id == id);
+                if (payrun != null && payrun.IsPosted)
+                {
+                    payrun.IsIndemnityPosted = true;
+                    await PayrunAppService.Repository.UpdateAsync(payrun);
+                }
+                else
+                    return StatusCode(500);
+
+                return StatusCode(200);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500);
+            }
+        }
+        public async Task<IActionResult> OnPostPaymentSheet(int id)
+        {
+            try
+            {
+                Payrun payrun = PayrunAppService.Repository.WithDetails().SingleOrDefault(x => x.Id == id);
+                if (payrun != null && payrun.IsPosted)
+                {
+                    payrun.IsPSPosted = true;
+                    await PayrunAppService.Repository.UpdateAsync(payrun);
+                }
+                else
+                    return StatusCode(500);
+                return StatusCode(200);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500);
+            }
+        }
+
         public void OnGet()
         {
             Allowances = DicValuesRepo.Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.AllowanceType).ToList();
@@ -105,7 +165,7 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
                     PayrunDetail curDetail = payrunDetails[i];
                     List<PayrunAllowanceSummary> payrunAllowances = curDetail.PayrunAllowancesSummaries.ToList();
                     PayrunAllowanceSummary housingAllowance = payrunAllowances.LastOrDefault(x => x.AllowanceType.Value == "Housing");
-                    string otherAllowancesSum = "SAR " + (payrunAllowances.Sum(x => x.Value) - (housingAllowance == null ? 0 : housingAllowance.Value)).ToString("N2");
+                    string otherAllowancesSum = "" + (payrunAllowances.Sum(x => x.Value) - (housingAllowance == null ? 0 : housingAllowance.Value)).ToString("N2");
                     DateTime curPeriod = new DateTime(curDetail.Year, curDetail.Month, 1);
 
                     dynamic paymentSlipDSRow = new ExpandoObject();
@@ -119,12 +179,15 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
                     paymentSlipDSRow.getBankName = curBank.GetBankName;
                     paymentSlipDSRow.getBankIBAN = curBank.BankIBAN;
 
-                    paymentSlipDSRow.getBasicSalary = "SAR " + curDetail.BasicSalary.ToString("N2");
-                    paymentSlipDSRow.getAllowanceHousing = housingAllowance == null ? "—" : "SAR " + housingAllowance.Value.ToString("N2");
+                    paymentSlipDSRow.getBasicSalary = "" + curDetail.BasicSalary.ToString("N2");
+                    paymentSlipDSRow.getAllowanceHousing = housingAllowance == null ? "—" : "" + housingAllowance.Value.ToString("N2");
                     paymentSlipDSRow.getOtherIncome = otherAllowancesSum;
-                    paymentSlipDSRow.getDeductions = "SAR " + curDetail.GrossDeductions.ToString("N2");
-                    paymentSlipDSRow.getPayment = "SAR " + curDetail.NetAmount.ToString("N2");
+                    paymentSlipDSRow.getDeductions = "" + curDetail.GrossDeductions.ToString("N2");
+                    paymentSlipDSRow.getPayment = "" + curDetail.NetAmount.ToString("N2");
 
+                    paymentSlipDSRow.month = curDetail.Month;
+                    paymentSlipDSRow.year = curDetail.Year;
+                    paymentSlipDSRow.isPosted = payrun.IsPSPosted;
                     dynamicDS.Add(paymentSlipDSRow);
                 }
 
@@ -170,20 +233,23 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
                     indemnityDSRow.getEmpName = employeeIndemnity.Employee.Name;
                     indemnityDSRow.getEmpDepartment = employeeIndemnity.Employee.Department.Name;
                     indemnityDSRow.getEmpDOJ = employeeIndemnity.Employee.JoiningDate;
-                    indemnityDSRow.getBasicSalary = "SAR " + employeeIndemnity.BasicSalary.ToString("N2");
+                    indemnityDSRow.getBasicSalary = "" + employeeIndemnity.BasicSalary.ToString("N2");
 
                     foreach (PayrunAllowanceSummary_Dto eosbAllowance in employeeIndemnity.PayrunEOSBAllowancesSummaries)
                     {
-                        DynamicHelper.AddProperty(indemnityDSRow, $"{eosbAllowance.AllowanceType.Value}_Value", "SAR " + eosbAllowance.Value.ToString("N2"));
+                        DynamicHelper.AddProperty(indemnityDSRow, $"{eosbAllowance.AllowanceType.Value}_Value", "" + eosbAllowance.Value.ToString("N2"));
                     }
 
-                    indemnityDSRow.getEmpGrossSalary = "SAR " + employeeIndemnity.GrossSalary.ToString("N2");
+                    indemnityDSRow.getEmpGrossSalary = "" + employeeIndemnity.GrossSalary.ToString("N2");
                     indemnityDSRow.getEmpTotalDays = employeeIndemnity.TotalEmploymentDays;
                     indemnityDSRow.getEmpDaysBelow = employeeIndemnity.TotalPre5EmploymentDays;
                     indemnityDSRow.getEmpDaysAbove = employeeIndemnity.TotalPost5EmploymentDays;
-                    indemnityDSRow.getEmpTotalEOSB = "SAR " + employeeIndemnity.TotalEOSB.ToString("N2");
-                    indemnityDSRow.getEmpLastMonthEOSB = "SAR " + employeeIndemnity.LastMonthEOSB.ToString("N2");
-                    indemnityDSRow.getEmpEOSBDifference = "SAR " + employeeIndemnity.Difference.ToString("N2");
+                    indemnityDSRow.getEmpTotalEOSB = "" + employeeIndemnity.TotalEOSB.ToString("N2");
+                    indemnityDSRow.getEmpLastMonthEOSB = "" + employeeIndemnity.LastMonthEOSB.ToString("N2");
+                    indemnityDSRow.getEmpEOSBDifference = "" + employeeIndemnity.Difference.ToString("N2");
+
+                    indemnityDSRow.month = curDetail.Month;
+                    indemnityDSRow.year = curDetail.Year;
 
                     dynamicDS.Add(indemnityDSRow);
                 }
@@ -192,6 +258,9 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
 
                 dynamic Model = new ExpandoObject();
                 Model.EOSBDS = dynamicDS;
+                Model.month = payrun.Month;
+                Model.year = payrun.Year;
+                Model.isPosted = payrun.IsIndemnityPosted;
                 return new JsonResult(Model);
             }
             return StatusCode(500);
@@ -208,6 +277,7 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
         }
         public SocialInsuranceReport_Dto GetSIReport(PayrunDetail_Dto detail)
         {
+            double upperLimit = SocialInsuranceAppService.GetCurrentSetup().SI_UpperLimit;
             List<PayrunAllowanceSummary_Dto> payrunAllowances = detail.PayrunAllowancesSummaries.Where(x => x.AllowanceType.Dimension_1_Value.ToUpper() == "TRUE").ToList();
 
             GeneralInfo generalInfo = JsonSerializer.Deserialize<GeneralInfo>(detail.Employee.ExtraProperties["generalInfo"].ToString());
@@ -228,6 +298,7 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
             siDSRow.PayrunSIAllowancesSummaries = payrunAllowances;//payrunAllowances.Select(x => x.a);
             siDSRow.TotalSISalary = (double)siDSRow.PayrunSIAllowancesSummaries.Sum(x => x.Value);
             siDSRow.TotalSISalary += curBasicSalary;
+            siDSRow.TotalSISalary = Math.Min(upperLimit, siDSRow.TotalSISalary);
 
             return siDSRow;
         }
@@ -255,15 +326,15 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
                     siDSRow.getEmpIdentityNumber = employeeSIReport.EmpID;
                     siDSRow.getEmpNationality = employeeSIReport.Employee.Nationality.Value;
                     siDSRow.getEmpSIID = employeeSIReport.EmpSIId;
-                    siDSRow.getBasicSalary = "SAR " + employeeSIReport.BasicSalary.ToString("N2");
+                    siDSRow.getBasicSalary = "" + employeeSIReport.BasicSalary.ToString("N2");
 
                     foreach (PayrunAllowanceSummary_Dto siAllowance in employeeSIReport.PayrunSIAllowancesSummaries)
                     {
-                        DynamicHelper.AddProperty(siDSRow, $"{siAllowance.AllowanceType.Value}_Value", "SAR " + siAllowance.Value.ToString("N2"));
+                        DynamicHelper.AddProperty(siDSRow, $"{siAllowance.AllowanceType.Value}_Value", "" + siAllowance.Value.ToString("N2"));
                     }
 
                     double totalSISalary = employeeSIReport.TotalSISalary;
-                    siDSRow.getEmpTotalSalaryForSI = "SAR " + totalSISalary.ToString("N2");
+                    siDSRow.getEmpTotalSalaryForSI = "" + totalSISalary.ToString("N2");
 
                     List<(string title, double value)> Contributions = new List<(string title, double value)>();
                     foreach (SIContributionCategory_Dto SIC in SIContributionCategories)
@@ -273,15 +344,19 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
                             double SICCCV = SICC.IsPercentage ? totalSISalary * (SICC.Value / 100) : SICC.Value;
                             int contribIndex = Contributions.FindIndex(x => x.title == SICC.Title);
                             if (contribIndex != -1) Contributions[contribIndex] = (SICC.Title, Contributions[contribIndex].value + SICCCV); else Contributions.Add((SICC.Title, SICCCV));
-                            DynamicHelper.AddProperty(siDSRow, $"{SIC.Title}_{SICC.Title}_Value", $"SAR {SICCCV.ToString("N2")}");
+                            DynamicHelper.AddProperty(siDSRow, $"{SIC.Title}_{SICC.Title}_Value", $"{SICCCV.ToString("N2")}");
                         }
                     }
 
                     foreach ((string title, double value) SICC in Contributions)
                     {
                         List<SIContribution_Dto> sIContributions = SIContributionCategories.SelectMany(x => x.SIContributions).ToList();
-                        DynamicHelper.AddProperty(siDSRow, $"Overall_{SICC.title}_Value", $"SAR {SICC.value.ToString("N2")}");
+                        DynamicHelper.AddProperty(siDSRow, $"Overall_{SICC.title}_Value", $"{SICC.value.ToString("N2")}");
                     }
+
+                    siDSRow.month = curDetail.Month;
+                    siDSRow.year = curDetail.Year;
+
                     dynamicDS.Add(siDSRow);
                 }
 
@@ -289,6 +364,9 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
 
                 dynamic Model = new ExpandoObject();
                 Model.SIDS = dynamicDS;
+                Model.month = payrun.Month;
+                Model.year = payrun.Year;
+                Model.isPosted = payrun.IsSIPosted;
                 return new JsonResult(Model);
             }
             return StatusCode(500);
@@ -310,7 +388,7 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
                 }
                 await PayrunAppService.Repository.DeleteAsync(payrun.Id);
 
-                return NoContent();
+                return new OkResult();
             }
             else
                 return StatusCode(500);
@@ -338,16 +416,16 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
         public List<GridColumn> GetPrimaryGridColumns()
         {
             List<GridColumn> gridColumns = new List<GridColumn>() {
-                new GridColumn { Field = "company.name", Width = "100", HeaderText = "Company", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "year", Width = "100", HeaderText = "Year", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "company.name", Width = "100", HeaderText = "Company", TextAlign=TextAlign.Center,  MinWidth="10", CustomAttributes=new {id="detailed"}  },
+                new GridColumn { Field = "year", Width = "100", HeaderText = "Year", TextAlign=TextAlign.Center,  MinWidth="10",  CustomAttributes=new {id="detailed"}  },
                 new GridColumn { Field = "getMonth", HeaderText = "Month", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "totalEarnings", HeaderText = "Earnings", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "totalDeductions", HeaderText = "Deductions", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "netTotal", HeaderText = "Net Total", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "note", HeaderText = "Note", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "note", HeaderText = "Note", TextAlign=TextAlign.Center,  MinWidth="10",  CustomAttributes=new {id="detailed"}  },
                 new GridColumn { Field = "isPosted", Width = "65", DisplayAsCheckBox = true, HeaderText = "Is Posted", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "postedDate", HeaderText = "Posted Date", Type="Date", Format="E, MMMM d, y", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "postedByTemp", HeaderText = "Posted By", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "postedDate", HeaderText = "Posted Date", Type="Date", Format="E, MMMM d, y", TextAlign=TextAlign.Center,  MinWidth="10",  CustomAttributes=new {id="detailed"}  },
+                new GridColumn { Field = "postedByTemp", HeaderText = "Posted By", TextAlign=TextAlign.Center,  MinWidth="10",  CustomAttributes=new {id="detailed"}  },
             };
 
             gridColumns.AddRange(GetCommandsColumns());

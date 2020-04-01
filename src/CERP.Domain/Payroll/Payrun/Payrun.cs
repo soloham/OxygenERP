@@ -43,6 +43,10 @@ namespace CERP.Payroll.Payrun
         [ForeignKey("PostedById")]
         public Employee? PostedBy { get; set; }
         public Guid? PostedById { get; set; }
+
+        public bool IsPSPosted { get; set; }
+        public bool IsSIPosted { get; set; }
+        public bool IsIndemnityPosted { get; set; }
     }
 
     public class PayrunDetail : FullAuditedAggregateTenantRoot<int>
