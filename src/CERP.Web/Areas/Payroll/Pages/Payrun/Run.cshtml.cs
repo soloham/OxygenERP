@@ -327,6 +327,7 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
 
                 if (payrun == null) payrun = new Payrun_Dto();
 
+                //payrunDetails.ForEach(x => x.Indemnity = x.GetIndemnity());
                 payrun.PayrunDetails = payrunDetails;
                 payrun.Year = year;
                 payrun.Month = month;

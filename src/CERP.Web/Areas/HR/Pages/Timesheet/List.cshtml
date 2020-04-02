@@ -551,17 +551,17 @@
                     var col = gridObj.columns[i];
                     if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
                         gridObj.showHider.hide(col.headerText, 'headerText');
-                    else
+                    else if(col.showInColumnChooser)
                         gridObj.showHider.show(col.headerText, 'headerText');
                 }
             }
             else {
                 for (var i = 0; i < gridObj.columns.length; i++) {
                     var col = gridObj.columns[i];
-                    gridObj.showHider.show(col.headerText, 'headerText');
+	    if(col.showInColumnChooser)
+                         gridObj.showHider.show(col.headerText, 'headerText');
                 }
             }
-            gridObj.refresh();
         }
 }
     function alertBtnClick() {

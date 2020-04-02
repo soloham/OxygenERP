@@ -222,13 +222,21 @@
     }
     function postIndemnity() {
         var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
-
+        var grid = $('#EOSBGrid')[0].ej2_instances[0];
+        console.log(grid.dataSource);
+        var rowObjs = grid.getRowsObject(); 
+        var indemniteisDS = [];
+        for (var i = 0; i < rowObjs.length; i++) {
+            indemniteisDS.push(rowObjs[i].data);
+        }
+        console.log(indemniteisDS);
         $.ajax({
             url: '@Url.Content("~")/Payroll/Payrun?handler=Indemnity',
             async: true,
             type: "POST",
-            data: { id: curIndemnityId, __RequestVerificationToken: xhrToken },
+            data: { indemnitiesDS: JSON.stringify(indemniteisDS), payrunId: curIndemnityId, __RequestVerificationToken: xhrToken },
             success: function (data) {
+                grid.allowEditing = false;
                 swal.fire('Success', 'Indemnity successfully posted', 'success')
                 $('#eosbHeaderPostBtn').hide();
                 $('#eosbHeaderPosted').show();
@@ -268,10 +276,8 @@
         if (args.data.isPosted) {
             if (args.data.attachmentFile != null) {
                 $(".e-" + "View-Attach-" + "Button", args.row).removeClass("e-hide");
-                console.log("Yupi");
             } else {
                 $(".e-" + "View-Attach-" + "Button", args.row).addClass("e-hide");
-                console.log("Yup");
             }
             $(".e-" + "View-Payments-Sheet-" + "Button", args.row).removeClass("e-hide");
             var gridObj = document.getElementById("PayrunsHistoryGrid").ej2_instances[0];
@@ -450,21 +456,20 @@
                     }
                     $('#psHeaderDate').html(months[data[0].month - 1] + ', ' + data[0].year);
 
-                    if (data[0].isPosted) {
-                        $('#psHeaderPostBtn').hide();
-                        $('#psHeaderPosted').show();
-                    }
-                    else {
-                        $('#psHeaderPostBtn').show();
-                        $('#psHeaderPosted').hide();
-                    }
 
-                    if (data[0].isPosted) {
-                        $('#psHeaderPostBtn').hide();
-                        $('#psHeaderPosted').show();
+                    if (params.isPosted) {
+                        if (data[0].isPosted) {
+                            $('#psHeaderPostBtn').hide();
+                            $('#psHeaderPosted').show();
+                        }
+                        else {
+                            $('#psHeaderPostBtn').show();
+                            $('#psHeaderPosted').hide();
+                        }
                     }
                     else {
-                        $('#psHeaderPostBtn').show();
+
+                        $('#psHeaderPostBtn').hide();
                         $('#psHeaderPosted').hide();
                     }
 
@@ -565,20 +570,26 @@
                 type: "GET",
                 data: { payrunId: params.id },
                 success: function (data) {
+                    grid.allowEditing = false;
                     curIndemnityId = params.id;
                     console.log(data);
                     gridMain.hideSpinner();
                     $('#eosbHeaderDate').html(months[data.month - 1] + ', ' + data.year);
 
-                    if (data.isPosted) {
-                        $('#eosbHeaderPostBtn').hide();
-                        $('#eosbHeaderPosted').show();
+                    if (params.isPosted) {
+                        if (data.isPosted) {
+                            $('#eosbHeaderPostBtn').hide();
+                            $('#eosbHeaderPosted').show();
+                        }
+                        else {
+                            $('#eosbHeaderPostBtn').show();
+                            $('#eosbHeaderPosted').hide();
+                        }
                     }
                     else {
-                        $('#eosbHeaderPostBtn').show();
+                        $('#eosbHeaderPostBtn').hide();
                         $('#eosbHeaderPosted').hide();
                     }
-
                     setTimeout(function () {
                         setTimeout(function () {
                             grid.dataSource = data.EOSBDS;
@@ -645,12 +656,20 @@
                     console.log(data);
                     $('#siHeaderDate').html(months[data.month - 1] + ', ' + data.year);
 
-                    if (data.isPosted) {
-                        $('#siHeaderPostBtn').hide();
-                        $('#siHeaderPosted').show();
+
+                    if (params.isPosted) {
+                        if (data.isPosted) {
+                            $('#siHeaderPostBtn').hide();
+                            $('#siHeaderPosted').show();
+                        }
+                        else {
+                            $('#siHeaderPostBtn').show();
+                            $('#siHeaderPosted').hide();
+                        }
                     }
                     else {
-                        $('#siHeaderPostBtn').show();
+
+                        $('#siHeaderPostBtn').hide();
                         $('#siHeaderPosted').hide();
                     }
 
@@ -688,7 +707,6 @@
     function toolbarClick(args) {
         var gridObj = document.getElementById("PayrunsHistoryGrid").ej2_instances[0];
         if (args.item.id === 'PayrunsHistoryGrid_pdfexport') {
-            console.log("Hello");
             gridObj.pdfExport({}, true);
         }
         if (args.item.id === 'PayrunsHistoryGrid_excelexport') {
@@ -736,17 +754,17 @@
                     var col = gridObj.columns[i];
                     if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
                         gridObj.showHider.hide(col.headerText, 'headerText');
-                    else
+                    else if(col.showInColumnChooser)
                         gridObj.showHider.show(col.headerText, 'headerText');
                 }
             }
             else {
                 for (var i = 0; i < gridObj.columns.length; i++) {
                     var col = gridObj.columns[i];
-                    gridObj.showHider.show(col.headerText, 'headerText');
+        if(col.showInColumnChooser)
+                         gridObj.showHider.show(col.headerText, 'headerText');
                 }
             }
-            gridObj.refresh();
         }
     }
     function alertBtnClick() {

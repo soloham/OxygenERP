@@ -189,6 +189,10 @@ namespace CERP.Web.Areas.HR.Pages.Employees
 
                 IsEditing = employee.Id != Guid.Empty; 
                 Employee_Dto empAdded = null;
+
+                //selfPortalDetail.
+                //employee.
+
                 if (!IsEditing)
                 {
                     employee.Id = GuidGenerator.Create();

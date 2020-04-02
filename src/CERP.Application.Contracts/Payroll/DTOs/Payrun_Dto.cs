@@ -83,6 +83,8 @@ namespace CERP.Payroll.DTOs
         public decimal AmountPaid { get; set; }
         public decimal DifferAmount { get; set; }
 
+        public PayrunDetailIndemnity_Dto? Indemnity { get; set; }
+        public int? IndemnityId { get; set; }
         public PayrunDetailIndemnity_Dto GetIndemnity()
         {
             List<PayrunAllowanceSummary_Dto> payrunAllowances = PayrunAllowancesSummaries.Where(x => x.AllowanceType.Dimension_2_Value.ToUpper() == "TRUE").ToList();

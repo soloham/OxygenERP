@@ -137,6 +137,8 @@ namespace CERP.EntityFrameworkCore
                                                         .ThenInclude(p => p.IndemnityType)
                                                        .Include(p => p.PayrunDetails)
                                                         .ThenInclude(x => x.EmployeeTimesheet)
+                                                       .Include(p => p.PayrunDetails)
+                                                        .ThenInclude(p => p.Indemnity)
                                                        .Include(p => p.PostedBy);
                 });
                 options.Entity<PayrunDetail>(opt =>
@@ -152,7 +154,8 @@ namespace CERP.EntityFrameworkCore
                                                         .ThenInclude(p => p.IndemnityType)
                                                        .Include(p => p.PayrunAllowancesSummaries)
                                                         .ThenInclude(x => x.AllowanceType)
-                                                       .Include(p => p.EmployeeTimesheet);
+                                                       .Include(p => p.EmployeeTimesheet)
+                                                       .Include(p => p.Indemnity);
                 });
                 options.Entity<SISetup>(opt =>
                 {

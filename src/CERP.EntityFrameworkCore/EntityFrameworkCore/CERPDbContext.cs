@@ -65,6 +65,8 @@ namespace CERP.EntityFrameworkCore
         public DbSet<SIContributionCategory> SIContributionCategories { get; set; }
         public DbSet<SIContribution> SIContributions { get; set; }
 
+        public DbSet<PayrunDetailIndemnity> PayrunDetailIndemnities { get; set; }
+
         public CERPDbContext(DbContextOptions<CERPDbContext> options)
             : base(options)
         {
@@ -82,6 +84,7 @@ namespace CERP.EntityFrameworkCore
                 b.ToTable("AbpUsers"); //Sharing the same table "AbpUsers" with the IdentityUser
                 b.ConfigureByConvention();
                 b.ConfigureAbpUser();
+
                 //b.ConfigureFullAuditedAggregateRoot();
                 //b.ConfigureSoftDelete();
                 //b.ConfigureExtraProperties();

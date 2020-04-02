@@ -10,11 +10,13 @@
     List<GridColumn> primaryGridColumns = new List<GridColumn>()
     {
         new GridColumn { Field = "sNo", HeaderText = "#", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+        new GridColumn { Field = "Id", HeaderText = "", TextAlign=TextAlign.Center, Visible=false, ShowInColumnChooser=false,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+        new GridColumn { Field = "EmployeeId", HeaderText = "", TextAlign=TextAlign.Center,  AllowEditing=false, Visible = false, ShowInColumnChooser = false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
         new GridColumn { Field = "getEmpRefCode", HeaderText = "Id", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
         new GridColumn { Field = "getEmpName", HeaderText = "Employee Name", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
         new GridColumn { Field = "getEmpDepartment", HeaderText = "Department", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
         new GridColumn { Field = "getEmpDOJ", HeaderText = "Joining Date", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
-        new GridColumn { Field = "getBasicSalary", HeaderText = "Basic Salary", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+        new GridColumn { Field = "BasicSalary", HeaderText = "Basic Salary", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
     };
 
     List<DictionaryValue> EOSBAllowancesSummaries = Model.EOSBAllowances;
@@ -25,18 +27,19 @@
     }
 
     primaryGridColumns.AddRange(new List<GridColumn>() {
-            new GridColumn { Field = "getEmpGrossSalary", HeaderText = "Gross Salary", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+            new GridColumn { Field = "GrossSalary", HeaderText = "Gross Salary", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
             new GridColumn { Field = "", HeaderText = "Employment Days", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", Columns=new List<GridColumn>(){
-                new GridColumn { Field = "getEmpDaysBelow", HeaderText = "PRE 5", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
-                new GridColumn { Field = "getEmpDaysAbove", HeaderText = "POST 5", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
-                new GridColumn { Field = "getEmpTotalDays", HeaderText = "TOTAL", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", Id=""  }
+                new GridColumn { Field = "TotalPre5EmploymentDays", HeaderText = "PRE 5", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+                new GridColumn { Field = "TotalPost5EmploymentDays", HeaderText = "POST 5", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+                new GridColumn { Field = "TotalEmploymentDays", HeaderText = "TOTAL", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", Id=""  }
             }},
-            new GridColumn { Field = "getEmpTotalEOSB", HeaderText = "Total EOSB", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
-            new GridColumn { Field = "getEmpLastMonthEOSB", HeaderText = "Balance", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+            new GridColumn { Field = "TotalEOSB", HeaderText = "Total EOSB", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+            new GridColumn { Field = "LastMonthEOSB", HeaderText = "Balance", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
             new GridColumn { Field = "", HeaderText = "Change", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", Columns=new List<GridColumn>(){
-                new GridColumn { Field = "getActuarialValue", HeaderText = "Actuarial Value", TextAlign=TextAlign.Center,  AllowEditing=true,  MinWidth = "10"  },
-                new GridColumn { Field = "getEmpEOSBDifference", HeaderText = "Net Change", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+                new GridColumn { Field = "ActuarialEvaluation", HeaderText = "Actuarial Value", TextAlign=TextAlign.Center,  AllowEditing=true,  MinWidth = "10"  },
+                new GridColumn { Field = "Difference", HeaderText = "Net Change", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
             }},
+            new GridColumn { Field = "PayrunDetailId", HeaderText = "", Visible = false, ShowInColumnChooser = false, TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
         });
 
     var DS = Model.EOSBDS;
@@ -102,17 +105,17 @@
     };
     function actionBeginIndmenity(args) {
         if (args.requestType == "save") {
-            if (typeof args.data.getActuarialValue === 'undefined') {
+            if (typeof args.data.ActuarialEvaluation === 'undefined') {
                 args.cancel = true;
             }
             else
             {
-                var actuarialValue = parseFloat(args.data.getActuarialValue.replace(/,/g, ''));
-                var getEmpLastMonthEOSB = parseFloat(args.data.getEmpLastMonthEOSB.replace(/,/g, ''));
+                var actuarialValue = parseFloat(args.data.ActuarialEvaluation.replace(/,/g, ''));
+                var getEmpLastMonthEOSB = parseFloat(args.data.LastMonthEOSB.replace(/,/g, ''));
                 console.log(actuarialValue);
                 console.log(getEmpLastMonthEOSB);
-                args.data.getActuarialValue = Number(actuarialValue).toLocaleString('en', options);
-                args.data.getEmpEOSBDifference = Number(actuarialValue).toLocaleString('en', options);
+                args.data.ActuarialEvaluation = Number(actuarialValue).toLocaleString('en', options);
+                args.data.Difference = Number(actuarialValue).toLocaleString('en', options);
             }
         }
         else if (args.requestType == "delete")
@@ -175,17 +178,17 @@
                     var col = gridObj.columns[i];
                     if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
                         gridObj.showHider.hide(col.headerText, 'headerText');
-                    else
+                    else if(col.showInColumnChooser)
                         gridObj.showHider.show(col.headerText, 'headerText');
                 }
             }
             else {
                 for (var i = 0; i < gridObj.columns.length; i++) {
                     var col = gridObj.columns[i];
-                    gridObj.showHider.show(col.headerText, 'headerText');
+	    if(col.showInColumnChooser)
+                         gridObj.showHider.show(col.headerText, 'headerText');
                 }
             }
-            gridObj.refresh();
         }
     }
 </script>

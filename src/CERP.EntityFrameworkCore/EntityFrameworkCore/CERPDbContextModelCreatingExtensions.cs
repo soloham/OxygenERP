@@ -10,6 +10,7 @@ using CERP.Setup;
 using CERP.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
 using Volo.Abp;
 using Volo.Abp.EntityFrameworkCore.Modeling;
 using Volo.Abp.Users;
@@ -573,6 +574,7 @@ namespace CERP.EntityFrameworkCore
                 b.HasOne(x => x.Payrun).WithMany(p => p.PayrunDetails).OnDelete(DeleteBehavior.Restrict);
                 b.HasMany(x => x.PayrunAllowancesSummaries).WithOne().OnDelete(DeleteBehavior.ClientCascade);
                 b.HasOne(x => x.Employee).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.Indemnity).WithOne(x => x.PayrunDetail).OnDelete(DeleteBehavior.Restrict);
             });
             builder.Entity<Payslip>(b =>
             {
@@ -674,12 +676,41 @@ namespace CERP.EntityFrameworkCore
 
                 b.HasOne(x => x.SICategory).WithMany(x => x.SIContributions).OnDelete(DeleteBehavior.Restrict);
             });
+            builder.Entity<PayrunDetailIndemnity>(b =>
+            {
+                b.ToTable(CERPConsts.PayrollDbTablePrefix + "PayrunDetailIndemnities", CERPConsts.PayrollDbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.Property(x => x.BasicSalary)
+                    .IsRequired();
+                b.Property(x => x.GrossSalary)
+                    .IsRequired();
+                b.Property(x => x.TotalEmploymentDays)
+                    .IsRequired();
+                b.Property(x => x.TotalEOSB)
+                    .IsRequired();
+                b.Property(x => x.ActuarialEvaluation)
+                    .IsRequired();
+                b.Property(x => x.LastMonthEOSB)
+                    .IsRequired();
+                b.Property(x => x.Difference)
+                    .IsRequired();
+
+                b.HasOne(x => x.Employee).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.PayrunDetail).WithOne(x => x.Indemnity).OnDelete(DeleteBehavior.Restrict);
+                b.HasMany(x => x.PayrunEOSBAllowancesSummaries).WithOne().OnDelete(DeleteBehavior.Restrict);
+            });
         }
 
         public static void ConfigureCustomUserProperties<TUser>(this EntityTypeBuilder<TUser> b)
-            where TUser: class, IUser
+            where TUser : class, IUser
         {
-            //b.Property<string>(nameof(AppUser.MyProperty))...
+            //b.HasOne<Employee>(nameof(AppUser.Employee)).WithOne(p => p.).OnDelete(DeleteBehavior.Restrict);
+            //b.Property<Guid?>(nameof(AppUser.EmployeeId)).HasColumnName(nameof(AppUser.EmployeeId));
+            //b.HasOne<Employee?>(nameof(AppUser.Employee)).WithOne(nameof(Employee.Portal)).HasForeignKey(nameof(AppUser.EmployeeId));
         }
     }
 }

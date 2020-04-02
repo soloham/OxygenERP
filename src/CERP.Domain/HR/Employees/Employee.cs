@@ -123,9 +123,9 @@ namespace CERP.HR.Employees
 
         public string ProfilePic { get; set; }
 
-        //[ForeignKey("PortalId")]
-        //public AppUser Portal { get; set; }
-        //public Guid? PortalId { get; set; }
+        [ForeignKey("PortalId")]
+        public AppUser Portal { get; set; }
+        public Guid? PortalId { get; set; }
 
         public void UpdateExtraProperties(IDictionary<string, object> extraProperties)
         {

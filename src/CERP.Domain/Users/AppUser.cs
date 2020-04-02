@@ -46,9 +46,9 @@ namespace CERP.Users
          *
          * public virtual string MyProperty { get; set; }
          */
-        //[ForeignKey("EmployeeId")]
-        //public virtual Employee Employee { get; set; }
-        //public Guid? EmployeeId { get; set; }
+        [ForeignKey("EmployeeId")]
+        public virtual Employee Employee { get; set; }
+        public Guid? EmployeeId { get; set; }
 
         private AppUser()
         {
