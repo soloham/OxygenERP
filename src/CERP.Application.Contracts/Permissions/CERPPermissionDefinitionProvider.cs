@@ -12,6 +12,7 @@ namespace CERP.Permissions
 
             //Define your own permissions here. Example:
             //myGroup.AddPermission(CERPPermissions.MyPermission1, L("Permission:MyPermission1"));
+            myGroup.AddPermission(CERPPermissions.ESS_Timesheet, L("Permission:ESS_Timesheet"));
         }
 
         private static LocalizableString L(string name)

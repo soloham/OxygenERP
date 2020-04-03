@@ -78,7 +78,7 @@ namespace CERP.EntityFrameworkCore
                                                        .Include(p => p.EmployeeStatus)
                                                        .Include(p => p.EmployeeType)
                                                        .Include(p => p.Position).ThenInclude(x => x.Department)
-                                                       .Include(p => p.Portal);
+                                                       .Include(p => p.Portal)
                                                        .Include(p => p.SIType)
                                                        .Include(p => p.IndemnityType);
                 });

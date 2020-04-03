@@ -1,6 +1,7 @@
 {
   "culture": "en",
   "texts": {
+    "Permission:ESS_Timesheet": "ESS Timesheet", 
     "ps:main": "Main",
     "ps:dashboard": "Dashboard",
     "ps:FinancialManagement": "Financial Management",
