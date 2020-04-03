@@ -1,6 +1,7 @@
 ﻿using CERP.App;
 using CERP.AppServices.Payroll.PayrunService;
 using CERP.Payroll.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Linq;

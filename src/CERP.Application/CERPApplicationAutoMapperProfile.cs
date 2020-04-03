@@ -18,6 +18,7 @@ using CERP.Payroll.DTOs;
 using CERP.Payroll.Payrun;
 using CERP.Setup;
 using CERP.Setup.DTOs;
+using CERP.Users;
 
 namespace CERP
 {
@@ -93,6 +94,9 @@ namespace CERP
             CreateMap<Employee_UV_Dto, Employee_Dto>();
             CreateMap<Employee_Dto, Employee_UV_Dto>();
             CreateMap<Employee_UV_Dto, Employee>();
+
+            CreateMap<AppUser, AppUser_Dto>();
+            CreateMap<AppUser_Dto, AppUser>();
 
             CreateMap<PhysicalID, PhysicalID_Dto>().ForMember(d => d.Employee, opt => opt.Ignore());
             CreateMap<PhysicalID_Dto, PhysicalID>().ForMember(d => d.Employee, opt => opt.Ignore());

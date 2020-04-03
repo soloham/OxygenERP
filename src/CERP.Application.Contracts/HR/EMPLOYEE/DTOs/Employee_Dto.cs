@@ -3,6 +3,7 @@ using CERP.Base;
 using CERP.FM.DTOs;
 using CERP.HR.EMPLOYEE.DTOs;
 using CERP.Setup.DTOs;
+using CERP.Users;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -28,6 +29,8 @@ namespace CERP.HR.Employees.DTOs
         }
 
         public string GetReferenceId { get => Id.ToString().Substring(0, 4); }
+        public AppUser_Dto Portal { get; set; }
+        public Guid? PortalId { get; set; }
 
         #region General Info
         public string Name { get => FirstName + " " + LastName; }

@@ -1,6 +1,8 @@
-﻿using CERP.HR.Employees;
+﻿using CERP.Base;
+using CERP.HR.Employees;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.Users;
@@ -15,7 +17,7 @@ namespace CERP.Users
      * - You can query users from database with this entity.
      * - You can update values of your custom properties.
      */
-    public class AppUser : FullAuditedAggregateRoot<Guid>, IUser
+    public class AppUser_Dto : FullAuditedEntityTenantDto<Guid>
     {
         #region Base properties
 
@@ -25,14 +27,18 @@ namespace CERP.Users
          * So, this properties are designed as read only!
          */
 
+        [Required]
         public virtual Guid? TenantId { get; private set; }
 
+        [Required]
         public virtual string UserName { get; private set; }
 
+        [Required]
         public virtual string Name { get; private set; }
 
         public virtual string Surname { get; private set; }
 
+        [Required]
         public virtual string Email { get; private set; }
 
         public virtual bool EmailConfirmed { get; private set; }
@@ -47,14 +53,14 @@ namespace CERP.Users
          *
          * public virtual string MyProperty { get; set; }
          */
-        [NotMapped]
-        public override Dictionary<string, object> ExtraProperties { get; protected set; }
+        //[NotMapped]
+        //public override Dictionary<string, object> ExtraProperties { get; protected set; }
 
-        [ForeignKey("EmployeeId")]
-        public virtual Employee Employee { get; set; }
+        //[ForeignKey("EmployeeId")]
+        //public virtual Employee Employee { get; set; }
         public virtual Guid? EmployeeId { get; set; }
 
-        private AppUser()
+        private AppUser_Dto()
         {
             
         }

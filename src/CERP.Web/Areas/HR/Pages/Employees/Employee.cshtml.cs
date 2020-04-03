@@ -9,6 +9,7 @@ using CERP.App;
 using CERP.AppServices.HR.DepartmentService;
 using CERP.AppServices.HR.EmployeeService;
 using CERP.AppServices.HR.WorkShiftService;
+using CERP.AppServices.Identity;
 using CERP.AppServices.Setup.DepartmentSetup;
 using CERP.AppServices.Setup.PositionSetup;
 using CERP.CERP.HR.Documents;
@@ -19,21 +20,32 @@ using CERP.HR.EMPLOYEE.RougeDTOs;
 using CERP.HR.Employees;
 using CERP.HR.Employees.DTOs;
 using CERP.HR.Employees.UV_DTOs;
+using CERP.Identity;
 using CERP.Setup;
 using CERP.Setup.DTOs;
 using CERP.Web.Pages;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Syncfusion.EJ2.Base;
+using Volo.Abp;
+using Volo.Abp.Account.Settings;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Identity;
 using Volo.Abp.Json;
+using Volo.Abp.Settings;
+using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
 namespace CERP.Web.Areas.HR.Pages.Employees
 {
     public class EmployeeModel : CERPPageModel
     {
+        protected AccountAppService AccountAppService { get; }
+
+        protected IdentityUserManager UserManager { get; }
+
         [BindProperty(SupportsGet = true)]
         public Guid EmployeeId { get; set; }
         public bool IsEditing { get; set; }
@@ -64,7 +76,23 @@ namespace CERP.Web.Areas.HR.Pages.Employees
 
         public IWebHostEnvironment webHostEnvironment { get; set; }
 
-        public EmployeeModel(IRepository<DictionaryValue, Guid> dictionaryValuesRepo, EmployeeAppService employeeAppService, DepartmentAppService departmentAppService, PositionAppService positionAppService, WorkShiftsAppService workShiftsAppService, IJsonSerializer jsonSerializer, IWebHostEnvironment webHostEnvironment, documentAppService documentAppService)
+        protected async Task<bool> CheckSelfRegistrationAsync()
+        {
+            if (!await SettingProvider.IsTrueAsync(AccountSettingNames.IsSelfRegistrationEnabled) ||
+                !await SettingProvider.IsTrueAsync(AccountSettingNames.EnableLocalLogin))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public EmployeeModel(IRepository<DictionaryValue, Guid> dictionaryValuesRepo, 
+            EmployeeAppService employeeAppService, DepartmentAppService departmentAppService, 
+            PositionAppService positionAppService, WorkShiftsAppService workShiftsAppService, 
+            IJsonSerializer jsonSerializer, IWebHostEnvironment webHostEnvironment,
+            documentAppService documentAppService, AccountAppService accountAppService, 
+            IdentityUserManager userManager)
         {
             DictionaryValuesRepo = dictionaryValuesRepo;
             this.employeeAppService = employeeAppService;
@@ -74,6 +102,8 @@ namespace CERP.Web.Areas.HR.Pages.Employees
             JsonSerializer = jsonSerializer;
             this.webHostEnvironment = webHostEnvironment;
             this.documentAppService = documentAppService;
+            AccountAppService = accountAppService;
+            UserManager = userManager;
         }
 
         public JsonResult OnGetPositions(Guid departmentId)
@@ -187,11 +217,34 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                     employee.ProfilePic = uploadedFileName;
                 }
 
-                IsEditing = employee.Id != Guid.Empty; 
+                IsEditing = employee.Id != Guid.Empty;
+                if(!IsEditing) employee.Id = GuidGenerator.Create();
+
+                bool selfRegistration = await CheckSelfRegistrationAsync();
+                if (selfRegistration && selfPortalDetail.CreatePortal)
+                {
+                    string employeeUsername = selfPortalDetail.IsUsernameEmpId ? employee.GetReferenceId : selfPortalDetail.Username;
+
+                    var registerDto = new RegisterDto
+                    {
+                        AppName = "OxygenERP",
+                        EmailAddress = contactInformation.PrimaryContact.Email,
+                        Password = "EMP_" + employee.GetReferenceId,
+                        UserName = employeeUsername,
+                        EmployeeId = employee.Id
+                    };
+
+                    var userDto = await AccountAppService.RegisterAsync(registerDto);
+                    var user = await UserManager.GetByIdAsync(userDto.Id);
+
+                    await UserManager.SetEmailAsync(user, registerDto.EmailAddress);
+
+                    employee.PortalId = user.Id;
+                }
+
                 Employee_Dto empAdded = null;
                 if (!IsEditing)
                 {
-                    employee.Id = GuidGenerator.Create();
 
                     List<Document_Dto> documentsToAdd = new List<Document_Dto>();
                     if (FormData.Files.Count > 0)

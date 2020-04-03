@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200403113807_AddedEmployeeInAppUserNavigation")]
+    partial class AddedEmployeeInAppUserNavigation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2166,6 +2168,9 @@ namespace CERP.Migrations
                     b.Property<Guid?>("EmployeeId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("EmployeeId2")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("ExtraProperties")
                         .HasColumnName("ExtraProperties")
                         .HasColumnType("nvarchar(max)");
@@ -2217,9 +2222,11 @@ namespace CERP.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmployeeId")
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("EmployeeId2")
                         .IsUnique()
-                        .HasFilter("[EmployeeId] IS NOT NULL");
+                        .HasFilter("[EmployeeId2] IS NOT NULL");
 
                     b.ToTable("AbpUsers");
                 });
@@ -4170,8 +4177,12 @@ namespace CERP.Migrations
             modelBuilder.Entity("CERP.Users.AppUser", b =>
                 {
                     b.HasOne("CERP.HR.Employees.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId");
+
+                    b.HasOne("CERP.HR.Employees.Employee", null)
                         .WithOne("Portal")
-                        .HasForeignKey("CERP.Users.AppUser", "EmployeeId")
+                        .HasForeignKey("CERP.Users.AppUser", "EmployeeId2")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Volo.Abp.Identity.IdentityUser", null)

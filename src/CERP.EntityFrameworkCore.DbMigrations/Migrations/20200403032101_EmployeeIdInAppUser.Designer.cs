@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200403032101_EmployeeIdInAppUser")]
+    partial class EmployeeIdInAppUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1012,9 +1014,6 @@ namespace CERP.Migrations
                         .HasColumnType("int");
 
                     b.Property<Guid>("POB_ID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("PortalId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("PositionId")
@@ -2125,105 +2124,6 @@ namespace CERP.Migrations
                     b.ToTable("Positions","SETUP");
                 });
 
-            modelBuilder.Entity("CERP.Users.AppUser", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnName("ConcurrencyStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnName("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnName("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnName("DeleterId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnName("DeletionTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnName("Email")
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
-
-                    b.Property<bool>("EmailConfirmed")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("EmailConfirmed")
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<Guid?>("EmployeeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnName("ExtraProperties")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("IsDeleted")
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnName("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnName("LastModifierId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .HasColumnName("Name")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnName("PhoneNumber")
-                        .HasColumnType("nvarchar(16)")
-                        .HasMaxLength(16);
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("PhoneNumberConfirmed")
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("Surname")
-                        .HasColumnName("Surname")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnName("UserName")
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId")
-                        .IsUnique()
-                        .HasFilter("[EmployeeId] IS NOT NULL");
-
-                    b.ToTable("AbpUsers");
-                });
-
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2725,6 +2625,9 @@ namespace CERP.Migrations
                         .HasColumnName("EmailConfirmed")
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
+
+                    b.Property<Guid?>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ExtraProperties")
                         .HasColumnName("ExtraProperties")
@@ -4164,20 +4067,6 @@ namespace CERP.Migrations
                         .WithMany("Positions")
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.ClientCascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CERP.Users.AppUser", b =>
-                {
-                    b.HasOne("CERP.HR.Employees.Employee", "Employee")
-                        .WithOne("Portal")
-                        .HasForeignKey("CERP.Users.AppUser", "EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Volo.Abp.Identity.IdentityUser", null)
-                        .WithOne()
-                        .HasForeignKey("CERP.Users.AppUser", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 

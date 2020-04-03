@@ -10,6 +10,7 @@ using CERP.Setup;
 using CERP.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
 using Volo.Abp;
 using Volo.Abp.EntityFrameworkCore.Modeling;
 using Volo.Abp.Users;
@@ -31,7 +32,7 @@ namespace CERP.EntityFrameworkCore
             //    //...
             //});
 
-            builder.Entity<COA_Account>(b =>
+             builder.Entity<COA_Account>(b =>
             {
                 b.ToTable(CERPConsts.FMDbTablePrefix + "COAs", CERPConsts.FMDbSchema);
 
@@ -278,8 +279,7 @@ namespace CERP.EntityFrameworkCore
 
                 b.HasOne(p => p.Position).WithOne(pos => pos.Employee).OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.WorkShift).WithMany(p => p.Employees).OnDelete(DeleteBehavior.Restrict);
-
-                //b.HasOne(p => p.Portal).WithOne(p => p.Employee).OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(p => p.Portal).WithOne(p => p.Employee).OnDelete(DeleteBehavior.Restrict);
             });
 
             builder.Entity<Department>(b =>
@@ -674,10 +674,22 @@ namespace CERP.EntityFrameworkCore
             });
         }
 
-        public static void ConfigureCustomUserProperties<TUser>(this EntityTypeBuilder<TUser> b)
+        public static void ConfigureCustomUserProperties<TUser>(this EntityTypeBuilder<TUser> b, bool isMigrationDbContext)
             where TUser: class, IUser
         {
-            //b.Property<string>(nameof(AppUser.MyProperty))...
+            //b.ConfigureByConvention();
+            //b.TryConfigureExtraProperties();
+            //b.Property<string>(nameof(AppUser.ExtraProperties));
+            b.Property<Guid?>(nameof(AppUser.EmployeeId));
+
+            if(false)
+            {
+                b.Ignore(nameof(AppUser.Employee));
+            }
+            else
+            {
+                b.HasOne(nameof(AppUser.Employee)).WithOne(nameof(Employee.Portal)).OnDelete(DeleteBehavior.Restrict);
+            }
         }
     }
 }

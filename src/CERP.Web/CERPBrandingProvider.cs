@@ -6,6 +6,6 @@ namespace CERP.Web
     [Dependency(ReplaceServices = true)]
     public class CERPBrandingProvider : DefaultBrandingProvider
     {
-        public override string AppName => "CERP";
+        public override string AppName => "OxygenERP";
     }
 }

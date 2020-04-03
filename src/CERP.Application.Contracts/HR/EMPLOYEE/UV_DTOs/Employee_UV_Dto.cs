@@ -114,6 +114,9 @@ namespace CERP.HR.Employees.UV_DTOs
 
         [Required]
         public string ProfilePic { get; set; }
+        public Guid? PortalId { get; set; }
+
+        public string GetReferenceId { get => Id.ToString().Substring(0, 4); }
 
         public IDictionary<string, object> ExtraProperties { get; set; } = new Dictionary<string, object>();
     }

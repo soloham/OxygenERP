@@ -218,7 +218,7 @@ namespace CERP.Web
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "CERP API");
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "OxygenERP API");
             });
             app.UseAuditing();
             app.UseAbpSerilogEnrichers();

@@ -80,6 +80,14 @@
     <Compile Remove="Migrations\20200321092941_InitialServer.Designer.cs" />
     <Compile Remove="Migrations\20200328032120_UpdatedUserAndEmployeeAddedPortalDetails.cs" />
     <Compile Remove="Migrations\20200328032120_UpdatedUserAndEmployeeAddedPortalDetails.Designer.cs" />
+    <Compile Remove="Migrations\20200402210754_EmployeeInAppUser.cs" />
+    <Compile Remove="Migrations\20200402210754_EmployeeInAppUser.Designer.cs" />
+    <Compile Remove="Migrations\20200403071109_AddedEmployeeInAppUser.cs" />
+    <Compile Remove="Migrations\20200403071109_AddedEmployeeInAppUser.Designer.cs" />
+    <Compile Remove="Migrations\20200403071724_AddedEmployeeInAppUser.cs" />
+    <Compile Remove="Migrations\20200403071724_AddedEmployeeInAppUser.Designer.cs" />
+    <Compile Remove="Migrations\20200403073308_AddedEmployeeInAppUser.cs" />
+    <Compile Remove="Migrations\20200403073308_AddedEmployeeInAppUser.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

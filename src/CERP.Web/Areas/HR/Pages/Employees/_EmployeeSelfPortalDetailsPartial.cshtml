@@ -12,7 +12,7 @@
 }
 
 <script>
-    let createPortal = false;
+    let createPortal = true;
     $(document).ready(function () {
         $('#addEmployeePortalSectionBtn').on('click', function () {
             var isCollapsed = $('#form-step-7-1').css('display') == 'none';
@@ -30,7 +30,7 @@
                 setTimeout(function () { $('#addEmployeePortalSectionBtn', '#addEmployeePortalSection').html('<i class="fa fa-plus p-r-5"></i> Create Portal') }, 200)
                 $('#addEmployeePortalSection').slideDown(200);
 
-                createPortal = false;
+                createPortal = true;
             }
         });
     });

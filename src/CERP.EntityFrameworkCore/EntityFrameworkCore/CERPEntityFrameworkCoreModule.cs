@@ -5,6 +5,7 @@ using CERP.HR.Employees;
 using CERP.HR.Timesheets;
 using CERP.HR.Workshifts;
 using CERP.Payroll.Payrun;
+using CERP.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
@@ -76,10 +77,16 @@ namespace CERP.EntityFrameworkCore
                                                        .Include(p => p.WorkShift)
                                                        .Include(p => p.EmployeeStatus)
                                                        .Include(p => p.EmployeeType)
-                                                       .Include(p => p.Position).ThenInclude(x => x.Department);
+                                                       .Include(p => p.Position).ThenInclude(x => x.Department)
+                                                       .Include(p => p.Portal);
                 });
 
-                options.Entity<PhysicalID>(opt =>
+                options.Entity<AppUser>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.Employee);
+                });
+
+                    options.Entity<PhysicalID>(opt =>
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.IssuedFrom)
                                                        .Include(p => p.IDType);
