@@ -94,6 +94,25 @@ function kuwaiticalendar(date, adjust) {
         iy         //islamic year
     ];
 }
+
+function dataBoundResponsive() {
+    var visCount = 0;
+    for (var i = 0; i < this.columns.length; i++) {
+        if (this.columns[i].visible) visCount++;
+    }
+    if (visCount == this.columns.length) {
+        for (var i = 0; i < this.columns.length; i++) {
+            var col = this.columns[i];
+            if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                this.showHider.hide(col.headerText, 'headerText');
+            else
+                this.showHider.show(col.headerText, 'headerText');
+        }
+    }
+    if (screen.width <= 600)
+        this.autoFitColumns();
+}
+
 function writeIslamicDate(date, adjustment) {
     var wdNames = ["Ahad", "Ithnin", "Thulatha", "Arbaa", "Khams", "Jumuah", "Sabt"];
     var iMonthNames = ["Muharram", "Safar", "Rabi'ul Awwal", "Rabi'ul Akhir", "Jumadal Ula", "Jumadal Akhira",

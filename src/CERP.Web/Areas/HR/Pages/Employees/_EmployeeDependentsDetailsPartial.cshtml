@@ -172,11 +172,11 @@
 
         </div>
         <ejs-grid id="DependantsGrid" dataSource="@dependantsDS" enableAutoFill="true" columns="@dependantsColumns"
-                  dataBound="dataBound" commandClick="commandClick"
+                  dataBound="dataBoundResponsive"commandClick="commandClick"
                   allowExcelExport="true" height="100%"allowPdfExport="true"
                   hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                   allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                  toolbarClick="toolbarClick" actionComplete="actionCompleteDependant" showColumnChooser="true" toolbar="@ViewData["initialToolBar"]"
+                  toolbarClick="toolbarClick" load="onLoad" actionComplete="actionCompleteDependant" showColumnChooser="true" toolbar="@ViewData["initialToolBar"]"
                   
                   allowPaging="true" allowResizing="true">
 
@@ -336,7 +336,7 @@
 
             </div>
             <ejs-grid id="DependantsPhysicalIdsGrid" dataSource="@DependantIdsListDs" enableAutoFill="true" columns="@DependantsIdsListColumns"
-                      dataBound="dataBound" commandClick="commandClick"
+                      dataBound="dataBoundResponsive"commandClick="commandClick"
                       allowExcelExport="true" height="100%"allowPdfExport="true"
                       hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                       allowSorting="true" allowMultiSorting="true" gridLines="Both"
@@ -357,7 +357,7 @@
         @*<div class="col-lg-6 m-t-20">
                 <h3 class="m-t-0">Dependants Passports</h3>
                 <ejs-grid id="DependantsPassportIdsGrid" dataSource="@ViewData["PassportIdsListDS"]" enableAutoFill="true" columns="@PassportIdsListColumns"
-                          dataBound="dataBound" commandClick="commandClick"
+                          dataBound="dataBoundResponsive"commandClick="commandClick"
                           allowExcelExport="true" height="100%"allowPdfExport="true"
                           hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                           allowSorting="true" allowMultiSorting="true" gridLines="Both"
@@ -498,7 +498,7 @@
             }
         }
         if (args.item.id === 'showActions') {
-            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, "ExcelExport", "CsvExport", "Print", "Search",{ text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search",{ text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
 	gridObj.refresh();
         }
         if (args.item.id === 'hideActions') {
@@ -509,6 +509,28 @@
         if (args.item.id === 'toggleGrouping') {
             gridObj.allowGrouping = !gridObj.allowGrouping;
             gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            var visCount = 0;
+            for (var i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else if(col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+	    if(col.showInColumnChooser)
+                         gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
         }
     }
     function toolbarClickDependantIds(args) {
@@ -539,7 +561,7 @@
             }
         }
         if (args.item.id === 'showActions') {
-            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, "ExcelExport", "CsvExport", "Print", "Search",{ text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search",{ text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
 	gridObj.refresh();
         }
         if (args.item.id === 'hideActions') {
@@ -550,6 +572,28 @@
         if (args.item.id === 'toggleGrouping') {
             gridObj.allowGrouping = !gridObj.allowGrouping;
             gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            var visCount = 0;
+            for (var i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else if(col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+	    if(col.showInColumnChooser)
+                         gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
         }
     }
     function toolbarClickDependantPassports(args) {
@@ -580,7 +624,7 @@
             }
         }
         if (args.item.id === 'showActions') {
-            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, "ExcelExport", "CsvExport", "Print", "Search",{ text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search",{ text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
 	gridObj.refresh();
         }
         if (args.item.id === 'hideActions') {
@@ -591,6 +635,28 @@
         if (args.item.id === 'toggleGrouping') {
             gridObj.allowGrouping = !gridObj.allowGrouping;
             gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            var visCount = 0;
+            for (var i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else if(col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+	    if(col.showInColumnChooser)
+                         gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
         }
     }
 

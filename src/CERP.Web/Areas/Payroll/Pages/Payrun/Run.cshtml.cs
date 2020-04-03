@@ -150,7 +150,7 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
                 string camelCaseName = allowance.Value;
                 camelCaseName = camelCaseName.Replace(" ", "");
                 camelCaseName = char.ToLowerInvariant(camelCaseName[0]) + camelCaseName.Substring(1);
-                KeyValuePair<string, string> keyValuePair = new KeyValuePair<string, string>(allowance.Value, "SAR " + allowanceSummary.Value.ToString("N2"));
+                KeyValuePair<string, string> keyValuePair = new KeyValuePair<string, string>(allowance.Value, "" + allowanceSummary.Value.ToString("N2"));
                 dynamicDSRow.Earnings.Add(keyValuePair);
                 //DynamicHelper.AddProperty(dynamicDSRow, $"{camelCaseName}_Value", allowanceSummary.Value);
             }
@@ -158,11 +158,11 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
             dynamicDSRow.Deductions = new List<KeyValuePair<string, string>>();
 
             dynamicDSRow.gosiValue = payrunDetail.GOSIAmount;
-            dynamicDSRow.Deductions.Add(new KeyValuePair<string, string>("GOSI", "SAR " + dynamicDSRow.gosiValue.ToString("N2")));
+            dynamicDSRow.Deductions.Add(new KeyValuePair<string, string>("GOSI", "" + dynamicDSRow.gosiValue.ToString("N2")));
             dynamicDSRow.loansValue = payrunDetail.Loan;
-            dynamicDSRow.Deductions.Add(new KeyValuePair<string, string>("Loans", "SAR " + dynamicDSRow.loansValue.ToString("N2")));
+            dynamicDSRow.Deductions.Add(new KeyValuePair<string, string>("Loans", "" + dynamicDSRow.loansValue.ToString("N2")));
             dynamicDSRow.leavesValue = payrunDetail.Leaves;
-            dynamicDSRow.Deductions.Add(new KeyValuePair<string, string>("Leaves", "SAR " + dynamicDSRow.leavesValue.ToString("N2")));
+            dynamicDSRow.Deductions.Add(new KeyValuePair<string, string>("Leaves", "" + dynamicDSRow.leavesValue.ToString("N2")));
             dynamicDSRow.grossDeductions = payrunDetail.GrossDeductions;
 
             dynamicDSRow.netAmount = payrunDetail.NetAmount;
@@ -327,6 +327,7 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
 
                 if (payrun == null) payrun = new Payrun_Dto();
 
+                //payrunDetails.ForEach(x => x.Indemnity = x.GetIndemnity());
                 payrun.PayrunDetails = payrunDetails;
                 payrun.Year = year;
                 payrun.Month = month;

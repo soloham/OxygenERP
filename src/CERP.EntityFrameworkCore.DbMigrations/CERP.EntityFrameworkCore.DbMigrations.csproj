@@ -88,6 +88,18 @@
     <Compile Remove="Migrations\20200403071724_AddedEmployeeInAppUser.Designer.cs" />
     <Compile Remove="Migrations\20200403073308_AddedEmployeeInAppUser.cs" />
     <Compile Remove="Migrations\20200403073308_AddedEmployeeInAppUser.Designer.cs" />
+    <Compile Remove="Migrations\20200331124025_EmployeeSI.cs" />
+    <Compile Remove="Migrations\20200331124025_EmployeeSI.Designer.cs" />
+    <Compile Remove="Migrations\20200402045500_ActuarialEvalInPayrun.cs" />
+    <Compile Remove="Migrations\20200402045500_ActuarialEvalInPayrun.Designer.cs" />
+    <Compile Remove="Migrations\20200402081916_IndemnityInPayrunDetail.cs" />
+    <Compile Remove="Migrations\20200402081916_IndemnityInPayrunDetail.Designer.cs" />
+    <Compile Remove="Migrations\20200402090531_UpdatedIndemnityInPayrunDetail.cs" />
+    <Compile Remove="Migrations\20200402090531_UpdatedIndemnityInPayrunDetail.Designer.cs" />
+    <Compile Remove="Migrations\20200402093217_UpdatedIndemnityInPayrunDetail2.cs" />
+    <Compile Remove="Migrations\20200402093217_UpdatedIndemnityInPayrunDetail2.Designer.cs" />
+    <Compile Remove="Migrations\20200402100333_IndemnityPayrunDetail.cs" />
+    <Compile Remove="Migrations\20200402100333_IndemnityPayrunDetail.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

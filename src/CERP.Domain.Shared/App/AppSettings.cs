@@ -59,5 +59,9 @@ namespace CERP
         Clients,
         [Description("Employee Type")]
         EmployeeType,
+        [Description("Indemnity Type")]
+        IndemnityType,
+        [Description("Social Insurance Type")]
+        SocialInsuranceType
     }
 }

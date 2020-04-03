@@ -44,6 +44,10 @@ namespace CERP.Payroll.DTOs
 
         public Employee_Dto? PostedBy { get; set; }
         public Guid? PostedById { get; set; }
+
+        public bool IsPSPosted { get; set; }
+        public bool IsSIPosted { get; set; }
+        public bool IsIndemnityPosted { get; set; }
     }
 
     public class PayrunDetail_Dto : FullAuditedEntityTenantDto<int>
@@ -79,9 +83,11 @@ namespace CERP.Payroll.DTOs
         public decimal AmountPaid { get; set; }
         public decimal DifferAmount { get; set; }
 
+        public PayrunDetailIndemnity_Dto? Indemnity { get; set; }
+        public int? IndemnityId { get; set; }
         public PayrunDetailIndemnity_Dto GetIndemnity()
         {
-            List<PayrunAllowanceSummary_Dto> payrunAllowances = PayrunAllowancesSummaries.ToList();
+            List<PayrunAllowanceSummary_Dto> payrunAllowances = PayrunAllowancesSummaries.Where(x => x.AllowanceType.Dimension_2_Value.ToUpper() == "TRUE").ToList();
 
             PayrunDetailIndemnity_Dto indemnityDSRow = new PayrunDetailIndemnity_Dto();
             indemnityDSRow.Payrun = Payrun;

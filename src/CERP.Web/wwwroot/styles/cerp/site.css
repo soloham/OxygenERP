@@ -60,14 +60,17 @@ html {
 
 body {
   /* Margin bottom by footer height */
-  margin-bottom: 60px;
+  /*margin-bottom: 60px;*/
+}
+.site-main{
+    background-color: white;
 }
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px; /* Vertically center the text there */
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px; /* Vertically center the text there */
 }
 
 
@@ -266,7 +269,6 @@ i.fab {
     height: -moz-fill-available;
     /*height: -moz-available;*/
     height: fill-available;
-
     padding-top: 0;
     background-color: rgb(253,253,253);
     padding-bottom: 70px
@@ -336,6 +338,7 @@ i.fab {
     height: calc(-moz-available - 100px);
     height: calc(fill-available - 100px);
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);
+    flex: 1 1 auto;
 }
 
 .h-fill-available {
@@ -385,7 +388,25 @@ vhr {
     border-color: #00b2f0
 }
 .e-grid .e-groupdroparea {
-    background-color: #00b2f0!important;
+    background-color: #00b2f0 !important;
+    flex: 0 1 auto;
+}
+.e-grid .e-gridheader {
+    flex: 0 0 auto;
+}
+.e-grid .e-gridheader > div{
+}
+
+.e-hscroll-bar {
+    overflow-y: hidden;
+}
+
+.e-grid .e-gridcontent {
+    flex: 1 1 auto;
+    height: 100% !important;
+}
+.e-grid .e-gridpager {
+    flex: 1 1 auto;
 }
 .e-hscroll .e-scroll-nav {
     background-color: #99d6e9 !important;
@@ -414,6 +435,9 @@ vhr {
 .e-toolbar, .e-toolbar .e-toolbar-items {
     background-color: #c0e4ef !important;
 }
+.e-toggledetailed:before {
+    content: '\eb04';
+}
 .e-custom-hide-actions:before {
     content: '\e60a';
 }
@@ -438,6 +462,12 @@ vhr {
 .e-gosi-report:before {
     content: '\e310';
 }
+
+.e-grid {
+    display: flex !important;
+    flex-flow: column !important;
+}
+
 
 .custom-control-indicator {
     background-color: #35c6f5 !important;
@@ -483,4 +513,14 @@ ul.step-anchor > li.clickable > a:hover:after {
 p{
     font-size:15px;
     font-weight: 400
+}
+.areaHeader {
+    margin:0;
+    width: 100%;
+    text-align: center;
+    background-color: #5BCFF3;
+    color: white;
+}
+.areaHeader > h3 {
+    padding:10px;
 }

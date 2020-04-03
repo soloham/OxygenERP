@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200331130202_EmployeeSI")]
+    partial class EmployeeSI
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1017,9 +1019,6 @@ namespace CERP.Migrations
                     b.Property<Guid>("POB_ID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("PortalId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("PositionId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1530,16 +1529,7 @@ namespace CERP.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<bool>("IsIndemnityPosted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsPSPosted")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsPosted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsSIPosted")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
@@ -1645,9 +1635,6 @@ namespace CERP.Migrations
                     b.Property<int?>("PayrunDetailId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PayrunDetailIndemnityId")
-                        .HasColumnType("int");
-
                     b.Property<Guid?>("TenantId")
                         .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
@@ -1662,8 +1649,6 @@ namespace CERP.Migrations
                     b.HasIndex("EmployeeId");
 
                     b.HasIndex("PayrunDetailId");
-
-                    b.HasIndex("PayrunDetailIndemnityId");
 
                     b.ToTable("PayrunsAllowancesSummaries","PR");
                 });
@@ -1727,9 +1712,6 @@ namespace CERP.Migrations
                     b.Property<decimal>("GrossEarnings")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("IndemnityId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnName("IsDeleted")
@@ -1772,83 +1754,9 @@ namespace CERP.Migrations
 
                     b.HasIndex("EmployeeTimesheetId");
 
-                    b.HasIndex("IndemnityId")
-                        .IsUnique()
-                        .HasFilter("[IndemnityId] IS NOT NULL");
-
                     b.HasIndex("PayrunId");
 
                     b.ToTable("PayrunsDetails","PR");
-                });
-
-            modelBuilder.Entity("CERP.Payroll.Payrun.PayrunDetailIndemnity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<double>("ActuarialEvaluation")
-                        .HasColumnType("float");
-
-                    b.Property<double>("BasicSalary")
-                        .HasColumnType("float");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnName("ConcurrencyStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnName("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnName("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<double>("Difference")
-                        .HasColumnType("float");
-
-                    b.Property<Guid?>("EmployeeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnName("ExtraProperties")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("GrossSalary")
-                        .HasColumnType("float");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnName("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnName("LastModifierId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<double>("LastMonthEOSB")
-                        .HasColumnType("float");
-
-                    b.Property<int>("PayrunDetailId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<double>("TotalEOSB")
-                        .HasColumnType("float");
-
-                    b.Property<int>("TotalEmploymentDays")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.ToTable("PayrunDetailIndemnities","PR");
                 });
 
             modelBuilder.Entity("CERP.Payroll.Payrun.Payslip", b =>
@@ -2224,105 +2132,6 @@ namespace CERP.Migrations
                     b.HasIndex("DepartmentId");
 
                     b.ToTable("Positions","SETUP");
-                });
-
-            modelBuilder.Entity("CERP.Users.AppUser", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnName("ConcurrencyStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnName("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnName("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnName("DeleterId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnName("DeletionTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnName("Email")
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
-
-                    b.Property<bool>("EmailConfirmed")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("EmailConfirmed")
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<Guid?>("EmployeeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnName("ExtraProperties")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("IsDeleted")
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnName("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnName("LastModifierId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .HasColumnName("Name")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnName("PhoneNumber")
-                        .HasColumnType("nvarchar(16)")
-                        .HasMaxLength(16);
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("PhoneNumberConfirmed")
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("Surname")
-                        .HasColumnName("Surname")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnName("UserName")
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId")
-                        .IsUnique()
-                        .HasFilter("[EmployeeId] IS NOT NULL");
-
-                    b.ToTable("AbpUsers");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>
@@ -4199,11 +4008,6 @@ namespace CERP.Migrations
                         .WithMany("PayrunAllowancesSummaries")
                         .HasForeignKey("PayrunDetailId")
                         .OnDelete(DeleteBehavior.ClientCascade);
-
-                    b.HasOne("CERP.Payroll.Payrun.PayrunDetailIndemnity", null)
-                        .WithMany("PayrunEOSBAllowancesSummaries")
-                        .HasForeignKey("PayrunDetailIndemnityId")
-                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("CERP.Payroll.Payrun.PayrunDetail", b =>
@@ -4220,24 +4024,11 @@ namespace CERP.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CERP.Payroll.Payrun.PayrunDetailIndemnity", "Indemnity")
-                        .WithOne("PayrunDetail")
-                        .HasForeignKey("CERP.Payroll.Payrun.PayrunDetail", "IndemnityId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("CERP.Payroll.Payrun.Payrun", "Payrun")
                         .WithMany("PayrunDetails")
                         .HasForeignKey("PayrunId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("CERP.Payroll.Payrun.PayrunDetailIndemnity", b =>
-                {
-                    b.HasOne("CERP.HR.Employees.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("CERP.Payroll.Payrun.Payslip", b =>
@@ -4293,20 +4084,6 @@ namespace CERP.Migrations
                         .WithMany("Positions")
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.ClientCascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CERP.Users.AppUser", b =>
-                {
-                    b.HasOne("CERP.HR.Employees.Employee", "Employee")
-                        .WithOne("Portal")
-                        .HasForeignKey("CERP.Users.AppUser", "EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Volo.Abp.Identity.IdentityUser", null)
-                        .WithOne()
-                        .HasForeignKey("CERP.Users.AppUser", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 

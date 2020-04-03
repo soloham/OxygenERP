@@ -276,6 +276,8 @@ namespace CERP.EntityFrameworkCore
                 b.HasOne(p => p.ContractType).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.EmployeeStatus).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.Department).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(p => p.SIType).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(p => p.IndemnityType).WithMany().OnDelete(DeleteBehavior.Restrict);
 
                 b.HasOne(p => p.Position).WithOne(pos => pos.Employee).OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.WorkShift).WithMany(p => p.Employees).OnDelete(DeleteBehavior.Restrict);
@@ -571,6 +573,7 @@ namespace CERP.EntityFrameworkCore
                 b.HasOne(x => x.Payrun).WithMany(p => p.PayrunDetails).OnDelete(DeleteBehavior.Restrict);
                 b.HasMany(x => x.PayrunAllowancesSummaries).WithOne().OnDelete(DeleteBehavior.ClientCascade);
                 b.HasOne(x => x.Employee).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.Indemnity).WithOne(x => x.PayrunDetail).OnDelete(DeleteBehavior.Restrict);
             });
             builder.Entity<Payslip>(b =>
             {
@@ -671,6 +674,33 @@ namespace CERP.EntityFrameworkCore
                     .IsRequired();
 
                 b.HasOne(x => x.SICategory).WithMany(x => x.SIContributions).OnDelete(DeleteBehavior.Restrict);
+            });
+            builder.Entity<PayrunDetailIndemnity>(b =>
+            {
+                b.ToTable(CERPConsts.PayrollDbTablePrefix + "PayrunDetailIndemnities", CERPConsts.PayrollDbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.Property(x => x.BasicSalary)
+                    .IsRequired();
+                b.Property(x => x.GrossSalary)
+                    .IsRequired();
+                b.Property(x => x.TotalEmploymentDays)
+                    .IsRequired();
+                b.Property(x => x.TotalEOSB)
+                    .IsRequired();
+                b.Property(x => x.ActuarialEvaluation)
+                    .IsRequired();
+                b.Property(x => x.LastMonthEOSB)
+                    .IsRequired();
+                b.Property(x => x.Difference)
+                    .IsRequired();
+
+                b.HasOne(x => x.Employee).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.PayrunDetail).WithOne(x => x.Indemnity).OnDelete(DeleteBehavior.Restrict);
+                b.HasMany(x => x.PayrunEOSBAllowancesSummaries).WithOne().OnDelete(DeleteBehavior.Restrict);
             });
         }
 

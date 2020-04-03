@@ -1,4 +1,5 @@
 ﻿using CERP.App;
+using CERP.Base;
 using CERP.FM;
 using CERP.HR.Employees;
 using CERP.HR.Timesheets;
@@ -10,7 +11,7 @@ using System.Text;
 
 namespace CERP.Payroll.Payrun
 {
-    public class PayrunDetailIndemnity
+    public class PayrunDetailIndemnity : AuditedAggregateTenantRoot<int>
     {
         [ForeignKey("EmployeeId")]
         public Employee? Employee { get; set; }
@@ -29,5 +30,9 @@ namespace CERP.Payroll.Payrun
         public double ActuarialEvaluation { get; set; }
         public double LastMonthEOSB { get; set; }
         public double Difference { get; set; }
+
+        [ForeignKey("PayrunDetailId")]
+        public PayrunDetail PayrunDetail { get; set; }
+        public int PayrunDetailId { get; set; }
     }
 }

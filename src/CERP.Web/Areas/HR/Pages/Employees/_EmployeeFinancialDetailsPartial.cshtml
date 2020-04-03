@@ -1,21 +1,26 @@
 ﻿@using CERP.App;
 @using Syncfusion.EJ2.Grids
 @using CERP.HR.EMPLOYEE.RougeDTOs
+@using CERP.HR.Employees.DTOs;
 @{
     bool IsEditing = (bool)ViewData["IsEditing"];
+    Employee_Dto employee = IsEditing ? Model.EmployeeToEdit : null;
 
     List<GridColumn> basicSalaryColumns = (List<GridColumn>)ViewData["basicSalaryColumns"];
-    FinancialDetails fd = (IsEditing == true)? (FinancialDetails)Model.FinancialDetails : null;
+    FinancialDetails fd = (IsEditing == true) ? (FinancialDetails)Model.FinancialDetails : null;
 
-    IList<BasicSalaryRDTO> basicSalaryDS = (IsEditing == true)? fd.BasicSalaries : new List<BasicSalaryRDTO>();
+    IList<BasicSalaryRDTO> basicSalaryDS = (IsEditing == true) ? fd.BasicSalaries : new List<BasicSalaryRDTO>();
 
     List<DictionaryValue> allowanceTypes = (List<DictionaryValue>)ViewData["allowanceTypes"];
     List<GridColumn> allowancesColumns = (List<GridColumn>)ViewData["allowancesColumns"];
-    IList<AllowanceRDTO> allowancesDS = (IsEditing == true)? fd.AllowancesDetails : new List<AllowanceRDTO>();
+    IList<AllowanceRDTO> allowancesDS = (IsEditing == true) ? fd.AllowancesDetails : new List<AllowanceRDTO>();
+
+    List<DictionaryValue> eosbTypes = (List<DictionaryValue>)ViewData["eosbTypes"];
+    List<DictionaryValue> siTypes = (List<DictionaryValue>)ViewData["siTypes"];
 
     List<DictionaryValue> banks = (List<DictionaryValue>)ViewData["banks"];
     List<GridColumn> banksColumns = (List<GridColumn>)ViewData["banksColumns"];
-    IList<BanksRDTO> banksDS = (IsEditing == true)? fd.Banks : new List<BanksRDTO>();
+    IList<BanksRDTO> banksDS = (IsEditing == true) ? fd.Banks : new List<BanksRDTO>();
 }
 <script>
     $(document).ready(function () {
@@ -62,12 +67,11 @@
         </div>
 
         <ejs-grid id="BasicSalariesGrid" width="auto" dataSource="@basicSalaryDS" enableAutoFill="true" columns="@basicSalaryColumns"
-                  dataBound="dataBound" commandClick="commandClick" actionComplete="actionComplete"
+                  dataBound="dataBoundResponsive"commandClick="commandClick" dataBound="dataBoundResponsive" actionComplete="actionComplete"
                   allowExcelExport="true" allowGrouping="false" allowPdfExport="true"
                   hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                   allowSorting="true" allowMultiSorting="true" gridLines="Both"
                   toolbarClick="toolbarClick" toolbar="@ViewData["initialToolBar"]"
-                  
                   allowPaging="true" allowResizing="true">
 
             <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
@@ -80,10 +84,44 @@
         {
 
             <div id="form-step-3-1" role="form" data-toggle="validator">
+                <div id="fdGeneralInfo" class="row m-t-20">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="margin-bottom-5 fontSize-15">Social Security Number</label>
+                            <input type="number" id="socialInsuranceId" name="SocialInsuranceId" min="01" value="@(IsEditing? employee.SocialInsuranceId : "")" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="margin-bottom-5 fontSize-15">Indemnity</label>
+
+                            <select id="eosbTypeId" name="IndemnityTypeId" class="form-control" required>
+                                <option></option>
+                                @for (int i = 0; i < eosbTypes.Count; i++)
+                                {
+                                    @: <option value="@eosbTypes[i].Id" data-value="@eosbTypes[i].Value" @(IsEditing && employee.IndemnityTypeId != null && employee.IndemnityTypeId == eosbTypes[i].Id ? "selected" : "")>@eosbTypes[i].Value</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="margin-bottom-5 fontSize-15">Social Insurance</label>
+
+                            <select id="sITypeId" name="SITypeId" class="form-control" required>
+                                <option></option>
+                                @for (int i = 0; i < siTypes.Count; i++)
+                                {
+                                    @: <option value="@siTypes[i].Id" data-value="@siTypes[i].Value" @(IsEditing && employee.SITypeId != null &&  employee.SITypeId == siTypes[i].Id ? "selected" : "")>@siTypes[i].Value</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
                 <div class="row m-t-20">
                     <div class="col-lg-4 col-sm-6 col-12">
                         <div class="form-group">
-                            <label class="margin-bottom-5 fontSize-15">Basic Salary:</label>
+                            <label class="margin-bottom-5 fontSize-15">Basic Salary</label>
                             <input type="number" id="basicSalary" name="BasicSalary" min="01" @*value="@(empInfo!=null? empInfo.BASIC_SALARY : 0)"*@ class="form-control" required>
                         </div>
                     </div>
@@ -166,7 +204,7 @@
                     </div>
 
                     @*</div>
-                    <div class="row">*@
+                        <div class="row">*@
                     <div class="col-lg-4 col-sm-6 col-12">
                         <div class="col-sm-6" style="padding:0">
                             <div class="form-group">
@@ -204,16 +242,15 @@
             </div>
 
             <ejs-grid id="AllowancesGrid" dataSource="@allowancesDS" enableAutoFill="true" columns="@allowancesColumns"
-                      dataBound="dataBound" commandClick="commandClick"
-                      allowExcelExport="true" height="100%"allowPdfExport="true"
+                      dataBound="dataBoundResponsive"commandClick="commandClick"
+                      allowExcelExport="true" height="100%" allowPdfExport="true"
                       hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                       allowSorting="true" allowMultiSorting="true" gridLines="Both"
                       toolbarClick="toolbarClick" toolbar="@ViewData["initialToolBar"]"
-                      
                       allowPaging="true" allowResizing="true">
 
                 <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
-            <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="false" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="false" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
                 <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
                 <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
             </ejs-grid>
@@ -306,12 +343,11 @@
         </div>
 
         <ejs-grid id="BanksGrid" width="auto" dataSource="@banksDS" enableAutoFill="true" columns="@banksColumns"
-                  dataBound="dataBound" commandClick="commandClick" actionComplete="actionComplete"
+                  dataBound="dataBoundResponsive"commandClick="commandClick" dataBound="dataBoundResponsive" actionComplete="actionComplete"
                   allowExcelExport="true" allowGrouping="false" allowPdfExport="true"
                   hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                   allowSorting="true" allowMultiSorting="true" gridLines="Both"
                   toolbarClick="toolbarClick" toolbar="@ViewData["initialToolBar"]"
-                  
                   allowPaging="true" allowResizing="true">
 
             <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
@@ -375,7 +411,7 @@
             }
         }
         if (args.item.id === 'showActions') {
-            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, "ExcelExport", "CsvExport", "Print", "Search",{ text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search",{ text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
 	gridObj.refresh();
         }
         if (args.item.id === 'hideActions') {
@@ -386,6 +422,28 @@
         if (args.item.id === 'toggleGrouping') {
             gridObj.allowGrouping = !gridObj.allowGrouping;
             gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            var visCount = 0;
+            for (var i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else if(col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+	    if(col.showInColumnChooser)
+                         gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
         }
     }
     function alertBtnClick() {
@@ -412,7 +470,7 @@
         }
         else {
             $("#allowancesSection").slideDown();
-            
+
             curBasicSalary = grid.dataSource[grid.dataSource.length - 1].Salary;
             console.log(curBasicSalary);
         }

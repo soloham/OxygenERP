@@ -16,7 +16,7 @@
     var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
 
     var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
-    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "hideActions" }, "ExcelExport", "CsvExport", "Print", "Search",new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search",new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
 }   
 @section styles {
     <link href="~/libs/syncfusion/ej2-grid/styles/fabric.css" rel="stylesheet" />
@@ -34,6 +34,16 @@
         }
         #payrunsSection {
             transition: all .2s;
+            display: flex;
+            flex-flow: column;
+        }
+        #payrunsSection #areaHeader {
+            flex: 0 1 auto;
+            width: 100%;
+            text-align: center;
+            background-color: #5BCFF3;
+            color: white;
+            padding: 10px
         }
         .dividePayrun{
             position: absolute;
@@ -59,6 +69,18 @@
                 position: unset;
             }*/
         }
+        .areaLeft {
+            background-color: #00b2f0;
+            display: flex;
+            align-items: center;
+            padding: 0 20px 0 20px;
+        }
+        .areaRight {
+            background-color: #00b2f0;
+            display: flex;
+            align-items: center;
+            padding: 0 20px 0 20px;
+        }
     </style>
 }
 @section scripts {
@@ -79,12 +101,15 @@
 }
 <partial name="_DefaultPageHeader" />
 <div class="site-content customContentArea">
-    <div class="col-md-12 h-fill-available">
-        <div id="payrunsSection" class="col-md-12 h-fill-available p-l-0">
+    <div class="col-md-12 h-fill-available" style="">
+        <div id="payrunsSection" class="col-md-12 p-l-0" style="height: 100%">
+            <div class="areaHeader m-b-5 font-roboto" style="">
+                <h3 class="control-label" style="flex-grow: 1; margin:0">Payruns Overview</h3>
+            </div>
             <div class="control-section">
                 <ejs-grid id="PayrunsHistoryGrid" dataSource="@ViewData["Payruns_DS"]" queryCellInfo="QueryCellInfo" childGrid="@Model.SecondaryDetailsGrid"
                           enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()" rowDataBound="rowDataBound"
-                          dataBound="dataBound" commandClick="commandClick" actionComplete="actionComplete"
+                          dataBound="dataBoundResponsive" commandClick="commandClick" dataBound="dataBoundResponsive" actionComplete="actionComplete"
                           allowExcelExport="true" height="100%" allowPdfExport="true"
                           hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                           allowSorting="true" allowMultiSorting="true" gridLines="Both"
@@ -99,13 +124,43 @@
             </div>
         </div>
         <div id="paymentsSheetSection" class="col-md-6 h-fill-available p-r-0" style="padding-top:0; background-color: rgb(253,253,253); display:none">
-        <partial name="_PaymentSheet" model="null" />
-    </div>
+            <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
+                <div class="areaLeft">
+                    <h4 id="psHeaderDate" class="control-label" style="margin:0; margin-top:2px;"></h4>
+                </div>
+                <h3 class="control-label" style="flex-grow: 1; margin:0">Payment Sheet</h3>
+                <div class="areaRight" style="padding: 0!important">
+                    <h4 id="psHeaderPosted" class="control-label" style="padding: 0 20px 0 20px; margin:0; margin-top:2px; display: none">POSTED</h4>
+                    <button id="psHeaderPostBtn" onclick="return postPS()" class="btn btn-outline-default" style="margin:0; color: white; height: 100%; width: 100%;">POST</button>
+                </div>
+            </div>
+            <partial name="_PaymentSheet" model="null" />
+        </div>
     </div>
     <div id="indemnitySheetSection" class="col-md-12 m-t-20" style="padding-top:0; background-color: rgb(253,253,253); display:none">
+        <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
+            <div class="areaLeft">   
+                <h4 id="eosbHeaderDate" class="control-label" style="margin:0; margin-top:2px;"></h4>
+            </div>
+            <h3 class="control-label" style="flex-grow: 1; margin:0">Indemnity Report</h3>
+            <div class="areaRight" style="padding: 0!important">
+                <h4 id="eosbHeaderPosted" class="control-label" style="padding: 0 20px 0 20px; margin:0; margin-top:2px; display: none">POSTED</h4>
+                <button id="eosbHeaderPostBtn" onclick="return postIndemnity()" class="btn btn-outline-default" style="margin:0; color: white; height: 100%; width: 100%;">POST</button>
+            </div>
+        </div>
         <partial name="_PayrunIndemnity" model="@Model.GetIndemnityModel()" />
     </div>
     <div id="siReportSection" class="col-md-12 m-t-20" style="padding-top:0; background-color: rgb(253,253,253); display:none">
+        <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
+            <div class="areaLeft">
+                <h4 id="siHeaderDate" class="control-label" style="margin:0; margin-top:2px;"></h4>
+            </div>
+            <h3 class="control-label" style="flex-grow: 1; margin:0">Social Insurance Report</h3>
+            <div class="areaRight" style="padding: 0!important">
+                <h4 id="siHeaderPosted" class="control-label" style="padding: 0 20px 0 20px; margin:0; margin-top:2px; display: none">POSTED</h4>
+                <button id="siHeaderPostBtn" onclick="return postSI()" class="btn btn-outline-default" style="margin:0; color: white; height: 100%; width: 100%;">POST</button>
+            </div>
+        </div>
         <partial name="_PayrunSIReport" model="@Model.GetSIReportModel()" />
     </div>
 </div>
@@ -122,7 +177,79 @@
 </ejs-dialog>
 
 <script>
+    var curPSId;
+    var curIndemnityId;
+    var curSIId;
+    function postPS() {
+        var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
 
+        $.ajax({
+            url: '@Url.Content("~")/Payroll/Payrun?handler=PaymentSheet',
+            async: true,
+            type: "POST",
+            data: { id: curPSId, __RequestVerificationToken: xhrToken },
+            success: function (data) {
+                swal.fire('Success', 'Payment sheet successfully posted', 'success')
+                $('#psHeaderPostBtn').hide();
+                $('#psHeaderPosted').show();
+            },
+            error: function (data) {
+                swal.fire('Failed', `Payment sheet couldn't be posted`, 'error');
+                $('#psHeaderPostBtn').show();
+                $('#psHeaderPosted').hide();
+            }
+        });
+    }
+    function postSI() {
+        var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+
+        $.ajax({
+            url: '@Url.Content("~")/Payroll/Payrun?handler=SocialInsurance',
+            async: true,
+            type: "POST",
+            data: { id: curSIId, __RequestVerificationToken: xhrToken },
+            success: function (data) {
+                swal.fire('Success', 'Social insurance successfully posted', 'success')
+                $('#siHeaderPostBtn').hide();
+                $('#siHeaderPosted').show();
+            },
+            error: function (data) {
+                swal.fire('Failed', `Social insurance couldn't be posted`, 'error');
+                $('#siHeaderPostBtn').show();
+                $('#siHeaderPosted').hide();
+            }
+        });
+    }
+    function postIndemnity() {
+        var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+        var grid = $('#EOSBGrid')[0].ej2_instances[0];
+        console.log(grid.dataSource);
+        var rowObjs = grid.getRowsObject(); 
+        var indemniteisDS = [];
+        for (var i = 0; i < rowObjs.length; i++) {
+            indemniteisDS.push(rowObjs[i].data);
+        }
+        console.log(indemniteisDS);
+        $.ajax({
+            url: '@Url.Content("~")/Payroll/Payrun?handler=Indemnity',
+            async: true,
+            type: "POST",
+            data: { indemnitiesDS: JSON.stringify(indemniteisDS), payrunId: curIndemnityId, __RequestVerificationToken: xhrToken },
+            success: function (data) {
+                grid.allowEditing = false;
+                swal.fire('Success', 'Indemnity successfully posted', 'success')
+                $('#eosbHeaderPostBtn').hide();
+                $('#eosbHeaderPosted').show();
+            },
+            error: function (data) {
+                swal.fire('Failed', `Indemnity couldn't be posted`, 'error');
+                $('#eosbHeaderPostBtn').show();
+                $('#eosbHeaderPosted').hide();
+            }
+        });
+    }
+    var months = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
     function DeletePayrun(month, year) {
         var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
 
@@ -149,10 +276,8 @@
         if (args.data.isPosted) {
             if (args.data.attachmentFile != null) {
                 $(".e-" + "View-Attach-" + "Button", args.row).removeClass("e-hide");
-                console.log("Yupi");
             } else {
                 $(".e-" + "View-Attach-" + "Button", args.row).addClass("e-hide");
-                console.log("Yup");
             }
             $(".e-" + "View-Payments-Sheet-" + "Button", args.row).removeClass("e-hide");
             var gridObj = document.getElementById("PayrunsHistoryGrid").ej2_instances[0];
@@ -192,7 +317,7 @@
                 };
                 var value = parseFloat(args.cell.innerText);
                 const formatted = Number(value).toLocaleString('en', options);
-                args.cell.innerText = 'SAR ' + formatted // change decimal ;
+                args.cell.innerText = '' + formatted // change decimal ;
             }
         }
     }
@@ -296,6 +421,7 @@
                 //$("#paymentsSheetSection").stop().animate({ width: '0' }, 150);
 
                 $('#paymentsSheetSection').slideUp(200);
+                $("#payrunsSection").removeClass('dividePayrun');
                 setTimeout(function () {
                     $("#payrunsSection").removeClass('col-md-6');
                     $("#payrunsSection").addClass('col-md-12');
@@ -317,7 +443,7 @@
                 type: "GET",
                 data: { payrunId: params.id },
                 success: function (data) {
-
+                    curPSId = params.id;
                     let waitAnim = 0;
                     if (isVisible) {
 
@@ -328,6 +454,25 @@
                     else {
                         gridMain.hideSpinner();
                     }
+                    $('#psHeaderDate').html(months[data[0].month - 1] + ', ' + data[0].year);
+
+
+                    if (params.isPosted) {
+                        if (data[0].isPosted) {
+                            $('#psHeaderPostBtn').hide();
+                            $('#psHeaderPosted').show();
+                        }
+                        else {
+                            $('#psHeaderPostBtn').show();
+                            $('#psHeaderPosted').hide();
+                        }
+                    }
+                    else {
+
+                        $('#psHeaderPostBtn').hide();
+                        $('#psHeaderPosted').hide();
+                    }
+
                     setTimeout(function () {
                         $("#payrunsSection").removeClass('col-md-12');
                         $("#payrunsSection").addClass('col-md-6');
@@ -340,8 +485,8 @@
 
                             setTimeout(function () {
                                 if ($('#indemnitySheetSection').css('display') != 'none') {
-                                    $('#payrunsSection').addClass('dividePayrun');
-                                    $('#paymentsSheetSection').css('margin-left', '50%');
+                                    //$('#payrunsSection').addClass('dividePayrun');
+                                    //$('#paymentsSheetSection').css('margin-left', '50%');
                                 }
                             }, 200);
                         }, 200);
@@ -402,9 +547,10 @@
                 if (!isSIVisible) {
                     setTimeout(function () {
                         $(".customContentArea").css('position', 'absolute');
-                        gridMain.refresh();
                         $('#payrunsSection').removeClass('dividePayrun');
-                        $('#paymentsSheetSection').css('margin-left', '0');
+                        gridMain.refresh();
+                        //$('#payrunsSection').removeClass('dividePayrun');
+                        //$('#paymentsSheetSection').css('margin-left', '0');
                     }, 200);
                 }
                 //$("#sectionDiv").stop().animate({ width: '0' }, 150);
@@ -416,18 +562,34 @@
                 gridMain.showSpinner();
             }
             if (!isSIVisible) {
-                $('#indemnitySheetSection').slideUp(150);
-                $(".customContentArea").css('position', 'absolute');
-                $('#payrunsSection').removeClass('dividePayrun');
             }
+            grid.showSpinner();
             $.ajax({
                 url: '@Url.Content("~")/Payroll/Payrun?handler=IndemnitySheet',
                 async: true,
                 type: "GET",
                 data: { payrunId: params.id },
                 success: function (data) {
+                    grid.allowEditing = false;
+                    curIndemnityId = params.id;
                     console.log(data);
                     gridMain.hideSpinner();
+                    $('#eosbHeaderDate').html(months[data.month - 1] + ', ' + data.year);
+
+                    if (params.isPosted) {
+                        if (data.isPosted) {
+                            $('#eosbHeaderPostBtn').hide();
+                            $('#eosbHeaderPosted').show();
+                        }
+                        else {
+                            $('#eosbHeaderPostBtn').show();
+                            $('#eosbHeaderPosted').hide();
+                        }
+                    }
+                    else {
+                        $('#eosbHeaderPostBtn').hide();
+                        $('#eosbHeaderPosted').hide();
+                    }
                     setTimeout(function () {
                         setTimeout(function () {
                             grid.dataSource = data.EOSBDS;
@@ -438,8 +600,8 @@
                         $('#indemnitySheetSection').slideDown(100);
                         setTimeout(function () {
                             if($('#paymentsSheetSection').css('display') != 'none'){
-                                $('#payrunsSection').addClass('dividePayrun');
-                                $('#paymentsSheetSection').css('margin-left', '50%');
+                                //$('#payrunsSection').addClass('dividePayrun');
+                                //$('#paymentsSheetSection').css('margin-left', '50%');
                             }
                         }, 100)
                     }, 150);
@@ -467,9 +629,10 @@
                 if (!isEOSBVisible) {
                     setTimeout(function () {
                         $(".customContentArea").css('position', 'absolute');
-                        gridMain.refresh();
                         $('#payrunsSection').removeClass('dividePayrun');
-                        $('#paymentsSheetSection').css('margin-left', '0');
+                        gridMain.refresh();
+                        //$('#payrunsSection').removeClass('dividePayrun');
+                        //$('#paymentsSheetSection').css('margin-left', '0');
                     }, 200);
                 }
                 //$("#sectionDiv").stop().animate({ width: '0' }, 150);
@@ -481,17 +644,35 @@
                 gridMain.showSpinner();
             }
             if (!isEOSBVisible) {
-                $('#siReportSection').slideUp(150);
-                $(".customContentArea").css('position', 'absolute');
-                $('#payrunsSection').removeClass('dividePayrun');
             }
+            grid.showSpinner();
             $.ajax({
                 url: '@Url.Content("~")/Payroll/Payrun?handler=SIReport',
                 async: true,
                 type: "GET",
                 data: { payrunId: params.id },
                 success: function (data) {
+                    curSIId = params.id;
                     console.log(data);
+                    $('#siHeaderDate').html(months[data.month - 1] + ', ' + data.year);
+
+
+                    if (params.isPosted) {
+                        if (data.isPosted) {
+                            $('#siHeaderPostBtn').hide();
+                            $('#siHeaderPosted').show();
+                        }
+                        else {
+                            $('#siHeaderPostBtn').show();
+                            $('#siHeaderPosted').hide();
+                        }
+                    }
+                    else {
+
+                        $('#siHeaderPostBtn').hide();
+                        $('#siHeaderPosted').hide();
+                    }
+
                     gridMain.hideSpinner();
                     setTimeout(function () {
                         setTimeout(function () {
@@ -503,8 +684,8 @@
                         $('#siReportSection').slideDown(100);
                         setTimeout(function () {
                             if($('#paymentsSheetSection').css('display') != 'none'){
-                                $('#payrunsSection').addClass('dividePayrun');
-                                $('#paymentsSheetSection').css('margin-left', '50%');
+                                //$('#payrunsSection').addClass('dividePayrun');
+                                //$('#paymentsSheetSection').css('margin-left', '50%');
                             }
                         }, 100)
                     }, 150);
@@ -526,7 +707,6 @@
     function toolbarClick(args) {
         var gridObj = document.getElementById("PayrunsHistoryGrid").ej2_instances[0];
         if (args.item.id === 'PayrunsHistoryGrid_pdfexport') {
-            console.log("Hello");
             gridObj.pdfExport({}, true);
         }
         if (args.item.id === 'PayrunsHistoryGrid_excelexport') {
@@ -552,8 +732,8 @@
             }
         }
         if (args.item.id === 'showActions') {
-            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, "ExcelExport", "CsvExport", "Print", "Search",{ text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
-    gridObj.refresh();
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search",{ text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.refresh();
         }
         if (args.item.id === 'hideActions') {
             gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
@@ -563,6 +743,28 @@
         if (args.item.id === 'toggleGrouping') {
             gridObj.allowGrouping = !gridObj.allowGrouping;
             gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            var visCount = 0;
+            for (var i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else if(col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+        if(col.showInColumnChooser)
+                         gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
         }
     }
     function alertBtnClick() {

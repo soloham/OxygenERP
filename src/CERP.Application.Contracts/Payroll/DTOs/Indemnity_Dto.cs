@@ -3,10 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using CERP.Base;
 
 namespace CERP.Payroll.DTOs
 {
-    public class PayrunDetailIndemnity_Dto
+    public class PayrunDetailIndemnity_Dto : AuditedEntityTenantDto<int>
     {
         [Required]
         public DateTime PayrunDate { get; internal set; }
@@ -37,5 +38,8 @@ namespace CERP.Payroll.DTOs
         public double LastMonthEOSB { get; set; }
         [Required]
         public double Difference { get; set; }
+
+        public PayrunDetail_Dto PayrunDetail { get; set; }
+        public int PayrunDetailId { get; set; }
     }
 }

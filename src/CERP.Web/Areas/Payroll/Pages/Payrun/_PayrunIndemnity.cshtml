@@ -7,34 +7,39 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @addTagHelper *, Syncfusion.EJ2
 @{
-        List<GridColumn> primaryGridColumns = new List<GridColumn>()
+    List<GridColumn> primaryGridColumns = new List<GridColumn>()
     {
-        new GridColumn { Field = "sNo", HeaderText = "#", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
-        new GridColumn { Field = "getEmpRefCode", HeaderText = "Id", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+        new GridColumn { Field = "sNo", HeaderText = "#", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+        new GridColumn { Field = "Id", HeaderText = "", TextAlign=TextAlign.Center, Visible=false, ShowInColumnChooser=false,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+        new GridColumn { Field = "EmployeeId", HeaderText = "", TextAlign=TextAlign.Center,  AllowEditing=false, Visible = false, ShowInColumnChooser = false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+        new GridColumn { Field = "getEmpRefCode", HeaderText = "Id", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
         new GridColumn { Field = "getEmpName", HeaderText = "Employee Name", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
-        new GridColumn { Field = "getEmpDepartment", HeaderText = "Department", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
-        new GridColumn { Field = "getEmpDOJ", HeaderText = "Joining Date", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
-        new GridColumn { Field = "getBasicSalary", HeaderText = "Basic Salary", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+        new GridColumn { Field = "getEmpDepartment", HeaderText = "Department", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+        new GridColumn { Field = "getEmpDOJ", HeaderText = "Joining Date", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+        new GridColumn { Field = "BasicSalary", HeaderText = "Basic Salary", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
     };
 
-        List<DictionaryValue> EOSBAllowancesSummaries = Model.EOSBAllowances;
+    List<DictionaryValue> EOSBAllowancesSummaries = Model.EOSBAllowances;
 
-        for (int i = 0; i < EOSBAllowancesSummaries.Count; i++)
-        {
-            primaryGridColumns.Add(new GridColumn { Field = $"{EOSBAllowancesSummaries[i].Value}_Value", HeaderText = $"{EOSBAllowancesSummaries[i].Value}", TextAlign = TextAlign.Center, AllowEditing=false,  MinWidth = "10" });
-        }
+    for (int i = 0; i < EOSBAllowancesSummaries.Count; i++)
+    {
+        primaryGridColumns.Add(new GridColumn { Field = $"{EOSBAllowancesSummaries[i].Value}_Value", HeaderText = $"{EOSBAllowancesSummaries[i].Value}", TextAlign = TextAlign.Center, AllowEditing=false,  MinWidth = "10" });
+    }
 
-        primaryGridColumns.AddRange(new List<GridColumn>() {
-            new GridColumn { Field = "getEmpGrossSalary", HeaderText = "Gross Salary", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
-            new GridColumn { Field = "getEmpTotalDays", HeaderText = "Employment Days", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", Columns=new List<GridColumn>(){
-                new GridColumn { Field = "getEmpDaysBelow", HeaderText = "PRE 5", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
-                new GridColumn { Field = "getEmpDaysAbove", HeaderText = "POST 5", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
-                new GridColumn { Field = "getEmpTotalDays", HeaderText = "TOTAL", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  }
+    primaryGridColumns.AddRange(new List<GridColumn>() {
+            new GridColumn { Field = "GrossSalary", HeaderText = "Gross Salary", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+            new GridColumn { Field = "", HeaderText = "Employment Days", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", Columns=new List<GridColumn>(){
+                new GridColumn { Field = "TotalPre5EmploymentDays", HeaderText = "PRE 5", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+                new GridColumn { Field = "TotalPost5EmploymentDays", HeaderText = "POST 5", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+                new GridColumn { Field = "TotalEmploymentDays", HeaderText = "TOTAL", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", Id=""  }
             }},
-            new GridColumn { Field = "getEmpTotalEOSB", HeaderText = "Total EOSB", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
-            new GridColumn { Field = "getEmpLastMonthEOSB", HeaderText = "Balance", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
-            new GridColumn { Field = "", HeaderText = "Actuarial Value", TextAlign=TextAlign.Center,  AllowEditing=true,  MinWidth = "10"  },
-            new GridColumn { Field = "getEmpEOSBDifference", HeaderText = "Net Change", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+            new GridColumn { Field = "TotalEOSB", HeaderText = "Total EOSB", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+            new GridColumn { Field = "LastMonthEOSB", HeaderText = "Balance", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+            new GridColumn { Field = "", HeaderText = "Change", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", Columns=new List<GridColumn>(){
+                new GridColumn { Field = "ActuarialEvaluation", HeaderText = "Actuarial Value", TextAlign=TextAlign.Center,  AllowEditing=true,  MinWidth = "10"  },
+                new GridColumn { Field = "Difference", HeaderText = "Net Change", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+            }},
+            new GridColumn { Field = "PayrunDetailId", HeaderText = "", Visible = false, ShowInColumnChooser = false, TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
         });
 
     var DS = Model.EOSBDS;
@@ -42,14 +47,14 @@
     var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
 
     var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
-    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "hideActions" }, "ExcelExport", "CsvExport", "Print", "Search",new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search",new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
 }
 
 
 <div class="control-section">
     <ejs-grid id="EOSBGrid"
               enableAutoFill="true" columns="@primaryGridColumns" dataSource="@DS"
-              dataBound="dataBound" commandClick="commandClick" actionComplete="actionComplete"
+              dataBound="dataBoundResponsive"commandClick="commandClick" dataBound="dataBoundResponsive" actionComplete="actionComplete" actionBegin="actionBeginIndmenity"
               allowExcelExport="true" height="100%" allowPdfExport="true"
               hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
               allowSorting="true" allowMultiSorting="true" gridLines="Both"
@@ -90,10 +95,38 @@
     //            };
     //            var value = parseFloat(args.cell.innerText);
     //            const formatted = Number(value).toLocaleString('en', options);
-    //            args.cell.innerText = 'SAR ' + formatted // change decimal ;
+    //            args.cell.innerText = '' + formatted // change decimal ;
     //        }
     //    }
     //}
+    const options = {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    };
+    function actionBeginIndmenity(args) {
+        if (args.requestType == "save") {
+            if (typeof args.data.ActuarialEvaluation === 'undefined') {
+                args.cancel = true;
+            }
+            else
+            {
+                var actuarialValue = parseFloat(args.data.ActuarialEvaluation.replace(/,/g, ''));
+                var getEmpLastMonthEOSB = parseFloat(args.data.LastMonthEOSB.replace(/,/g, ''));
+                console.log(actuarialValue);
+                console.log(getEmpLastMonthEOSB);
+                args.data.ActuarialEvaluation = Number(actuarialValue).toLocaleString('en', options);
+                args.data.Difference = Number(actuarialValue).toLocaleString('en', options);
+            }
+        }
+        else if (args.requestType == "delete")
+        {
+
+        }
+        else if (args.requestType == "add")
+        {
+
+        }
+    }
 
     function EOSBtoolbarClick(args) {
         var gridObj = document.getElementById("EOSBGrid").ej2_instances[0];
@@ -123,7 +156,7 @@
             }
         }
         if (args.item.id === 'showActions') {
-            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, "ExcelExport", "CsvExport", "Print", "Search",{ text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search",{ text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
     gridObj.refresh();
         }
         if (args.item.id === 'hideActions') {
@@ -134,6 +167,28 @@
         if (args.item.id === 'toggleGrouping') {
             gridObj.allowGrouping = !gridObj.allowGrouping;
             gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            var visCount = 0;
+            for (var i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else if(col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+	    if(col.showInColumnChooser)
+                         gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
         }
     }
 </script>

@@ -130,6 +130,9 @@ namespace CERP
             CreateMap<SIContributionCategory_Dto, SIContributionCategory>().ForMember(d => d.Setup, opt => opt.Ignore());
             CreateMap<SIContribution, SIContribution_Dto>().ForMember(d => d.SICategory, opt => opt.Ignore());
             CreateMap<SIContribution_Dto, SIContribution>().ForMember(d => d.SICategory, opt => opt.Ignore());
+
+            CreateMap<PayrunDetailIndemnity, PayrunDetailIndemnity_Dto>().ForMember(d => d.PayrunDetail, opt => opt.Ignore());
+            CreateMap<PayrunDetailIndemnity_Dto, PayrunDetailIndemnity>().ForMember(d => d.PayrunDetail, opt => opt.Ignore());
         }
     }
 }

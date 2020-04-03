@@ -17,7 +17,7 @@
     string TabPlaceholder = (bool)ViewData["IsEditing"]? "Area" : "Step";
 
     var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
-    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "hideActions" }, "ExcelExport", "CsvExport", "Print", "Search",new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search",new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
 
     ViewData["birthPlaces"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Country).OrderBy(x => x.Key).ToList();
     ViewData["nationalities"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Country).OrderBy(x => x.Key).ToList();
@@ -40,6 +40,8 @@
 
     ViewData["employees"] = Model.employeeAppService.Repository.ToList();
 
+    ViewData["eosbTypes"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.IndemnityType).OrderBy(x => x.Key).ToList();
+    ViewData["siTypes"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.SocialInsuranceType).OrderBy(x => x.Key).ToList();
     ViewData["banks"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Bank).OrderBy(x => x.Key).ToList();
     ViewData["banksColumns"] = new List<GridColumn>() {
         new GridColumn { Field = "Id", Width = "110", HeaderText = "#", TextAlign=TextAlign.Center,  MinWidth="10"  },
@@ -306,7 +308,6 @@
                     elmForm.validator('validate');
                     var elmErr = elmForm.find('.has-error');
                     if (elmErr) {
-                            console.log("Yup");
                         if (elmErr.length > 0) {
                             console.log("Greater");
                             // Form validation failed
@@ -456,6 +457,8 @@
                 var form = [];
                 var generalInfo = $('#generalInfo').find("select, textarea, input").serializeArray();
                 form = form.concat(generalInfo);
+                var fdGeneralInfo = $('#fdGeneralInfo').find("select, textarea, input").serializeArray();
+                form = form.concat(fdGeneralInfo);
                 var contractDetails = $('#form-step-2').find("select, textarea, input").serializeArray();
                 form = form.concat(contractDetails);
                 
@@ -470,6 +473,9 @@
                 //}
                 params.Id = "@(IsEditing? Model.EmployeeId : Guid.Empty)";
                 params.profilePic = "@(IsEditing? Model.EmployeeToEdit.ProfilePic ?? "" : "")";
+                params.socialInsuranceId = $('#socialInsuranceId').val();
+                params.indemnityTypeId = $('#eosbTypeId').val();
+                params.sITypeId = $('#sITypeId').val();
                 var primaryContactInfo = objectifyForm($('#primaryContactForm').find("select, textarea, input").serializeArray());
                 var nationalAddressInfo = objectifyForm($('#nationalAddressInfo').find("select, textarea, input").serializeArray());
                 var portalDetail = objectifyForm($('#form-step-7-1').find("select, textarea, input").serializeArray());

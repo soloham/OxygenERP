@@ -243,6 +243,10 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                 }
 
                 Employee_Dto empAdded = null;
+
+                //selfPortalDetail.
+                //employee.
+
                 if (!IsEditing)
                 {
 
@@ -460,6 +464,9 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                     emp.GenderId = employee.GenderId;
                     emp.NationalityId = employee.NationalityId;
                     emp.POB_ID = employee.POB_ID;
+                    emp.SocialInsuranceId = employee.SocialInsuranceId;
+                    emp.SITypeId = employee.SITypeId;
+                    emp.IndemnityTypeId = employee.IndemnityTypeId;
 
                     emp.JoiningDate = employee.JoiningDate;
                     emp.JoiningHDate = employee.JoiningHDate;

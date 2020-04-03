@@ -79,6 +79,8 @@ namespace CERP.EntityFrameworkCore
                                                        .Include(p => p.EmployeeType)
                                                        .Include(p => p.Position).ThenInclude(x => x.Department)
                                                        .Include(p => p.Portal);
+                                                       .Include(p => p.SIType)
+                                                       .Include(p => p.IndemnityType);
                 });
 
                 options.Entity<AppUser>(opt =>
@@ -135,7 +137,15 @@ namespace CERP.EntityFrameworkCore
                                                         .ThenInclude(p => p.Employee)
                                                         .ThenInclude(p => p.Nationality)
                                                        .Include(p => p.PayrunDetails)
+                                                        .ThenInclude(p => p.Employee)
+                                                        .ThenInclude(p => p.SIType)
+                                                       .Include(p => p.PayrunDetails)
+                                                        .ThenInclude(p => p.Employee)
+                                                        .ThenInclude(p => p.IndemnityType)
+                                                       .Include(p => p.PayrunDetails)
                                                         .ThenInclude(x => x.EmployeeTimesheet)
+                                                       .Include(p => p.PayrunDetails)
+                                                        .ThenInclude(p => p.Indemnity)
                                                        .Include(p => p.PostedBy);
                 });
                 options.Entity<PayrunDetail>(opt =>
@@ -145,9 +155,14 @@ namespace CERP.EntityFrameworkCore
                                                         .ThenInclude(x => x.Company)
                                                        .Include(p => p.Employee)
                                                         .ThenInclude(p => p.Position)
+                                                       .Include(p => p.Employee)
+                                                        .ThenInclude(p => p.SIType)
+                                                       .Include(p => p.Employee)
+                                                        .ThenInclude(p => p.IndemnityType)
                                                        .Include(p => p.PayrunAllowancesSummaries)
                                                         .ThenInclude(x => x.AllowanceType)
-                                                       .Include(p => p.EmployeeTimesheet);
+                                                       .Include(p => p.EmployeeTimesheet)
+                                                       .Include(p => p.Indemnity);
                 });
                 options.Entity<SISetup>(opt =>
                 {
