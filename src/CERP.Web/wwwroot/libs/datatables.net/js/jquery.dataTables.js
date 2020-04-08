@@ -6530,7 +6530,7 @@
 	 *  @param {object} extender Object from which the properties will be applied to
 	 *      out
 	 *  @param {boolean} breakRefs If true, then arrays will be sliced to take an
-	 *      independant copy with the exception of the `data` or `aaData` parameters
+	 *      independent copy with the exception of the `data` or `aaData` parameters
 	 *      if they are present. This is so you can pass in a collection to
 	 *      DataTables and have that used as your data source without breaking the
 	 *      references
