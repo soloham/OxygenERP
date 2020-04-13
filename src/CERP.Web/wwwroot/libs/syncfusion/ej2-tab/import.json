@@ -1,0 +1,13 @@
+{
+    "components": [
+        "tab"
+    ],
+    "minified": "true",
+    "themes": [
+        "fabric"
+    ],
+    "version": "17.4.49-patch",
+    "name": "ej2-tab",
+    "isMinified": true,
+    "injectables": {}
+}

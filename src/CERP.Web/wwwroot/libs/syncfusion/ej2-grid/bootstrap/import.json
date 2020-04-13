@@ -1,0 +1,39 @@
+{
+    "components": [
+        "grid"
+    ],
+    "minified": "true",
+    "injectables": {
+        "grid": [
+            "Filter",
+            "Page",
+            "Selection",
+            "Sort",
+            "Group",
+            "Reorder",
+            "RowDD",
+            "DetailRow",
+            "Toolbar",
+            "Aggregate",
+            "Search",
+            "VirtualScroll",
+            "Edit",
+            "Resize",
+            "ExcelExport",
+            "PdfExport",
+            "CommandColumn",
+            "ContextMenu",
+            "Freeze",
+            "ColumnMenu",
+            "ColumnChooser",
+            "ForeignKey",
+            "BlazorAction"
+        ]
+    },
+    "themes": [
+        "bootstrap"
+    ],
+    "version": "17.4.51-patch",
+    "name": "ej2-grid",
+    "isMinified": true
+}

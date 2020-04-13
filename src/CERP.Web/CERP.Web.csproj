@@ -18,9 +18,13 @@
 
   <ItemGroup>
     <Compile Remove="Logs\**" />
+    <Compile Remove="wwwroot\libs\sweetalert\**" />
     <Content Remove="Logs\**" />
+    <Content Remove="wwwroot\libs\sweetalert\**" />
     <EmbeddedResource Remove="Logs\**" />
+    <EmbeddedResource Remove="wwwroot\libs\sweetalert\**" />
     <None Remove="Logs\**" />
+    <None Remove="wwwroot\libs\sweetalert\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -337,6 +341,10 @@
     <None Include="wwwroot\libs\JqueryDatepicker\js\jquery.plugin.js" />
     <None Include="wwwroot\libs\JqueryDatepicker\js\jquery.plugin.min.js" />
     <None Include="wwwroot\libs\JqueryDatepicker\js\jquery.plugin.min.map" />
+    <None Include="wwwroot\libs\sweetalert2\dist\sweetalert2.all.js" />
+    <None Include="wwwroot\libs\sweetalert2\dist\sweetalert2.all.min.js" />
+    <None Include="wwwroot\libs\sweetalert2\dist\sweetalert2.js" />
+    <None Include="wwwroot\libs\sweetalert2\dist\sweetalert2.min.js" />
     <None Include="wwwroot\seed\fonts\font-awesome\fontawesome-webfont.svg" />
     <None Include="wwwroot\seed\fonts\font-awesome\fontawesome-webfont.woff2" />
     <None Include="wwwroot\seed\fonts\fontawesome-webfont.svg" />

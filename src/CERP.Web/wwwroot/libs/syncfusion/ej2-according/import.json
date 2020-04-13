@@ -1,0 +1,14 @@
+{
+    "components": [
+        "accordion"
+    ],
+    "minified": "true",
+    "themes": [
+        "fabric",
+        "bootstrap"
+    ],
+    "version": "17.4.51-patch",
+    "name": "ej2-according",
+    "isMinified": true,
+    "injectables": {}
+}
