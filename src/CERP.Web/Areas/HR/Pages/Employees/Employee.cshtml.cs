@@ -221,7 +221,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                 if(!IsEditing) employee.Id = GuidGenerator.Create();
 
                 bool selfRegistration = await CheckSelfRegistrationAsync();
-                if (selfRegistration && selfPortalDetail.CreatePortal)
+                if (selfRegistration && !selfPortalDetail.CreatePortal)
                 {
                     string employeeUsername = selfPortalDetail.IsUsernameEmpId ? employee.GetReferenceId : selfPortalDetail.Username;
 

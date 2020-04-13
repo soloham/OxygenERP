@@ -1,0 +1,326 @@
+﻿@page "/Payroll/Payrun/Indemnity/{payrunId}"
+@using CERP;
+@using CERP.App;
+@using CERP.HR.EMPLOYEE.DTOs;
+@using Volo.Abp.Domain.Repositories;
+@using Syncfusion.EJ2.Grids;
+@using CERP.Setup.DTOs;
+@model CERP.Web.Areas.Payroll.Pages.PayrunPage.PayrunIndemnityModel
+@{
+    ViewData["Title"] = "Indemnity Report";
+    ViewData["IconClass"] = "fas fa-calendar-check";
+    ViewData["HeaderTitle"] = "INDEMNITY REPORT";
+    ViewData["SubTitle"] = "";
+    ViewData["Area"] = "Payroll";
+
+    ViewData["IsList"] = false;
+    ViewData["IsCreate"] = false;
+
+    List<GridColumn> primaryGridColumns = new List<GridColumn>()
+    {
+        new GridColumn { Field = "sNo", HeaderText = "#", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+        new GridColumn { Field = "Id", HeaderText = "", TextAlign=TextAlign.Center, Visible=false, ShowInColumnChooser=false,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+        new GridColumn { Field = "EmployeeId", HeaderText = "", TextAlign=TextAlign.Center,  AllowEditing=false, Visible = false, ShowInColumnChooser = false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+        new GridColumn { Field = "getEmpRefCode", HeaderText = "Id", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+        new GridColumn { Field = "getEmpName", HeaderText = "Employee Name", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+        new GridColumn { Field = "getEmpDepartment", HeaderText = "Department", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+        new GridColumn { Field = "getEmpDOJ", HeaderText = "Joining Date", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+        new GridColumn { Field = "BasicSalary", HeaderText = "Basic Salary", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+    };
+
+    List<DictionaryValue> EOSBAllowancesSummaries = Model.EOSBAllowances;
+
+    for (int i = 0; i < EOSBAllowancesSummaries.Count; i++)
+    {
+        primaryGridColumns.Add(new GridColumn { Field = $"{EOSBAllowancesSummaries[i].Value}_Value", HeaderText = $"{EOSBAllowancesSummaries[i].Value}", TextAlign = TextAlign.Center, AllowEditing = false, MinWidth = "10" });
+    }
+
+    primaryGridColumns.AddRange(new List<GridColumn>() {
+            new GridColumn { Field = "GrossSalary", HeaderText = "Gross Salary", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+            new GridColumn { Field = "", HeaderText = "Employment Days", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", Columns=new List<GridColumn>(){
+                new GridColumn { Field = "TotalPre5EmploymentDays", HeaderText = "PRE 5", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+                new GridColumn { Field = "TotalPost5EmploymentDays", HeaderText = "POST 5", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+                new GridColumn { Field = "TotalEmploymentDays", HeaderText = "TOTAL", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", Id=""  }
+            }},
+            new GridColumn { Field = "TotalEOSB", HeaderText = "Total EOSB", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+            new GridColumn { Field = "LastMonthEOSB", HeaderText = "Balance", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+            new GridColumn { Field = "", HeaderText = "Change", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", Columns=new List<GridColumn>(){
+                new GridColumn { Field = "ActuarialEvaluation", HeaderText = "Actuarial Value", TextAlign=TextAlign.Center,  AllowEditing=true,  MinWidth = "10"  },
+                new GridColumn { Field = "Difference", HeaderText = "Net Change", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+            }},
+            new GridColumn { Field = "PayrunDetailId", HeaderText = "", Visible = false, ShowInColumnChooser = false, TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10"  },
+        });
+
+    var DS = Model._dynamicDS.EOSBDS;
+
+    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+
+    var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
+
+    var months = new string[] {"January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December" };
+
+    string pRDate = Model._dynamicDS != null ? months[Model._dynamicDS.month - 1] + ", " + Model._dynamicDS.year : "";
+}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Syncfusion.EJ2
+
+@section styles {
+    <link href="~/libs/syncfusion/ej2-grid/styles/fabric.css" rel="stylesheet" />
+
+    <style>
+        .e-grid .e-headercell {
+            background-color: #f5f5f5;
+            /*font-size: 18px;*/
+        }
+
+        .e-detailcell .e-headercell {
+            background-color: #6691b1 !important;
+            color: rgb(253,253,253);
+            /*font-size: 18px;*/
+        }
+
+        @@media screen and (max-width:780px) {
+            #paymentsSheetSection {
+                margin-top: 20px;
+            }
+        }
+
+        @@media screen and (max-width:1000px) {
+            #paymentsSheetSection {
+                margin-top: 20px;
+                margin-left: 0 !important;
+                padding-left: 0px;
+            }
+
+            .dividePayrun {
+                position: unset;
+                padding-right: 0px;
+            }
+            /*.customContentArea{
+                position: unset;
+            }*/
+        }
+
+        .areaLeft {
+            background-color: #00b2f0;
+            display: flex;
+            align-items: center;
+            padding: 0 20px 0 20px;
+        }
+
+        .areaRight {
+            background-color: #00b2f0;
+            display: flex;
+            align-items: center;
+            padding: 0 20px 0 20px;
+        }
+    </style>
+}
+@section scripts {
+    <!-- Syncfusion Essential JS 2 Scripts -->
+    <script src="~/libs/syncfusion/ej2-grid/scripts/ej2.min.js"></script>
+    <ejs-scripts></ejs-scripts>
+
+}
+<partial name="_DefaultPageHeader" />
+
+<div class="site-content customContentArea" style="padding-bottom: 120px">
+    <div class="control-section">
+        <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
+            <div class="areaLeft">
+                <h4 id="psHeaderDate" class="control-label" style="margin:0; margin-top:2px;">@pRDate</h4>
+            </div>
+            <h3 class="control-label" style="flex-grow: 1; margin:0">Indemnity Sheet</h3>
+            @if (Model.payrun.IsPosted)
+            {
+                <div class="areaRight" style="padding: 0!important">
+                    @if (Model.payrun.IsIndemnityPosted)
+                    {
+                        <h4 id="psHeaderPosted" class="control-label" style="padding: 0 20px 0 20px; margin:0; margin-top:2px">POSTED</h4>
+                    }
+                    else
+                    {
+                        <button id="psHeaderPostBtn" onclick="return postIndemnity()" class="btn btn-outline-default" style="margin:0; color: white; height: 100%; width: 100%;">POST</button>
+                    }
+                </div>
+            }
+            </div>
+        <ejs-grid id="EOSBGrid"
+                  enableAutoFill="true" columns="@primaryGridColumns" dataSource="@DS"
+                  dataBound="dataBoundResponsive" actionBegin="actionBeginIndmenity"
+                  allowExcelExport="true" height="100%" allowPdfExport="true"
+                  hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                  allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                  toolbarClick="EOSBtoolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
+                  contextMenuItems="@(new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending","Copy", "Edit", "PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage","LastPage", "NextPage"})"
+                  allowPaging="true" allowResizing="true">
+
+            <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+            <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="false" allowAdding="false" allowDeleting="false" allowEditing="true"></e-grid-editSettings>
+            <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+            <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+        </ejs-grid>
+
+        <form>
+
+        </form>
+    </div>
+</div>
+<ejs-dialog id="alert_dialog" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy with Header" content="Atleast one row should be selected to copy with header">
+    <e-dialog-buttons>
+        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+    </e-dialog-buttons>
+</ejs-dialog>
+<ejs-dialog id="alert_dialog_1" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy" content="Atleast one row should be selected to copy">
+    <e-dialog-buttons>
+        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+    </e-dialog-buttons>
+</ejs-dialog>
+<script>
+    //function QueryCellInfo(args) {
+    //    if (args.cell.innerText == '') {
+    //        if(typeof args.column.field != 'undefined')
+    //            args.cell.innerText = '—';
+    //    }
+    //    else {
+    //        if (args.column.field.includes("Value") || args.column.field.includes("BasicSalar") || args.column.field == 'totalEarnings' || args.column.field == 'totalDeductions' || args.column.field == 'netTotal') {
+    //            const options = {
+    //                minimumFractionDigits: 2,
+    //                maximumFractionDigits: 2
+    //            };
+    //            var value = parseFloat(args.cell.innerText);
+    //            const formatted = Number(value).toLocaleString('en', options);
+    //            args.cell.innerText = '' + formatted // change decimal ;
+    //        }
+    //    }
+    //}
+    var curIndemnityId = @Model.payrunId;
+
+    const options = {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    };
+    function actionBeginIndmenity(args) {
+        if (args.requestType == "save") {
+            if (typeof args.data.ActuarialEvaluation === 'undefined') {
+                args.cancel = true;
+            }
+            else {
+                var actuarialValue = parseFloat(args.data.ActuarialEvaluation.replace(/,/g, ''));
+                var getEmpLastMonthEOSB = parseFloat(args.data.LastMonthEOSB.replace(/,/g, ''));
+                console.log(actuarialValue);
+                console.log(getEmpLastMonthEOSB);
+                args.data.ActuarialEvaluation = Number(actuarialValue).toLocaleString('en', options);
+                args.data.Difference = Number(actuarialValue).toLocaleString('en', options);
+            }
+        }
+        else if (args.requestType == "delete") {
+
+        }
+        else if (args.requestType == "add") {
+
+        }
+    }
+
+    function EOSBtoolbarClick(args) {
+        var gridObj = document.getElementById("EOSBGrid").ej2_instances[0];
+        if (args.item.id === 'EOSBGrid_pdfexport') {
+            gridObj.pdfExport();
+        }
+        if (args.item.id === 'EOSBGrid_excelexport') {
+            gridObj.excelExport();
+        }
+        if (args.item.id === 'EOSBGrid_csvexport') {
+            gridObj.csvExport();
+        }
+        if (this.getSelectedRecords().length > 0) {
+            var withHeader = false;
+            if (args.item.id === 'copyHeader') {
+                withHeader = true;
+            }
+            this.copy(withHeader);
+        } else {
+            if (args.item.id === 'copyHeader') {
+                var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+                dialogObj.show();
+            }
+            else if (args.item.id === 'copy') {
+                var dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+                dialogObj.show();
+            }
+        }
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.showColumnChooser = true;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            var visCount = 0;
+            for (var i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+        }
+    }
+
+    function postIndemnity() {
+        var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+        var grid = $('#EOSBGrid')[0].ej2_instances[0];
+        console.log(grid.dataSource);
+        var rowObjs = grid.getRowsObject();
+        var indemniteisDS = [];
+        for (var i = 0; i < rowObjs.length; i++) {
+            indemniteisDS.push(rowObjs[i].data);
+        }
+        console.log(indemniteisDS);
+        $.ajax({
+            url: '/handler=Indemnity',
+            async: true,
+            type: "POST",
+            data: { indemnitiesDS: JSON.stringify(indemniteisDS), payrunId: curIndemnityId, __RequestVerificationToken: xhrToken },
+            success: function (data) {
+                grid.allowEditing = false;
+                swal.fire('Success', 'Indemnity successfully posted', 'success')
+                $('#eosbHeaderPostBtn').hide();
+                $('#eosbHeaderPosted').show();
+            },
+            error: function (data) {
+                swal.fire('Failed', `Indemnity couldn't be posted`, 'error');
+                $('#eosbHeaderPostBtn').show();
+                $('#eosbHeaderPosted').hide();
+            }
+        });
+    }
+
+    function alertBtnClick() {
+        var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+        var dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
+        dialogObj.hide();
+        dialogObj1.hide();
+    }
+</script>

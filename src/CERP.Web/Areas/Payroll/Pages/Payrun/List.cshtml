@@ -109,7 +109,7 @@
             <div class="control-section">
                 <ejs-grid id="PayrunsHistoryGrid" dataSource="@ViewData["Payruns_DS"]" queryCellInfo="QueryCellInfo" childGrid="@Model.SecondaryDetailsGrid"
                           enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()" rowDataBound="rowDataBound"
-                          dataBound="dataBoundResponsive" commandClick="commandClick" dataBound="dataBoundResponsive" actionComplete="actionComplete"
+                          dataBound="dataBoundResponsive" commandClick="commandClick" actionComplete="actionComplete"
                           allowExcelExport="true" height="100%" allowPdfExport="true"
                           hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                           allowSorting="true" allowMultiSorting="true" gridLines="Both"
@@ -123,7 +123,7 @@
                 </ejs-grid>
             </div>
         </div>
-        <div id="paymentsSheetSection" class="col-md-6 h-fill-available p-r-0" style="padding-top:0; background-color: rgb(253,253,253); display:none">
+        @*<div id="paymentsSheetSection" class="col-md-6 h-fill-available p-r-0" style="padding-top:0; background-color: rgb(253,253,253); display:none">
             <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
                 <div class="areaLeft">
                     <h4 id="psHeaderDate" class="control-label" style="margin:0; margin-top:2px;"></h4>
@@ -135,9 +135,9 @@
                 </div>
             </div>
             <partial name="_PaymentSheet" model="null" />
-        </div>
+        </div>*@
     </div>
-    <div id="indemnitySheetSection" class="col-md-12 m-t-20" style="padding-top:0; background-color: rgb(253,253,253); display:none">
+    @*<div id="indemnitySheetSection" class="col-md-12 m-t-20" style="padding-top:0; background-color: rgb(253,253,253); display:none">
         <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
             <div class="areaLeft">   
                 <h4 id="eosbHeaderDate" class="control-label" style="margin:0; margin-top:2px;"></h4>
@@ -162,7 +162,7 @@
             </div>
         </div>
         <partial name="_PayrunSIReport" model="@Model.GetSIReportModel()" />
-    </div>
+    </div>*@
 </div>
 
 <ejs-dialog id="alert_dialog" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy with Header" content="Atleast one row should be selected to copy with header">
@@ -224,7 +224,7 @@
         var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
         var grid = $('#EOSBGrid')[0].ej2_instances[0];
         console.log(grid.dataSource);
-        var rowObjs = grid.getRowsObject(); 
+        var rowObjs = grid.getRowsObject();
         var indemniteisDS = [];
         for (var i = 0; i < rowObjs.length; i++) {
             indemniteisDS.push(rowObjs[i].data);
@@ -248,8 +248,7 @@
             }
         });
     }
-    var months = ["January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"];
+
     function DeletePayrun(month, year) {
         var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
 
@@ -403,7 +402,7 @@
         {
             var params = args.rowData;  // display row data
 
-            window.location = `@Url.Content("~")/Payroll/Payrun/Run?foryear=${params.year}&formonth=${params.month}`;
+            window.open(`@Url.Content("~")/Payroll/Payrun/Run?foryear=${params.year}&formonth=${params.month}`, '_blank');
         }
         else if (args.commandColumn.type == "Copy") {
             this.copy(false);
@@ -411,11 +410,13 @@
         else if (args.commandColumn.type == "View Reconciliation") {
             var params = args.rowData;  // display row data
 
-            window.location = `@Url.Content("~")/Payroll/Reconciliation?P1Year=${params.year}&P1Month=${params.month-1}&P2Year=${params.year}&P2Month=${params.month}`;
+            window.open(`@Url.Content("~")/Payroll/Reconciliation?P1Year=${params.year}&P1Month=${params.month - 1}&P2Year=${params.year}&P2Month=${params.month}`);
         }
         else if (args.commandColumn.type == "View Payments Sheet") {
-            var params = args.rowData;  // display row data
-            var grid = $('#PaymentSheetGrid')[0].ej2_instances[0];
+            //var params = ;  // display row data
+            window.open(`@Url.Content("~")/Payroll/Payrun/PaymentSheet/${args.rowData.id}`, '_blank');
+
+            @*var grid = $('#PaymentSheetGrid')[0].ej2_instances[0];
             let isVisible = $("#paymentsSheetSection").css('display') != 'none';
             if (isVisible && grid.dataSource != null && grid.dataSource[0].payrunId == params.id) {
                 //$("#paymentsSheetSection").stop().animate({ width: '0' }, 150);
@@ -531,12 +532,13 @@
                     swal.fire('Failed', `Payment sheet for this payrun couldn't be generated`, 'error');
                     //location.reload(true);
                 }
-            });
-            //window.location = `@Url.Content("~")/Payroll/Reconciliation?fromYear=${params.year-1}&fromMonth=${params.month-1}&toYear=${params.year}&toMonth=${params.month}`;
+            });*@
         }
         else if (args.commandColumn.type == "View Indemnity") {
             var params = args.rowData;  // display row data
-            let isSIVisible = $("#siReportSection").css('display') != 'none';
+            window.open(`@Url.Content("~")/Payroll/Payrun/Indemnity/${args.rowData.id}`, '_blank')
+
+            @*let isSIVisible = $("#siReportSection").css('display') != 'none';
             let isVisible = $("#indemnitySheetSection").css('display') != 'none';
             var gridMain = $('#PayrunsHistoryGrid')[0].ej2_instances[0];
             var grid = $('#EOSBGrid')[0].ej2_instances[0];
@@ -612,12 +614,14 @@
                     swal.fire('Failed', `Indemnity for this payrun couldn't be generated`, 'error');
                     //location.reload(true);
                 }
-            });
+            });*@
             //window.location = `@Url.Content("~")/Payroll/Reconciliation?fromYear=${params.year-1}&fromMonth=${params.month-1}&toYear=${params.year}&toMonth=${params.month}`;
         }
         else if (args.commandColumn.type == "View GOSI Report") {
             var params = args.rowData;  // display row data
-            let isVisible = $("#siReportSection").css('display') != 'none';
+            window.open(`@Url.Content("~")/Payroll/Payrun/SocialInsurance/${args.rowData.id}`, '_blank');
+
+            @*let isVisible = $("#siReportSection").css('display') != 'none';
             let isEOSBVisible = $("#indemnitySheetSection").css('display') != 'none';
             var gridMain = $('#PayrunsHistoryGrid')[0].ej2_instances[0];
             var grid = $('#SIGrid')[0].ej2_instances[0];
@@ -696,7 +700,7 @@
                     swal.fire('Failed', `Social Insurance Report for this payrun couldn't be generated`, 'error');
                     //location.reload(true);
                 }
-            });
+            });*@
             //window.location = `@Url.Content("~")/Payroll/Reconciliation?fromYear=${params.year-1}&fromMonth=${params.month-1}&toYear=${params.year}&toMonth=${params.month}`;
         }
     }

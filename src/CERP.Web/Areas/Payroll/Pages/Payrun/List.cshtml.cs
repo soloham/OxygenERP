@@ -293,8 +293,8 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
         public dynamic GetSIReportModel()
         {
             dynamic Model = new ExpandoObject();
-            List<SIContributionCategory_Dto> SIContributionCategories = ObjectMapper.Map<List<SIContributionCategory>, List<SIContributionCategory_Dto>>(SocialInsuranceAppService.Repository.WithDetails().First().ContributionCategories.ToList());
-            Model.SIContributionCategories = SIContributionCategories;
+
+            List<SIContributionCategory_Dto> SIContributionCategories = Model.SIContributionCategories; Model.SIContributionCategories = SIContributionCategories;
             Model.SIAllowances = Allowances.Where(x => x.Dimension_2_Value.ToUpper() == "TRUE").ToList();
             Model.SIDS = null;
             return Model;

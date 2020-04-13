@@ -459,6 +459,9 @@ vhr {
 .e-custom-group-toggle:before {
     content: '\e926';
 }
+.e-custom-audit-trail:before {
+    content: '\ea8f';
+}
 .e-gosi-report:before {
     content: '\e310';
 }

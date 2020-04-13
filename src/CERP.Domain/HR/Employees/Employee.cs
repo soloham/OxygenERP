@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
+using Volo.Abp.Auditing;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
@@ -38,7 +39,6 @@ namespace CERP.HR.Employees
         public string LastNameLocalized { get; set; }
         public string FamilyName { get; set; }
         public string FamilyNameLocalized { get; set; }
-
         public string DOB { get; set; }
         public string DOB_H { get; set; }
 
@@ -58,7 +58,6 @@ namespace CERP.HR.Employees
         [ForeignKey("MaritalStatusId")]
         public DictionaryValue MaritalStatus { get; set; }
         public Guid MaritalStatusId { get; set; }
-
         public int NoOfDependents { get; set; }
 
         [ForeignKey("BloodGroupId")]
@@ -120,7 +119,6 @@ namespace CERP.HR.Employees
         public int WorkShiftId { get; set; }
 
         #endregion
-
         public string ProfilePic { get; set; }
 
         [ForeignKey("PortalId")]

@@ -1,23 +1,22 @@
 ﻿@page "/HR/Employee/{EmployeeId?}"
 @addTagHelper *, Syncfusion.EJ2
 @using CERP;
-@using CERP.App;
 @using Syncfusion.EJ2.Grids;
 @model CERP.Web.Areas.HR.Pages.Employees.EmployeeModel
 @{
     bool IsEditing = (bool)ViewData["IsEditing"];
 
-    ViewData["Title"] = IsEditing? "Edit Employee" : "Add Employee";
+    ViewData["Title"] = IsEditing ? "Edit Employee" : "Add Employee";
     ViewData["IconClass"] = "fa fa-user-tie";
     ViewData["HeaderTitle"] = "EMPLOYEES";
-    ViewData["SubTitle"] = IsEditing? "Edit This Employee" : "Add New Employee";
+    ViewData["SubTitle"] = IsEditing ? "Edit This Employee" : "Add New Employee";
 
     ViewData["IsList"] = false;
     ViewData["IsCreate"] = false;
-    string TabPlaceholder = (bool)ViewData["IsEditing"]? "Area" : "Step";
+    string TabPlaceholder = (bool)ViewData["IsEditing"] ? "Area" : "Step";
 
     var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
-    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search",new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
 
     ViewData["birthPlaces"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Country).OrderBy(x => x.Key).ToList();
     ViewData["nationalities"] = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Country).OrderBy(x => x.Key).ToList();
@@ -167,7 +166,7 @@
 }
 @section styles {
     <link href="~/libs/smartwizard/dist/css/smart_wizard.min.css" rel="stylesheet" />
-        <link href="~/libs/smartwizard/dist/css/smart_wizard_theme_arrows.min.css" rel="stylesheet" />
+    <link href="~/libs/smartwizard/dist/css/smart_wizard_theme_arrows.min.css" rel="stylesheet" />
     @if ((bool)ViewData["IsEditing"])
     {
         <link href="~/libs/smartwizard/dist/css/smart_wizard_theme_circles.min.css" rel="stylesheet" />
@@ -182,8 +181,9 @@
             background-color: #f5f5f5;
             /*font-size: 18px;*/
         }
-        .customContentArea{
-            position: unset!important;
+
+        .customContentArea {
+            position: unset !important;
         }
     </style>
 }
@@ -204,7 +204,7 @@
         }
         //toastr.options.positionClass = 'toast-bottom-right';
         toastr.options.closeButton = true;
-        
+
         //toastr.options.newOnTop = false;
         toastr.options.showEasing = 'swing';
         toastr.options.hideEasing = 'linear';
@@ -364,7 +364,7 @@
                 var errorSteps = [];
                 //Step 1
                 if (ValidateStep(0, true)) {
-                    
+
                 }
                 else {
                     errorSteps.push(0);
@@ -377,7 +377,7 @@
                 }
                 //Step 3
                 if (ValidateStep(2, true)) {
-                    
+
                 }
                 else {
                     errorSteps.push(2);
@@ -461,7 +461,7 @@
                 form = form.concat(fdGeneralInfo);
                 var contractDetails = $('#form-step-2').find("select, textarea, input").serializeArray();
                 form = form.concat(contractDetails);
-                
+
                 var fileInput = $('#imageUpload')[0];
                 var params = objectifyForm(form);
                 var profilePic = fileInput.files[0];
@@ -702,7 +702,7 @@
                                     $(`#smartwizard>ul>li>a[href="#step-${stepNumber + 1}"]`).parent().removeClass('danger');
                                     valid = true;
                                 }
-                                    
+
                                 if ($('#BanksGrid')[0].ej2_instances[0].dataSource.length == 0) {
                                     console.log("Banks Grid ----->");
                                     console.log($('#BanksGrid')[0].ej2_instances[0].dataSource.length);
@@ -760,7 +760,7 @@
                                         $(`#smartwizard>ul>li>a[href="#step-${stepNumber + 1}"]`).parent().removeClass('danger');
                                         valid = true;
                                     }
-                                    
+
                                     if ($('#BanksGrid')[0].ej2_instances[0].dataSource.length == 0) {
                                         console.log("Banks Grid ----->");
                                         console.log($('#BanksGrid')[0].ej2_instances[0].dataSource.length);
@@ -1148,7 +1148,7 @@
                         ToDate: toDate,
                     });
                     grid.refresh(); // refresh the Grid.
-                    
+
                     toastr.info(`${bankIdValue} Bank Added`);
                 }
                 return true;
@@ -1216,7 +1216,7 @@
                         City: secCityValue
                     });
                     grid.refresh(); // refresh the Grid.
-                    
+
                     toastr.info(`Secondary contact of ${contactRelationValue} Added`);
                 }
                 return true;
@@ -1276,7 +1276,7 @@
                         ToDate: toDate
                     });
                     grid.refresh(); // refresh the Grid.
-                    
+
                     toastr.info(`${degreeIdValue} Qualification Added`);
                 }
                 return true;
@@ -1333,7 +1333,7 @@
                         ToDate: toDate,
                     });
                     grid.refresh(); // refresh the Grid.
-                    
+
                     toastr.info(`${experiencePlace} Experience Added`);
                 }
                 return true;
@@ -1403,7 +1403,7 @@
                         GetGenderValue: genderIdValue
                     });
                     grid.refresh(); // refresh the Grid.
-                    
+
                     toastr.info(`$Dependant: ${dependantName} Added`);
 
                     var dependantsSelect = $("#dependantId");
@@ -1489,7 +1489,7 @@
                         GetDocument: { Name: idCopyFile.name }
                     }); // refresh the Grid.
                     grid.refresh(); // refresh the Grid.
-                    
+
                     toastr.info(`${idTypeValue} Added for dependant: ${dependant.Name}`);
                 }
                 return true;
@@ -1549,7 +1549,7 @@
                         ToDate: toDate
                     });
                     grid.refresh(); // refresh the Grid.
-                    
+
                     toastr.info(`${workshiftIdValue} Workshift Added`);
                 }
                 return true;
@@ -1596,8 +1596,8 @@
             //$("#theme_selector").change();
 
             $("#firstName").on("change", function () {
-                let firstName = $("#firstName").val(); 
-                let middleName = $("#MiddleName").val(); 
+                let firstName = $("#firstName").val();
+                let middleName = $("#MiddleName").val();
                 let lastName = $("#grandName").val();
 
                 $("#bankAccountTitle").val(firstName + ' ' + middleName + ' ' + lastName);
@@ -1613,8 +1613,8 @@
                 }
             })
             $("#MiddleName").on("change", function () {
-                let firstName = $("#firstName").val(); 
-                let middleName = $("#MiddleName").val(); 
+                let firstName = $("#firstName").val();
+                let middleName = $("#MiddleName").val();
                 let lastName = $("#grandName").val();
 
                 $("#bankAccountTitle").val(firstName + ' ' + middleName + ' ' + lastName);
@@ -1630,8 +1630,8 @@
                 }
             })
             $("#grandName").on("change", function () {
-                let firstName = $("#firstName").val(); 
-                let middleName = $("#MiddleName").val(); 
+                let firstName = $("#firstName").val();
+                let middleName = $("#MiddleName").val();
                 let lastName = $("#grandName").val();
 
                 $("#bankAccountTitle").val(firstName + ' ' + middleName + ' ' + lastName);
@@ -1691,7 +1691,7 @@
                     }
                 });
             }
-            
+
             $('#EmpPhoto').click(function () {
                 $('#divPhoto').slideToggle();
             });
@@ -1802,6 +1802,7 @@
             </div>
 
         </div>
+
 
 
     </form>
