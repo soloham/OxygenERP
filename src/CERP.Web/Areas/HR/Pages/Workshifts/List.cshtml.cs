@@ -8,6 +8,7 @@ using CERP.AppServices.HR.DepartmentService;
 using CERP.AppServices.HR.WorkShiftService;
 using CERP.AppServices.Setup.DepartmentSetup;
 using CERP.HR.EMPLOYEE.DTOs;
+using CERP.HR.Workshift.DTOs;
 using CERP.HR.Workshifts;
 using CERP.Setup.DTOs;
 using CERP.Web.Pages;

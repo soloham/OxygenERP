@@ -1,0 +1,151 @@
+﻿@page "/HR/Setup"
+@model CERP.Web.Areas.HR.Pages.Setup.IndexModel
+@{
+    ViewData["Title"] = "Setup";
+    ViewData["IconClass"] = "fas fa-user-tie";
+    ViewData["HeaderTitle"] = "HR SETUP";
+    ViewData["SubTitle"] = "HR Setup";
+    ViewData["Area"] = "HR";
+
+    ViewData["IsList"] = false;
+    ViewData["IsCreate"] = false;
+
+    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+
+    var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" },"Add", "Cancel", "Edit", "Delete", "Search", "ColumnChooser" };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" },"Add", "Cancel", "Edit", "Delete", new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "e-custom-group-toggle", id = "toggleGrouping" }, "ExcelExport", "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
+    ViewData["initialToolbar"] = initialToolBar;
+    ViewData["fullToolBar"] = fullToolBar;
+    string TabPlaceholder = "Area";
+}
+@section Styles {
+    <link href="~/libs/smartwizard/dist/css/smart_wizard.min.css" rel="stylesheet" />
+    <link href="~/libs/smartwizard/dist/css/smart_wizard_theme_arrows.min.css" rel="stylesheet" />
+    <link href="~/libs/syncfusion/ej2-grid/styles/fabric.css" rel="stylesheet" />
+
+    <style>
+        .customContentArea {
+            position: unset !important;
+        }
+
+        .e-grid .e-headercell {
+            background-color: #f5f5f5;
+            /*font-size: 18px;*/
+        }
+
+        .e-detailcell .e-headercell {
+            background-color: #6691b1 !important;
+            color: rgb(253,253,253);
+            /*font-size: 18px;*/
+        }
+    </style>
+}
+@section scripts {
+    <!-- Syncfusion Essential JS 2 Scripts -->
+    <script src="~/libs/smartwizard/dist/js/jquery.smartWizard.min.js"></script>
+    <script src="~/libs/syncfusion/ej2-grid/scripts/ej2.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            toastr.options = {
+
+                "positionClass": "toast-bottom-right",
+
+            }
+            //toastr.options.positionClass = 'toast-bottom-right';
+            toastr.options.closeButton = true;
+
+            //toastr.options.newOnTop = false;
+            toastr.options.showEasing = 'swing';
+            toastr.options.hideEasing = 'linear';
+            toastr.options.closeEasing = 'linear';
+
+            toastr.options.showMethod = 'slideDown';
+            toastr.options.hideMethod = 'slideUp';
+            toastr.options.closeMethod = 'slideUp';
+
+            toastr.options.progressBar = true;
+            $('#smartwizard').smartWizard({
+                selected: 0,
+                theme: 'arrows',
+                transitionEffect: 'slide',
+                showStepURLhash: false,
+                keyNavigation: true,
+                //errorSteps: [1],
+                toolbarSettings: {
+                    showNextButton: false, // show/hide a Next button
+                    showPreviousButton: false, // show/hide a Previous button
+                },
+                anchorSettings: {
+                    anchorClickable: true, // Enable/Disable anchor navigation
+                    enableAllAnchors: true, // add done css
+                    markDoneStep: false, // add done css
+                    markAllPreviousStepsAsDone: false, // When a step selected by url hash, all previous steps are marked done
+                    removeDoneStepOnNavigateBack: true, // While navigate back done step after active step will be cleared
+                    enableAnchorOnDoneStep: true, // Enable/Disable the done steps navigation
+                }
+            });
+            $("#smartwizard").on("showStep", function (e, anchorObject, stepNumber, stepDirection, stepPosition) {
+                //alert("You are on step "+stepNumber+" now");
+                if (stepPosition === 'first') {
+                    $("#prev-btn").addClass('disabled');
+                } else if (stepPosition === 'final') {
+                    $("#next-btn").addClass('disabled');
+                } else {
+                    $("#prev-btn").removeClass('disabled');
+                    $("#next-btn").removeClass('disabled');
+                }
+
+                let li = $(`#smartwizard>ul>li>a[href="#step-${stepNumber + 1}"]`).parent();
+                if ($(li).hasClass('danger')) {
+                    $(li).removeClass('danger');
+                }
+            });
+            $("#smartwizard").on("leaveStep", function (e, anchorObject, stepNumber, stepDirection) {
+                let allow = true;
+                return allow;
+            });
+            $("#smartwizard").on("endReset", function () {
+                $("#next-btn").removeClass('disabled');
+            });
+        });
+
+    </script>
+    <ejs-scripts></ejs-scripts>
+}
+<partial name="_DefaultPageHeader" />
+<div class="site-content customContentArea">
+    <form id="payrollSetupForm" role="form" method="post" accept-charset="utf-8" novalidate>
+        <div id="smartwizard">
+            <ul>
+                <li><a href="#step-1">@TabPlaceholder 1<br /><p style="font-size: 15px">Workshifts</p></a></li>
+                <li><a href="#step-2">@TabPlaceholder 2<br /><p style="font-size: 15px">Leaves</p></a></li>
+            </ul>
+            <div>
+                <div id="step-1">
+                    <div id="form-step-0" role="form" data-toggle="validator">
+                        <partial name="_Workshift" />
+                    </div>
+                </div>
+                <div id="step-2">
+                    <div id="form-step-1" role="form" data-toggle="validator">
+                        @*<partial name="_Allowances" />*@
+                    </div>
+                </div>
+
+                <ejs-dialog id="alert_dialog" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy with Header" content="Atleast one row should be selected to copy with header">
+                    <e-dialog-buttons>
+                        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+                    </e-dialog-buttons>
+                </ejs-dialog>
+                <ejs-dialog id="alert_dialog_1" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy" content="Atleast one row should be selected to copy">
+                    <e-dialog-buttons>
+                        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+                    </e-dialog-buttons>
+                </ejs-dialog>
+            </div>
+
+        </div>
+
+
+    </form>
+</div>

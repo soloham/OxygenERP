@@ -10,13 +10,13 @@ using Volo.Abp.Domain.Repositories;
 
 namespace CERP.AppServices.HR.WorkShiftService
 {
-    public class WorkShiftsAppService : CrudAppService<WorkShift, WorkShift_Dto, int, PagedAndSortedResultRequestDto, WorkShift_Dto, WorkShift_Dto>
+    public class DeductionMethodsAppService : CrudAppService<DeductionMethod, DeductionMethod_Dto, int, PagedAndSortedResultRequestDto, DeductionMethod_Dto, DeductionMethod_Dto>
     {
-        public WorkShiftsAppService(IRepository<WorkShift, int> repository) : base(repository)
+        public DeductionMethodsAppService(IRepository<DeductionMethod, int> repository) : base(repository)
         {
             Repository = repository;
         }
 
-        public IRepository<WorkShift, int> Repository { get; }
+        public IRepository<DeductionMethod, int> Repository { get; }
     }
 }

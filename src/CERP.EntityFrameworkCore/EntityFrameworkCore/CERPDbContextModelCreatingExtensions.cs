@@ -343,7 +343,24 @@ namespace CERP.EntityFrameworkCore
                     .IsRequired();
 
                 b.HasOne(x => x.Department).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.DeductionMethod).WithMany(x => x.WorkShifts).OnDelete(DeleteBehavior.Restrict);
                 b.HasMany(p => p.Employees).WithOne().OnDelete(DeleteBehavior.Restrict);
+            });
+            builder.Entity<DeductionMethod>(b =>
+            {
+                b.ToTable(CERPConsts.HRDbTablePrefix + "DeductionMethods", CERPConsts.HRDbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureSoftDelete();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.Property(x => x.Title)
+                    .IsRequired();
+                b.Property(x => x.HoursMultiplicationFactor)
+                    .IsRequired();
+
+                b.HasMany(p => p.WorkShifts).WithOne(x => x.DeductionMethod).OnDelete(DeleteBehavior.Restrict);
             });
             builder.Entity<Document>(b =>
             {

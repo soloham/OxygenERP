@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using Volo.Abp.Application.Dtos;
 
-namespace CERP.HR.EMPLOYEE.DTOs
+namespace CERP.HR.Workshift.DTOs
 {
     public class WorkShift_Dto : FullAuditedEntityTenantDto<int>
     {

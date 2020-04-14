@@ -56,6 +56,7 @@ namespace CERP.EntityFrameworkCore
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Document> Documents { get; set; }
         public DbSet<WorkShift> WorkShifts { get; set; }
+        public DbSet<DeductionMethod> DeductionMethods { get; set; }
 
         public DbSet<Timesheet> TimeSheets { get; set; }
         public DbSet<TimesheetWeekSummary> WeeklySheets { get; set; }

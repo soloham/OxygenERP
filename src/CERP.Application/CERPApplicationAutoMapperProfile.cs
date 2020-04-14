@@ -13,6 +13,7 @@ using CERP.HR.Employees;
 using CERP.HR.Employees.DTOs;
 using CERP.HR.Employees.UV_DTOs;
 using CERP.HR.Timesheets;
+using CERP.HR.Workshift.DTOs;
 using CERP.HR.Workshifts;
 using CERP.Payroll.DTOs;
 using CERP.Payroll.Payrun;
@@ -107,6 +108,9 @@ namespace CERP
 
             CreateMap<WorkShift, WorkShift_Dto>();
             CreateMap<WorkShift_Dto, WorkShift>();
+
+            CreateMap<DeductionMethod, DeductionMethod_Dto>();
+            CreateMap<DeductionMethod_Dto, DeductionMethod>();
 
             CreateMap<Timesheet, Timesheet_Dto>().AfterMap((ts, tsDto) => tsDto.Initialize());
             CreateMap<Timesheet_Dto, Timesheet>();

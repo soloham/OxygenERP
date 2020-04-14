@@ -2,6 +2,7 @@
 using CERP.Base;
 using CERP.FM.DTOs;
 using CERP.HR.EMPLOYEE.DTOs;
+using CERP.HR.Workshift.DTOs;
 using CERP.Setup.DTOs;
 using CERP.Users;
 using System;

@@ -23,6 +23,10 @@ namespace CERP.HR.Workshifts
         [ForeignKey("DepartmentId")]
         public Department Department { get; set; }
         public Guid DepartmentId { get; set; }
+        
+        [ForeignKey("DeductionMethodId")]
+        public DeductionMethod DeductionMethod { get; set; }
+        public int? DeductionMethodId { get; set; }
 
         public ICollection<Employees.Employee> Employees { get; set; }
     }
