@@ -375,6 +375,7 @@
                     success: function (data) {
                         grid.hideSpinner();
 
+                        agtGrid.childGrid.childGrid.dataSource = data.tertiaryDS;
                         agtGrid.childGrid.dataSource = data.secondaryDS;
                         agtGrid.dataSource = data.ds;
                         agtGrid.refresh();

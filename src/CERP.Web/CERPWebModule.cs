@@ -31,6 +31,8 @@ using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.VirtualFileSystem;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.AspNetCore.MultiTenancy;
+using Volo.Abp.Auditing;
+using CERP.HR.Employees;
 
 namespace CERP.Web
 {
@@ -86,6 +88,25 @@ namespace CERP.Web
                 //Adding as the second highest priority resolver after 'CurrentUserTenantResolveContributor' to
                 //ensure the user cannot impersonate a different tenant.
                 options.AddDomainTenantResolver("{0}.localhost");
+            });
+
+            Configure<AbpAuditingOptions>(options =>
+            {
+                options.EntityHistorySelectors.Add(
+                    new NamedTypeSelector(
+                        "EmployeeSelector",
+                        type =>
+                        {
+                            if (typeof(Employee).IsAssignableFrom(type))
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
+                    ));
             });
         }
 
@@ -177,7 +198,7 @@ namespace CERP.Web
             services.AddSwaggerGen(
                 options =>
                 {
-                    options.SwaggerDoc("v1", new OpenApiInfo { Title = "CERP API", Version = "v1" });
+                    options.SwaggerDoc("v1", new OpenApiInfo { Title = "OxygenERP API", Version = "v1" });
                     options.DocInclusionPredicate((docName, description) => true);
                     options.CustomSchemaIds(type => type.FullName);
                 }

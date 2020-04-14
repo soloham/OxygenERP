@@ -1,8 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization;
-@using System.Web;
+@using Volo.Abp.Users;
 @using CERP.Localization;
 @inject IHtmlLocalizer<CERPResource> L
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,7 +18,7 @@
     <link href="~/styles/cerp/cosmos.min.css" rel="stylesheet" />
     <link href="~/styles/cerp/application.min.css" rel="stylesheet" />
 
-    <link href="~/libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="~/libs/@@fortawesome/fontawesome-free/css/all.css" rel="stylesheet" />
 
     <link href="~/libs/fabricUI/fabric.min.css" rel="stylesheet" />
     <link href="~/libs/fabricUI/fabric-11.0.0.scoped.min.css" rel="stylesheet" />
@@ -96,6 +95,7 @@
                             <span class="menu-text active"> @L["ps:dashboard"]</span>
                         </a>
                     </li>
+
 
                     <li class="menu-title">Financial Management</li>
                     <li class="with-sub">
@@ -887,11 +887,9 @@
 
 
     <script src="~/scripts/cerp/site.js" asp-append-version="true"></script>
-    <script src="~/libs/font-awesome/js/fontawesome.min.js"></script>
+    @*<script src="~/libsfont-awesome/js/fontawesome.min.js"></script>*@
 
     @RenderSection("Scripts", required: false)
-
-
 
 </body>
 </html>

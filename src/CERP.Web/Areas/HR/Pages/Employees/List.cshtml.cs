@@ -10,8 +10,10 @@ using CERP.HR.Employees.DTOs;
 using CERP.Web.Pages;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.OpenApi.Extensions;
 using Syncfusion.EJ2.Grids;
 using Volo.Abp.AuditLogging;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Json;
 
@@ -92,6 +94,15 @@ namespace CERP.Web.Areas.HR.Pages.Employees
             List<GridColumn> secondaryGridColumns = new List<GridColumn>()
             {
                 new GridColumn { Field = "EntityChangeId", HeaderText = "", TextAlign=TextAlign.Center, Visible=false, ShowInColumnChooser=false,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+                new GridColumn { Field = "TypeId", HeaderText = "", TextAlign=TextAlign.Center, Visible=false, ShowInColumnChooser=false,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+                new GridColumn { Field = "Type", HeaderText = "Type", TextAlign=TextAlign.Center,  AllowEditing=false, MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+                new GridColumn { Field = "Status", HeaderText = "New Value", TextAlign=TextAlign.Center,  AllowEditing=false, MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+
+            };
+            List<GridColumn> tertiaryGridColumns = new List<GridColumn>()
+            {
+                new GridColumn { Field = "EntityChangeId", HeaderText = "", TextAlign=TextAlign.Center, Visible=false, ShowInColumnChooser=false,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+                new GridColumn { Field = "TypeId", HeaderText = "", TextAlign=TextAlign.Center, Visible=false, ShowInColumnChooser=false,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
                 new GridColumn { Field = "Field", HeaderText = "Field", TextAlign=TextAlign.Center,  AllowEditing=false, MinWidth = "10", CustomAttributes=new {id="detailed"}  },
                 new GridColumn { Field = "NewValue", HeaderText = "New Value", TextAlign=TextAlign.Center,  AllowEditing=false, MinWidth = "10", CustomAttributes=new {id="detailed"}  },
                 new GridColumn { Field = "OriginalValue", HeaderText = "Original Value", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
@@ -117,6 +128,27 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                 ContextMenuItems = new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending", "Copy", "Edit", "Delete", "Save", "Cancel", "PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage", "LastPage", "NextPage" },
                 Columns = secondaryGridColumns
             };
+            Grid TertiaryAGTGrid = new Grid()
+            {
+                DataSource = new List<dynamic>(),
+                QueryString = "TypeId",
+                EditSettings = new Syncfusion.EJ2.Grids.GridEditSettings() { },
+                AllowExcelExport = true,
+                //AllowGrouping = true,
+                AllowPdfExport = true,
+                HierarchyPrintMode = HierarchyGridPrintMode.All,
+                AllowSelection = true,
+                AllowFiltering = false,
+                AllowSorting = true,
+                AllowMultiSorting = true,
+                AllowResizing = true,
+                GridLines = GridLine.Both,
+                SearchSettings = new GridSearchSettings() { },
+                //Toolbar = new List<object>() { "ExcelExport", "CsvExport", "Print", "Search",new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } },
+                ContextMenuItems = new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending", "Copy", "Edit", "Delete", "Save", "Cancel", "PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage", "LastPage", "NextPage" },
+                Columns = tertiaryGridColumns
+            };
+            SecondaryAGTGrid.ChildGrid = TertiaryAGTGrid;
 
             result.secondaryGrid = SecondaryAGTGrid;
             result.dataSource = null;
@@ -129,6 +161,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
             dynamic result = new ExpandoObject();
             List<dynamic> DS = new List<dynamic>();
             List<dynamic> secondaryDS = new List<dynamic>();
+            List<dynamic> tertiaryDS = new List<dynamic>();
             var employeeLogs = AuditLogsRepo.WithDetails().Where(x => x.Url == "/HR/Employee" && x.EntityChanges != null && x.EntityChanges.Count > 0).ToList();
 
             List<Employee_Dto> Employees = employeeAppService.GetAllEmployees();
@@ -142,6 +175,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                 for (int j = 0; j < entityChanges.Count; j++)
                 {
                     EntityChange entityChange = entityChanges[j];
+
                     dynamic changeRow = new ExpandoObject();
                     changeRow.AuditLogId = entityChange.Id;
                     changeRow.EntityChangeId = entityChange.Id;
@@ -152,27 +186,69 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                     changeRow.Date = entityChange.ChangeTime.ToShortDateString();
                     changeRow.Time = entityChange.ChangeTime.ToShortTimeString();
                     changeRow.User = auditLog.UserName;
-                    changeRow.Status = entityChange.ChangeType;
+                    changeRow.Status = entityChange.ChangeType.GetDisplayName();
 
                     DS.Add(changeRow);
 
-                    var propertyChanges = entityChange.PropertyChanges.ToList();
+                    dynamic generalTypeRow = new ExpandoObject();
+                    generalTypeRow.EntityChangeId = entityChange.Id;
+                    generalTypeRow.TypeId = 1;
+                    generalTypeRow.Type = "General";
+                    generalTypeRow.Name = "";
+                    generalTypeRow.Status = "Updated";
 
-                    for (int k = 0; k < propertyChanges.Count; k++)
+                    secondaryDS.Add(generalTypeRow);
+
+                    var generalPropertyChanges = entityChange.PropertyChanges.ToList();
+
+                    for (int k = 0; k < generalPropertyChanges.Count; k++)
                     {
-                        EntityPropertyChange propertyChange = propertyChanges[k];
+                        EntityPropertyChange propertyChange = generalPropertyChanges[k];
                         dynamic propertyChangeRow = new ExpandoObject();
+                        propertyChangeRow.TypeId = 1;
                         propertyChangeRow.EntityChangeId = propertyChange.EntityChangeId;
                         propertyChangeRow.Field = textInfo.ToTitleCase(propertyChange.PropertyName.ToSentenceCase());
                         propertyChangeRow.NewValue = propertyChange.NewValue != "null" && propertyChange.NewValue != "\"\""? propertyChange.NewValue.TrimStart('"').TrimEnd('"') : "—";
                         propertyChangeRow.OriginalValue = propertyChange.OriginalValue != "null" && propertyChange.OriginalValue != "\"\"" ? propertyChange.OriginalValue.TrimStart('"').TrimEnd('"') : "—"; ;
 
-                        secondaryDS.Add(propertyChangeRow);
+                        tertiaryDS.Add(propertyChangeRow);
+                    }
+
+                    List<EmployeeExtraPropertyHistory> extraPropertyHistories = entityChange.GetProperty<List<EmployeeExtraPropertyHistory>>("extraPropertiesHistory");
+                    if (extraPropertyHistories != null && extraPropertyHistories.Count > 0)
+                    {
+                        foreach (EmployeeExtraPropertyHistory extraPropertyHistory in extraPropertyHistories)
+                        {
+                            dynamic typeRow = new ExpandoObject();
+                            typeRow.EntityChangeId = entityChange.Id;
+                            typeRow.TypeId = extraPropertyHistory.TypeId;
+                            typeRow.Type = extraPropertyHistory.Type;
+                            typeRow.Name = extraPropertyHistory.Name;
+                            typeRow.Status = extraPropertyHistory.Status;
+
+                            secondaryDS.Add(typeRow);
+
+                            var propertyChanges = extraPropertyHistory.PropertyChanges.ToList();
+
+                            for (int k = 0; k < propertyChanges.Count; k++)
+                            {
+                                EmployeeTypePropertyChange propertyChange = propertyChanges[k];
+                                dynamic propertyChangeRow = new ExpandoObject();
+                                propertyChangeRow.TypeId = extraPropertyHistory.TypeId;
+                                propertyChangeRow.EntityChangeId = typeRow.EntityChangeId;
+                                propertyChangeRow.Field = textInfo.ToTitleCase(propertyChange.PropertyName.ToSentenceCase());
+                                propertyChangeRow.NewValue = propertyChange.NewValue != "null" && propertyChange.NewValue != "\"\"" ? propertyChange.NewValue.TrimStart('"').TrimEnd('"') : "—";
+                                propertyChangeRow.OriginalValue = propertyChange.OriginalValue != "null" && propertyChange.OriginalValue != "\"\"" ? propertyChange.OriginalValue.TrimStart('"').TrimEnd('"') : "—"; ;
+
+                                tertiaryDS.Add(propertyChangeRow);
+                            }
+                        }
                     }
                 }
             }
             result.ds = DS;
             result.secondaryDS = secondaryDS;
+            result.tertiaryDS = tertiaryDS;
 
             var secondaryGrid = new JsonResult(result);
             return secondaryGrid;

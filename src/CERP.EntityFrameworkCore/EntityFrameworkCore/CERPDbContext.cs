@@ -13,6 +13,7 @@ using CERP.HR.Workshifts;
 using CERP.HR.Documents;
 using CERP.HR.Timesheets;
 using CERP.Payroll.Payrun;
+using CERP.App.CustomEntityHistorySystem;
 
 namespace CERP.EntityFrameworkCore
 {
@@ -33,6 +34,10 @@ namespace CERP.EntityFrameworkCore
         /* Add DbSet properties for your Aggregate Roots / Entities here.
          * Also map them inside CERPDbContextModelCreatingExtensions.ConfigureCERP
          */
+
+        public DbSet<CustomEntityChange> CustomEntityChanges { get; set; }
+        public DbSet<CustomEntityPropertyChange> CustomEntityPropertyChanges { get; set; }
+
 
         public DbSet<COA_Account> COAs { get; set; }
         public DbSet<Company> Companies { get; set; }

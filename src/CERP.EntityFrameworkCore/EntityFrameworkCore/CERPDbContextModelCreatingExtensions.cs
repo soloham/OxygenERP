@@ -1,4 +1,5 @@
 ﻿using CERP.App;
+using CERP.App.CustomEntityHistorySystem;
 using CERP.FM;
 using CERP.FM.COA;
 using CERP.HR.Documents;
@@ -31,8 +32,24 @@ namespace CERP.EntityFrameworkCore
 
             //    //...
             //});
+            builder.Entity<CustomEntityChange>(b =>
+            {
+                b.ToTable(CERPConsts.DbTablePrefix + "CustomEntityChanges", CERPConsts.DbSchema);
 
-             builder.Entity<COA_Account>(b =>
+                b.ConfigureExtraProperties();
+
+                b.HasMany(x => x.PropertyChanges).WithOne(x => x.EntityChange).OnDelete(DeleteBehavior.Restrict);
+            });
+            builder.Entity<CustomEntityPropertyChange>(b =>
+            {
+                b.ToTable(CERPConsts.DbTablePrefix + "CustomEntityPropertyChanges", CERPConsts.DbSchema);
+
+                b.ConfigureExtraProperties();
+
+                b.HasOne(x => x.EntityChange).WithMany(x => x.PropertyChanges).OnDelete(DeleteBehavior.Restrict);
+            });
+
+            builder.Entity<COA_Account>(b =>
             {
                 b.ToTable(CERPConsts.FMDbTablePrefix + "COAs", CERPConsts.FMDbSchema);
 

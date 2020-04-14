@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CERP.Application.Contracts\CERP.Application.Contracts.csproj" />
     <ProjectReference Include="..\CERP.Domain.Shared\CERP.Domain.Shared.csproj" />
   </ItemGroup>
 

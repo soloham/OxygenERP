@@ -1,5 +1,6 @@
 ﻿using CERP.App;
 using CERP.AppServices.HR.DepartmentService;
+using CERP.Attributes;
 using CERP.CERP.HR.Documents;
 using CERP.HR.Documents;
 using Microsoft.AspNetCore.Http;
@@ -46,6 +47,8 @@ namespace CERP.HR.EMPLOYEE.RougeDTOs
             }
             set { idType = value; }
         }
+
+        [CustomAudited]
         public Guid IDTypeId { get; set; }
         public string IDNumber { get; set; }
 
@@ -70,10 +73,15 @@ namespace CERP.HR.EMPLOYEE.RougeDTOs
             }
             set { issuedFrom = value; }
         }
+        [CustomAudited]
         public Guid IssuedFromId { get; set; }
+        [CustomAudited]
         public string JobTitle { get; set; }
+        [CustomAudited]
         public string Sponsor { get; set; }
+        [CustomAudited]
         public DateTime IssuedDate { get; set; }
+        [CustomAudited]
         public DateTime EndDate { get; set; }
         [JsonIgnore]
         public Document Document;
@@ -101,11 +109,13 @@ namespace CERP.HR.EMPLOYEE.RougeDTOs
                 Document = value;
             }
         }
+        [CustomAudited]
         public string SoftCopy { get; set; }
 
 
         [JsonIgnore]
         private string parentName;
+        [CustomAudited]
         public string GetParentName
         {
             get
@@ -126,7 +136,9 @@ namespace CERP.HR.EMPLOYEE.RougeDTOs
         }
         [JsonIgnore]
         public Dependant Holder;
+        [CustomAudited]
         public T ParentId { get; set; }
+        [CustomAudited]
         public string GetParentNameLocalized { get; internal set; }
     }
 }

@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200414043635_CustomEntityHistory")]
+    partial class CustomEntityHistory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,7 +27,7 @@ namespace CERP.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("AuditLogId")
+                    b.Property<Guid>("AuditLogId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("ChanegeTime")
@@ -34,11 +36,8 @@ namespace CERP.Migrations
                     b.Property<byte>("ChangeType")
                         .HasColumnType("tinyint");
 
-                    b.Property<string>("EntityId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EntityTenantId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("EntityTenantId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("EntityTypeFullName")
                         .HasColumnType("nvarchar(max)");
@@ -47,14 +46,14 @@ namespace CERP.Migrations
                         .HasColumnName("ExtraProperties")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TenantId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AuditLogId");
 
-                    b.ToTable("CustomEntityChanges","OxygenERP");
+                    b.ToTable("CustomEntityChanges","AvalonERP");
                 });
 
             modelBuilder.Entity("CERP.App.CustomEntityHistorySystem.CustomEntityPropertyChange", b =>
@@ -82,14 +81,14 @@ namespace CERP.Migrations
                     b.Property<string>("PropertyTypeFullName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("TenantId")
+                    b.Property<Guid>("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EntityChangeId");
 
-                    b.ToTable("CustomEntityPropertyChanges","OxygenERP");
+                    b.ToTable("CustomEntityPropertyChanges","AvalonERP");
                 });
 
             modelBuilder.Entity("CERP.App.DictionaryValue", b =>
@@ -184,7 +183,7 @@ namespace CERP.Migrations
 
                     b.HasIndex("ValueTypeId");
 
-                    b.ToTable("DictionaryValues","OxygenERP");
+                    b.ToTable("DictionaryValues","AvalonERP");
                 });
 
             modelBuilder.Entity("CERP.App.DictionaryValueType", b =>
@@ -254,7 +253,7 @@ namespace CERP.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("DictionaryValueTypes","OxygenERP");
+                    b.ToTable("DictionaryValueTypes","AvalonERP");
                 });
 
             modelBuilder.Entity("CERP.FM.AccountStatementType", b =>
@@ -371,7 +370,7 @@ namespace CERP.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Branches","OxygenERP");
+                    b.ToTable("Branches","AvalonERP");
                 });
 
             modelBuilder.Entity("CERP.FM.COA.COA_Account", b =>
@@ -865,7 +864,7 @@ namespace CERP.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Companies","OxygenERP");
+                    b.ToTable("Companies","AvalonERP");
                 });
 
             modelBuilder.Entity("CERP.HR.Documents.Document", b =>
@@ -3939,7 +3938,9 @@ namespace CERP.Migrations
                 {
                     b.HasOne("Volo.Abp.AuditLogging.AuditLog", "AuditLog")
                         .WithMany()
-                        .HasForeignKey("AuditLogId");
+                        .HasForeignKey("AuditLogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("CERP.App.CustomEntityHistorySystem.CustomEntityPropertyChange", b =>

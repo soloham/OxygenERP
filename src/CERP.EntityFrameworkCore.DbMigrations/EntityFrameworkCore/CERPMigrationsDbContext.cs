@@ -22,6 +22,7 @@ namespace CERP.EntityFrameworkCore
      */
     public class CERPMigrationsDbContext : AbpDbContext<CERPMigrationsDbContext>
     {
+        
         public CERPMigrationsDbContext(DbContextOptions<CERPMigrationsDbContext> options) 
             : base(options)
         {

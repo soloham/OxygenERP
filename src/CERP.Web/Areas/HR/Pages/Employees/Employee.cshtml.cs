@@ -1,17 +1,20 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web.Helpers;
 using CERP.App;
+using CERP.App.CustomEntityHistorySystem;
 using CERP.AppServices.HR.DepartmentService;
 using CERP.AppServices.HR.EmployeeService;
 using CERP.AppServices.HR.WorkShiftService;
 using CERP.AppServices.Identity;
 using CERP.AppServices.Setup.DepartmentSetup;
 using CERP.AppServices.Setup.PositionSetup;
+using CERP.Attributes;
 using CERP.CERP.HR.Documents;
 using CERP.Helpers;
 using CERP.HR.Documents;
@@ -29,9 +32,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.VisualBasic;
 using Syncfusion.EJ2.Base;
 using Volo.Abp;
 using Volo.Abp.Account.Settings;
+using Volo.Abp.Auditing;
+using Volo.Abp.AuditLogging;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
 using Volo.Abp.Json;
@@ -76,6 +83,9 @@ namespace CERP.Web.Areas.HR.Pages.Employees
 
         public IWebHostEnvironment webHostEnvironment { get; set; }
 
+        public IAuditingManager AuditingManager { get; set; }
+        public IRepository<CustomEntityChange> CustomEntityChangesRepo { get; set; }
+
         protected async Task<bool> CheckSelfRegistrationAsync()
         {
             if (!await SettingProvider.IsTrueAsync(AccountSettingNames.IsSelfRegistrationEnabled) ||
@@ -87,12 +97,12 @@ namespace CERP.Web.Areas.HR.Pages.Employees
             return true;
         }
 
-        public EmployeeModel(IRepository<DictionaryValue, Guid> dictionaryValuesRepo, 
-            EmployeeAppService employeeAppService, DepartmentAppService departmentAppService, 
-            PositionAppService positionAppService, WorkShiftsAppService workShiftsAppService, 
+        public EmployeeModel(IRepository<DictionaryValue, Guid> dictionaryValuesRepo,
+            EmployeeAppService employeeAppService, DepartmentAppService departmentAppService,
+            PositionAppService positionAppService, WorkShiftsAppService workShiftsAppService,
             IJsonSerializer jsonSerializer, IWebHostEnvironment webHostEnvironment,
-            documentAppService documentAppService, AccountAppService accountAppService, 
-            IdentityUserManager userManager)
+            documentAppService documentAppService, AccountAppService accountAppService,
+            IdentityUserManager userManager, IRepository<CustomEntityChange> customEntityChangesRepo, IAuditingManager auditingManager)
         {
             DictionaryValuesRepo = dictionaryValuesRepo;
             this.employeeAppService = employeeAppService;
@@ -104,6 +114,8 @@ namespace CERP.Web.Areas.HR.Pages.Employees
             this.documentAppService = documentAppService;
             AccountAppService = accountAppService;
             UserManager = userManager;
+            CustomEntityChangesRepo = customEntityChangesRepo;
+            AuditingManager = auditingManager;
         }
 
         public JsonResult OnGetPositions(Guid departmentId)
@@ -161,6 +173,8 @@ namespace CERP.Web.Areas.HR.Pages.Employees
         {
             try
             {
+                //CustomEntityChange customEntityChange = new CustomEntityChange(GuidGenerator.Create());
+                
                 var FormData = Request.Form;
 
                 employee = JsonSerializer.Deserialize<Employee_UV_Dto>(FormData["employee"]);
@@ -322,6 +336,43 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                         employee.ProfilePic = "noimage.jpg";
                     }
                     empAdded = await employeeAppService.CreateEmployee(employee);
+
+                    //customEntityChange.EntityId = empAdded.Id.ToString();
+                    //customEntityChange.TenantId = CurrentUser.TenantId.ToString();
+                    //customEntityChange.EntityTenantId = empAdded.TenantId.ToString();
+                    //customEntityChange.ChanegeTime = DateTime.Now;
+                    //customEntityChange.ChangeType = EntityChangeType.Created;
+                    //customEntityChange.EntityTypeFullName = typeof(Employee).FullName;
+
+                    //await CustomEntityChangesRepo.InsertAsync(customEntityChange);
+
+                    //customEntityChange.PropertyChanges = new List<CustomEntityPropertyChange>();
+                    //List<CustomEntityPropertyChange> customEntityPropertyChanges = new List<CustomEntityPropertyChange>();
+                    //var auditProps = empAdded.GetType().GetProperties().Where(x => Attribute.IsDefined(x, typeof(AuditedAttribute)));
+                    //foreach (var prop in auditProps)
+                    //{
+                    //    CustomEntityPropertyChange propertyChange = new CustomEntityPropertyChange();
+                    //    propertyChange.EntityChangeId = customEntityChange.Id;
+                    //    propertyChange.TenantId = CurrentTenant.Id;
+                    //    propertyChange.PropertyName = prop.Name;
+                    //    propertyChange.OriginalValue = "";
+                    //    propertyChange.NewValue = prop.GetValue(empAdded).ToString();
+
+                    //    customEntityChange.PropertyChanges.Add(propertyChange);
+                    //}
+
+                    if (AuditingManager.Current != null)
+                    {
+                        EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
+                        entityChangeInfo.EntityId = empAdded.Id.ToString();
+                        entityChangeInfo.EntityTenantId = empAdded.TenantId;
+                        entityChangeInfo.ChangeTime = DateTime.Now;
+                        entityChangeInfo.ChangeType = EntityChangeType.Created;
+                        entityChangeInfo.EntityTypeFullName = typeof(Employee).FullName;
+
+                        AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
+                    }
+
                     for (int i = 0; i < documentsToAdd.Count; i++)
                     {
                         Document_Dto curDoc = documentsToAdd[i];
@@ -451,6 +502,192 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                         }
                     }
 
+                    if (AuditingManager.Current != null)
+                    {
+                        EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
+
+                        entityChangeInfo.EntityId = emp.Id.ToString();
+                        entityChangeInfo.EntityTenantId = emp.TenantId;
+                        entityChangeInfo.ChangeTime = DateTime.Now;
+                        entityChangeInfo.ChangeType = EntityChangeType.Updated;
+                        entityChangeInfo.EntityTypeFullName = typeof(Employee).FullName;
+                        
+                        entityChangeInfo.PropertyChanges = new List<EntityPropertyChangeInfo>();
+                        List<EntityPropertyChangeInfo> entityPropertyChanges = new List<EntityPropertyChangeInfo>();
+                        var auditProps = typeof(Employee).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+
+                        Employee mappedInput = ObjectMapper.Map<Employee_UV_Dto, Employee>(employee);
+                        foreach (var prop in auditProps)
+                        {
+                            EntityPropertyChangeInfo propertyChange = new EntityPropertyChangeInfo();
+                            object origVal = prop.GetValue(emp);
+                            propertyChange.OriginalValue = origVal == null ? "" : origVal.ToString();
+                            object newVal = prop.GetValue(mappedInput);
+                            propertyChange.NewValue = newVal == null ? "" : newVal.ToString();
+                            if (propertyChange.OriginalValue == propertyChange.NewValue) continue;
+
+                            propertyChange.PropertyName = prop.Name;
+
+                            if(prop.Name.EndsWith("Id"))
+                            {
+                                try
+                                {
+                                    string valuePropName = prop.Name.TrimEnd('d', 'I');
+                                    propertyChange.PropertyName = valuePropName;
+
+                                    var valueProp = typeof(Employee).GetProperty(valuePropName);
+
+                                    DictionaryValue _origValObj = (DictionaryValue)valueProp.GetValue(emp);
+                                    if (_origValObj == null) _origValObj = await DictionaryValuesRepo.GetAsync((Guid)origVal);
+                                    string _origVal = _origValObj.Value;
+                                    propertyChange.OriginalValue = origVal == null ? "" : _origVal;
+                                    DictionaryValue _newValObj = (DictionaryValue)valueProp.GetValue(mappedInput);
+                                    if (_newValObj == null) _newValObj = await DictionaryValuesRepo.GetAsync((Guid)newVal);
+                                    string _newVal = _newValObj.Value;
+                                    propertyChange.NewValue = _newValObj == null ? "" : _newVal;
+                                }
+                                catch(Exception ex)
+                                {
+
+                                }
+                            }
+
+                            propertyChange.PropertyTypeFullName = prop.Name.GetType().FullName;
+
+                            entityChangeInfo.PropertyChanges.Add(propertyChange);
+                        }
+
+                        #region ExtraProperties
+                        List<EmployeeExtraPropertyHistory> allExtraPropertyHistories = new List<EmployeeExtraPropertyHistory>();
+                        if (emp.ExtraProperties != employee.ExtraProperties)
+                        {
+                            GeneralInfo oldGeneralInfo = emp.GetProperty<GeneralInfo>("generalInfo");
+                            List<EmployeeExtraPropertyHistory> physicalIdsHistory = new List<EmployeeExtraPropertyHistory>();
+                            var generalInfoPhysicalIdAuditProps = typeof(PhysicalID).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+                            List<PhysicalId<Guid>> NewPhysicalIds = generalInfo.PhysicalIds.Where(x => !oldGeneralInfo.PhysicalIds.Any(y => y.Id == x.Id)).ToList();
+                            List<PhysicalId<Guid>> UpdatedPhysicalIds = generalInfo.PhysicalIds.Where(x => oldGeneralInfo.PhysicalIds.Any(y => y.Id == x.Id)).ToList();
+                            List<PhysicalId<Guid>> DeletedPhysicalIds = oldGeneralInfo.PhysicalIds.Where(x => !generalInfo.PhysicalIds.Any(y => y.Id == x.Id)).ToList();
+                            for (int i = 0; i < NewPhysicalIds.Count; i++)
+                            {
+                                PhysicalId<Guid> curPhId = generalInfo.PhysicalIds[i];
+
+                                EmployeeExtraPropertyHistory newPhIdHistory = new EmployeeExtraPropertyHistory(2, "Physical Id", curPhId.IDNumber, "Created");
+                                physicalIdsHistory.Add(newPhIdHistory);
+                            }
+                            for (int i = 0; i < UpdatedPhysicalIds.Count; i++)
+                            {
+                                PhysicalId<Guid> curPhId = generalInfo.PhysicalIds[i];
+                                PhysicalId<Guid> oldPhId = oldGeneralInfo.PhysicalIds.First(x => x.Id == curPhId.Id);
+   
+                                EmployeeExtraPropertyHistory updatedPhIdHistory = new EmployeeExtraPropertyHistory(2, "Physical Id", curPhId.IDNumber, "Updated");
+                                foreach (var prop in generalInfoPhysicalIdAuditProps)
+                                {
+                                    updatedPhIdHistory.PropertyChanges = new List<EmployeeTypePropertyChange>();
+
+                                    EmployeeTypePropertyChange propertyChange = new EmployeeTypePropertyChange();
+
+                                    object origVal = prop.GetValue(oldPhId);
+                                    propertyChange.OriginalValue = origVal == null ? "" : origVal.ToString();
+                                    object newVal = prop.GetValue(curPhId);
+                                    propertyChange.NewValue = newVal == null ? "" : newVal.ToString();
+                                    if (propertyChange.OriginalValue == propertyChange.NewValue) continue;
+
+                                    propertyChange.PropertyName = prop.Name;
+
+                                    if (prop.Name.EndsWith("Id"))
+                                    {
+                                        try
+                                        {
+                                            string valuePropName = prop.Name.TrimEnd('d', 'I');
+                                            propertyChange.PropertyName = valuePropName;
+
+                                            var valueProp = typeof(PhysicalID).GetProperty(valuePropName);
+
+                                            DictionaryValue _origValObj = (DictionaryValue)valueProp.GetValue(oldPhId);
+                                            if (_origValObj == null) _origValObj = await DictionaryValuesRepo.GetAsync((Guid)origVal);
+                                            string _origVal = _origValObj.Value;
+                                            propertyChange.OriginalValue = origVal == null ? "" : _origVal;
+                                            DictionaryValue _newValObj = (DictionaryValue)valueProp.GetValue(curPhId);
+                                            if (_newValObj == null) _newValObj = await DictionaryValuesRepo.GetAsync((Guid)newVal);
+                                            string _newVal = _newValObj.Value;
+                                            propertyChange.NewValue = _newValObj == null ? "" : _newVal;
+                                        }
+                                        catch (Exception ex)
+                                        {
+
+                                        }
+                                    }
+
+                                    propertyChange.PropertyTypeFullName = prop.Name.GetType().FullName;
+
+                                    updatedPhIdHistory.PropertyChanges.Add(propertyChange);
+                                }
+                                physicalIdsHistory.Add(updatedPhIdHistory);
+                            }
+                            for (int i = 0; i < DeletedPhysicalIds.Count; i++)
+                            {
+                                PhysicalId<Guid> curPhId = generalInfo.PhysicalIds[i];
+
+                                EmployeeExtraPropertyHistory deletedPhIdHistory = new EmployeeExtraPropertyHistory(2, "Physical Id", curPhId.IDNumber, "Deleted");
+                                physicalIdsHistory.Add(deletedPhIdHistory);
+                            }
+
+                            allExtraPropertyHistories.AddRange(physicalIdsHistory);
+
+                            var financialDetailsAuditProps = typeof(FinancialDetails).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+                            FinancialDetails oldFinancialDetails = emp.GetProperty<FinancialDetails>("financialDetails");
+
+                            var contactInformationAuditProps = typeof(ContactInformation).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+                            ContactInformation oldContactInformation = emp.GetProperty<ContactInformation>("contactInformation");
+
+                            var qualificationDetailAuditProps = typeof(QualificationDetail).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+                            QualificationDetail oldQualificationDetail = emp.GetProperty<QualificationDetail>("qualificationDetail");
+
+                            var experienceDetailAuditProps = typeof(ExperienceDetail).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+                            ExperienceDetail oldExperienceDetail = emp.GetProperty<ExperienceDetail>("experienceDetail");
+
+                            var dependantsDetailAuditProps = typeof(DependantsDetail).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+                            DependantsDetail oldDependantsDetail = emp.GetProperty<DependantsDetail>("dependantsDetail");
+
+                            var workShiftDetailAuditProps = typeof(WorkShiftDetail).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+                            WorkShiftDetail oldWorkShiftDetail = emp.GetProperty<WorkShiftDetail>("workShiftDetail");
+
+                            entityChangeInfo.SetProperty("extraPropertiesHistory", allExtraPropertyHistories);
+                        }
+                        #endregion
+
+                        AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
+                    }
+
+                    //customEntityChange.EntityId = emp.Id.ToString();
+                    //customEntityChange.TenantId = CurrentUser.TenantId.ToString();
+                    //customEntityChange.EntityTenantId = emp.TenantId.ToString();
+                    //customEntityChange.ChanegeTime = DateTime.Now;
+                    //customEntityChange.ChangeType = EntityChangeType.Updated;
+                    //customEntityChange.EntityTypeFullName = typeof(Employee).FullName;
+
+                    //customEntityChange.PropertyChanges = new List<CustomEntityPropertyChange>();
+                    //List<CustomEntityPropertyChange> customEntityPropertyChanges = new List<CustomEntityPropertyChange>();
+                    //var auditProps = typeof(Employee).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+                    //Employee mappedInput = ObjectMapper.Map<Employee_UV_Dto, Employee>(employee);
+                    //foreach (var prop in auditProps)
+                    //{
+                    //    CustomEntityPropertyChange propertyChange = new CustomEntityPropertyChange(GuidGenerator.Create());
+                    //    object origVal = prop.GetValue(emp);
+                    //    propertyChange.OriginalValue = origVal == null? "" : origVal.ToString();
+                    //    object newVal = prop.GetValue(mappedInput);
+                    //    propertyChange.NewValue = newVal == null? "" : newVal.ToString();
+                    //    if (propertyChange.OriginalValue == propertyChange.NewValue) continue;
+
+                    //    propertyChange.EntityChangeId = customEntityChange.Id;
+                    //    propertyChange.TenantId = CurrentTenant.Id;
+                    //    propertyChange.PropertyName = prop.Name;
+
+                    //    customEntityChange.PropertyChanges.Add(propertyChange);
+                    //}
+
+                    //await CustomEntityChangesRepo.InsertAsync(customEntityChange);
+
                     emp.UpdateExtraProperties(employee.ExtraProperties);
 
                     emp.DepartmentId = employee.DepartmentId;
@@ -513,7 +750,6 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                     emp.POB = null;
 
                     var empBack = await employeeAppService.Repository.UpdateAsync(emp);
-                    //Console.WriteLine(empBack.EmployeeStatus.Value);
                 }
             }
             catch(Exception ex)
