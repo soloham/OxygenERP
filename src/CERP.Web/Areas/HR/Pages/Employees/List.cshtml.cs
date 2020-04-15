@@ -27,7 +27,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
 
         public Grid SecondaryDetailsGrid = new Grid();
 
-        private IJsonSerializer JsonSerializer { get; set; }
+        public IJsonSerializer JsonSerializer { get; set; }
 
         public ListModel(EmployeeAppService _employeeAppService, IJsonSerializer jsonSerializer, IAuditLogRepository auditLogsRepo)
         {

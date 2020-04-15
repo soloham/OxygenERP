@@ -149,7 +149,7 @@ namespace CERP.Web.Areas.HR.Pages.WorkShifts
             public int EndHour { get; set; }
 
             public Department_Dto Department { get; set; }
-            public Guid DepartmentId { get; set; }
+            public Guid? DepartmentId { get; set; }
         }
     }
 }

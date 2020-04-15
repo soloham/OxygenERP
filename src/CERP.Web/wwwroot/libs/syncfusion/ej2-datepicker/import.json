@@ -1,0 +1,13 @@
+{
+    "components": [
+        "datepicker"
+    ],
+    "minified": "true",
+    "themes": [
+        "fabric"
+    ],
+    "version": "18.1.42",
+    "name": "ej2-datepicker",
+    "isMinified": true,
+    "injectables": {}
+}

@@ -42,7 +42,7 @@ namespace CERP.Web
                     options.Conventions.AddAreaPageRoute("Main", "/Dashboard", "/Dashboard");
 
                     options.Conventions.AddPageRoute("/index", "{*url}");
-                })
+                })                                            
                 .AddNewtonsoftJson(options =>
                 {
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;

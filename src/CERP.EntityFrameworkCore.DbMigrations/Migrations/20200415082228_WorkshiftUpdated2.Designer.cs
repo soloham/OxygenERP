@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200415082228_WorkshiftUpdated2")]
+    partial class WorkshiftUpdated2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1121,6 +1123,12 @@ namespace CERP.Migrations
                     b.Property<int>("WorkShiftId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("WorkShiftId1")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WorkShiftId2")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BloodGroupId");
@@ -1155,6 +1163,8 @@ namespace CERP.Migrations
                     b.HasIndex("SITypeId");
 
                     b.HasIndex("WorkShiftId");
+
+                    b.HasIndex("WorkShiftId1");
 
                     b.ToTable("Employees","HR");
                 });
@@ -4275,10 +4285,15 @@ namespace CERP.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("CERP.HR.Workshifts.WorkShift", "WorkShift")
-                        .WithMany("Employees")
+                        .WithMany()
                         .HasForeignKey("WorkShiftId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("CERP.HR.Workshifts.WorkShift", null)
+                        .WithMany("Employees")
+                        .HasForeignKey("WorkShiftId1")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("CERP.HR.Timesheets.Timesheet", b =>

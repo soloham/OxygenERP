@@ -17,12 +17,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\HR\Pages\Workshifts\**" />
     <Compile Remove="Logs\**" />
     <Compile Remove="wwwroot\libs\sweetalert\**" />
+    <Content Remove="Areas\HR\Pages\Workshifts\**" />
     <Content Remove="Logs\**" />
     <Content Remove="wwwroot\libs\sweetalert\**" />
+    <EmbeddedResource Remove="Areas\HR\Pages\Workshifts\**" />
     <EmbeddedResource Remove="Logs\**" />
     <EmbeddedResource Remove="wwwroot\libs\sweetalert\**" />
+    <None Remove="Areas\HR\Pages\Workshifts\**" />
     <None Remove="Logs\**" />
     <None Remove="wwwroot\libs\sweetalert\**" />
   </ItemGroup>

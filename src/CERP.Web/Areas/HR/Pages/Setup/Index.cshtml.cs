@@ -54,10 +54,19 @@ namespace CERP.Web.Areas.HR.Pages.Setup
 
         public void OnGet()
         {
-            List<WorkShift_Dto> workshifts = ObjectMapper.Map<List<WorkShift>, List<WorkShift_Dto>>(WorkShiftsAppService.Repository.WithDetails(x => x.Department).ToList());
+            List<WorkShift> _workshifts = WorkShiftsAppService.Repository.WithDetails(x => x.Department, x => x.DeductionMethod).ToList();
+            List<WorkShift_Dto> workshifts = ObjectMapper.Map<List<WorkShift>, List<WorkShift_Dto>>(_workshifts);
+
             ViewData["Workshifts_DS"] = JsonSerializer.Serialize(workshifts);
             List<DeductionMethod_Dto> deductionMethods = ObjectMapper.Map<List<DeductionMethod>, List<DeductionMethod_Dto>>(DeductionMethodsAppService.Repository.ToList());
             ViewData["DeductionMethods_DS"] = JsonSerializer.Serialize(deductionMethods);
+        }
+        public JsonResult OnGetWorkhifts()
+        {
+            List<WorkShift> _workshifts = WorkShiftsAppService.Repository.WithDetails(x => x.Department, x => x.DeductionMethod).ToList();
+            List<WorkShift_Dto> workshifts = ObjectMapper.Map<List<WorkShift>, List<WorkShift_Dto>>(_workshifts);
+
+            return new JsonResult(workshifts);
         }
 
         public async Task OnDeleteWorkShift()
@@ -135,20 +144,36 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                     if (generalInfo.IsEditing)
                     {
                         WorkShift workShift = WorkShiftsAppService.Repository.First(x => x.Id == generalInfo.Id);
-                        workShift.Title = generalInfo.WorkshiftTitle;
-                        workShift.DepartmentId = generalInfo.DepartmentId;
+                        workShift.Title = generalInfo.Title;
+                        workShift.DepartmentId = generalInfo.DepartmentId.HasValue ? generalInfo.DepartmentId.Value : Guid.Empty;
+                        workShift.DeductionMethodId = generalInfo.DeductionMethodId;
+                        workShift.isSUN = generalInfo.isSUN;
+                        workShift.isMON = generalInfo.isMON;
+                        workShift.isTUE = generalInfo.isTUE;
+                        workShift.isWED = generalInfo.isWED;
+                        workShift.isTHU = generalInfo.isTHU;
+                        workShift.isFRI = generalInfo.isFRI;
+                        workShift.isSAT = generalInfo.isSAT;
                         workShift.StartHour = generalInfo.StartHour;
                         workShift.EndHour = generalInfo.EndHour;
 
                         WorkShift workShiftAdded = await WorkShiftsAppService.Repository.UpdateAsync(workShift);
-                        WorkShift_Dto workShiftDto = ObjectMapper.Map<WorkShift, WorkShift_Dto>(WorkShiftsAppService.Repository.WithDetails(x => x.Department).First(x => x.Id == workShiftAdded.Id));
+                        WorkShift_Dto workShiftDto = ObjectMapper.Map<WorkShift, WorkShift_Dto>(WorkShiftsAppService.Repository.WithDetails(x => x.Department, x => x.DeductionMethod).First(x => x.Id == workShiftAdded.Id));
                         return new JsonResult(workShiftDto);
                     }
                     else
                     {
                         WorkShift_Dto workShift = new WorkShift_Dto();
-                        workShift.Title = generalInfo.WorkshiftTitle;
-                        workShift.DepartmentId = generalInfo.DepartmentId;
+                        workShift.Title = generalInfo.Title;
+                        workShift.DepartmentId = generalInfo.DepartmentId.HasValue ? generalInfo.DepartmentId.Value : Guid.Empty;
+                        workShift.DeductionMethodId = generalInfo.DeductionMethodId;
+                        workShift.isSUN = generalInfo.isSUN;
+                        workShift.isMON = generalInfo.isMON;
+                        workShift.isTUE = generalInfo.isTUE;
+                        workShift.isWED = generalInfo.isWED;
+                        workShift.isTHU = generalInfo.isTHU;
+                        workShift.isFRI = generalInfo.isFRI;
+                        workShift.isSAT = generalInfo.isSAT;
                         workShift.StartHour = generalInfo.StartHour;
                         workShift.EndHour = generalInfo.EndHour;
 
@@ -175,17 +200,28 @@ namespace CERP.Web.Areas.HR.Pages.Setup
             public void Initialize()
             {
                 DepartmentId = Department.Id;
+                DeductionMethodId = DeductionMethod.Id;
             }
 
             public int Id { get; set; }
 
             public bool IsEditing { get; set; }
-            public string WorkshiftTitle { get; set; }
+            public string Title { get; set; }
             public int StartHour { get; set; }
             public int EndHour { get; set; }
 
+            public bool isSUN { get; set; }
+            public bool isMON { get; set; }
+            public bool isTUE { get; set; }
+            public bool isWED { get; set; }
+            public bool isTHU { get; set; }
+            public bool isFRI { get; set; }
+            public bool isSAT { get; set; }
+
+            public DeductionMethod_Dto DeductionMethod { get; set; }
+            public int DeductionMethodId { get; set; }
             public Department_Dto Department { get; set; }
-            public Guid DepartmentId { get; set; }
+            public Guid? DepartmentId { get; set; }
         }
         public class DeductionMethodViewModel
         {

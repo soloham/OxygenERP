@@ -106,10 +106,10 @@ namespace CERP
             CreateMap<PhysicalID_UV_Dto, PhysicalID>().ForMember(d => d.Employee, opt => opt.Ignore());
             //CreateMap<DictionaryValue_UV_Dto, DictionaryValue>();
 
-            CreateMap<WorkShift, WorkShift_Dto>();
-            CreateMap<WorkShift_Dto, WorkShift>();
+            CreateMap<WorkShift, WorkShift_Dto>().ForMember(d => d.Employees, opt => opt.Ignore());
+            CreateMap<WorkShift_Dto, WorkShift>().ForMember(d => d.Employees, opt => opt.Ignore());
 
-            CreateMap<DeductionMethod, DeductionMethod_Dto>();
+            CreateMap<DeductionMethod, DeductionMethod_Dto>().ForMember(d => d.WorkShifts, opt => opt.Ignore());
             CreateMap<DeductionMethod_Dto, DeductionMethod>();
 
             CreateMap<Timesheet, Timesheet_Dto>().AfterMap((ts, tsDto) => tsDto.Initialize());
