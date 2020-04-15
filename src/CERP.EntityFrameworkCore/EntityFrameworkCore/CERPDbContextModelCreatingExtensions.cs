@@ -297,7 +297,7 @@ namespace CERP.EntityFrameworkCore
                 b.HasOne(p => p.IndemnityType).WithMany().OnDelete(DeleteBehavior.Restrict);
 
                 b.HasOne(p => p.Position).WithOne(pos => pos.Employee).OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(p => p.WorkShift).WithMany(p => p.Employees).OnDelete(DeleteBehavior.SetNull);
+                b.HasOne(p => p.WorkShift).WithMany(p => p.Employees).OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(p => p.Portal).WithOne(p => p.Employee).OnDelete(DeleteBehavior.Restrict);
             });
 
@@ -344,7 +344,7 @@ namespace CERP.EntityFrameworkCore
 
                 b.HasOne(x => x.Department).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(x => x.DeductionMethod).WithMany(x => x.WorkShifts).OnDelete(DeleteBehavior.Restrict);
-                b.HasMany(p => p.Employees).WithOne(p => p.WorkShift).OnDelete(DeleteBehavior.SetNull);
+                b.HasMany(p => p.Employees).WithOne(p => p.WorkShift).OnDelete(DeleteBehavior.Restrict);
             });
             builder.Entity<DeductionMethod>(b =>
             {

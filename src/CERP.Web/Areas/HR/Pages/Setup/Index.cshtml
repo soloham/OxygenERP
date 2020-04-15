@@ -118,7 +118,9 @@
         <div id="smartwizard">
             <ul>
                 <li><a href="#step-1">@TabPlaceholder 1<br /><p style="font-size: 15px">Workshifts</p></a></li>
-                <li><a href="#step-2">@TabPlaceholder 2<br /><p style="font-size: 15px">Leaves</p></a></li>
+                <li><a href="#step-2">@TabPlaceholder 2<br /><p style="font-size: 15px">Attendance</p></a></li>
+                <li><a href="#step-2">@TabPlaceholder 3<br /><p style="font-size: 15px">Leaves</p></a></li>
+                <li><a href="#step-2">@TabPlaceholder 4<br /><p style="font-size: 15px">Holidays</p></a></li>
             </ul>
             <div>
                 <div id="step-1">
@@ -128,7 +130,17 @@
                 </div>
                 <div id="step-2">
                     <div id="form-step-1" role="form" data-toggle="validator">
-                        @*<partial name="_Allowances" />*@
+                        <partial name="_Attendance" />
+                    </div>
+                </div>
+                <div id="step-3">
+                    <div id="form-step-2" role="form" data-toggle="validator">
+                        <partial name="_Leaves" />
+                    </div>
+                </div>
+                <div id="step-4">
+                    <div id="form-step-3" role="form" data-toggle="validator">
+                        <partial name="_Holidays" />
                     </div>
                 </div>
 

@@ -1,0 +1,32 @@
+﻿@using CERP.Setup.DTOs;
+@using Syncfusion.EJ2.Grids;
+@{
+
+    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+
+    var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
+}
+<script>
+    $(document).ready(function () {
+
+    })
+</script>
+
+<div class="m-l-20 m-t-0">
+    <h2>Attendance</h2>
+    <p>
+        Setup Attendance System
+    </p>
+</div>
+<hr />
+
+<div class="row">
+    <div class="col-lg-12">
+        <input id="submitUseAttendanceSystem" type="submit" class="btn btn-primary btn-block" value="Use Attendance System" required />
+    </div>
+</div>
+
+<script>
+
+</script>
