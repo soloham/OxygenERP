@@ -10,6 +10,78 @@
 <script>
     $(document).ready(function () {
 
+        if ('@Model.IsUsingAttendanceSystem' == 'true') {
+            $("#disableATS").slideDown(200);
+            $("#enableATS").slideUp(200);
+        }
+        else {
+            $("#enableATS").slideDown(200);
+            $("#disableATS").slideUp(200);
+        }
+        $("#submitUseAttendanceSystem").on('click', function (args) {
+            console.log("Hello");
+            args.preventDefault();
+
+            var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: "?handler=AttendanceSystem",
+                async: true,
+                type: "POST",
+                data: { use: true, __RequestVerificationToken: xhrToken },
+                success: function (data) {
+                    console.log("Response");
+                    Swal.hideLoading();
+
+                    swal.fire("Success", "Attendance system has successfully been enabled", "success");
+
+                    $("#disableATS").slideDown(200);
+                    $("#enableATS").slideUp(200);
+                },
+                error: function (err) {
+                    Swal.hideLoading();
+
+                    swal.fire("Failed", "An error occured while enabling the attendance system", "error");
+
+                    $("#enableATS").slideDown(200);
+                    $("#disableATS").slideUp(200);
+
+                    console.log(err);
+                }
+            });
+        });
+        $("#submitDisableAttendanceSystem").on('click', function (args) {
+            console.log("Hello");
+            args.preventDefault();
+
+            var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: "?handler=AttendanceSystem",
+                async: true,
+                type: "POST",
+                data: { use: false, __RequestVerificationToken: xhrToken },
+                success: function (data) {
+                    console.log("Response");
+                    Swal.hideLoading();
+
+                    swal.fire("Success", "Attendance system has successfully been disbaled", "success");
+
+                    $("#enableATS").slideDown(200);
+                    $("#disableATS").slideUp(200);
+                },
+                error: function (err) {
+                    Swal.hideLoading();
+
+                    swal.fire("Success", "An error occured while disabling the attendance system", "success");
+
+                    $("#disableATS").slideDown(200);
+                    $("#enableATS").slideUp(200);
+
+                    console.log(err);
+                }
+            });
+        });
     })
 </script>
 
@@ -20,13 +92,83 @@
     </p>
 </div>
 <hr />
+<div class="panel-body p-t-0" style="padding-bottom:0;">
+    <div class="col-lg-12 padding-right-0">
+        <div id="attendanceSystem" class="row">
+            <div id="enableATS" class="col-lg-12">
+                <input id="submitUseAttendanceSystem" class="btn btn-primary btn-block" value="Use Attendance System" required />
+            </div>
 
-<div class="row">
-    <div class="col-lg-12">
-        <input id="submitUseAttendanceSystem" type="submit" class="btn btn-primary btn-block" value="Use Attendance System" required />
+            <div id="disableATS" class="">
+                <div class="col-lg-8 col-md-8 col-sm-6 col-12">
+                    <div id="posted" class="pull-right font-roboto" style="width: 100%">
+                        <div class="alert alert-outline-success alert-icon-bg alert-dismissable" style="margin-bottom:0" role="alert">
+                            <div class="alert-icon">
+                                <i class="zmdi zmdi-check"></i>
+                            </div>
+                            <div class="" style="padding: 5px 25px 5px 0; text-align:center; font-size:15px; font-weight:400">
+                                @*<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">
+                                    <i class="zmdi zmdi-close"></i>
+                                </span>
+                            </button>*@
+                                Using Attendance System
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <input id="submitDisableAttendanceSystem" class="btn btn-primary btn-block" value="Disable Attendance System" required />
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="m-l-20 m-t-0">
+            <h2>Attendance Mappings</h2>
+            <p>
+                Provide mappings for attendance system spreadsheet
+            </p>
+        </div>
+        <hr />
+        <form id="attendanceMappingsForm" method="post" data-toggle="validator">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="col-sm-12" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 ">Employee Id:</label>
+                            <input type="text" id="employeeIdMap" name="EmployeeIdMap" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5 control-label">Date:</label>
+                        <input type="text" id="dateMap" name="DateMap" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5 control-label">Time In:</label>
+                        <input type="text" id="timeInMap" name="TimeInMap" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5 control-label">Time Out:</label>
+                        <input type="text" id="timeOutMap" name="TimeOutMap" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix margin-5"></div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <input id="submitAttendanceMappingsBtn" type="submit" class="btn btn-primary btn-block" value="Apply Mappings" required />
+                </div>
+            </div>
+        </form>
     </div>
 </div>
-
 <script>
 
 </script>

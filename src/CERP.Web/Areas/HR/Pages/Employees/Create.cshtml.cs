@@ -29,7 +29,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
         public EmployeeAppService employeeAppService;
         public DepartmentAppService departmentAppService;
         public PositionAppService positionAppService;
-        public WorkShiftsAppService workShiftsAppService;
+        public WorkshiftAppService workShiftsAppService;
 
         public IRepository<DictionaryValue, Guid> DictionaryValuesRepo;
         public IRepository<PhysicalID, int> PhysicalIdsRepo;
@@ -39,7 +39,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
 
         public List<Department_Dto> Departments = new List<Department_Dto>();
 
-        public CreateModel(IRepository<DictionaryValue, Guid> dictionaryValuesRepo, EmployeeAppService employeeAppService, IRepository<PhysicalID, int> physicalIdsRepo, DepartmentAppService departmentAppService, PositionAppService positionAppService, WorkShiftsAppService workShiftsAppService)
+        public CreateModel(IRepository<DictionaryValue, Guid> dictionaryValuesRepo, EmployeeAppService employeeAppService, IRepository<PhysicalID, int> physicalIdsRepo, DepartmentAppService departmentAppService, PositionAppService positionAppService, WorkshiftAppService workShiftsAppService)
         {
             DictionaryValuesRepo = dictionaryValuesRepo;
             this.employeeAppService = employeeAppService;

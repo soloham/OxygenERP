@@ -28,21 +28,34 @@ using System.Dynamic;
 using CERP.HR.Employees.DTOs;
 using Newtonsoft.Json;
 using CERP.HR.Workshift.DTOs;
+using CERP.AppServices.Setup.PositionSetup;
+using CERP.AppServices.HR.EmployeeService;
+using CERP.AppServices.HR.LeaveRequestService;
+using CERP.AppServices.HR.ApprovalRouteService;
+using CERP.HR.Leaves;
+using CERP.AppServices.Setup.Lookup;
 
 namespace CERP.Web.Areas.HR.Pages.Setup
 {
     public class IndexModel : CERPPageModel
     {
-        private IRepository<DictionaryValue, Guid> DictionaryValuesRepo;
+        public IRepository<DictionaryValue, Guid> DictionaryValuesRepo;
 
         public IGuidGenerator guidGenerator { get; set; }
         public IJsonSerializer JsonSerializer { get; set; }
 
+        public DictionaryValueAppService DictionaryValueAppService { get; set; }
         public DepartmentAppService DepartmentAppService { get; set; }
-        public WorkShiftsAppService WorkShiftsAppService { get; set; }
+        public PositionAppService PositionAppService { get; set; }
+        public EmployeeAppService EmployeeAppService { get; set; }
+        public WorkshiftAppService WorkShiftsAppService { get; set; }
+        public ApprovalRouteTemplatesAppService ApprovalRouteTemplatesAppService { get; set; }
+        public LeaveRequestTemplatesAppService LeaveRequestTemplatesAppService { get; set; }
         public DeductionMethodsAppService DeductionMethodsAppService { get; set; }
 
-        public IndexModel(IRepository<DictionaryValue, Guid> dictionaryValuesRepo, IGuidGenerator guidGenerator, IJsonSerializer jsonSerializer, DepartmentAppService departmentAppService, WorkShiftsAppService workShiftsAppService, DeductionMethodsAppService deductionMethodsAppService)
+        public bool IsUsingAttendanceSystem { get; set; }
+
+        public IndexModel(IRepository<DictionaryValue, Guid> dictionaryValuesRepo, IGuidGenerator guidGenerator, IJsonSerializer jsonSerializer, DepartmentAppService departmentAppService, WorkshiftAppService workShiftsAppService, DeductionMethodsAppService deductionMethodsAppService, PositionAppService positionAppService, EmployeeAppService employeeAppService, LeaveRequestTemplatesAppService leaveRequestTemplatesAppService, ApprovalRouteTemplatesAppService approvalRouteTemplatesAppService, DictionaryValueAppService dictionaryValueAppService)
         {
             DictionaryValuesRepo = dictionaryValuesRepo;
             this.guidGenerator = guidGenerator;
@@ -50,6 +63,11 @@ namespace CERP.Web.Areas.HR.Pages.Setup
             DepartmentAppService = departmentAppService;
             WorkShiftsAppService = workShiftsAppService;
             DeductionMethodsAppService = deductionMethodsAppService;
+            this.PositionAppService = positionAppService;
+            EmployeeAppService = employeeAppService;
+            LeaveRequestTemplatesAppService = leaveRequestTemplatesAppService;
+            ApprovalRouteTemplatesAppService = approvalRouteTemplatesAppService;
+            DictionaryValueAppService = dictionaryValueAppService;
         }
 
         public void OnGet()
@@ -60,6 +78,11 @@ namespace CERP.Web.Areas.HR.Pages.Setup
             ViewData["Workshifts_DS"] = JsonSerializer.Serialize(workshifts);
             List<DeductionMethod_Dto> deductionMethods = ObjectMapper.Map<List<DeductionMethod>, List<DeductionMethod_Dto>>(DeductionMethodsAppService.Repository.ToList());
             ViewData["DeductionMethods_DS"] = JsonSerializer.Serialize(deductionMethods);
+
+            IsUsingAttendanceSystem = false;
+
+            ViewData["LeaveRequests_DS"] = new List<dynamic>();
+            ViewData["departments"] = DepartmentAppService.GetDepartments();
         }
         public JsonResult OnGetWorkhifts()
         {
@@ -67,6 +90,32 @@ namespace CERP.Web.Areas.HR.Pages.Setup
             List<WorkShift_Dto> workshifts = ObjectMapper.Map<List<WorkShift>, List<WorkShift_Dto>>(_workshifts);
 
             return new JsonResult(workshifts);
+        }
+        public JsonResult OnGetPositions(Guid departmentId)
+        {
+            List<Position_Dto> result = PositionAppService.GetPositionByDepartmentId(departmentId);
+            return new JsonResult(result);
+        }
+        public JsonResult OnGetDepartmentsPositions(string departmentIds)
+        {
+            Guid[] _departmentIds = JsonSerializer.Deserialize<Guid[]>(departmentIds);
+            List<Position_Dto> positions = new List<Position_Dto>();
+            for (int i = 0; i < _departmentIds.Length; i++)
+            {
+                List<Position_Dto> result = PositionAppService.GetPositionByDepartmentId(_departmentIds[i]);
+                positions.AddRange(result);
+            }
+            return new JsonResult(positions);
+        }
+        public JsonResult OnGetEmployees(Guid positionId)
+        {
+            List<object> result = EmployeeAppService.GetEmployeesByPositionId(positionId).Select<Employee_Dto, object>(x => new { Id = x.Id, Name = x.Name }).ToList();
+            return new JsonResult(result);
+        }
+        public IActionResult OnPostAttendanceSystem(bool use)
+        {
+
+            return StatusCode(200);
         }
 
         public async Task OnDeleteWorkShift()
@@ -78,7 +127,7 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                 await WorkShiftsAppService.DeleteAsync(workshift.Id);
             }
         }
-        
+
         public async Task OnDeleteDeductionMethod()
         {
             List<DeductionMethod_Dto> deductionMethods = JsonSerializer.Deserialize<List<DeductionMethod_Dto>>(Request.Form["deductionMethods"]);
@@ -128,7 +177,7 @@ namespace CERP.Web.Areas.HR.Pages.Setup
             }
             return NoContent();
         }
-        
+
         public async Task<IActionResult> OnPostWorkshift()
         {
             if (ModelState.IsValid)
@@ -190,6 +239,167 @@ namespace CERP.Web.Areas.HR.Pages.Setup
             return NoContent();
         }
 
+        public async Task<IActionResult> OnPostLeaveRequestTemplate()
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var formData = Request.Form;
+
+                    LeaveRequestTemplateViewModel lrTemplateVM = new LeaveRequestTemplateViewModel();
+                    lrTemplateVM = JsonSerializer.Deserialize<LeaveRequestTemplateViewModel>(formData["info"].ToString());
+                    lrTemplateVM.Initialize();
+
+                    if (lrTemplateVM.IsEditing)
+                    {
+                    }
+                    else
+                    {
+                        LeaveRequestTemplate_Dto leaveRequestTemplate = new LeaveRequestTemplate_Dto();
+                        leaveRequestTemplate.Title = lrTemplateVM.LRTitle;
+                        leaveRequestTemplate.TitleLocalized = lrTemplateVM.LRTitleLocalized;
+                        leaveRequestTemplate.Prefix = lrTemplateVM.LRPrefix;
+                        leaveRequestTemplate.StartingNo = lrTemplateVM.LRStartingNo;
+
+                        leaveRequestTemplate.Departments = new List<Department_Dto>();
+                        for (int i = 0; i < lrTemplateVM.LRDepartmentIds.Length; i++)
+                        {
+                            Department_Dto department = await DepartmentAppService.GetAsync(lrTemplateVM.LRDepartmentIds[i]);
+                            leaveRequestTemplate.Departments.Add(department);
+                        }
+                        leaveRequestTemplate.Positions = new List<Position_Dto>();
+                        for (int i = 0; i < lrTemplateVM.LRPositionsIds.Length; i++)
+                        {
+                            Position_Dto position = await PositionAppService.GetAsync(lrTemplateVM.LRPositionsIds[i]);
+                            leaveRequestTemplate.Positions.Add(position);
+                        }
+                        leaveRequestTemplate.EmployeeStatuses = new List<DictionaryValue_Dto>();
+                        for (int i = 0; i < lrTemplateVM.LREmploymeeStatusIds.Length; i++)
+                        {
+                            DictionaryValue_Dto employeeStatus = await DictionaryValueAppService.GetAsync(lrTemplateVM.LRPositionsIds[i]);
+                            leaveRequestTemplate.EmployeeStatuses.Add(employeeStatus);
+                        }
+                        leaveRequestTemplate.EmploymentTypes = new List<DictionaryValue_Dto>();
+                        for (int i = 0; i < lrTemplateVM.LREmploymentTypeIds.Length; i++)
+                        {
+                            DictionaryValue_Dto employmentType = await DictionaryValueAppService.GetAsync(lrTemplateVM.LREmploymentTypeIds[i]);
+                            leaveRequestTemplate.EmploymentTypes.Add(employmentType);
+                        }
+
+                        ApprovalRouteTemplate_Dto approvalRouteTemplate = new ApprovalRouteTemplate_Dto();
+                        approvalRouteTemplate.ApprovalRouteModule = ApprovalRouteModule.LeaveRequest;
+
+                        for (int i = 0; i < lrTemplateVM.LRApprovalRoute.Count; i++)
+                        {
+                            LeaveRequestTemplateViewModel.LRApprovalRouteVM lRApprovalRouteVM = lrTemplateVM.LRApprovalRoute[i];
+                            ApprovalRouteTemplateItem_Dto approvalRouteTemplateItem = new ApprovalRouteTemplateItem_Dto();
+
+                            if (lRApprovalRouteVM.IsDPHead)
+                            {
+                                approvalRouteTemplateItem.IsDepartmentHead = true;
+                                approvalRouteTemplateItem.DepartmentId = Guid.Empty;
+                                approvalRouteTemplateItem.PositionId = Guid.Empty;
+                                approvalRouteTemplateItem.EmployeeId = Guid.Empty;
+                            }
+                            else if (lRApprovalRouteVM.IsReportingTo)
+                            {
+                                approvalRouteTemplateItem.IsReportingTo = true;
+                                approvalRouteTemplateItem.DepartmentId = Guid.Empty;
+                                approvalRouteTemplateItem.PositionId = Guid.Empty;
+                                approvalRouteTemplateItem.EmployeeId = Guid.Empty;
+                            }
+                            else
+                            {
+                                approvalRouteTemplateItem.IsDepartmentHead = false;
+                                approvalRouteTemplateItem.IsReportingTo = false;
+                                approvalRouteTemplateItem.DepartmentId = lRApprovalRouteVM.DepartmentId;
+                                approvalRouteTemplateItem.PositionId = lRApprovalRouteVM.PositionId;
+                                approvalRouteTemplateItem.EmployeeId = lRApprovalRouteVM.EmployeeId;
+                            }
+                            approvalRouteTemplateItem.RouteIndex = i + 1;
+                        }
+
+                        leaveRequestTemplate.ApprovalRouteTemplate = approvalRouteTemplate;
+
+                        leaveRequestTemplate.HasAdvanceSalaryRequest = lrTemplateVM.LRAdvanceSalaryAD;
+                        leaveRequestTemplate.HasAirTicketRequest = lrTemplateVM.LRAirTicketAD;
+                        leaveRequestTemplate.HasExitReentryRequest = lrTemplateVM.LRExitReentryAD;
+
+                        leaveRequestTemplate.HasNotesRequirement = lrTemplateVM.LRNotesAR;
+                        leaveRequestTemplate.HasAttachmentRequirement = lrTemplateVM.LRAttachmentAR;
+
+                        var lrTempCreated = await LeaveRequestTemplatesAppService.CreateAsync(leaveRequestTemplate);
+
+                        return StatusCode(200, lrTempCreated);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500);
+                }
+            }
+            return NoContent();
+        }
+
+        public class LeaveRequestTemplateViewModel
+        {
+            public LeaveRequestTemplateViewModel()
+            {
+                IsEditing = false;
+            }
+
+            public void Initialize()
+            {
+                LRApprovalRoute.ForEach(x => x.Initialize());
+            }
+
+            public Guid Id { get; set; }
+
+            public bool IsEditing { get; set; }
+            public string LRTitle { get; set; }
+            public string LRTitleLocalized { get; set; }
+            public string LRPrefix { get; set; }
+            public int LRStartingNo { get; set; }
+            public int EntitlementDays { get; set; }
+            public Guid[] LRDepartmentIds { get; set; }
+            public Guid[] LRPositionsIds { get; set; }
+            public Guid[] LREmploymentTypeIds { get; set; }
+            public Guid[] LREmploymeeStatusIds { get; set; }
+
+            public List<LRApprovalRouteVM> LRApprovalRoute { get; set; }
+
+            public Guid[] LRDeductionHolidaysIds { get; set; }
+
+            public bool LRAdvanceSalaryAD { get; set; }
+            public bool LRExitReentryAD { get; set; }
+            public bool LRAirTicketAD { get; set; }
+
+            public bool LRNotesAR { get; set; }
+            public bool LRAttachmentAR { get; set; }
+
+            public class LRApprovalRouteVM
+            {
+                public void Initialize()
+                {
+                    DepartmentId = Department.Id;
+                    PositionId = Position.Id;
+                    EmployeeId = Employee.Id;
+                }
+
+                public string Id { get; set; }
+
+                public bool IsDPHead { get; set; }
+                public bool IsReportingTo { get; set; }
+
+                public Department_Dto Department { get; set; }
+                public Guid DepartmentId { get; set; }
+                public Position_Dto Position { get; set; }
+                public Guid PositionId { get; set; }
+                public Employee_Dto Employee { get; set; }
+                public Guid EmployeeId { get; set; }
+            }
+        }
         public class WorkShiftViewModel
         {
             public WorkShiftViewModel()

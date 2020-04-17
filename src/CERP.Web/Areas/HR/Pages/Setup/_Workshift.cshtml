@@ -267,7 +267,7 @@
                     },
                     error: function (err) {
                         Swal.hideLoading();
-                        if (isEditingWorkshift)
+                        if (isEditingDeductionMethod)
                             swal.fire("Failed", "Deduction method couldn't be updated, please fix all errors and try again.", "error");
                         else
                             swal.fire("Failed", "Deduction method couldn't be added, please fix all errors and try again.", "error");
@@ -371,6 +371,7 @@
                     Provide details regarding the deduction method
                 </p>
             </div>
+            <hr />
             <form></form>
             <form id="newDeductionMethodForm" method="post" data-toggle="validator">
                 <div class="row">
@@ -438,6 +439,7 @@
                     Provide details regarding the workshift
                 </p>
             </div>
+            <hr />
             <form id="newWorkshiftForm" method="post" data-toggle="validator">
                 <div class="row">
                     <div class="col-lg-3 col-md-6 col-sm-6 col-12">

@@ -1,4 +1,5 @@
 ﻿@page "/HR/Setup"
+@using CERP;
 @model CERP.Web.Areas.HR.Pages.Setup.IndexModel
 @{
     ViewData["Title"] = "Setup";
@@ -17,6 +18,9 @@
     ViewData["initialToolbar"] = initialToolBar;
     ViewData["fullToolBar"] = fullToolBar;
     string TabPlaceholder = "Area";
+
+    ViewData["employeeTypes"] = Model.DictionaryValuesRepo.Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.EmployeeType).OrderBy(x => x.Key).ToList();
+    ViewData["employeeStatuses"] = Model.DictionaryValuesRepo.Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.EmployeeStatus).OrderBy(x => x.Key).ToList();
 }
 @section Styles {
     <link href="~/libs/smartwizard/dist/css/smart_wizard.min.css" rel="stylesheet" />
@@ -119,8 +123,8 @@
             <ul>
                 <li><a href="#step-1">@TabPlaceholder 1<br /><p style="font-size: 15px">Workshifts</p></a></li>
                 <li><a href="#step-2">@TabPlaceholder 2<br /><p style="font-size: 15px">Attendance</p></a></li>
-                <li><a href="#step-2">@TabPlaceholder 3<br /><p style="font-size: 15px">Leaves</p></a></li>
-                <li><a href="#step-2">@TabPlaceholder 4<br /><p style="font-size: 15px">Holidays</p></a></li>
+                <li><a href="#step-3">@TabPlaceholder 3<br /><p style="font-size: 15px">Leaves</p></a></li>
+                <li><a href="#step-4">@TabPlaceholder 4<br /><p style="font-size: 15px">Holidays</p></a></li>
             </ul>
             <div>
                 <div id="step-1">

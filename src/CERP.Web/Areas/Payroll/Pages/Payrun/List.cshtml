@@ -274,32 +274,32 @@
     function rowDataBound(args) {
         if (args.data.isPosted) {
             if (args.data.attachmentFile != null) {
-                $(".e-" + "View-Attach-" + "Button", args.row).removeClass("e-hide");
+                $(".e-" + "View-Attach-Button", args.row).removeClass("e-hide");
             } else {
-                $(".e-" + "View-Attach-" + "Button", args.row).addClass("e-hide");
+                $(".e-" + "View-Attach-Button", args.row).addClass("e-hide");
             }
-            $(".e-" + "View-Payments-Sheet-" + "Button", args.row).removeClass("e-hide");
+            $(".e-" + "View-Payments-Sheet-Button", args.row).removeClass("e-hide");
             var gridObj = document.getElementById("PayrunsHistoryGrid").ej2_instances[0];
             var lastPayrun = gridObj.dataSource.find(x => x.month == args.data.month - 1 && x.year == args.data.year);
             if (typeof lastPayrun != 'undefined') {
-                $(".e-" + "View-Reconciliation-" + "Button", args.row).removeClass("e-hide");
+                $(".e-" + "View-Reconciliation-Button", args.row).removeClass("e-hide");
             }
             else {
-                $(".e-" + "View-Reconciliation-" + "Button", args.row).addClass("e-hide");
+                $(".e-" + "View-Reconciliation-Button", args.row).addClass("e-hide");
             }
-            $(".e-" + "View" + "Button", args.row).removeClass("e-hide");
+            $(".e-" + "ViewButton", args.row).removeClass("e-hide");
 
-            $(".e-" + "Edit" + "Button", args.row).addClass("e-hide");
-            $(".e-" + "Delete" + "Button", args.row).addClass("e-hide");
+            $(".e-" + "EditButton", args.row).addClass("e-hide");
+            $(".e-" + "DeleteButton", args.row).addClass("e-hide");
         }
         else {
-            $(".e-" + "View-Attachment-" + "Button", args.row).addClass("e-hide");
-            $(".e-" + "View-Payment-Sheet-" + "Button", args.row).addClass("e-hide");
-            $(".e-" + "View-Reconciliation-" + "Button", args.row).addClass("e-hide");
-            $(".e-" + "View" + "Button", args.row).addClass("e-hide");
+            $(".e-" + "View-Attachment-Button", args.row).addClass("e-hide");
+            $(".e-" + "View-Payment-Sheet-Button", args.row).addClass("e-hide");
+            $(".e-" + "View-Reconciliation-Button", args.row).addClass("e-hide");
+            $(".e-" + "ViewButton", args.row).addClass("e-hide");
 
-            $(".e-" + "Edit" + "Button", args.row).removeClass("e-hide");
-            $(".e-" + "Delete" + "Button", args.row).removeClass("e-hide");
+            $(".e-" + "EditButton", args.row).removeClass("e-hide");
+            $(".e-" + "DeleteButton", args.row).removeClass("e-hide");
         }
     }
 

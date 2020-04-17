@@ -63,7 +63,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
         public EmployeeAppService employeeAppService;
         public DepartmentAppService departmentAppService;
         public PositionAppService positionAppService;
-        public WorkShiftsAppService workShiftsAppService;
+        public WorkshiftAppService workShiftsAppService;
         public documentAppService documentAppService;
 
         public IRepository<DictionaryValue, Guid> DictionaryValuesRepo;
@@ -99,7 +99,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
 
         public EmployeeModel(IRepository<DictionaryValue, Guid> dictionaryValuesRepo,
             EmployeeAppService employeeAppService, DepartmentAppService departmentAppService,
-            PositionAppService positionAppService, WorkShiftsAppService workShiftsAppService,
+            PositionAppService positionAppService, WorkshiftAppService workShiftsAppService,
             IJsonSerializer jsonSerializer, IWebHostEnvironment webHostEnvironment,
             documentAppService documentAppService, AccountAppService accountAppService,
             IdentityUserManager userManager, IRepository<CustomEntityChange> customEntityChangesRepo, IAuditingManager auditingManager)

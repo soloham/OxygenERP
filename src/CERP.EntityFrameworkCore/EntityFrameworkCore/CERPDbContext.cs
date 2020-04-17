@@ -14,6 +14,7 @@ using CERP.HR.Documents;
 using CERP.HR.Timesheets;
 using CERP.Payroll.Payrun;
 using CERP.App.CustomEntityHistorySystem;
+using CERP.HR.Leaves;
 
 namespace CERP.EntityFrameworkCore
 {
@@ -35,9 +36,11 @@ namespace CERP.EntityFrameworkCore
          * Also map them inside CERPDbContextModelCreatingExtensions.ConfigureCERP
          */
 
+        public DbSet<ApprovalRouteTemplate> ApprovalRouteTemplates { get; set; }
+        public DbSet<ApprovalRouteTemplateItem> ApprovalRouteTemplateItems { get; set; }
+
         public DbSet<CustomEntityChange> CustomEntityChanges { get; set; }
         public DbSet<CustomEntityPropertyChange> CustomEntityPropertyChanges { get; set; }
-
 
         public DbSet<COA_Account> COAs { get; set; }
         public DbSet<Company> Companies { get; set; }
@@ -72,6 +75,7 @@ namespace CERP.EntityFrameworkCore
         public DbSet<SIContribution> SIContributions { get; set; }
 
         public DbSet<PayrunDetailIndemnity> PayrunDetailIndemnities { get; set; }
+        public DbSet<LeaveRequestTemplate> LeaveRequestTemplates { get; set; }
 
         public CERPDbContext(DbContextOptions<CERPDbContext> options)
             : base(options)

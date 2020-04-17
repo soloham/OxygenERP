@@ -11,7 +11,7 @@ namespace CERP.App.CustomEntityHistorySystem
 {
     [DisableAuditing]
     public class CustomEntityChange : Entity<Guid>, IHasExtraProperties
-    {
+    {   
         public CustomEntityChange()
         {
 

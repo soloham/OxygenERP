@@ -12,6 +12,7 @@ using CERP.HR.EMPLOYEE.DTOs;
 using CERP.HR.Employees;
 using CERP.HR.Employees.DTOs;
 using CERP.HR.Employees.UV_DTOs;
+using CERP.HR.Leaves;
 using CERP.HR.Timesheets;
 using CERP.HR.Workshift.DTOs;
 using CERP.HR.Workshifts;
@@ -30,6 +31,12 @@ namespace CERP
             /* You can configure your AutoMapper mapping configuration here.
              * Alternatively, you can split your mapping configurations
              * into multiple profile classes for a better organization. */
+
+            CreateMap<ApprovalRouteTemplate, ApprovalRouteTemplate_Dto>();
+            CreateMap<ApprovalRouteTemplate_Dto, ApprovalRouteTemplate>();
+
+            CreateMap<ApprovalRouteTemplateItem, ApprovalRouteTemplateItem_Dto>();
+            CreateMap<ApprovalRouteTemplateItem_Dto, ApprovalRouteTemplateItem>();
 
             CreateMap<COA_Account, COA_Account_Dto>();
             CreateMap<COA_Account_Dto, COA_Account>();
@@ -127,6 +134,9 @@ namespace CERP
             CreateMap<PayrunAllowanceSummary_Dto, PayrunAllowanceSummary>();
             //CreateMap<Payslip, Payslip_Dto>().ForMember(d => d.Payrun, opt => opt.Ignore());
             //CreateMap<Payslip_Dto, Payslip>().ForMember(d => d.Payrun, opt => opt.Ignore());
+
+            CreateMap<LeaveRequestTemplate, LeaveRequestTemplate_Dto>();
+            CreateMap<LeaveRequestTemplate_Dto, LeaveRequestTemplate>();
 
             CreateMap<SISetup, SISetup_Dto>();
             CreateMap<SISetup_Dto, SISetup>();

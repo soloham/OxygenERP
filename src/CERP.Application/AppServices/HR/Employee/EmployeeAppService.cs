@@ -36,10 +36,16 @@ namespace CERP.AppServices.HR.EmployeeService
             }
         }
 
-        public List<Employee_Dto> GetAllEmployees()
-        {
+        public List<Employee_Dto> GetAllEmployees() 
+        { 
             var result = Repository.WithDetails();
             return result.Select(MapToGetListOutputDto).ToList();
         }
+        public List<Employee_Dto> GetEmployeesByPositionId(Guid positionId)
+        {
+            var result = Repository.Where(x => x.PositionId == positionId);
+            return result.Select(MapToGetListOutputDto).ToList();
+        }
+
     }
 }

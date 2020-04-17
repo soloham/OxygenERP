@@ -4,6 +4,7 @@ using CERP.FM;
 using CERP.FM.COA;
 using CERP.HR.Documents;
 using CERP.HR.Employees;
+using CERP.HR.Leaves;
 using CERP.HR.Timesheets;
 using CERP.HR.Workshifts;
 using CERP.Payroll.Payrun;
@@ -32,6 +33,29 @@ namespace CERP.EntityFrameworkCore
 
             //    //...
             //});
+
+            builder.Entity<ApprovalRouteTemplate>(b =>
+            {
+                b.ToTable(CERPConsts.DbTablePrefix + "ApprovalRouteTemplates", CERPConsts.DbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureMultiTenant();
+
+                b.HasMany(x => x.ApprovalRouteTemplateItems).WithOne(x => x.ApprovalRouteTemplate).OnDelete(DeleteBehavior.Restrict);
+            });
+            builder.Entity<ApprovalRouteTemplateItem>(b =>
+            {
+                b.ToTable(CERPConsts.DbTablePrefix + "ApprovalRouteTemplateItems", CERPConsts.DbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureMultiTenant();
+
+                b.HasOne(x => x.ApprovalRouteTemplate).WithMany(x => x.ApprovalRouteTemplateItems).OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.Department).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.Position).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.Employee).WithMany().OnDelete(DeleteBehavior.Restrict);
+            });
+            
             builder.Entity<CustomEntityChange>(b =>
             {
                 b.ToTable(CERPConsts.DbTablePrefix + "CustomEntityChanges", CERPConsts.DbSchema);
@@ -736,6 +760,61 @@ namespace CERP.EntityFrameworkCore
                 b.HasOne(x => x.PayrunDetail).WithOne(x => x.Indemnity).OnDelete(DeleteBehavior.Restrict);
                 b.HasMany(x => x.PayrunEOSBAllowancesSummaries).WithOne().OnDelete(DeleteBehavior.Restrict);
             });
+
+
+            builder.Entity<LeaveRequestTemplate>(b =>
+            {
+                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplates", CERPConsts.DbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureMultiTenant();
+
+                b.HasOne(x => x.ApprovalRouteTemplate).WithMany().OnDelete(DeleteBehavior.Restrict);
+            });
+            //builder.Entity<LeaveRequestTemplateDepartment>(b =>
+            //{
+            //    b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplateDepartments", CERPConsts.DbSchema);
+
+            //    b.ConfigureAuditedAggregateRoot();
+            //    b.ConfigureMultiTenant();
+
+            //    b.HasKey(x => new { x.LeaveRequestTemplateId, x.DepartmentId });
+            //    b.HasOne(x => x.LeaveRequestTemplate).WithMany(x => x.Departments).OnDelete(DeleteBehavior.Restrict);
+            //    b.HasOne(x => x.Department).WithMany().OnDelete(DeleteBehavior.Restrict);
+            //});
+            //builder.Entity<LeaveRequestTemplatePosition>(b =>
+            //{
+            //    b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplatePositions", CERPConsts.DbSchema);
+
+            //    b.ConfigureAuditedAggregateRoot();
+            //    b.ConfigureMultiTenant();
+
+            //    b.HasKey(x => new { x.LeaveRequestTemplateId, x.PositionId });
+            //    b.HasOne(x => x.LeaveRequestTemplate).WithMany(x => x.Positions).OnDelete(DeleteBehavior.Restrict);
+            //    b.HasOne(x => x.Position).WithMany().OnDelete(DeleteBehavior.Restrict);
+            //});
+            //builder.Entity<LeaveRequestTemplateEmployeeStatus>(b =>
+            //{
+            //    b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplateEmployeeStatuses", CERPConsts.DbSchema);
+
+            //    b.ConfigureAuditedAggregateRoot();
+            //    b.ConfigureMultiTenant();
+
+            //    b.HasKey(x => new { x.LeaveRequestTemplateId, x.EmployeeStatus });
+            //    b.HasOne(x => x.LeaveRequestTemplate).WithMany(x => x.EmployeeStatuses).OnDelete(DeleteBehavior.Restrict);
+            //    b.HasOne(x => x.EmployeeStatus).WithMany().OnDelete(DeleteBehavior.Restrict);
+            //});
+            //builder.Entity<LeaveRequestTemplateEmploymentType>(b =>
+            //{
+            //    b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplateEmploymentTypes", CERPConsts.DbSchema);
+
+            //    b.ConfigureAuditedAggregateRoot();
+            //    b.ConfigureMultiTenant();
+
+            //    b.HasKey(x => new { x.LeaveRequestTemplateId, x.EmploymentType });
+            //    b.HasOne(x => x.LeaveRequestTemplate).WithMany(x => x.EmploymentTypes).OnDelete(DeleteBehavior.Restrict);
+            //    b.HasOne(x => x.EmploymentType).WithMany().OnDelete(DeleteBehavior.Restrict);
+            //});
         }
 
         public static void ConfigureCustomUserProperties<TUser>(this EntityTypeBuilder<TUser> b, bool isMigrationDbContext)

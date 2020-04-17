@@ -213,7 +213,8 @@ function initDatePicker() {
     }, $.calendarsPicker.regionalOptions['ar']));
 }
 
-function objectifyForm(formArray) {//serialize data function
+function objectifyForm(formArray) {
+    //serialize data function
     var returnArray = {};
     for (var i = 0; i < formArray.length; i++) {
         var curName = formArray[i]['name'];
