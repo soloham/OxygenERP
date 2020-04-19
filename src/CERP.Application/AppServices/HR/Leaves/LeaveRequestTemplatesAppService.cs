@@ -23,7 +23,7 @@ namespace CERP.AppServices.HR.LeaveRequestService
 
         public IRepository<LeaveRequestTemplate, int> Repository { get; }
 
-        [Route("/getAllAsync")]
+        [Route("/api/app/leaveRequestTemplates/getAllAsync")]
         public async Task<List<LeaveRequestTemplate_Dto>> GetAllAsync()
         {
             List<LeaveRequestTemplate> all = await Repository.GetListAsync(true);

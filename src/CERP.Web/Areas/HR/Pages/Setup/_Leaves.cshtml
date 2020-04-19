@@ -64,13 +64,13 @@
         
         $(document).ready(function () {
             var lrGrid = $("#AllLeaveRequestsGrid")[0].ej2_instances[0];
-            lrGrid.showSpinner();
+            //lrGrid.showSpinner();
 
-            cERP.appServices.hR.leaveRequestService.leaveRequestTemplates.getAll().done(function (data) {
-                lrGrid.hideSpinner();
-                lrGrid.dataSource = data;
-                lrGrid.refresh();
-            });
+            //cERP.appServices.hR.leaveRequestService.leaveRequestTemplates.getAll().done(function (data) {
+            //    lrGrid.hideSpinner();
+            //    lrGrid.dataSource = data;
+            //    lrGrid.refresh();
+            //});
             cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.EmployeeType).done(function (data) {
                 var employmentTypes = [];
                 $.each(data, function (i, d) {
@@ -530,12 +530,14 @@
                     <h3 class="control-label" style="flex-grow: 1; margin:0">Current Leave Requests</h3>
                 </div>
                 <ejs-grid id="AllLeaveRequestsGrid" enableAutoFill="true" columns="@leaveRequestsGridColumns"
-                            dataBound="dataBoundResponsive" commandClick="leaveRequestsCommandClick" actionBegin="leaveRequestsActionBegin"
-                            allowExcelExport="true" height="100%" allowPdfExport="true"
-                            hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
-                            allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                            toolbarClick="leaveRequestsToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
-                            allowPaging="true" allowResizing="true">
+                          dataBound="dataBoundResponsive" commandClick="leaveRequestsCommandClick" actionBegin="leaveRequestsActionBegin"
+                          allowExcelExport="true" height="100%" allowPdfExport="true"
+                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                          allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                          toolbarClick="leaveRequestsToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
+                          allowPaging="true" allowResizing="true">
+
+                    <e-data-manager url="/api/app/leaveRequestTemplates/getAllAsync" adaptor="WebApiAdaptor"></e-data-manager>
 
                     <e-grid-filterSettings type="CheckBox">
                     </e-grid-filterSettings>

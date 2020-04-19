@@ -41,7 +41,7 @@ namespace CERP.Web
 
                     options.Conventions.AddAreaPageRoute("Main", "/Dashboard", "/Dashboard");
 
-                    options.Conventions.AddPageRoute("/index", "{*url}");
+                    //options.Conventions.AddPageRoute("/index", "{*url}");
                 })                                            
                 .AddNewtonsoftJson(options =>
                 {
