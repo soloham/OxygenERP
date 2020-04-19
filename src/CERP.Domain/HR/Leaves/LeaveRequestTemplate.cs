@@ -30,6 +30,7 @@ namespace CERP.HR.Leaves
         public virtual ICollection<LeaveRequestTemplateEmployeeStatus> EmployeeStatuses { get; set; }
 
         public virtual ApprovalRouteTemplate ApprovalRouteTemplate { get; set; }
+        public int ApprovalRouteTemplateId { get; set; }
 
         public bool HasAdvanceSalaryRequest { get; set; }
         public bool HasExitReentryRequest { get; set; }
