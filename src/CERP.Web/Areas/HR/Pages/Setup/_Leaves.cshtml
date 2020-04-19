@@ -2,9 +2,6 @@
 @using Syncfusion.EJ2.Grids;
 @using CERP;
 @{
-    List<CERP.App.DictionaryValue> employementTypes = (List<CERP.App.DictionaryValue>)ViewData["employeeTypes"];
-    List<CERP.App.DictionaryValue> employeeStatuses = (List<CERP.App.DictionaryValue>)ViewData["employeeStatuses"]; var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
-
     var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
     var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
 
@@ -19,20 +16,30 @@
 
     List<GridColumn> leaveRequestsGridColumns = new List<GridColumn>()
     {
-        new GridColumn { Field = "id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center, MinWidth="10", IsPrimaryKey=true  },
+        new GridColumn { Field = "id", Width = "80", HeaderText = "", Visible=false, ShowInColumnChooser=false, TextAlign=TextAlign.Center, MinWidth="10", IsPrimaryKey=true  },
         new GridColumn { Field = "title", Width = "110", HeaderText = "Title", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "titleLocalized", Width = "110", HeaderText = "Title (In Arabic)", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "prefix", Width = "110", HeaderText = "Prefix", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "startingFrom", Width = "110", HeaderText = "Starting No", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "employmentDays", Width = "110", HeaderText = "Employment Days", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "department", Width = "110", HeaderText = "Department", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "position", Width = "110", HeaderText = "Position", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "employmentType.Value", Width = "110", HeaderText = "Employment Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "employmentStatus.Value", Width = "110", HeaderText = "Employment Status", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "startingNo", Width = "110", HeaderText = "Starting No", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "entitlementDays", Width = "110", HeaderText = "Employment Days", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        //new GridColumn { Field = "getAllDepartments", Width = "110", HeaderText = "Department", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        //new GridColumn { Field = "getAllPositions", Width = "110", HeaderText = "Position", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        //new GridColumn { Field = "getAllEmploymentTypes", Width = "110", HeaderText = "Employment Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        //new GridColumn { Field = "getAllEmployeeStatuses", Width = "110", HeaderText = "Employment Status", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "", DisplayAsCheckBox=true, HeaderText = "Additional Requests", TextAlign=TextAlign.Center,  MinWidth="10", Columns = new List<GridColumn>(){
+                new GridColumn { Field = "hasAdvanceSalaryRequest", Width = "110", DisplayAsCheckBox=true, HeaderText = "Advance Salary", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "hasExitReentryRequest", Width = "110", DisplayAsCheckBox=true, HeaderText = "Exit-Reentry", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "hasAirTicketRequest", Width = "110", DisplayAsCheckBox=true, HeaderText = "Air Ticket", TextAlign=TextAlign.Center,  MinWidth="10"  },
+            }
+        },
+        new GridColumn { Field = "", DisplayAsCheckBox=true, HeaderText = "Additional Requirements", TextAlign=TextAlign.Center,  MinWidth="10", Columns = new List<GridColumn>(){
+                new GridColumn { Field = "hasNotesRequirement", Width = "110", DisplayAsCheckBox=true, HeaderText = "Advance Salary", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "hasAttachmentRequirement", Width = "110", DisplayAsCheckBox=true, HeaderText = "Exit-Reentry", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "hasAirTicketRequest", Width = "110", DisplayAsCheckBox=true, HeaderText = "Air Ticket", TextAlign=TextAlign.Center,  MinWidth="10"  },
+            }
+        },
         new GridColumn { Width = "150", HeaderText = "Commands", TextAlign=TextAlign.Center, MinWidth="10", Commands = leaveRequestsCommands }
     };
-
-    List<Department_Dto> departments = (List<Department_Dto>)ViewData["departments"];
 
     List<object> lrApprovalRouteCommands = new List<object>();
     lrApprovalRouteCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat e-DeleteButton" } });
@@ -42,59 +49,95 @@
 
     List<GridColumn> lrApprovalRouteGridColumns = new List<GridColumn>()
     {
-        new GridColumn { Field = "Id", Visible=false, ShowInColumnChooser=false, IsPrimaryKey=true  },
+        new GridColumn { Field = "id", Visible=false, ShowInColumnChooser=false, IsPrimaryKey=true  },
         new GridColumn { Field = "active", Width = "110", HeaderText = "Active", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "department.Name", Width = "110", HeaderText = "Department", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "position.Name", Width = "110", HeaderText = "Position", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "employee.Name", Width = "110", HeaderText = "Employee", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "department.name", Width = "110", HeaderText = "Department", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "position.title", Width = "110", HeaderText = "Position", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "employee.name", Width = "110", HeaderText = "Employee", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Width = "50", HeaderText = "Actions", TextAlign=TextAlign.Center, MinWidth="10", Commands = lrApprovalRouteCommands }
     };
 }
     <script>
         isEditingLR = false;
+        isEditingLRLoaded = false;
         var curLREditRow;
+        
         $(document).ready(function () {
-            var options = {
-                buttonWidth: '100%',
-                includeSelectAllOption: true,
-                enableFiltering: false,
-                enableClickableOptGroups: true,
-                includeResetOption: true,
-                includeResetDivider: true,
-                enableCollapsibleOptGroups: true
-            };
-            $('#lrDepartmentId').multiselect({
-                buttonWidth: '100%',
-                includeSelectAllOption: true,
-                enableFiltering: false,
-                enableClickableOptGroups: true,
-                includeResetOption: true,
-                includeResetDivider: true,
-                enableCollapsibleOptGroups: true,
-                onDeselectAll: function (e) {
-                    $('#lrPositionId').empty();
-                },
-                onSelectAll: SelectDepartmentPositions()
+            var lrGrid = $("#AllLeaveRequestsGrid")[0].ej2_instances[0];
+            lrGrid.showSpinner();
+
+            cERP.appServices.hR.leaveRequestService.leaveRequestTemplates.getAll().done(function (data) {
+                lrGrid.hideSpinner();
+                lrGrid.dataSource = data;
+                lrGrid.refresh();
             });
-            $('#lrPositionId').multiselect(options);
-            $('#lrPositionId').multiselect(options);
-            $('#lrEmploymentTypeId').multiselect(options);
-            $('#lrEmployeeStatusId').multiselect(options);
-            $('#lrHolidaysDeductionIds').multiselect(options);
+            cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.EmployeeType).done(function (data) {
+                var employmentTypes = [];
+                $.each(data, function (i, d) {
+                    employmentTypes.push({ label: d.value, value: d.id });
+                }); 
+                $("#lrEmploymentTypeId").multiselect('dataprovider', employmentTypes);
+            });
+            cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.EmployeeStatus).done(function (data) {
+                var employmeeStatuses = [];
+                $.each(data, function (i, d) {
+                    employmeeStatuses.push({ label: d.value, value: d.id });
+                });
+                $("#lrEmployeeStatusId").multiselect('dataprovider', employmeeStatuses);
+            });
+
+            //$.ajax({
+            //    url: '?handler=LeaveRequests',
+            //    async: true,
+            //    type: 'GET',
+            //    data: {},
+            //    success: function (data) {
+            //        lrGrid.hideSpinner();
+            //        lrGrid.dataSource = data;
+            //        lrGrid.refresh();
+
+            //        isLRLoaded = true;
+            //    },
+            //    error: function (err) {
+            //        lrGrid.hideSpinner();
+            //        isLRLoaded = false;
+            //    }
+            //});
 
             $('#addLeaveRequestBtn').on('click', function () {
                 var isCollapsed = $('#leaveRequestForm').css('display') == 'none';
 
                 if (isCollapsed) {
+                    curLREditRow = null;
+                    isEditingLR = false;
+                    isEditingLRLoaded = false;
+
+                    $('#submitLeaveRequestBtn').val('Add Leave Request');
+
                     $('#addLeaveRequestBtnSection').slideUp(200);
                     $('#leaveRequestForm').slideDown(200);
                     setTimeout(function () { $('#addLeaveRequestBtn', '#addLeaveRequestBtnSection').html('<i class="fa fa-arrow-up p-r-5"></i> Cancel Add') }, 200)
                     $('#addLeaveRequestBtnSection').slideDown(200);
 
+                    $('#lrTitle').val('');
+                    $('#lrTitleLocalized').val('');
+                    $('#lrPrefix').val('');
+                    $('#lrStartingNo').val('');
+                    $('#lrEntitlementDays').val('');
+
+                    $('#lrDepartmentId').multiselect('deselectAll', false);
+                    $('#lrDepartmentId').multiselect('updateButtonText');
+                    $('#lrPositionId').multiselect('deselectAll', false);
+                    $('#lrPositionId').multiselect('updateButtonText');
+                    $('#lrEmploymentTypeId').multiselect('deselectAll', false);
+                    $('#lrEmploymentTypeId').multiselect('updateButtonText');
+                    $('#lrEmployeeStatusId').multiselect('deselectAll', false);
+                    $('#lrEmployeeStatusId').multiselect('updateButtonText');
+
                     var apGrid = $("#LRApprovalRouteGrid")[0].ej2_instances[0];
                     apGrid.dataSource = [];
-                    apGrid.dataSource.push({ Id: 0, active: true, isDPHead:true, department: { Id: "@Guid.Empty", Name: "Selected" }, position: { Id: "@Guid.Empty", Name: "Head" }, employee: { Id: "@Guid.Empty", Name: "Auto" } })
-                    apGrid.dataSource.push({ Id: 1, active: true, isReportingTo:true, department: { Id: "@Guid.Empty", Name: "Selected" }, position: { Id: "@Guid.Empty", Name: "Auto" }, employee: { Id: "@Guid.Empty", Name: "Auto [Reporting To]" } })
+                    apGrid.dataSource.push({ id: 0, active: true, isDepartmentHead:true, department: { id: "@Guid.Empty", name: "Selected" }, position: { id: "@Guid.Empty", title: "Head" }, employee: { id: "@Guid.Empty", name: "Auto" } })
+                    apGrid.dataSource.push({ id: 1, active: true, isReportingTo:true, department: { id: "@Guid.Empty", name: "Selected" }, position: { id: "@Guid.Empty", title: "Auto" }, employee: { id: "@Guid.Empty", name: "Auto [Reporting To]" } })
                     apGrid.refresh();
                 } else {
                     $('#addLeaveRequestBtnSection').slideUp(200);
@@ -124,14 +167,14 @@
                 var depId = $("#apDepartmentId").val();
                 var posId = $("#apPositionId").val();
                 var empId = $("#apEmployeeId").val();
-                if (depId == '' || posId == '' || empId == '' || apGrid.dataSource.filter(function (e) { return e.employee.Id === empId; }).length > 0)
+                if (depId == '' || posId == '' || empId == '' || apGrid.dataSource.filter(function (e) { return e.employee.id === empId; }).length > 0)
                     return;
                 var apRoute = {
-                    Id: empId,
+                    id: empId,
                     active: true,
-                    department: { Id: depId, Name: $("#apDepartmentId option:selected").text() },
-                    position: { Id: posId, Name: $("#apPositionId option:selected").text() },
-                    employee: { Id: empId, Name: $("#apEmployeeId option:selected").text() }
+                    department: { id: depId, name: $("#apDepartmentId option:selected").text() },
+                    position: { id: posId, title: $("#apPositionId option:selected").text() },
+                    employee: { id: empId, name: $("#apEmployeeId option:selected").text() }
                 }
                 apGrid.dataSource.push(apRoute);
                 apGrid.refresh();
@@ -164,14 +207,21 @@
                     params.LRNotesAR = $("#LRNotesRequired").parent().hasClass('active');
                     params.LRAttachmentAR = $("#LRAttachmentRequired").parent().hasClass('active');
 
-                    if (isEditingLR)
+                    if (isEditingLR) {
                         params.Id = curLREditRow.id;
 
+                        //cERP.appServices.hR.leaveRequestTemplates.update()
+                    }
+                    else {
+
+                        //cERP.appServices.hR.leaveRequestTemplates.update()
+                    }
                     let formData = new FormData();
                     formData.append("info", JSON.stringify(params));
                     var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
                     formData.append("__RequestVerificationToken", xhrToken);
                     console.log(params);
+
                     $.ajax({
                         url: "?handler=LeaveRequestTemplate",
                         async: true,
@@ -198,13 +248,13 @@
                                 //    }
                                 //}
 
-                                //gridWS.refresh();
 
-                                for (var i = 0; i < gridWS.dataSource.length; i++) {
-                                    if (gridWS.dataSource[i].deductionMethod != null && gridWS.dataSource[i].deductionMethod.id == data.id) {
-                                        gridWS.dataSource[i].deductionMethod = data;
+                                for (var i = 0; i < grid.dataSource.length; i++) {
+                                    if (grid.dataSource[i].id == data.id) {
+                                        grid.dataSource[i] = data;
                                     }
                                 }
+                                grid.refresh();
                             }
                             else {
                                 grid.dataSource.push(data);
@@ -300,7 +350,7 @@
                             <div class="col-sm-6" style="padding:0">
                                 <div class="form-group">
                                     <label class="control-label m-b-5 ">LR Title (In Arabic):</label>
-                                    <input type="text" id="lrTitle" name="LRTitleLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                    <input type="text" id="lrTitleLocalized" name="LRTitleLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -319,7 +369,7 @@
                         <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                             <div class="form-group">
                                 <label class="margin-bottom-5 control-label">Entitlement Days:</label>
-                                <input type="number" min="1" id="entitlementDays" name="EntitlementDays" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                <input type="number" min="1" id="lrEntitlementDays" name="LREntitlementDays" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                             </div>
                         </div>
                     </div>
@@ -328,11 +378,8 @@
                         <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                             <div class="form-group">
                                 <label class="control-label m-b-5 ">Department:</label>
-                                <select id="lrDepartmentId" name="LRDepartmentId" multiple="multiple" class="form-control" onchange="SelectDepartmentPositions();" required>
-                                    @for (int i = 0; i < departments.Count; i++)
-                                    {
-                                        <option value="@departments[i].Id">@departments[i].Name</option>
-                                    }
+                                <select id="lrDepartmentId" name="LRDepartmentId" multiple="multiple" class="form-control" onchange="SelectDepartmentPositions();" required>                                    
+                                    
                                 </select>
                             </div>
                         </div>
@@ -347,10 +394,7 @@
                             <div class="form-group">
                                 <label class="margin-bottom-5 control-label">Employment Type:</label>
                                 <select id="lrEmploymentTypeId" name="EmployementTypeId" multiple="multiple" class="form-control" required>
-                                    @for (int i = 0; i < employementTypes.Count; i++)
-                                    {
-                                        <option value="@employementTypes[i].Id">@employementTypes[i].Value</option>
-                                    }
+                                    
                                 </select>
                                 @*<ejs-dropdownlist id="vegetables" placeholder="Select an employment type" popupHeight="200px" dataSource="@employementTypes">
                                     <e-dropdownlist-fields text="Value" value="Id"></e-dropdownlist-fields>
@@ -361,10 +405,7 @@
                             <div class="form-group">
                                 <label class="margin-bottom-5 control-label">Employmee Status:</label>
                                 <select id="lrEmployeeStatusId" name="EmployementStatusId" multiple="multiple" class="form-control" required>
-                                    @for (int i = 0; i < employeeStatuses.Count; i++)
-                                    {
-                                        <option value="@employeeStatuses[i].Id">@employeeStatuses[i].Value</option>
-                                    }
+                                    
                                 </select>
                             </div>
                         </div>
@@ -382,10 +423,7 @@
                                     <label class="control-label m-b-5 ">Department:</label>
                                     <select id="apDepartmentId" name="DepartmentId" class="form-control" onchange="SelectAPDepartmentPositions();">
                                         <option selected>Select Department</option>
-                                        @for (int i = 0; i < departments.Count; i++)
-                                        {
-                                            <option value="@departments[i].Id">@departments[i].Name</option>
-                                        }
+                                        
                                     </select>
                                 </div>
                             </div>
@@ -436,11 +474,8 @@
                                 <label class="control-label m-b-5 ">Holidays for deduction:</label>
                             </div>
                             <div class="col-sm-9">
-                                <select id="lrHolidaysDeductionIds" name="LRHolidaysDeductionIds" multiple="multiple" class="form-control" required>
-                                    @for (int i = 0; i < departments.Count; i++)
-                                    {
-                                        <option value="@departments[i].Id">@departments[i].Name</option>
-                                    }
+                                <select id="lrHolidaysDeductionIds" name="LRHolidaysDeductionIds" multiple="multiple" class="form-control">
+                                    
                                 </select>
                             </div>
                         </div>
@@ -494,7 +529,7 @@
                 <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
                     <h3 class="control-label" style="flex-grow: 1; margin:0">Current Leave Requests</h3>
                 </div>
-                <ejs-grid id="AllLeaveRequestsGrid" dataSource="@ViewData["LeaveRequests_DS"]" enableAutoFill="true" columns="@leaveRequestsGridColumns"
+                <ejs-grid id="AllLeaveRequestsGrid" enableAutoFill="true" columns="@leaveRequestsGridColumns"
                             dataBound="dataBoundResponsive" commandClick="leaveRequestsCommandClick" actionBegin="leaveRequestsActionBegin"
                             allowExcelExport="true" height="100%" allowPdfExport="true"
                             hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
@@ -523,12 +558,12 @@
             Swal.showLoading();
 
             let formData = new FormData();
-            formData.append("workshifts", JSON.stringify(args.data));
+            formData.append("leaveRequests", JSON.stringify(args.data));
             var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
             formData.append("__RequestVerificationToken", xhrToken);
 
             $.ajax({
-                url: '?handler=Workshift',
+                url: '?handler=LeaveRequest',
                 async: true,
                 type: "DELETE",
                 data: formData,
@@ -536,19 +571,17 @@
                 processData: false,
                 success: function (data) {
                     //console.log(data.success);
-                    swal.fire("Success", "Workshift has successfully been deleted", "success");
+                    swal.fire("Success", "Leave request(s) successfully deleted", "success");
 
-                    if ($('#addWorkshiftSection').css('display') !== 'none') {
-                        $('#addWorkshiftSection').slideUp();
-                        $('#toggleAddWorkshiftSection').slideUp(50);
-                        setTimeout(function () {
-                            $('#addWorkshiftSecToggleBtn').html('Add New Workshift');
-                        }, 50);
-                        $('#toggleAddWorkshiftSection').slideDown(250);
+                    if ($('#leaveRequestForm').css('display') !== 'none') {
+                        $('#addLeaveRequestBtnSection').slideUp(200);
+                        $('#leaveRequestForm').slideUp(200);
+                        setTimeout(function () { $('#addLeaveRequestBtn', '#addLeaveRequestBtnSection').html('<i class="fa fa-plus p-r-5"></i> Add Leave Request') }, 200)
+                        $('#addLeaveRequestBtnSection').slideDown(200);
                     }
                 },
                 error: function (err) {
-                    swal.fire("Failed", "Workshift couldn't be deleted, please fix all errors and try again.", "error");
+                    swal.fire("Failed", "Leave request(s) couldn't be deleted, please fix all errors and try again.", "error");
 
                     console.log(err);
                 }
@@ -558,40 +591,104 @@
     function leaveRequestsCommandClick(args) {
         if (args.commandColumn.type == "Edit") {
             console.log(args);
-            var params = args.rowData;  // display row data
-            curWorkshiftEditRow = args.rowData;
+            curLREditRow = args.rowData;
+            isEditingLR = true;
+            isEditingLRLoaded = false;
+            var isCollapsed = $('#leaveRequestForm').css('display') == 'none';
 
-            $('#toggleAddWorkshiftSection').slideUp(50);
-            $('#toggleAddWorkshiftSection').slideDown(250);
-            $('#addWorkshiftSection').slideUp(50);
-            $('#addWorkshiftSection').slideDown(250);
+            var timeout = 0;
+            if (!isCollapsed) {
+                $('#addLeaveRequestBtnSection').slideUp(200);
+                $('#leaveRequestForm').slideUp(200);
 
-            $('#submitWorkshiftAddSection').val('Update Workshift');
-            $('#addWorkshiftSecTitle').html('Update Workshift');
-
+                timeout = 200;
+            }
             setTimeout(function () {
-                $('#addWorkshiftSecToggleBtn').html('Close Section');
+                $('#addLeaveRequestBtnSection').slideUp(200);
+                $('#leaveRequestForm').slideDown(200);
+                $('#addLeaveRequestBtnSection').slideDown(200);
 
-                $('#workshiftTitle').val(params.title);
-                $('#startHour').val(params.startHour);
-                $('#endHour').val(params.endHour);
-                try {
-                    $('#departmentId').val(params.department.id);
-                    $('#deductionMethodId').val(params.deductionMethod.id);
-                }
-                catch {
+                setTimeout(function () {
+                    $('#addLeaveRequestBtn', '#addLeaveRequestBtnSection').html('<i class="fa fa-arrow-up p-r-5"></i> Cancel Update');
+                    $('#submitLeaveRequestBtn').val('Update Leave Request');
 
-                }
-                $('#isSUN')[0].ej2_instances[0].checked = params.isSUN;
-                $('#isMON')[0].ej2_instances[0].checked = params.isMON;
-                $('#isTUE')[0].ej2_instances[0].checked = params.isTUE;
-                $('#isWED')[0].ej2_instances[0].checked = params.isWED;
-                $('#isTHU')[0].ej2_instances[0].checked = params.isTHU;
-                $('#isFRI')[0].ej2_instances[0].checked = params.isFRI;
-                $('#isSAT')[0].ej2_instances[0].checked = params.isSAT;
+                    $('#lrTitle').val(curLREditRow.title);
+                    $('#lrTitleLocalized').val(curLREditRow.titleLocalized);
+                    $('#lrPrefix').val(curLREditRow.prefix);
+                    $('#lrStartingNo').val(curLREditRow.startingNo);
+                    $('#lrEntitlementDays').val(curLREditRow.entitlementDays);
 
-                isEditingWorkshift = true;
-            }, 50);
+                    var departs = [];
+                    for (var i = 0; i < curLREditRow.departments.length; i++) {
+                        departs.push(curLREditRow.departments[i].departmentId);
+                    }
+                    $('#lrDepartmentId').multiselect('select', departs);
+                    $('#lrDepartmentId').change();
+                    var empTypes = [];
+                    for (var i = 0; i < curLREditRow.employmentTypes.length; i++) {
+                        empTypes.push(curLREditRow.employmentTypes[i].employmentTypeId);
+                    }
+                    $('#lrEmploymentTypeId').multiselect('select', empTypes);
+                    var empStatuses = [];
+                    for (var i = 0; i < curLREditRow.employeeStatuses.length; i++) {
+                        empStatuses.push(curLREditRow.employeeStatuses[i].employeeStatusId);
+                    }
+                    $('#lrEmployeeStatusId').multiselect('select', empStatuses);
+                    //var dedHolids = [];
+                    //for (var i = 0; i < curLREditRow.deductionHolidays.length; i++) {
+                    //    dedHolids.push(curLREditRow.deductionHolidays[i].deductionHolidayId);
+                    //}
+                    //$('#lrHolidaysDeductionIds').multiselect('select', dedHolids);
+
+                    var apGrid = $("#LRApprovalRouteGrid")[0].ej2_instances[0];
+                    apGrid.dataSource = null;
+                    apGrid.showSpinner();
+                    cERP.appServices.app.approvalRouteService.approvalRouteTemplates.getFull(curLREditRow.approvalRouteTemplate.id).done(function (data) {
+                        apGrid.hideSpinner();
+                        apGrid.dataSource = data.approvalRouteTemplateItems;
+                        apGrid.refresh();
+                    });
+                    //for (var i = 0; i < approvalItems.length; i++) {
+                    //    if (!approvalItems[i].isDepartmentHead && !approvalItems[i].isReportingTo) {
+                    //        cERP.appServices.setup.departmentSetup.department.get(approvalItems[i].departmentId).done(function (data) {
+                    //            approvalItems[i].department = data;
+                    //        })
+                    //        cERP.appServices.setup.positionSetup.position.get(approvalItems[i].positionId).done(function (data) {
+                    //            approvalItems[i].position = data;
+                    //        })
+                    //        cERP.appServices.hR.employeeService.employee.get(approvalItems[i].employeeId).done(function (data) {
+                    //            approvalItems[i].employee = data;
+                    //        })
+                    //    }
+                    //}
+
+                    if (curLREditRow.hasAdvanceSalaryRequest)
+                        $('#LRAdvanceSalaryAD').parent().addClass('active');
+                    else
+                        $('#LRAdvanceSalaryAD').parent().removeClass('active');
+
+                    if (curLREditRow.hasExitReentryRequest)
+                        $('#LRExitReentryAD').parent().addClass('active');
+                    else
+                        $('#LRExitReentryAD').parent().removeClass('active');
+
+                    if (curLREditRow.hasAirTicketRequest)
+                        $('#LRAirTicketAD').parent().addClass('active');
+                    else
+                        $('#LRAirTicketAD').parent().removeClass('active');
+
+
+                    if (curLREditRow.hasNotesRequirement)
+                        $('#LRNotesRequirement').parent().addClass('active');
+                    else
+                        $('#LRNotesRequirement').parent().removeClass('active');
+
+                    if (curLREditRow.hasAttachmentRequirement)
+                        $('#LRAttachmentRequirement').parent().addClass('active');
+                    else
+                        $('#LRAttachmentRequirement').parent().removeClass('active');
+                }, 150);
+            }, timeout);
         }
         else if (args.commandColumn.type == "Copy") {
             this.copy(false);
@@ -671,41 +768,7 @@
     }
     function lrApprovalRouteCommandClick(args) {
         if (args.commandColumn.type == "Edit") {
-            console.log(args);
-            var params = args.rowData;  // display row data
-            curWorkshiftEditRow = args.rowData;
-
-            $('#toggleAddWorkshiftSection').slideUp(50);
-            $('#toggleAddWorkshiftSection').slideDown(250);
-            $('#addWorkshiftSection').slideUp(50);
-            $('#addWorkshiftSection').slideDown(250);
-
-            $('#submitWorkshiftAddSection').val('Update Workshift');
-            $('#addWorkshiftSecTitle').html('Update Workshift');
-
-            setTimeout(function () {
-                $('#addWorkshiftSecToggleBtn').html('Close Section');
-
-                $('#workshiftTitle').val(params.title);
-                $('#startHour').val(params.startHour);
-                $('#endHour').val(params.endHour);
-                try {
-                    $('#departmentId').val(params.department.id);
-                    $('#deductionMethodId').val(params.deductionMethod.id);
-                }
-                catch {
-
-                }
-                $('#isSUN')[0].ej2_instances[0].checked = params.isSUN;
-                $('#isMON')[0].ej2_instances[0].checked = params.isMON;
-                $('#isTUE')[0].ej2_instances[0].checked = params.isTUE;
-                $('#isWED')[0].ej2_instances[0].checked = params.isWED;
-                $('#isTHU')[0].ej2_instances[0].checked = params.isTHU;
-                $('#isFRI')[0].ej2_instances[0].checked = params.isFRI;
-                $('#isSAT')[0].ej2_instances[0].checked = params.isSAT;
-
-                isEditingWorkshift = true;
-            }, 50);
+            
         }
         else if (args.commandColumn.type == "Copy") {
             this.copy(false);
@@ -790,7 +853,7 @@
         }
     }
     function lrApprovalRouteRowDataBound(args) {
-        if (args.data.department.Id == 0 && args.data.position.Id == 0 && args.data.employee.Id == 0) {
+        if (args.data.isDepartmentHead || args.data.isReportingTo) {
             $(".e-" + "DeleteButton", args.row).addClass("e-hide");
         }
         else {
@@ -855,6 +918,7 @@
         var departmentIds = $("#lrDepartmentId").val();
         $("#lrPositionId").empty();
         $("#lrPositionId").append("<option value=''>Select Position</option>");
+
         $.ajax({
             type: "GET",
             url: '?handler=DepartmentsPositions',
@@ -863,7 +927,7 @@
                 var dataMS = [];
                 $.each(departmentIds, function (i, departmentId) {
                     var positions = [];
-                    $.each(data, function (i, position) {
+                    $.each(data, function (j, position) {
                         if (position.departmentId == departmentId)
                             positions.push({ label: position.title, value: position.id });
                     });
@@ -872,6 +936,16 @@
                     });
                 });
                 $("#lrPositionId").multiselect('dataprovider', dataMS);
+                if (isEditingLR && !isEditingLRLoaded) {
+                    var posits = [];
+                    for (var i = 0; i < curLREditRow.positions.length; i++) {
+                        posits.push(curLREditRow.positions[i].positionId);
+                    }
+                    $("#lrPositionId").multiselect('select', posits);
+
+                    isEditingLRLoaded = true;
+                }
+
             }
         });
     }

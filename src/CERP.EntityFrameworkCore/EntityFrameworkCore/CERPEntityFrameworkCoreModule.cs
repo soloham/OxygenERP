@@ -2,6 +2,7 @@
 using CERP.FM.COA;
 using CERP.HR.Documents;
 using CERP.HR.Employees;
+using CERP.HR.Leaves;
 using CERP.HR.Timesheets;
 using CERP.HR.Workshifts;
 using CERP.Payroll.Payrun;
@@ -43,6 +44,22 @@ namespace CERP.EntityFrameworkCore
                 /* Remove "includeAllEntities: true" to create
                  * default repositories only for aggregate roots */
                 options.AddDefaultRepositories(includeAllEntities: true);
+
+                options.Entity<ApprovalRouteTemplate>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.ApprovalRouteTemplateItems)
+                                                        .ThenInclude(x => x.Department)
+                                                       .Include(p => p.ApprovalRouteTemplateItems)
+                                                        .ThenInclude(x => x.Position)
+                                                       .Include(p => p.ApprovalRouteTemplateItems)
+                                                        .ThenInclude(x => x.Employee);
+                });
+                options.Entity<ApprovalRouteTemplateItem>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.Department)
+                                                       .Include(p => p.Position)
+                                                       .Include(p => p.Employee);
+                });
 
                 options.Entity<COA_Account>(opt =>
                 {
@@ -175,6 +192,16 @@ namespace CERP.EntityFrameworkCore
                 options.Entity<SIContribution>(opt =>
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.SICategory);
+                });
+
+
+                options.Entity<LeaveRequestTemplate>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.ApprovalRouteTemplate).ThenInclude(p => p.ApprovalRouteTemplateItems)
+                                                      .Include(p => p.Departments)
+                                                      .Include(p => p.Positions)
+                                                      .Include(p => p.EmployeeStatuses)
+                                                      .Include(p => p.EmploymentTypes);
                 });
             });
 

@@ -35,7 +35,7 @@ namespace CERP
             CreateMap<ApprovalRouteTemplate, ApprovalRouteTemplate_Dto>();
             CreateMap<ApprovalRouteTemplate_Dto, ApprovalRouteTemplate>();
 
-            CreateMap<ApprovalRouteTemplateItem, ApprovalRouteTemplateItem_Dto>();
+            CreateMap<ApprovalRouteTemplateItem, ApprovalRouteTemplateItem_Dto>().ForMember(d => d.ApprovalRouteTemplate, opt => opt.Ignore()).AfterMap((x, y) => y.Initialize());
             CreateMap<ApprovalRouteTemplateItem_Dto, ApprovalRouteTemplateItem>();
 
             CreateMap<COA_Account, COA_Account_Dto>();
@@ -135,9 +135,6 @@ namespace CERP
             //CreateMap<Payslip, Payslip_Dto>().ForMember(d => d.Payrun, opt => opt.Ignore());
             //CreateMap<Payslip_Dto, Payslip>().ForMember(d => d.Payrun, opt => opt.Ignore());
 
-            CreateMap<LeaveRequestTemplate, LeaveRequestTemplate_Dto>();
-            CreateMap<LeaveRequestTemplate_Dto, LeaveRequestTemplate>();
-
             CreateMap<SISetup, SISetup_Dto>();
             CreateMap<SISetup_Dto, SISetup>();
             CreateMap<SIContributionCategory, SIContributionCategory_Dto>().ForMember(d => d.Setup, opt => opt.Ignore());
@@ -147,6 +144,21 @@ namespace CERP
 
             CreateMap<PayrunDetailIndemnity, PayrunDetailIndemnity_Dto>().ForMember(d => d.PayrunDetail, opt => opt.Ignore());
             CreateMap<PayrunDetailIndemnity_Dto, PayrunDetailIndemnity>().ForMember(d => d.PayrunDetail, opt => opt.Ignore());
+
+            CreateMap<LeaveRequestTemplate, LeaveRequestTemplate_Dto>();
+            CreateMap<LeaveRequestTemplate_Dto, LeaveRequestTemplate>();
+
+            CreateMap<LeaveRequestTemplateDepartment, LeaveRequestTemplateDepartment_Dto>().ForMember(d => d.LeaveRequestTemplate, opt => opt.Ignore());
+            CreateMap<LeaveRequestTemplateDepartment_Dto, LeaveRequestTemplateDepartment>();
+
+            CreateMap<LeaveRequestTemplatePosition, LeaveRequestTemplatePosition_Dto>().ForMember(d => d.LeaveRequestTemplate, opt => opt.Ignore());
+            CreateMap<LeaveRequestTemplatePosition_Dto, LeaveRequestTemplatePosition>();
+
+            CreateMap<LeaveRequestTemplateEmploymentType, LeaveRequestTemplateEmploymentType_Dto>().ForMember(d => d.LeaveRequestTemplate, opt => opt.Ignore());
+            CreateMap<LeaveRequestTemplateEmploymentType_Dto, LeaveRequestTemplateEmploymentType>();
+
+            CreateMap<LeaveRequestTemplateEmployeeStatus, LeaveRequestTemplateEmployeeStatus_Dto>().ForMember(d => d.LeaveRequestTemplate, opt => opt.Ignore());
+            CreateMap<LeaveRequestTemplateEmployeeStatus_Dto, LeaveRequestTemplateEmployeeStatus>();
         }
     }
 }

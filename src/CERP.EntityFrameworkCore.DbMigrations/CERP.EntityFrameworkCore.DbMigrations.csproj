@@ -102,6 +102,12 @@
     <Compile Remove="Migrations\20200402100333_IndemnityPayrunDetail.Designer.cs" />
     <Compile Remove="Migrations\20200415144746_EmployeeWorkshift2.cs" />
     <Compile Remove="Migrations\20200415144746_EmployeeWorkshift2.Designer.cs" />
+    <Compile Remove="Migrations\20200418073657_LRJoints.cs" />
+    <Compile Remove="Migrations\20200418073657_LRJoints.Designer.cs" />
+    <Compile Remove="Migrations\20200418074645_LRJoints.cs" />
+    <Compile Remove="Migrations\20200418074645_LRJoints.Designer.cs" />
+    <Compile Remove="Migrations\20200418141030_ApprovalRouteTemplateActiveProp.cs" />
+    <Compile Remove="Migrations\20200418141030_ApprovalRouteTemplateActiveProp.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -109,7 +115,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

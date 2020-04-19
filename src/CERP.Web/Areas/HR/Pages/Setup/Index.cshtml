@@ -18,9 +18,6 @@
     ViewData["initialToolbar"] = initialToolBar;
     ViewData["fullToolBar"] = fullToolBar;
     string TabPlaceholder = "Area";
-
-    ViewData["employeeTypes"] = Model.DictionaryValuesRepo.Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.EmployeeType).OrderBy(x => x.Key).ToList();
-    ViewData["employeeStatuses"] = Model.DictionaryValuesRepo.Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.EmployeeStatus).OrderBy(x => x.Key).ToList();
 }
 @section Styles {
     <link href="~/libs/smartwizard/dist/css/smart_wizard.min.css" rel="stylesheet" />
@@ -49,7 +46,61 @@
     <script src="~/libs/smartwizard/dist/js/jquery.smartWizard.min.js"></script>
     <script src="~/libs/syncfusion/ej2-grid/scripts/ej2.min.js"></script>
     <script type="text/javascript">
+        var departments = [];
         $(document).ready(function () {
+
+            var options = {
+                buttonWidth: '100%',
+                includeSelectAllOption: true,
+                enableFiltering: false,
+                enableClickableOptGroups: true,
+                includeResetOption: true,
+                includeResetDivider: true,
+                enableCollapsibleOptGroups: true
+            };
+            $('#lrDepartmentId').multiselect({
+                buttonWidth: '100%',
+                includeSelectAllOption: true,
+                enableFiltering: false,
+                enableClickableOptGroups: true,
+                includeResetOption: true,
+                includeResetDivider: true,
+                enableCollapsibleOptGroups: true,
+                onDeselectAll: function (e) {
+                    $('#lrPositionId').empty();
+                },
+                onSelectAll: SelectDepartmentPositions()
+            });
+            $('#departmentId').multiselect(options);
+            $('#apDepartmentId').multiselect({
+                buttonWidth: '100%',
+                includeSelectAllOption: true,
+                enableFiltering: false,
+                enableClickableOptGroups: true,
+                includeResetOption: true,
+                includeResetDivider: true,
+                enableCollapsibleOptGroups: true,
+                onDeselectAll: function (e) {
+                    $('#lrPositionId').empty();
+                },
+                onSelectAll: SelectAPDepartmentPositions()
+            });
+            $('#lrPositionId').multiselect(options);
+            $('#lrEmploymentTypeId').multiselect(options);
+            $('#lrEmployeeStatusId').multiselect(options);
+            $('#lrHolidaysDeductionIds').multiselect(options);
+
+            cERP.appServices.setup.departmentSetup.department.getDepartments().done(function (data) {
+                departments = [];
+                $.each(data, function (i, d) {
+                    departments.push({ label: d.name, value: d.id });
+                });
+
+                $("#departmentId").multiselect('dataprovider', departments);
+                $("#lrDepartmentId").multiselect('dataprovider', departments);
+                $("#apDepartmentId").multiselect('dataprovider', departments);
+                $("#apDepartmentId").change();
+            });
             toastr.options = {
 
                 "positionClass": "toast-bottom-right",
@@ -88,8 +139,8 @@
                     enableAnchorOnDoneStep: true, // Enable/Disable the done steps navigation
                 }
             });
+            
             $("#smartwizard").on("showStep", function (e, anchorObject, stepNumber, stepDirection, stepPosition) {
-                //alert("You are on step "+stepNumber+" now");
                 if (stepPosition === 'first') {
                     $("#prev-btn").addClass('disabled');
                 } else if (stepPosition === 'final') {

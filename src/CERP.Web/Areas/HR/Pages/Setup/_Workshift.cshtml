@@ -59,267 +59,285 @@
         new GridColumn { Width = "150", HeaderText = "Commands", TextAlign=TextAlign.Center, MinWidth="10", Commands = workshiftsCommands }
     };
 }
-    <script>
+<script>
     var isEditingDeductionMethod = false;
     var isEditingWorkshift = false;
     var curWorkshiftEditRow;
     var curDeductionMethodEditRow;
-    $(document).ready(function () {
-        $(".control-section").stop().animate({ height: '87%' }, 150);
-        $('#newWorkshiftForm').on('submit', function(e) {
-            e.preventDefault();
-            if (ValidateWorkshiftForm())
-            {
-                Swal.showLoading();
+        $(document).ready(function () {
+            var dmsGrid = $("#AllDeductionMethodsGrid")[0].ej2_instances[0];
+            dmsGrid.showSpinner();
 
-                let form = [];
-                let generalInfo = $('#newWorkshiftForm').find("select, textarea, input").serializeArray();
-                form = form.concat(generalInfo);
-                var params = objectifyForm(form);
-                params.isSUN = params.isSUN == 'on' ? 'true' : 'false';
-                params.isMON = params.isMON == 'on' ? 'true' : 'false';
-                params.isTUE = params.isTUE == 'on' ? 'true' : 'false';
-                params.isWED = params.isWED == 'on' ? 'true' : 'false';
-                params.isTHU = params.isTHU == 'on' ? 'true' : 'false';
-                params.isFRI = params.isFRI == 'on' ? 'true' : 'false';
-                params.isSAT = params.isSAT == 'on' ? 'true' : 'false';
-                params.isEditing = isEditingWorkshift;
+            cERP.appServices.hR.workShiftService.deductionMethods.getAll().done(function (data) {
+                dmsGrid.hideSpinner();
+                dmsGrid.dataSource = data;
+                dmsGrid.refresh();
+            });
 
-                if (isEditingWorkshift)
-                    params.Id = curWorkshiftEditRow.id;
+            var wsGrid = $("#AllWorkshiftsGrid")[0].ej2_instances[0];
+            wsGrid.showSpinner();
 
-                let formData = new FormData();
-                formData.append("info", JSON.stringify(params));
-                var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
-                formData.append("__RequestVerificationToken", xhrToken);
+            cERP.appServices.hR.workShiftService.workshift.getAll().done(function (data) {
+                wsGrid.hideSpinner();
+                wsGrid.dataSource = data;
+                wsGrid.refresh();
+            });
 
-                $.ajax({
-                    url: "?handler=Workshift",
-                    async: true,
-                    type: "POST",
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function (data) {
-                        var grid = $("#AllWorkshiftsGrid")[0].ej2_instances[0];
-                        console.log("Response");
-                        Swal.hideLoading();
-                        if (isEditingWorkshift) {
-                            curWorkshiftEditRow.id = data.id;
-                            curWorkshiftEditRow.workshiftTitle = data.workshiftTitle;
-                            curWorkshiftEditRow.department = data.department;
-                            curWorkshiftEditRow.deductionMethod = data.deductionMethod;
-                            curWorkshiftEditRow.startHour = data.startHour;
-                            curWorkshiftEditRow.endHour = data.endHour;
-                            curWorkshiftEditRow.isSUN = data.isSUN;
-                            curWorkshiftEditRow.isMON = data.isMON;
-                            curWorkshiftEditRow.isTUE = data.isTUE;
-                            curWorkshiftEditRow.isWED = data.isWED;
-                            curWorkshiftEditRow.isTHU = data.isTHU;
-                            curWorkshiftEditRow.isFRI = data.isFRI;
-                            curWorkshiftEditRow.isSAT = data.isSAT;
-
-                            grid.refresh(); // refresh the Grid.
-
-                            swal.fire("Success", "Workshift has successfully been updated", "success");
-                        }
-                        else {
-                            grid.dataSource.push(data);
-                            grid.refresh(); // refresh the Grid.
-
-                            swal.fire("Success", "Workshift has successfully been added", "success");
-                        }
-                        //window.location = "@Url.Content("~")/HR/Employees";
-                    },
-                    error: function (err) {
-                        Swal.hideLoading();
-                        if (isEditingWorkshift)
-                            swal.fire("Failed", "Workshift couldn't be updated, please fix all errors and try again.", "error");
-                        else
-                            swal.fire("Failed", "Workshift couldn't be added, please fix all errors and try again.", "error");
-
-                        console.log(err);
-                    }
-                });
-            }
-            else
-            {
-                Swal.close();
-                Swal.hideLoading();
-            }
-        });
-
-        function ValidateWorkshiftForm()
-        {
-            var elmForm = $("#newWorkshiftForm");
-            // stepDirection === 'forward' :- this condition allows to do the form validation
-            // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
-            var valid = false;
-            elmForm.validator('validate');
-            if (elmForm)
-            {
-                //elmForm.validate({
-                //    submitHandler: function (form) {
-                //        console.log("Submit")
-                //        valid = true;
-                //    },
-                //    invalidHandler: function (form) {
-                //        console.log("Invalid")
-                //        valid = false;
-                //    }
-                //})
-                var days = $("#tblDOW > tbody > tr > td > div.e-checkbox-wrapper");
-                var isSelected;
-                for (var i = 0; i < days.length; i++) {
-                    var day = $(days[i]);
-                    isSelected = day.attr('aria-checked') == 'true';
-                    if (isSelected) break;
-                }
-                if (!isSelected) {
-                    $("#dowFormGroup").addClass('has-error');
-                    //console.log($("#dowFormGroup"));
-                    return false;
-                }
-                var elmErr = elmForm.find('.has-error');
-                if (elmErr)
+            $(".control-section").stop().animate({ height: '87%' }, 150);
+            $('#newWorkshiftForm').on('submit', function(e) {
+                e.preventDefault();
+                if (ValidateWorkshiftForm())
                 {
-                    if (elmErr.length > 0)
-                    {
-                        // Form validation failed
-                        valid = false;
-                    }
-                    else
-                    {
-                        valid = true;
-                    }
-                }
-            }
-            return valid;
-        }
+                    Swal.showLoading();
 
-        $('#newDeductionMethodForm').on('submit', function (e) {
-            e.preventDefault();
-            if (ValidateDeductionMethodForm())
-            {
-                Swal.showLoading();
+                    let form = [];
+                    let generalInfo = $('#newWorkshiftForm').find("select, textarea, input").serializeArray();
+                    form = form.concat(generalInfo);
+                    var params = objectifyForm(form);
+                    params.isSUN = params.isSUN == 'on' ? 'true' : 'false';
+                    params.isMON = params.isMON == 'on' ? 'true' : 'false';
+                    params.isTUE = params.isTUE == 'on' ? 'true' : 'false';
+                    params.isWED = params.isWED == 'on' ? 'true' : 'false';
+                    params.isTHU = params.isTHU == 'on' ? 'true' : 'false';
+                    params.isFRI = params.isFRI == 'on' ? 'true' : 'false';
+                    params.isSAT = params.isSAT == 'on' ? 'true' : 'false';
+                    params.isEditing = isEditingWorkshift;
 
-                let form = [];
-                let generalInfo = $('#newDeductionMethodForm').find("select, textarea, input").serializeArray();
-                form = form.concat(generalInfo);
-                var params = objectifyForm(form);
-                params.isEditing = isEditingDeductionMethod;
+                    if (isEditingWorkshift)
+                        params.Id = curWorkshiftEditRow.id;
 
-                if (isEditingDeductionMethod)
-                    params.Id = curDeductionMethodEditRow.id;
+                    let formData = new FormData();
+                    formData.append("info", JSON.stringify(params));
+                    var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+                    formData.append("__RequestVerificationToken", xhrToken);
 
-                let formData = new FormData();
-                formData.append("info", JSON.stringify(params));
-                var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
-                formData.append("__RequestVerificationToken", xhrToken);
+                    $.ajax({
+                        url: "?handler=Workshift",
+                        async: true,
+                        type: "POST",
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (data) {
+                            var grid = $("#AllWorkshiftsGrid")[0].ej2_instances[0];
+                            console.log("Response");
+                            Swal.hideLoading();
+                            if (isEditingWorkshift) {
+                                curWorkshiftEditRow.id = data.id;
+                                curWorkshiftEditRow.workshiftTitle = data.workshiftTitle;
+                                curWorkshiftEditRow.department = data.department;
+                                curWorkshiftEditRow.deductionMethod = data.deductionMethod;
+                                curWorkshiftEditRow.startHour = data.startHour;
+                                curWorkshiftEditRow.endHour = data.endHour;
+                                curWorkshiftEditRow.isSUN = data.isSUN;
+                                curWorkshiftEditRow.isMON = data.isMON;
+                                curWorkshiftEditRow.isTUE = data.isTUE;
+                                curWorkshiftEditRow.isWED = data.isWED;
+                                curWorkshiftEditRow.isTHU = data.isTHU;
+                                curWorkshiftEditRow.isFRI = data.isFRI;
+                                curWorkshiftEditRow.isSAT = data.isSAT;
 
-                $.ajax({
-                    url: "?handler=DeductionMethod",
-                    async: true,
-                    type: "POST",
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function (data) {
-                        var gridWS = $("#AllWorkshiftsGrid")[0].ej2_instances[0];
-                        var grid = $("#AllDeductionMethodsGrid")[0].ej2_instances[0];
+                                grid.refresh(); // refresh the Grid.
 
-                        Swal.hideLoading();
-                        if (isEditingDeductionMethod) {
-                            curDeductionMethodEditRow.id = data.id;
-                            curDeductionMethodEditRow.title = data.title;
-                            curDeductionMethodEditRow.hoursMultiplicationFactor = data.hoursMultiplicationFactor;
-
-                            grid.refresh(); // refresh the Grid.
-
-                            swal.fire("Success", "Deduction method has successfully been updated", "success");
-
-                            //for (var i = 0; i < gridWS.dataSource.length; i++) {
-                            //    if (gridWS.dataSource[i].deductionMethod != null && gridWS.dataSource[i].deductionMethod.id == data.id) {
-                            //        gridWS.dataSource[i].deductionMethod = data;
-                            //    }
-                            //}
-
-                            //gridWS.refresh();
-
-                            for (var i = 0; i < gridWS.dataSource.length; i++) {
-                                if (gridWS.dataSource[i].deductionMethod != null && gridWS.dataSource[i].deductionMethod.id == data.id) {
-                                    gridWS.dataSource[i].deductionMethod = data;
-                                }
+                                swal.fire("Success", "Workshift has successfully been updated", "success");
                             }
+                            else {
+                                grid.dataSource.push(data);
+                                grid.refresh(); // refresh the Grid.
 
-                            $(`#deductionMethodId option[value='${data.id}']`).text(data.title);
-                            $(`#deductionMethodId option[value='${data.id}']`).attr('data-value', data.title);
+                                swal.fire("Success", "Workshift has successfully been added", "success");
+                            }
+                            //window.location = "@Url.Content("~")/HR/Employees";
+                        },
+                        error: function (err) {
+                            Swal.hideLoading();
+                            if (isEditingWorkshift)
+                                swal.fire("Failed", "Workshift couldn't be updated, please fix all errors and try again.", "error");
+                            else
+                                swal.fire("Failed", "Workshift couldn't be added, please fix all errors and try again.", "error");
 
+                            console.log(err);
                         }
-                        else {
-                            $("#deductionMethodId").append(`<option value="${data.id}" data-value='${data.title}'>${data.title}</option>`)
-                            grid.dataSource.push(data);
-                            grid.refresh(); // refresh the Grid.
-
-                            swal.fire("Success", "Deduction method has successfully been added", "success");
-                        }
-                        //window.location = "@Url.Content("~")/HR/Employees";
-                    },
-                    error: function (err) {
-                        Swal.hideLoading();
-                        if (isEditingDeductionMethod)
-                            swal.fire("Failed", "Deduction method couldn't be updated, please fix all errors and try again.", "error");
-                        else
-                            swal.fire("Failed", "Deduction method couldn't be added, please fix all errors and try again.", "error");
-
-                        console.log(err);
-                    }
-                });
-            }
-            else
-            {
-                Swal.close();
-                Swal.hideLoading();
-            }
-        });
-
-        function ValidateDeductionMethodForm()
-        {
-            var elmForm = $("#newDeductionMethodForm");
-            // stepDirection === 'forward' :- this condition allows to do the form validation
-            // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
-            var valid = false;
-            elmForm.validator('validate');
-            if (elmForm)
-            {
-                //elmForm.validate({
-                //    submitHandler: function (form) {
-                //        console.log("Submit")
-                //        valid = true;
-                //    },
-                //    invalidHandler: function (form) {
-                //        console.log("Invalid")
-                //        valid = false;
-                //    }
-                //})
-
-                var elmErr = elmForm.find('.has-error');
-                if (elmErr)
+                    });
+                }
+                else
                 {
-                    if (elmErr.length > 0)
-                    {
-                        // Form validation failed
-                        valid = false;
+                    Swal.close();
+                    Swal.hideLoading();
+                }
+            });
+
+            function ValidateWorkshiftForm()
+            {
+                var elmForm = $("#newWorkshiftForm");
+                // stepDirection === 'forward' :- this condition allows to do the form validation
+                // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
+                var valid = false;
+                elmForm.validator('validate');
+                if (elmForm)
+                {
+                    //elmForm.validate({
+                    //    submitHandler: function (form) {
+                    //        console.log("Submit")
+                    //        valid = true;
+                    //    },
+                    //    invalidHandler: function (form) {
+                    //        console.log("Invalid")
+                    //        valid = false;
+                    //    }
+                    //})
+                    var days = $("#tblDOW > tbody > tr > td > div.e-checkbox-wrapper");
+                    var isSelected;
+                    for (var i = 0; i < days.length; i++) {
+                        var day = $(days[i]);
+                        isSelected = day.attr('aria-checked') == 'true';
+                        if (isSelected) break;
                     }
-                    else
+                    if (!isSelected) {
+                        $("#dowFormGroup").addClass('has-error');
+                        //console.log($("#dowFormGroup"));
+                        return false;
+                    }
+                    var elmErr = elmForm.find('.has-error');
+                    if (elmErr)
                     {
-                        valid = true;
+                        if (elmErr.length > 0)
+                        {
+                            // Form validation failed
+                            valid = false;
+                        }
+                        else
+                        {
+                            valid = true;
+                        }
                     }
                 }
+                return valid;
             }
-            return valid;
-        }
-    });
+
+            $('#newDeductionMethodForm').on('submit', function (e) {
+                e.preventDefault();
+                if (ValidateDeductionMethodForm())
+                {
+                    Swal.showLoading();
+
+                    let form = [];
+                    let generalInfo = $('#newDeductionMethodForm').find("select, textarea, input").serializeArray();
+                    form = form.concat(generalInfo);
+                    var params = objectifyForm(form);
+                    params.isEditing = isEditingDeductionMethod;
+
+                    if (isEditingDeductionMethod)
+                        params.Id = curDeductionMethodEditRow.id;
+
+                    let formData = new FormData();
+                    formData.append("info", JSON.stringify(params));
+                    var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+                    formData.append("__RequestVerificationToken", xhrToken);
+
+                    $.ajax({
+                        url: "?handler=DeductionMethod",
+                        async: true,
+                        type: "POST",
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (data) {
+                            var gridWS = $("#AllWorkshiftsGrid")[0].ej2_instances[0];
+                            var grid = $("#AllDeductionMethodsGrid")[0].ej2_instances[0];
+
+                            Swal.hideLoading();
+                            if (isEditingDeductionMethod) {
+                                curDeductionMethodEditRow.id = data.id;
+                                curDeductionMethodEditRow.title = data.title;
+                                curDeductionMethodEditRow.hoursMultiplicationFactor = data.hoursMultiplicationFactor;
+
+                                grid.refresh(); // refresh the Grid.
+
+                                swal.fire("Success", "Deduction method has successfully been updated", "success");
+
+                                //for (var i = 0; i < gridWS.dataSource.length; i++) {
+                                //    if (gridWS.dataSource[i].deductionMethod != null && gridWS.dataSource[i].deductionMethod.id == data.id) {
+                                //        gridWS.dataSource[i].deductionMethod = data;
+                                //    }
+                                //}
+
+                                //gridWS.refresh();
+
+                                for (var i = 0; i < gridWS.dataSource.length; i++) {
+                                    if (gridWS.dataSource[i].deductionMethod != null && gridWS.dataSource[i].deductionMethod.id == data.id) {
+                                        gridWS.dataSource[i].deductionMethod = data;
+                                    }
+                                }
+
+                                $(`#deductionMethodId option[value='${data.id}']`).text(data.title);
+                                $(`#deductionMethodId option[value='${data.id}']`).attr('data-value', data.title);
+
+                            }
+                            else {
+                                $("#deductionMethodId").append(`<option value="${data.id}" data-value='${data.title}'>${data.title}</option>`)
+                                grid.dataSource.push(data);
+                                grid.refresh(); // refresh the Grid.
+
+                                swal.fire("Success", "Deduction method has successfully been added", "success");
+                            }
+                            //window.location = "@Url.Content("~")/HR/Employees";
+                        },
+                        error: function (err) {
+                            Swal.hideLoading();
+                            if (isEditingDeductionMethod)
+                                swal.fire("Failed", "Deduction method couldn't be updated, please fix all errors and try again.", "error");
+                            else
+                                swal.fire("Failed", "Deduction method couldn't be added, please fix all errors and try again.", "error");
+
+                            console.log(err);
+                        }
+                    });
+                }
+                else
+                {
+                    Swal.close();
+                    Swal.hideLoading();
+                }
+            });
+
+            function ValidateDeductionMethodForm()
+            {
+                var elmForm = $("#newDeductionMethodForm");
+                // stepDirection === 'forward' :- this condition allows to do the form validation
+                // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
+                var valid = false;
+                elmForm.validator('validate');
+                if (elmForm)
+                {
+                    //elmForm.validate({
+                    //    submitHandler: function (form) {
+                    //        console.log("Submit")
+                    //        valid = true;
+                    //    },
+                    //    invalidHandler: function (form) {
+                    //        console.log("Invalid")
+                    //        valid = false;
+                    //    }
+                    //})
+
+                    var elmErr = elmForm.find('.has-error');
+                    if (elmErr)
+                    {
+                        if (elmErr.length > 0)
+                        {
+                            // Form validation failed
+                            valid = false;
+                        }
+                        else
+                        {
+                            valid = true;
+                        }
+                    }
+                }
+                return valid;
+            }
+        });
     </script>
 
 <style>
@@ -405,7 +423,7 @@
         <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
             <h3 class="control-label" style="flex-grow: 1; margin:0">Current Deduction Methods</h3>
         </div>
-        <ejs-grid id="AllDeductionMethodsGrid" dataSource="@ViewData["DeductionMethods_DS"]" enableAutoFill="true" columns="@deductionMethodsGridColumns"
+        <ejs-grid id="AllDeductionMethodsGrid" enableAutoFill="true" columns="@deductionMethodsGridColumns"
                   dataBound="dataBoundResponsive" commandClick="deductionMethodCommandClick" actionBegin="deductionMethodActionBegin"
                   allowExcelExport="true" height="100%" allowPdfExport="true"
                   hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
@@ -452,13 +470,8 @@
                         <div class="col-sm-12" style="padding:0">
                             <div class="form-group">
                                 <label class="control-label m-b-5 ">Department:</label>
-                                <select id="departmentId" name="Department.Id" class="form-control" required>
-                                    <option></option>
-                                    <option value="@Guid.Empty" data-value="All">All</option>
-                                    @for (int i = 0; i < departments.Count; i++)
-                                    {
-                                        <option value="@departments[i].Id" data-value="@departments[i].Name">@departments[i].Name</option>
-                                    }
+                                <select id="departmentId" name="Department.Id" class="form-control" @*multiple="multiple"*@ required>
+                                    
                                 </select>
                             </div>
                         </div>
@@ -580,7 +593,7 @@
             <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
                 <h3 class="control-label" style="flex-grow: 1; margin:0">Current Workshifts</h3>
             </div>
-            <ejs-grid id="AllWorkshiftsGrid" dataSource="@ViewData["Workshifts_DS"]" enableAutoFill="true" columns="@workshiftsGridColumns"
+            <ejs-grid id="AllWorkshiftsGrid" enableAutoFill="true" columns="@workshiftsGridColumns"
                       dataBound="dataBoundResponsive" commandClick="commandClick" actionBegin="actionBegin"
                       allowExcelExport="true" height="100% " allowPdfExport="true"
                       hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"

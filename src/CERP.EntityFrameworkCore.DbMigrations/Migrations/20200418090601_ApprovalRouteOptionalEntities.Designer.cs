@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200418090601_ApprovalRouteOptionalEntities")]
+    partial class ApprovalRouteOptionalEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,9 +71,6 @@ namespace CERP.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("bit");
 
                     b.Property<int>("ApprovalRouteTemplateId")
                         .HasColumnType("int");
@@ -1306,13 +1305,13 @@ namespace CERP.Migrations
                         .HasColumnName("ExtraProperties")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("HaAttachmentRequirement")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("HasAdvanceSalaryRequest")
                         .HasColumnType("bit");
 
                     b.Property<bool>("HasAirTicketRequest")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasAttachmentRequirement")
                         .HasColumnType("bit");
 
                     b.Property<bool>("HasExitReentryRequest")
@@ -4691,7 +4690,7 @@ namespace CERP.Migrations
                     b.HasOne("CERP.App.ApprovalRouteTemplate", "ApprovalRouteTemplate")
                         .WithMany()
                         .HasForeignKey("ApprovalRouteTemplateId")
-                        .OnDelete(DeleteBehavior.ClientNoAction);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("CERP.HR.Leaves.LeaveRequestTemplateDepartment", b =>

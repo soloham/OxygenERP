@@ -76,11 +76,15 @@ namespace CERP.EntityFrameworkCore
 
         public DbSet<PayrunDetailIndemnity> PayrunDetailIndemnities { get; set; }
         public DbSet<LeaveRequestTemplate> LeaveRequestTemplates { get; set; }
+        public DbSet<LeaveRequestTemplateDepartment> LeaveRequestTemplateDepartment { get; set; }
+        public DbSet<LeaveRequestTemplatePosition> LeaveRequestTemplatePosition { get; set; }
+        public DbSet<LeaveRequestTemplateEmployeeStatus> LeaveRequestTemplateEmployeeStatus { get; set; }
+        public DbSet<LeaveRequestTemplateEmploymentType> LeaveRequestTemplateEmploymentType { get; set; }
 
         public CERPDbContext(DbContextOptions<CERPDbContext> options)
             : base(options)
         {
-
+            
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

@@ -19,20 +19,22 @@ namespace CERP.App
         }
 
         public virtual ApprovalRouteTemplate ApprovalRouteTemplate { get; set; }
-        public Guid? ApprovalRouteTemplateId { get; set; }
+        public int ApprovalRouteTemplateId { get; set; }
+
+        public bool Active { get; set; }
 
         public int RouteIndex { get; set; }
 
         public bool IsDepartmentHead { get; set; }
         public bool IsReportingTo { get; set; }
 
-        public Department Department { get; set; }
+        public virtual Department? Department { get; set; }
         public Guid? DepartmentId { get; set; }
         
-        public Position Position { get; set; }
+        public virtual Position? Position { get; set; }
         public Guid? PositionId { get; set; }
 
-        public Employee Employee { get; set; }
+        public virtual Employee? Employee { get; set; }
         public Guid? EmployeeId { get; set; }
     }
 }

@@ -231,3 +231,31 @@ function objectifyForm(formArray) {
     }
     return returnArray;
 }
+
+const ValueTypeModules = {
+    Country: 0,
+    Gender: 1,
+    MaritalStatus: 2,
+    BloodGroup: 3,
+    Religion: 4,
+    IDType: 5,
+    CashflowStatementType: 6,
+    ContractType: 7,
+    ContractStatus: 8,
+    EmployeeStatus: 9,
+    Bank: 10,
+    Relationship: 11,
+    Degree: 12,
+    AcademicInstitution: 13,
+    AllowanceType: 14,
+    OwnerType: 15,
+    DocumentType: 16,
+    ServiceCategory: 17,
+    ServiceLineChargeables: 18,
+    ServiceLineNonChargeables: 19,
+    ServiceLineAdmins: 20,
+    Clients: 21,
+    EmployeeType: 22,
+    IndemnityType: 23,
+    SocialInsuranceType: 24
+}

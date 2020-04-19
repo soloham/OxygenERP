@@ -16,6 +16,27 @@ namespace CERP.App
             Id = id;
         }
 
+        public void Initialize()
+        {
+            if(IsDepartmentHead)
+            {
+                Department = new Department_Dto() { Name = "Selected" };
+                Position = new Position_Dto() { Title = "Head" };
+                Employee = new Employee_Dto() { FirstName = "Auto" };
+            }
+            else if(IsReportingTo)
+            {
+                Department = new Department_Dto() { Name = "Selected" };
+                Position = new Position_Dto() { Title = "Auto" };
+                Employee = new Employee_Dto() { FirstName = "Auto [Reporting To]" };
+            }
+        }
+
+        public virtual ApprovalRouteTemplate_Dto ApprovalRouteTemplate { get; set; }
+        public int ApprovalRouteTemplateId { get; set; }
+
+        public bool Active { get; set; }
+
         public int RouteIndex { get; set; }
 
         public bool IsDepartmentHead { get; set; }

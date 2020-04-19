@@ -36,7 +36,7 @@ namespace CERP.HR.Leaves
         public bool HasAirTicketRequest { get; set; }
 
         public bool HasNotesRequirement { get; set; }
-        public bool HaAttachmentRequirement { get; set; }
+        public bool HasAttachmentRequirement { get; set; }
     }
     
 }
