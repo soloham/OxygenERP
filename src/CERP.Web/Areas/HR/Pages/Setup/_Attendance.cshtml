@@ -7,20 +7,33 @@
     var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
     var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
 }
-<script>
+    <script>
     $(document).ready(function () {
 
-        if ('@Model.IsUsingAttendanceSystem' == 'true') {
-            $("#disableATS").slideDown(200);
-            $("#enableATS").slideUp(200);
-        }
-        else {
-            $("#enableATS").slideDown(200);
-            $("#disableATS").slideUp(200);
-        }
+        cERP.appServices.hR.attendanceService.attendance.getAll().done(function (data) {
+            if (data.length > 0) {
+                if (data[0].useAttendanceSystem == true) {
+                    $("#disableATS").slideDown(200);
+                    $("#enableATS").slideUp(200);
+                }
+                else {
+                    $("#enableATS").slideDown(200);
+                    $("#disableATS").slideUp(200);
+                }
+
+                $('#employeeIdMap').val(data[0].employeeIDMap);
+                $('#dateMap').val(data[0].dateMap);
+                $('#timeInMap').val(data[0].timeInMap);
+                $('#timeOutMap').val(data[0].timeOutMap);
+            } else {
+                $("#enableATS").slideDown(200);
+                $("#disableATS").slideUp(200);
+            }
+        });
+
         $("#submitUseAttendanceSystem").on('click', function (args) {
-            console.log("Hello");
             args.preventDefault();
+            Swal.showLoading();
 
             var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
 
@@ -30,7 +43,6 @@
                 type: "POST",
                 data: { use: true, __RequestVerificationToken: xhrToken },
                 success: function (data) {
-                    console.log("Response");
                     Swal.hideLoading();
 
                     swal.fire("Success", "Attendance system has successfully been enabled", "success");
@@ -51,8 +63,8 @@
             });
         });
         $("#submitDisableAttendanceSystem").on('click', function (args) {
-            console.log("Hello");
             args.preventDefault();
+            Swal.showLoading();
 
             var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
 
@@ -62,7 +74,6 @@
                 type: "POST",
                 data: { use: false, __RequestVerificationToken: xhrToken },
                 success: function (data) {
-                    console.log("Response");
                     Swal.hideLoading();
 
                     swal.fire("Success", "Attendance system has successfully been disbaled", "success");
@@ -82,8 +93,33 @@
                 }
             });
         });
+        $("#attendanceMappingsForm").on('click', function (args) {
+            args.preventDefault();
+            Swal.showLoading();
+
+            var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: "?handler=AttendanceMappings",
+                async: true,
+                type: "POST",
+                data: { employeeIdMap: $('#employeeIdMap').val(), dateMap: $('#dateMap').val(), timeInMap: $('#timeInMap').val(), timeOutMap: $('#timeOutMap').val(), __RequestVerificationToken: xhrToken },
+                success: function (data) {
+                    Swal.hideLoading();
+
+                    swal.fire("Success", "Attendance mappings have successfully been saved", "success");
+                },
+                error: function (err) {
+                    Swal.hideLoading();
+
+                    swal.fire("Success", "An error occured while saving the attendance mappings", "success");
+
+                    console.log(err);
+                }
+            });
+        });
     })
-</script>
+    </script>
 
 <div class="m-l-20 m-t-0">
     <h2>Attendance</h2>
@@ -163,7 +199,7 @@
 
             <div class="row">
                 <div class="col-lg-12">
-                    <input id="submitAttendanceMappingsBtn" type="submit" class="btn btn-primary btn-block" value="Apply Mappings" required />
+                    <input id="submitAttendanceMappingsBtn" type="submit" class="btn btn-primary btn-block" value="Save Mappings" required />
                 </div>
             </div>
         </form>

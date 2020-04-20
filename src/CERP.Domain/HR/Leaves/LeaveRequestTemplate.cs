@@ -24,13 +24,19 @@ namespace CERP.HR.Leaves
         public int StartingNo { get; set; }
         public int EntitlementDays { get; set; }
 
+        public DictionaryValue LeaveType { get; set; }
+        public Guid LeaveTypeId { get; set; }
+
         public virtual ICollection<LeaveRequestTemplateDepartment> Departments { get; set; }
         public virtual ICollection<LeaveRequestTemplatePosition> Positions { get; set; }
         public virtual ICollection<LeaveRequestTemplateEmploymentType> EmploymentTypes { get; set; }
         public virtual ICollection<LeaveRequestTemplateEmployeeStatus> EmployeeStatuses { get; set; }
+        public virtual ICollection<LeaveRequestTemplateHoliday> Holidays { get; set; }
 
         public virtual ApprovalRouteTemplate ApprovalRouteTemplate { get; set; }
         public int ApprovalRouteTemplateId { get; set; }
+        public TaskTemplate TaskTemplate { get; set; }
+        public int TaskTemplateId { get; set; }
 
         public bool HasAdvanceSalaryRequest { get; set; }
         public bool HasExitReentryRequest { get; set; }

@@ -23,6 +23,9 @@ namespace CERP.HR.Leaves
         public int StartingNo { get; set; }
         public int EntitlementDays { get; set; }
 
+        public DictionaryValue_Dto LeaveType { get; set; }
+        public Guid LeaveTypeId { get; set; }
+
         public string GetAllDepartments { get {
                 string result = "";
                 try
@@ -108,9 +111,33 @@ namespace CERP.HR.Leaves
             }
         }
         public virtual ICollection<LeaveRequestTemplateEmployeeStatus_Dto> EmployeeStatuses { get; set; }
+        public string GetAllHolidays
+        {
+            get
+            {
+                string result = "";
+                try
+                {
+                    if (Holidays != null && Holidays.Count > 0)
+                    {
+                        int i = 0;
+                        foreach (LeaveRequestTemplateHoliday_Dto holiday in Holidays)
+                        {
+                            result += holiday.Holiday.Title + (i < Holidays.Count - 1 ? ", " : "");
+                            i++;
+                        }
+                    }
+                }
+                catch { }
+                return result;
+            }
+        }
+        public virtual ICollection<LeaveRequestTemplateHoliday_Dto> Holidays { get; set; }
 
         public ApprovalRouteTemplate_Dto ApprovalRouteTemplate { get; set; }
         public int ApprovalRouteTemplateId { get; set; }
+        public TaskTemplate_Dto TaskTemplate { get; set; }
+        public int TaskTemplateId { get; set; }
 
         public bool HasAdvanceSalaryRequest { get; set; }
         public bool HasExitReentryRequest { get; set; }

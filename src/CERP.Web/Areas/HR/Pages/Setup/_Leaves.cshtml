@@ -21,6 +21,7 @@
         new GridColumn { Field = "titleLocalized", Width = "110", HeaderText = "Title (In Arabic)", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "prefix", Width = "110", HeaderText = "Prefix", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "startingNo", Width = "110", HeaderText = "Starting No", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "leaveType.value", Width = "110", HeaderText = "Leave Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "entitlementDays", Width = "110", HeaderText = "Employment Days", TextAlign=TextAlign.Center,  MinWidth="10"  },
         //new GridColumn { Field = "getAllDepartments", Width = "110", HeaderText = "Department", TextAlign=TextAlign.Center,  MinWidth="10"  },
         //new GridColumn { Field = "getAllPositions", Width = "110", HeaderText = "Position", TextAlign=TextAlign.Center,  MinWidth="10"  },
@@ -33,9 +34,8 @@
             }
         },
         new GridColumn { Field = "", DisplayAsCheckBox=true, HeaderText = "Additional Requirements", TextAlign=TextAlign.Center,  MinWidth="10", Columns = new List<GridColumn>(){
-                new GridColumn { Field = "hasNotesRequirement", Width = "110", DisplayAsCheckBox=true, HeaderText = "Advance Salary", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "hasAttachmentRequirement", Width = "110", DisplayAsCheckBox=true, HeaderText = "Exit-Reentry", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "hasAirTicketRequest", Width = "110", DisplayAsCheckBox=true, HeaderText = "Air Ticket", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "hasNotesRequirement", Width = "110", DisplayAsCheckBox=true, HeaderText = "Notes", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "hasAttachmentRequirement", Width = "110", DisplayAsCheckBox=true, HeaderText = "Attachment", TextAlign=TextAlign.Center,  MinWidth="10"  },
             }
         },
         new GridColumn { Width = "150", HeaderText = "Commands", TextAlign=TextAlign.Center, MinWidth="10", Commands = leaveRequestsCommands }
@@ -45,16 +45,39 @@
     lrApprovalRouteCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat e-DeleteButton" } });
     lrApprovalRouteCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
     lrApprovalRouteCommands.Add(new { type = "Save", buttonOption = new { iconCss = "e-icons e-update", cssClass = "e-flat" } });
+    lrApprovalRouteCommands.Add(new { type = "MoveUp", buttonOption = new { iconCss = "e-icons e-c-moveup", cssClass = "e-flat" } });
+    lrApprovalRouteCommands.Add(new { type = "MoveDown", buttonOption = new { iconCss = "e-icons e-c-movedown", cssClass = "e-flat" } });
     lrApprovalRouteCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
 
     List<GridColumn> lrApprovalRouteGridColumns = new List<GridColumn>()
     {
         new GridColumn { Field = "id", Visible=false, ShowInColumnChooser=false, IsPrimaryKey=true  },
-        new GridColumn { Field = "active", Width = "110", HeaderText = "Active", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "department.name", Width = "110", HeaderText = "Department", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "position.title", Width = "110", HeaderText = "Position", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "employee.name", Width = "110", HeaderText = "Employee", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "routeIndex", Visible = false, HeaderText = "Route Index", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "active", AllowSorting = false, AutoFit=true, HeaderText = "Active", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "department.name", AllowSorting = false, AutoFit=true, HeaderText = "Department", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "position.title", AllowSorting = false, AutoFit=true, HeaderText = "Position", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "employee.name", AllowSorting = false,AutoFit=true, HeaderText = "Employee", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Width = "50", HeaderText = "Actions", TextAlign=TextAlign.Center, MinWidth="10", Commands = lrApprovalRouteCommands }
+    };
+
+    List<object> lrTasksCommands = new List<object>();
+    lrTasksCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat e-DeleteButton" } });
+    lrTasksCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
+    lrTasksCommands.Add(new { type = "Save", buttonOption = new { iconCss = "e-icons e-update", cssClass = "e-flat" } });
+    lrTasksCommands.Add(new { type = "MoveUp", buttonOption = new { iconCss = "e-icons e-c-moveup", cssClass = "e-flat" } });
+    lrTasksCommands.Add(new { type = "MoveDown", buttonOption = new { iconCss = "e-icons e-c-movedown", cssClass = "e-flat" } });
+    lrTasksCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
+
+    List<GridColumn> lrTasksGridColumns = new List<GridColumn>()
+    {
+        new GridColumn { Field = "id", Visible=false, ShowInColumnChooser=false, IsPrimaryKey=true  },
+        new GridColumn { Field = "routeIndex", Visible = false, HeaderText = "Route Index", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "active", AllowSorting = false, AutoFit=true, HeaderText = "Active", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "department.name", AllowSorting = false, AutoFit=true, HeaderText = "Department", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "position.title", AllowSorting = false, AutoFit=true, HeaderText = "Position", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "employee.name", AllowSorting = false,AutoFit=true, HeaderText = "Employee", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "taskDescription", AllowSorting = false, AutoFit=true, HeaderText = "Description", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Width = "50", HeaderText = "Actions", TextAlign=TextAlign.Center, MinWidth="10", Commands = lrTasksCommands }
     };
 }
     <script>
@@ -64,13 +87,20 @@
         
         $(document).ready(function () {
             var lrGrid = $("#AllLeaveRequestsGrid")[0].ej2_instances[0];
-            //lrGrid.showSpinner();
+            lrGrid.showSpinner();
 
-            //cERP.appServices.hR.leaveRequestService.leaveRequestTemplates.getAll().done(function (data) {
-            //    lrGrid.hideSpinner();
-            //    lrGrid.dataSource = data;
-            //    lrGrid.refresh();
-            //});
+            cERP.appServices.hR.leaveRequestService.leaveRequestTemplates.getAll().done(function (data) {
+                lrGrid.hideSpinner();
+                lrGrid.dataSource = data;
+                lrGrid.refresh();
+            });
+            cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.LeaveType).done(function (data) {
+                var leaveTypes = [];
+                $.each(data, function (i, d) {
+                    leaveTypes.push({ label: d.value, value: d.id });
+                }); 
+                $("#lrLeaveTypeId").multiselect('dataprovider', leaveTypes);
+            });
             cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.EmployeeType).done(function (data) {
                 var employmentTypes = [];
                 $.each(data, function (i, d) {
@@ -84,6 +114,13 @@
                     employmeeStatuses.push({ label: d.value, value: d.id });
                 });
                 $("#lrEmployeeStatusId").multiselect('dataprovider', employmeeStatuses);
+            });
+            cERP.appServices.hR.holidayService.holidays.getAll().done(function (data) {
+                var holidays = [];
+                $.each(data, function (i, d) {
+                    holidays.push({ label: d.title, value: d.id });
+                });
+                $("#lrHolidaysDeductionIds").multiselect('dataprovider', holidays);
             });
 
             //$.ajax({
@@ -125,6 +162,9 @@
                     $('#lrStartingNo').val('');
                     $('#lrEntitlementDays').val('');
 
+                    //$('#lrLeaveTypeId').multiselect('deselectAll', false);
+                    //$('#lrLeaveTypeId').multiselect('updateButtonText');
+
                     $('#lrDepartmentId').multiselect('deselectAll', false);
                     $('#lrDepartmentId').multiselect('updateButtonText');
                     $('#lrPositionId').multiselect('deselectAll', false);
@@ -134,11 +174,25 @@
                     $('#lrEmployeeStatusId').multiselect('deselectAll', false);
                     $('#lrEmployeeStatusId').multiselect('updateButtonText');
 
+                    $('#lrHolidaysDeductionIds').multiselect('deselectAll', false);
+                    $('#lrHolidaysDeductionIds').multiselect('updateButtonText');
+
+                    cERP.appServices.hR.holidayService.holidays.getAll().done(function (data) {
+                        var holidays = [];
+                        $.each(data, function (i, d) {
+                            holidays.push({ label: d.title, value: d.id });
+                        });
+                        $("#lrHolidaysDeductionIds").multiselect('dataprovider', holidays);
+                    });
+
                     var apGrid = $("#LRApprovalRouteGrid")[0].ej2_instances[0];
                     apGrid.dataSource = [];
                     apGrid.dataSource.push({ id: 0, active: true, isDepartmentHead:true, department: { id: "@Guid.Empty", name: "Selected" }, position: { id: "@Guid.Empty", title: "Head" }, employee: { id: "@Guid.Empty", name: "Auto" } })
                     apGrid.dataSource.push({ id: 1, active: true, isReportingTo:true, department: { id: "@Guid.Empty", name: "Selected" }, position: { id: "@Guid.Empty", title: "Auto" }, employee: { id: "@Guid.Empty", name: "Auto [Reporting To]" } })
                     apGrid.refresh();
+
+                    var tasksGrid = $("#LRTasksGrid")[0].ej2_instances[0];
+                    tasksGrid.dataSource = [];
                 } else {
                     $('#addLeaveRequestBtnSection').slideUp(200);
                     $('#leaveRequestForm').slideUp(200);
@@ -146,6 +200,7 @@
                     $('#addLeaveRequestBtnSection').slideDown(200);
                 }
             });
+
             $('#addLRApprovalRouteBtn').on('click', function () {
                 var isCollapsed = $('#addApprovalRouteForm').css('display') == 'none';
 
@@ -180,6 +235,42 @@
                 apGrid.refresh();
             })
 
+            $('#addLRTaskBtn').on('click', function () {
+                var isCollapsed = $('#addTaskForm').css('display') == 'none';
+
+                if (isCollapsed) {
+                    $('#addLRTaskBtnSection').slideUp(200);
+                    $('#addTaskForm').slideDown(200);
+                    setTimeout(function () { $('#addLRTaskBtn', '#addLRTaskBtnSection').html('<i class="fa fa-arrow-up p-r-5"></i> Cancel Add') }, 200)
+                    $('#addLRTaskBtnSection').slideDown(200);
+
+                } else {
+                    $('#addLRTaskBtnSection').slideUp(200);
+                    $('#addTaskForm').slideUp(200);
+                    setTimeout(function () { $('#addLRTaskBtn', '#addLRTaskBtnSection').html('<i class="fa fa-plus p-r-5"></i> Add Task') }, 200)
+                    $('#addLRTaskBtnSection').slideDown(200);
+                }
+            });
+            $("#addTaskBtn").on('click', function (args) {
+                var taskGrid = $("#LRTasksGrid")[0].ej2_instances[0];
+                var depId = $("#taskDepartmentId").val();
+                var posId = $("#taskPositionId").val();
+                var empId = $("#taskEmployeeId").val();
+                var taskDescription = $("#lrTaskDescription").val();
+                if (depId == '' || posId == '' || empId == '' || taskDescription == '' || (taskGrid.dataSource.length > 0 && taskGrid.dataSource.filter(function (e) { return e.employee.id === empId; }).length > 0))
+                    return;
+                var task = {
+                    id: empId,
+                    active: true,
+                    taskDescription: taskDescription,
+                    department: { id: depId, name: $("#taskDepartmentId option:selected").text() },
+                    position: { id: posId, title: $("#taskPositionId option:selected").text() },
+                    employee: { id: empId, name: $("#taskEmployeeId option:selected").text() }
+                }
+                taskGrid.dataSource.push(task);
+                taskGrid.refresh();
+            })
+
             $('#leaveRequestForm').on('submit', function (e) {
                 e.preventDefault();
                 if (ValidateForm())
@@ -192,6 +283,7 @@
                     var params = objectifyForm(form);
 
                     params.isEditing = isEditingLR;
+                    params.LRLeaveTypeId = $("#lrLeaveTypeId").val();
                     params.LRDepartmentIds = $("#lrDepartmentId").val();
                     params.LRPositionsIds = $("#lrPositionId").val();
                     params.LREmploymentTypeIds = $("#lrEmploymentTypeId").val();
@@ -199,6 +291,8 @@
                     params.LRDeductionHolidaysIds = $("#lrHolidaysDeductionIds").val();
 
                     params.LRApprovalRoute = $("#LRApprovalRouteGrid")[0].ej2_instances[0].dataSource;
+
+                    params.LRTasks = $("#LRTasksGrid")[0].ej2_instances[0].dataSource;
 
                     params.LRAdvanceSalaryAD = $("#LRAdvanceSalaryAD").parent().hasClass('active');
                     params.LRExitReentryAD = $("#LRExitReentryAD").parent().hasClass('active');
@@ -234,20 +328,9 @@
 
                             Swal.hideLoading();
                             if (isEditingLR) {
-                                curLREditRow.id = data.id;
-                                curLREditRow.title = data.title;
-                                curLREditRow.hoursMultiplicationFactor = data.hoursMultiplicationFactor;
-
                                 grid.refresh(); // refresh the Grid.
 
                                 swal.fire("Success", "Leave request has successfully been updated", "success");
-
-                                //for (var i = 0; i < gridWS.dataSource.length; i++) {
-                                //    if (gridWS.dataSource[i].deductionMethod != null && gridWS.dataSource[i].deductionMethod.id == data.id) {
-                                //        gridWS.dataSource[i].deductionMethod = data;
-                                //    }
-                                //}
-
 
                                 for (var i = 0; i < grid.dataSource.length; i++) {
                                     if (grid.dataSource[i].id == data.id) {
@@ -310,6 +393,8 @@
     </script>
 
 <style>
+.e-c-moveup:before { content: '\e307' }
+.e-c-movedown:before { content: '\e305' }
 </style>
 
 <div class="m-l-20 m-t-0">
@@ -321,12 +406,12 @@
 <hr />
 <div class="panel-body p-t-0" style="padding-bottom:0;">
     <div class="col-lg-12 padding-right-0">
-        <div id="attendanceSystem" class="row">
+        @*<div id="attendanceSystem" class="row">
             <div id="enableATS" class="col-lg-12">
                 <input id="submitUseAttendanceSystem" class="btn btn-primary btn-block" value="Use Attendance System" required />
             </div>
         </div>
-        <hr />
+        <hr />*@
         <div class="m-l-20 m-t-0">
             <h2>Leave Requests</h2>
             <p>
@@ -355,15 +440,24 @@
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">LR Prefix:</label>
-                                <input type="text" id="lrPrefix" name="LRPrefix" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                            <div class="col-sm-6" style="padding:0">
+                                <div class="form-group">
+                                    <label class="margin-bottom-5 control-label">LR Prefix:</label>
+                                    <input type="text" id="lrPrefix" name="LRPrefix" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-sm-6" style="padding:0">
+                                <div class="form-group">
+                                    <label class="margin-bottom-5 control-label">LR Starting No:</label>
+                                    <input type="number" min="0" id="lrStartingNo" name="LRStartingNo" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                </div>
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                             <div class="form-group">
-                                <label class="margin-bottom-5 control-label">LR Starting No:</label>
-                                <input type="number" min="0" id="lrStartingNo" name="LRStartingNo" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                <label class="margin-bottom-5 control-label">Leave Type:</label>
+                                <select id="lrLeaveTypeId" name="LRLeaveTypeId" class="form-control" required>
+                                </select>                            
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-6 col-sm-6 col-12">
@@ -453,16 +547,83 @@
                     </div>
                     <hr />
                     <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
-                        <h3 class="control-label" style="flex-grow: 1; margin:0">Current Approval Route</h3>
+                        <h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>
                     </div>
                     <ejs-grid id="LRApprovalRouteGrid" enableAutoFill="true" columns="@lrApprovalRouteGridColumns"
-                                dataBound="dataBoundResponsive" commandClick="lrApprovalRouteCommandClick" actionBegin="lrApprovalRouteActionBegin"
-                                allowRowDragAndDrop="true" allowExcelExport="true" allowPdfExport="true"
-                                hierarchyPrintMode="Expanded" allowSelection="true"
-                                gridLines="Both" rowDataBound="lrApprovalRouteRowDataBound"
-                                toolbarClick="lrApprovalRouteToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
-                                allowResizing="true">
+                              dataBound="dataBoundResponsive" commandClick="lrApprovalRouteCommandClick" actionBegin="lrApprovalRouteActionBegin"
+                              allowExcelExport="true" allowPdfExport="true"
+                              hierarchyPrintMode="Expanded" allowSelection="true" allowSorting="true"
+                              gridLines="Both" rowDataBound="lrApprovalRouteRowDataBound"
+                              toolbarClick="lrApprovalRouteToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
+                              allowResizing="true">
 
+                        <e-grid-sortsettings columns="@(new List<object>() { new { field = "routeIndex", direction = "Ascending" } })"></e-grid-sortsettings>
+                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowEditing="true" allowDeleting="true"></e-grid-editSettings>
+                        <e-grid-selectionsettings type="Multiple">
+                        </e-grid-selectionsettings>
+                    </ejs-grid>
+                    <hr />
+                    <div id="addLRTaskBtnSection" class="row" style="margin-bottom: 10px">
+                        <div class="col-lg-12">
+                            <button id="addLRTaskBtn" type="button" class="btn btn-primary btn-block"><i class="fa fa-plus p-r-5"></i> Add Task</button>
+                        </div>
+                    </div>
+                    <div id="addTaskForm" role="form" data-toggle="validator" style="display: none">
+                        <div class="row">
+                            <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                                <div class="col-sm-6" style="padding:0">
+                                    <div class="form-group">
+                                        <label class="control-label m-b-5 ">Department:</label>
+                                        <select id="taskDepartmentId" name="DepartmentId" class="form-control" onchange="SelectTaskDepartmentPositions();">
+                                            <option selected>Select Department</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6" style="padding:0">
+                                    <div class="form-group">
+                                        <label class="margin-bottom-5 control-label">Position:</label>
+                                        <select id="taskPositionId" name="PositionId" class="form-control" onchange="SelectTaskPositionEmployees()">
+                                            <option></option>
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <label class="margin-bottom-5 control-label">Employee:</label>
+                                    <select id="taskEmployeeId" name="Employee" class="form-control">
+                                        <option></option>
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <label class="margin-bottom-5 control-label">Task Description:</label>
+                                    <input type="text" id="lrTaskDescription" name="LRTaskDescription" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                                <label class="margin-bottom-5 control-label"></label>
+                                <button id="addTaskBtn" type="button" class="btn btn-primary btn-block"><i class="fa fa-plus p-r-5"></i> Add Task</button>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
+                        <h3 class="control-label" style="flex-grow: 1; margin:0">Tasks</h3>
+                    </div>
+                    <ejs-grid id="LRTasksGrid" enableAutoFill="true" columns="@lrTasksGridColumns"
+                              dataBound="dataBoundResponsive" commandClick="lrTaskCommandClick" actionBegin="lrTaskActionBegin"
+                              allowExcelExport="true" allowPdfExport="true"
+                              hierarchyPrintMode="Expanded" allowSelection="true" allowSorting="true"
+                              gridLines="Both" rowDataBound="lrTaskRowDataBound"
+                              toolbarClick="lrTaskToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
+                              allowResizing="true">
+
+                        <e-grid-sortsettings columns="@(new List<object>() { new { field = "routeIndex", direction = "Ascending" } })"></e-grid-sortsettings>
                         <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowEditing="true" allowDeleting="true"></e-grid-editSettings>
                         <e-grid-selectionsettings type="Multiple">
                         </e-grid-selectionsettings>
@@ -537,7 +698,7 @@
                           toolbarClick="leaveRequestsToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
                           allowPaging="true" allowResizing="true">
 
-                    <e-data-manager url="/api/app/leaveRequestTemplates/getAllAsync" adaptor="WebApiAdaptor"></e-data-manager>
+                    @*<e-data-manager url="/api/app/leaveRequestTemplates/getAllAsync" adaptor="WebApiAdaptor" ></e-data-manager>*@
 
                     <e-grid-filterSettings type="CheckBox">
                     </e-grid-filterSettings>
@@ -619,6 +780,14 @@
                     $('#lrPrefix').val(curLREditRow.prefix);
                     $('#lrStartingNo').val(curLREditRow.startingNo);
                     $('#lrEntitlementDays').val(curLREditRow.entitlementDays);
+                    $("#lrLeaveTypeId").multiselect('select', curLREditRow.leaveTypeId);
+                    $('#lrLeaveTypeId').multiselect('refresh');
+
+                    $('#lrDepartmentId').multiselect('deselectAll', false);
+                    $('#lrPositionId').multiselect('deselectAll', false);
+                    $('#lrEmploymentTypeId').multiselect('deselectAll', false);
+                    $('#lrEmployeeStatusId').multiselect('deselectAll', false);
+                    $('#lrHolidaysDeductionIds').multiselect('deselectAll', false);
 
                     var departs = [];
                     for (var i = 0; i < curLREditRow.departments.length; i++) {
@@ -636,6 +805,11 @@
                         empStatuses.push(curLREditRow.employeeStatuses[i].employeeStatusId);
                     }
                     $('#lrEmployeeStatusId').multiselect('select', empStatuses);
+                    var holidays = [];
+                    for (var i = 0; i < curLREditRow.holidays.length; i++) {
+                        holidays.push(curLREditRow.holidays[i].holidayId);
+                    }
+                    $('#lrHolidaysDeductionIds').multiselect('select', holidays);
                     //var dedHolids = [];
                     //for (var i = 0; i < curLREditRow.deductionHolidays.length; i++) {
                     //    dedHolids.push(curLREditRow.deductionHolidays[i].deductionHolidayId);
@@ -649,6 +823,14 @@
                         apGrid.hideSpinner();
                         apGrid.dataSource = data.approvalRouteTemplateItems;
                         apGrid.refresh();
+                    });
+                    var taskGrid = $("#LRTasksGrid")[0].ej2_instances[0];
+                    taskGrid.dataSource = null;
+                    taskGrid.showSpinner();
+                    cERP.appServices.app.taskService.taskTemplates.getFull(curLREditRow.taskTemplate.id).done(function (data) {
+                        taskGrid.hideSpinner();
+                        taskGrid.dataSource = data.taskTemplateItems;
+                        taskGrid.refresh();
                     });
                     //for (var i = 0; i < approvalItems.length; i++) {
                     //    if (!approvalItems[i].isDepartmentHead && !approvalItems[i].isReportingTo) {
@@ -761,6 +943,23 @@
         }
     }
 
+    function array_move(arr, old_index, new_index) {
+        while (old_index < 0) {
+            old_index += arr.length;
+        }
+        while (new_index < 0) {
+            new_index += arr.length;
+        }
+        if (new_index >= arr.length) {
+            var k = new_index - arr.length + 1;
+            while (k--) {
+                arr.push(undefined);
+            }
+        }
+        arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+        return arr; // for testing purposes
+    };
+
     function lrApprovalRouteActionBegin (args) {
         if (args.requestType == "save") {
 
@@ -769,6 +968,28 @@
         }
     }
     function lrApprovalRouteCommandClick(args) {
+        console.log(args.commandColumn.type);
+        if (args.commandColumn.type == "MoveUp") {
+            var grid = $('#LRApprovalRouteGrid')[0].ej2_instances[0];
+            var rI = args.rowData.routeIndex - 1;
+            if (rI < 1) return;
+            array_move(grid.dataSource, rI, rI - 1);
+            for (var i = 0; i < grid.dataSource.length; i++) {
+                grid.dataSource[i].routeIndex = i + 1;
+            }
+            grid.refresh();
+        }
+        if (args.commandColumn.type == "MoveDown") {
+            var grid = $('#LRApprovalRouteGrid')[0].ej2_instances[0];
+            var rI = args.rowData.routeIndex - 1;
+            if (rI == grid.dataSource.length) return;
+            array_move(grid.dataSource, rI, rI + 1);
+            for (var i = 0; i < grid.dataSource.length; i++) {
+                grid.dataSource[i].routeIndex = i + 1;
+            }
+            grid.refresh();
+            
+        }
         if (args.commandColumn.type == "Edit") {
             
         }
@@ -863,52 +1084,118 @@
 
         }
     }
-    function lrApprovalRouteRowDrop(args) {
-        var dropSelectedRowIndex = [];
-        let gObj = document.getElementById('LRApprovalRouteGrid').ej2_instances[0];
-        let seletedRowIndexes = gObj.getSelectedRowIndexes();
-        if (gObj.sortSettings.columns.length > 0) {
-            let startedRow = args.rows[0];
-            let startRowIndex = parseInt(startedRow.getAttribute("aria-rowindex"), 10);          //get the index of selected row
-            if (!args.target) {
-                return
-            }
-            let targetRow = args.target.closest('tr');
-            let targetRowIndex = targetRow.rowIndex;                                                                       //get the target row index where the row should place
-            gObj.getContentTable().querySelector('tbody').insertBefore(startedRow, targetRow);
 
-            if (!ej.base.isNullOrUndefined(targetRow.nextElementSibling)) {
-                let currentIndex = targetRow.rowIndex;
-                if (currentIndex <= startedRow.rowIndex) {                                                                   // check with selected index and target index
-                    gObj.getContentTable().querySelector('tbody').insertBefore(startedRow, targetRow);
-                } else {
-                    gObj.getContentTable().querySelector('tbody').insertBefore(startedRow, targetRow.nextElementSibling);
+    function lrTaskActionBegin (args) {
+        if (args.requestType == "save") {
+
+        }
+        else if (args.requestType == "delete") {
+        }
+    }
+    function lrTaskCommandClick(args) {
+        console.log(args.commandColumn.type);
+        if (args.commandColumn.type == "MoveUp") {
+            var grid = $('#LRTasksGrid')[0].ej2_instances[0];
+            var rI = args.rowData.routeIndex - 1;
+            if (rI < 1) return;
+            array_move(grid.dataSource, rI, rI - 1);
+            for (var i = 0; i < grid.dataSource.length; i++) {
+                grid.dataSource[i].routeIndex = i + 1;
+            }
+            grid.refresh();
+        }
+        if (args.commandColumn.type == "MoveDown") {
+            var grid = $('#LRTasksGrid')[0].ej2_instances[0];
+            var rI = args.rowData.routeIndex - 1;
+            if (rI == grid.dataSource.length) return;
+            array_move(grid.dataSource, rI, rI + 1);
+            for (var i = 0; i < grid.dataSource.length; i++) {
+                grid.dataSource[i].routeIndex = i + 1;
+            }
+            grid.refresh();
+            
+        }
+        if (args.commandColumn.type == "Edit") {
+            
+        }
+        else if (args.commandColumn.type == "Copy") {
+            this.copy(false);
+        }
+    }
+    function lrTaskToolbarClick(args) {
+        var gridObj = document.getElementById("LRTasksGrid").ej2_instances[0];
+        if (args.item.id === 'LRTasksGrid_pdfexport') {
+            gridObj.pdfExport();
+        }
+        if (args.item.id === 'LRTasksGrid_excelexport') {
+            gridObj.excelExport();
+        }
+        if (args.item.id === 'LRTasksGrid_csvexport') {
+            gridObj.csvExport();
+        }
+        if (this.getSelectedRecords().length > 0) {
+            var withHeader = false;
+            if (args.item.id === 'copyHeader') {
+                withHeader = true;
+            }
+            this.copy(withHeader);
+        }
+        else {
+            if (args.item.id === 'copyHeader') {
+                var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+                dialogObj.show();
+            }
+            else if (args.item.id === 'copy') {
+                var dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+                dialogObj.show();
+            }
+        }
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", "Delete", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.showColumnChooser = true;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            var visCount = 0;
+            for (var i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
                 }
-            } else {
-                gObj.getContentTable().querySelector('tbody').insertBefore(targetRow, startedRow);
             }
-
-            let startRowObj = gObj.getRowObjectFromUID(startedRow.getAttribute('data-uid'));
-            let targetRowObj = gObj.getRowObjectFromUID(targetRow.getAttribute('data-uid'))
-            for (let i = 0, len = gObj.currentViewData.length; i < len; i++) {
-                let getDataByField = gObj.currentViewData[i];                                                //fetch the selected row using index in grid current view datas
-                if (gObj.sortSettings.columns.length > 0) {
-                    sortedCurrentViewData = gObj.currentViewData;
-                    sortedCurrentViewData.splice(targetRowIndex, 0, sortedCurrentViewData.splice(startRowIndex, 1)[0]);   // take the target row using splice                             gObj.rowDragAndDropModule.removeBorder(targetRow);
-                    gObj.contentModule.refreshContentRows();
-                    dropSelectedRowIndex.push(targetRowIndex);
-                    if (gObj.sortSettings.columns.length > 0) {
-                        args.cancel = true;
-                    }
-                    if (dropSelectedRowIndex.length > 0) {
-                        gObj.clearSelection();
-                        gObj.selectRows(dropSelectedRowIndex);
-                    }
-                    return;
+            else {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
                 }
             }
         }
     }
+    function lrTaskRowDataBound(args) {
+        //if (args.data.isDepartmentHead || args.data.isReportingTo) {
+        //    $(".e-" + "DeleteButton", args.row).addClass("e-hide");
+        //}
+        //else {
+        //    $(".e-" + "DeleteButton", args.row).removeClass("e-hide");
+
+        //}
+    }
+
     function alertBtnClick() {
         var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
         var dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
@@ -951,6 +1238,7 @@
             }
         });
     }
+
     function SelectAPDepartmentPositions() {
         var departmentId = $("#apDepartmentId").val();
         $("#apPositionId").empty();
@@ -969,6 +1257,28 @@
         $.getJSON(`?handler=Employees&positionId=${positionId}`, (data) => {
             $.each(data, function (i, item) {
                 $("#apEmployeeId").append(`<option value="${item.id}">${item.name}</option>`);
+            });
+        });
+    }
+
+    function SelectTaskDepartmentPositions() {
+        var departmentId = $("#taskDepartmentId").val();
+        $("#taskPositionId").empty();
+        $("#taskEmployeeId").empty();
+        $("#taskPositionId").append("<option value=''>Select Position</option>");
+        $.getJSON(`?handler=Positions&departmentId=${departmentId}`, (data) => {
+            $.each(data, function (i, item) {
+                $("#taskPositionId").append(`<option value="${item.id}">${item.title}</option>`);
+            });
+        });
+    }
+    function SelectTaskPositionEmployees() {
+        var positionId = $("#taskPositionId").val();
+        $("#taskEmployeeId").empty();
+        $("#taskEmployeeId").append("<option value=''>Select Employee</option>");
+        $.getJSON(`?handler=Employees&positionId=${positionId}`, (data) => {
+            $.each(data, function (i, item) {
+                $("#taskEmployeeId").append(`<option value="${item.id}">${item.name}</option>`);
             });
         });
     }

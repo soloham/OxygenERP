@@ -7,11 +7,13 @@ using CERP.FM.COA.DTOs;
 using CERP.FM.COA.UV_DTOs;
 using CERP.FM.DTOs;
 using CERP.FM.UV_DTOs;
+using CERP.HR.Attendance;
 using CERP.HR.Documents;
 using CERP.HR.EMPLOYEE.DTOs;
 using CERP.HR.Employees;
 using CERP.HR.Employees.DTOs;
 using CERP.HR.Employees.UV_DTOs;
+using CERP.HR.Holidays;
 using CERP.HR.Leaves;
 using CERP.HR.Timesheets;
 using CERP.HR.Workshift.DTOs;
@@ -37,6 +39,12 @@ namespace CERP
 
             CreateMap<ApprovalRouteTemplateItem, ApprovalRouteTemplateItem_Dto>().ForMember(d => d.ApprovalRouteTemplate, opt => opt.Ignore()).AfterMap((x, y) => y.Initialize());
             CreateMap<ApprovalRouteTemplateItem_Dto, ApprovalRouteTemplateItem>();
+
+            CreateMap<TaskTemplate, TaskTemplate_Dto>();
+            CreateMap<TaskTemplate_Dto, TaskTemplate>();
+
+            CreateMap<TaskTemplateItem, TaskTemplateItem_Dto>().ForMember(d => d.TaskTemplate, opt => opt.Ignore());
+            CreateMap<TaskTemplateItem_Dto, TaskTemplateItem>();
 
             CreateMap<COA_Account, COA_Account_Dto>();
             CreateMap<COA_Account_Dto, COA_Account>();
@@ -159,6 +167,15 @@ namespace CERP
 
             CreateMap<LeaveRequestTemplateEmployeeStatus, LeaveRequestTemplateEmployeeStatus_Dto>().ForMember(d => d.LeaveRequestTemplate, opt => opt.Ignore());
             CreateMap<LeaveRequestTemplateEmployeeStatus_Dto, LeaveRequestTemplateEmployeeStatus>();
+
+            CreateMap<LeaveRequestTemplateHoliday, LeaveRequestTemplateHoliday_Dto>().ForMember(d => d.LeaveRequestTemplate, opt => opt.Ignore());
+            CreateMap<LeaveRequestTemplateHoliday_Dto, LeaveRequestTemplateHoliday>();
+
+            CreateMap<Holiday, Holiday_Dto>();
+            CreateMap<Holiday_Dto, Holiday>();
+
+            CreateMap<Attendance, Attendance_Dto>();
+            CreateMap<Attendance_Dto, Attendance>();
         }
     }
 }

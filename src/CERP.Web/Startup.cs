@@ -45,6 +45,7 @@ namespace CERP.Web
                 })                                            
                 .AddNewtonsoftJson(options =>
                 {
+                    //options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
 

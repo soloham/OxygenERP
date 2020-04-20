@@ -24,10 +24,17 @@ namespace CERP.AppServices.Setup.Lookup
 
         public IRepository<DictionaryValue, Guid> Repository { get; }
 
-        [Route("/getAllByValueType")]
+        [Route("/api/app/dictionaryValue/getAllByValueType")]
         public List<DictionaryValue_Dto> GetAllByValueType(ValueTypeModules valueType)
         {
             return Repository.WithDetails().Where(x => x.ValueType.ValueTypeFor == valueType).Select(MapToGetListOutputDto).ToList();
+        }
+
+        [Route("/api/app/dictionaryValue/getAllCustom")]
+        public IEnumerable<DictionaryValue_Dto> GetAllCustom()
+        {
+            List<DictionaryValue_Dto> list = Repository.WithDetails().Select(MapToGetListOutputDto).ToList();
+            return list;
         }
     }
 }

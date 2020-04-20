@@ -2,8 +2,10 @@
 using CERP.App.CustomEntityHistorySystem;
 using CERP.FM;
 using CERP.FM.COA;
+using CERP.HR.Attendance;
 using CERP.HR.Documents;
 using CERP.HR.Employees;
+using CERP.HR.Holidays;
 using CERP.HR.Leaves;
 using CERP.HR.Timesheets;
 using CERP.HR.Workshifts;
@@ -51,6 +53,28 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureMultiTenant();
 
                 b.HasOne(x => x.ApprovalRouteTemplate).WithMany(x => x.ApprovalRouteTemplateItems).OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.Department).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.Position).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.Employee).WithMany().OnDelete(DeleteBehavior.Restrict);
+            });
+
+            builder.Entity<TaskTemplate>(b =>
+            {
+                b.ToTable(CERPConsts.DbTablePrefix + "TaskTemplates", CERPConsts.DbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureMultiTenant();
+
+                b.HasMany(x => x.TaskTemplateItems).WithOne(x => x.TaskTemplate).OnDelete(DeleteBehavior.Cascade);
+            });
+            builder.Entity<TaskTemplateItem>(b =>
+            {
+                b.ToTable(CERPConsts.DbTablePrefix + "TaskTemplateItems", CERPConsts.DbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureMultiTenant();
+
+                b.HasOne(x => x.TaskTemplate).WithMany(x => x.TaskTemplateItems).OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(x => x.Department).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(x => x.Position).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(x => x.Employee).WithMany().OnDelete(DeleteBehavior.Restrict);
@@ -762,18 +786,31 @@ namespace CERP.EntityFrameworkCore
             });
 
 
-            builder.Entity<LeaveRequestTemplate>(b =>
+            builder.Entity<Holiday>(b =>
             {
-                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplates", CERPConsts.DbSchema);
+                b.ToTable(CERPConsts.DbTablePrefix + "Holidays", CERPConsts.HRDbSchema);
 
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
 
+                b.HasOne(x => x.HolidayType).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.ReligiousDenomination).WithMany().OnDelete(DeleteBehavior.Restrict);
+            });
+
+            builder.Entity<LeaveRequestTemplate>(b =>
+            {
+                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplates", CERPConsts.HRDbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureMultiTenant();
+
+                b.HasOne(x => x.LeaveType).WithMany().OnDelete(DeleteBehavior.ClientNoAction);
                 b.HasOne(x => x.ApprovalRouteTemplate).WithMany().OnDelete(DeleteBehavior.ClientNoAction);
+                b.HasOne(x => x.TaskTemplate).WithMany().OnDelete(DeleteBehavior.ClientNoAction);
             });
             builder.Entity<LeaveRequestTemplateDepartment>(b =>
             {
-                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplateDepartments", CERPConsts.DbSchema);
+                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplateDepartments", CERPConsts.HRDbSchema);
 
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
@@ -784,7 +821,7 @@ namespace CERP.EntityFrameworkCore
             });
             builder.Entity<LeaveRequestTemplatePosition>(b =>
             {
-                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplatePositions", CERPConsts.DbSchema);
+                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplatePositions", CERPConsts.HRDbSchema);
 
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
@@ -795,7 +832,7 @@ namespace CERP.EntityFrameworkCore
             });
             builder.Entity<LeaveRequestTemplateEmployeeStatus>(b =>
             {
-                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplateEmployeeStatuses", CERPConsts.DbSchema);
+                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplateEmployeeStatuses", CERPConsts.HRDbSchema);
 
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
@@ -806,7 +843,7 @@ namespace CERP.EntityFrameworkCore
             });
             builder.Entity<LeaveRequestTemplateEmploymentType>(b =>
             {
-                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplateEmploymentTypes", CERPConsts.DbSchema);
+                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplateEmploymentTypes", CERPConsts.HRDbSchema);
 
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
@@ -814,6 +851,26 @@ namespace CERP.EntityFrameworkCore
                 b.HasKey("LeaveRequestTemplateId", "EmploymentTypeId");
                 b.HasOne(x => x.LeaveRequestTemplate).WithMany(x => x.EmploymentTypes).OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(x => x.EmploymentType).WithMany().OnDelete(DeleteBehavior.Restrict);
+            });
+            
+            builder.Entity<LeaveRequestTemplateHoliday>(b =>
+            {
+                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplateHolidays", CERPConsts.HRDbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureMultiTenant();
+
+                b.HasKey("LeaveRequestTemplateId", "HolidayId");
+                b.HasOne(x => x.LeaveRequestTemplate).WithMany(x => x.Holidays).OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.Holiday).WithMany().OnDelete(DeleteBehavior.Restrict);
+            });
+            
+            builder.Entity<Attendance>(b =>
+            {
+                b.ToTable(CERPConsts.DbTablePrefix + "Attendance", CERPConsts.HRDbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureMultiTenant();
             });
         }
 

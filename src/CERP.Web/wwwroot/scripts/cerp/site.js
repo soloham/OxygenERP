@@ -257,5 +257,7 @@ const ValueTypeModules = {
     Clients: 21,
     EmployeeType: 22,
     IndemnityType: 23,
-    SocialInsuranceType: 24
+    SocialInsuranceType: 24,
+    LeaveType: 25,
+    HolidayType: 26
 }

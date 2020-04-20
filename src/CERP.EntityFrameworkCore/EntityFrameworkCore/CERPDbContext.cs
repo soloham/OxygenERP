@@ -15,6 +15,8 @@ using CERP.HR.Timesheets;
 using CERP.Payroll.Payrun;
 using CERP.App.CustomEntityHistorySystem;
 using CERP.HR.Leaves;
+using CERP.HR.Holidays;
+using CERP.HR.Attendance;
 
 namespace CERP.EntityFrameworkCore
 {
@@ -38,6 +40,9 @@ namespace CERP.EntityFrameworkCore
 
         public DbSet<ApprovalRouteTemplate> ApprovalRouteTemplates { get; set; }
         public DbSet<ApprovalRouteTemplateItem> ApprovalRouteTemplateItems { get; set; }
+
+        public DbSet<TaskTemplate> TaskTemplates { get; set; }
+        public DbSet<TaskTemplateItem> TaskTemplateItems { get; set; }
 
         public DbSet<CustomEntityChange> CustomEntityChanges { get; set; }
         public DbSet<CustomEntityPropertyChange> CustomEntityPropertyChanges { get; set; }
@@ -80,6 +85,10 @@ namespace CERP.EntityFrameworkCore
         public DbSet<LeaveRequestTemplatePosition> LeaveRequestTemplatePosition { get; set; }
         public DbSet<LeaveRequestTemplateEmployeeStatus> LeaveRequestTemplateEmployeeStatus { get; set; }
         public DbSet<LeaveRequestTemplateEmploymentType> LeaveRequestTemplateEmploymentType { get; set; }
+        public DbSet<LeaveRequestTemplateHoliday> LeaveRequestTemplateHoliday { get; set; }
+
+        public DbSet<Holiday> Holidays { get; set; }
+        public DbSet<Attendance> Attendance { get; set; }
 
         public CERPDbContext(DbContextOptions<CERPDbContext> options)
             : base(options)

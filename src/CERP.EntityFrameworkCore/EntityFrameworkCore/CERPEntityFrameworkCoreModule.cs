@@ -1,7 +1,9 @@
 ﻿using CERP.App;
 using CERP.FM.COA;
+using CERP.HR.Attendance;
 using CERP.HR.Documents;
 using CERP.HR.Employees;
+using CERP.HR.Holidays;
 using CERP.HR.Leaves;
 using CERP.HR.Timesheets;
 using CERP.HR.Workshifts;
@@ -61,6 +63,22 @@ namespace CERP.EntityFrameworkCore
                                                        .Include(p => p.Employee);
                 });
 
+                options.Entity<TaskTemplate>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.TaskTemplateItems)
+                                                        .ThenInclude(x => x.Department)
+                                                       .Include(p => p.TaskTemplateItems)
+                                                        .ThenInclude(x => x.Position)
+                                                       .Include(p => p.TaskTemplateItems)
+                                                        .ThenInclude(x => x.Employee);
+                });
+                options.Entity<TaskTemplateItem>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.Department)
+                                                       .Include(p => p.Position)
+                                                       .Include(p => p.Employee);
+                });
+
                 options.Entity<COA_Account>(opt =>
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.Company)
@@ -105,7 +123,7 @@ namespace CERP.EntityFrameworkCore
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.Employee);
                 });
 
-                    options.Entity<PhysicalID>(opt =>
+                options.Entity<PhysicalID>(opt =>
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.IssuedFrom)
                                                        .Include(p => p.IDType);
@@ -194,22 +212,38 @@ namespace CERP.EntityFrameworkCore
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.SICategory);
                 });
 
-
                 options.Entity<LeaveRequestTemplate>(opt =>
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.ApprovalRouteTemplate).ThenInclude(p => p.ApprovalRouteTemplateItems)
+                                                      .Include(p => p.TaskTemplate).ThenInclude(p => p.TaskTemplateItems)
+                                                      .Include(p => p.LeaveType)
                                                       .Include(p => p.Departments)
                                                       .Include(p => p.Positions)
                                                       .Include(p => p.EmployeeStatuses)
-                                                      .Include(p => p.EmploymentTypes);
+                                                      .Include(p => p.EmploymentTypes)
+                                                      .Include(p => p.Holidays);
                 });
-            });
 
-            Configure<AbpDbContextOptions>(options =>
-            {
-                /* The main point to change your DBMS.
-                 * See also CERPMigrationsDbContextFactory for EF Core tooling. */
-                options.UseSqlServer();
+                options.Entity<Holiday>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.HolidayType)
+                                                       .Include(p => p.ReligiousDenomination);
+                                                      
+                });
+
+                //options.Entity<Attendance>(opt =>
+                //{
+                //    opt.DefaultWithDetailsFunc = q => q.Include(p => p.HolidayType)
+                //                                       .Include(p => p.ReligiousDenomination);
+                                                      
+                //});
+
+                Configure<AbpDbContextOptions>(options =>
+                {
+                    /* The main point to change your DBMS.
+                     * See also CERPMigrationsDbContextFactory for EF Core tooling. */
+                    options.UseSqlServer();
+                });
             });
         }
     }

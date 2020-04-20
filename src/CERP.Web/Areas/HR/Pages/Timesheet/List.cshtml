@@ -73,104 +73,6 @@
         var isEditing = false;
         var curEditRow;
         $(document).ready(function () {
-            $('#newWorkshiftForm').on('submit', function (e) {
-                e.preventDefault();
-                if (ValidateForm()) {
-                    Swal.showLoading();
-
-                    let form = [];
-                    let generalInfo = $('#newWorkshiftForm').find("select, textarea, input").serializeArray();
-                    form = form.concat(generalInfo);
-                    var params = objectifyForm(form);
-                    params.isEditing = isEditing;
-
-                    if (isEditing)
-                        params.Id = curEditRow.id;
-
-                    let formData = new FormData();
-                    formData.append("info", JSON.stringify(params));
-                    var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
-                    formData.append("__RequestVerificationToken", xhrToken);
-
-                    $.ajax({
-                        url: "@Url.Content("~")/HR/Workshifts",
-                        async: true,
-                        type: "POST",
-                        data: formData,
-                        contentType: false,
-                        processData: false,
-                        success: function (data) {
-                            var grid = $("#TimesheetsGrid")[0].ej2_instances[0];
-                            console.log("Response");
-                            console.log(data);
-                            console.log(params);
-                            Swal.hideLoading();
-                            if (isEditing) {
-                                curEditRow.id = data.id;
-                                curEditRow.title = data.title;
-                                curEditRow.department.name = data.department.name;
-                                curEditRow.startHour = data.startHour;
-                                curEditRow.endHour = data.endHour;
-
-                                grid.refresh(); // refresh the Grid.
-
-                                swal.fire("Success", "Workshift has successfully been updated", "success");
-                            }
-                            else {
-                                grid.dataSource.push(data);
-                                grid.refresh(); // refresh the Grid.
-
-                                swal.fire("Success", "Workshift has successfully been added", "success");
-                            }
-                            //window.location = "@Url.Content("~")/HR/Employees";
-                        },
-                        error: function (err) {
-                            Swal.hideLoading();
-                            if (isEditing)
-                                swal.fire("Failed", "Workshift couldn't be updated, please fix all errors and try again.", "error");
-                            else
-                                swal.fire("Failed", "Workshift couldn't be added, please fix all errors and try again.", "error");
-
-                            console.log(err);
-                        }
-                    })
-                }
-                else {
-                    Swal.close();
-                    Swal.hideLoading();
-                }
-            });
-
-            function ValidateForm() {
-                var elmForm = $("#newWorkshiftForm");
-                // stepDirection === 'forward' :- this condition allows to do the form validation
-                // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
-                var valid = false;
-                elmForm.validator('validate');
-                if (elmForm) {
-                    //elmForm.validate({
-                    //    submitHandler: function (form) {
-                    //        console.log("Submit")
-                    //        valid = true;
-                    //    },
-                    //    invalidHandler: function (form) {
-                    //        console.log("Invalid")
-                    //        valid = false;
-                    //    }
-                    //})
-                    var elmErr = elmForm.find('.has-error');
-                    if (elmErr) {
-                        if (elmErr.length > 0) {
-                            // Form validation failed
-                            valid = false;
-                        }
-                        else {
-                            valid = true;
-                        }
-                    }
-                }
-                return valid;
-            }
         });
 
     </script>
@@ -182,11 +84,11 @@
     <div class="control-section">
         <ejs-grid id="TimesheetsGrid" dataSource="@ViewData["Timesheets_DS"]" childGrid="@Model.GetSecondaryGrid"
                   enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()" queryCellInfo="queryCellInfo"
-                  dataBound="dataBoundResponsive"commandClick="commandClick" dataBound="dataBoundResponsive" actionComplete="actionComplete" showColumnChooser="true"
+                  dataBound="dataBoundResponsive"commandClick="commandClick" actionComplete="actionComplete" showColumnChooser="true"
                   allowExcelExport="true" height="100%" allowPdfExport="true" allowPaging="true"
                   hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                   allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                  toolbarClick="toolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
+                  toolbarClick="toolbarClick" toolbar="@initialToolBar"
                   allowResizing="true">
 
             <e-grid-sortsettings columns="@(new List<object>() { new { field = "year", direction = "Descending" }, new { field = "getMonth", direction = "Descending" } })"></e-grid-sortsettings>
@@ -558,7 +460,7 @@
             else {
                 for (var i = 0; i < gridObj.columns.length; i++) {
                     var col = gridObj.columns[i];
-	    if(col.showInColumnChooser)
+        if(col.showInColumnChooser)
                          gridObj.showHider.show(col.headerText, 'headerText');
                 }
             }

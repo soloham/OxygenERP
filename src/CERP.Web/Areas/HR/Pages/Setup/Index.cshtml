@@ -85,10 +85,26 @@
                 },
                 onSelectAll: SelectAPDepartmentPositions()
             });
+            $('#taskDepartmentId').multiselect({
+                buttonWidth: '100%',
+                includeSelectAllOption: true,
+                enableFiltering: false,
+                enableClickableOptGroups: true,
+                includeResetOption: true,
+                includeResetDivider: true,
+                enableCollapsibleOptGroups: true,
+                onDeselectAll: function (e) {
+                    $('#lrPositionId').empty();
+                },
+                onSelectAll: SelectAPDepartmentPositions()
+            });
             $('#lrPositionId').multiselect(options);
+            $('#lrLeaveTypeId').multiselect(options);
             $('#lrEmploymentTypeId').multiselect(options);
             $('#lrEmployeeStatusId').multiselect(options);
             $('#lrHolidaysDeductionIds').multiselect(options);
+            $('#hTypeId').multiselect(options);
+            $('#hReligiousDenominationId').multiselect(options);
 
             cERP.appServices.setup.departmentSetup.department.getDepartments().done(function (data) {
                 departments = [];
@@ -97,9 +113,13 @@
                 });
 
                 $("#departmentId").multiselect('dataprovider', departments);
+                $("#departmentId").change();
                 $("#lrDepartmentId").multiselect('dataprovider', departments);
+                $("#lrDepartmentId").change();
                 $("#apDepartmentId").multiselect('dataprovider', departments);
                 $("#apDepartmentId").change();
+                $("#taskDepartmentId").multiselect('dataprovider', departments);
+                $("#taskDepartmentId").change();
             });
             toastr.options = {
 

@@ -1,20 +1,466 @@
 ﻿@using CERP.Setup.DTOs;
 @using Syncfusion.EJ2.Grids;
+@using CERP;
 @{
-   
-}
-<script>
+    var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
 
-</script>
+    List<object> HolidaysCommands = new List<object>();
+    HolidaysCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
+    HolidaysCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+    HolidaysCommands.Add(new
+    {
+        type = "Cancel",
+        buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" }
+    });
+
+    List<GridColumn> HolidaysGridColumns = new List<GridColumn>()
+    {
+        new GridColumn { Field = "id", Width = "80", HeaderText = "", Visible=false, ShowInColumnChooser=false, TextAlign=TextAlign.Center, MinWidth="10", IsPrimaryKey=true  },
+        new GridColumn { Field = "title", Width = "110", HeaderText = "Title", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "titleLocalized", Width = "110", HeaderText = "Title (In Arabic)", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "holidayType.value", Width = "110", HeaderText = "Holiday Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "getStartDate", Width = "110", HeaderText = "Start Date", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "getEndDate", Width = "110", HeaderText = "End Date", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "religiousDenomination.value", Width = "110", HeaderText = "Religious Denomination", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Width = "150", HeaderText = "Commands", TextAlign=TextAlign.Center, MinWidth="10", Commands = HolidaysCommands }
+    };
+}
+    <script>
+        isEditingHoliday = false;
+        isEditingHolidayLoaded = false;
+        var curHEditRow;
+
+        $(document).ready(function () {
+            var hGrid = $("#AllHolidaysGrid")[0].ej2_instances[0];
+            hGrid.showSpinner();
+
+            cERP.appServices.hR.holidayService.holidays.getAll().done(function (data) {
+                hGrid.hideSpinner();
+                hGrid.dataSource = data;
+                hGrid.refresh();
+            });
+            cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.HolidayType).done(function (data) {
+                var holidayTypes = [];
+                $.each(data, function (i, d) {
+                    holidayTypes.push({ label: d.value, value: d.id });
+                });
+                $("#hTypeId").multiselect('dataprovider', holidayTypes);
+                $("#hTypeId").change();
+            });
+            cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.Religion).done(function (data) {
+                var religions = [];
+                $.each(data, function (i, d) {
+                    religions.push({ label: d.value, value: d.id });
+                });
+                $("#hReligiousDenominationId").multiselect('dataprovider', religions);
+            });
+
+            $('#hTypeId').on('change', function (args) {
+                if ($("#hTypeId option:selected").text().toUpperCase().includes('PUBLIC'))
+                    $('#publicHolidaySec').slideDown(200);
+                else
+                    $('#publicHolidaySec').slideUp(200);
+            });
+            
+            $('#addHolidayBtn').on('click', function () {
+                var isCollapsed = $('#HolidayForm').css('display') == 'none';
+
+                if (isCollapsed) {
+                    curHEditRow = null;
+                    isEditingHoliday = false;
+                    isEditingHolidayLoaded = false;
+
+                    $('#submitHolidayBtn').val('Add Holiday');
+
+                    $('#addHolidayBtnSection').slideUp(200);
+                    $('#HolidayForm').slideDown(200);
+                    setTimeout(function () { $('#addHolidayBtn', '#addHolidayBtnSection').html('<i class="fa fa-arrow-up p-r-5"></i> Cancel Add') }, 200)
+                    $('#addHolidayBtnSection').slideDown(200);
+
+                    $('#hTitle').val('');
+                    $('#hTitleLocalized').val('');
+                    $('#hStartDate').val('');
+                    $('#hEndDate').val('');
+
+
+                } else {
+                    $('#addHolidayBtnSection').slideUp(200);
+                    $('#HolidayForm').slideUp(200);
+                    setTimeout(function () { $('#addHolidayBtn', '#addHolidayBtnSection').html('<i class="fa fa-plus p-r-5"></i> Add Holiday') }, 200)
+                    $('#addHolidayBtnSection').slideDown(200);
+                }
+            });
+
+            $('#HolidayForm').on('submit', function (e) {
+                e.preventDefault();
+                if (ValidateForm())
+                {
+                    Swal.showLoading();
+
+                    let form = [];
+                    let lrDetails = $('#HolidayForm').find("textarea, input").serializeArray();
+                    form = form.concat(lrDetails);
+                    var params = objectifyForm(form);
+
+                    params.isEditing = isEditingHoliday;
+                    params.HTypeId = $("#hTypeId").val();
+                    if ($("#hTypeId option:selected").text().toUpperCase().includes('PUBLIC'))
+                        params.IsPublic = true;
+                    else
+                        params.IsPublic = false;
+                    params.HReligiousDenominationId = $("#hReligiousDenominationId").val();
+
+                    if (isEditingHoliday) {
+                        params.Id = curHEditRow.id;
+
+                        //cERP.appServices.hR.HolidayTemplates.update()
+                    }
+                    else {
+
+                        //cERP.appServices.hR.HolidayTemplates.update()
+                    }
+                    let formData = new FormData();
+                    formData.append("info", JSON.stringify(params));
+                    var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+                    formData.append("__RequestVerificationToken", xhrToken);
+                    console.log(params);
+
+                    $.ajax({
+                        url: "?handler=Holiday",
+                        async: true,
+                        type: "POST",
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (data) {
+                            var grid = $("#AllHolidaysGrid")[0].ej2_instances[0];
+
+                            Swal.hideLoading();
+                            if (isEditingHoliday) {
+                                swal.fire("Success", "Holiday has successfully been updated", "success");
+
+                                for (var i = 0; i < grid.dataSource.length; i++) {
+                                    if (grid.dataSource[i].id == data.id) {
+                                        console.log(data);
+                                        grid.dataSource[i] = data;
+                                    }
+                                }
+                                grid.refresh();
+                            }
+                            else {
+                                grid.dataSource.push(data);
+                                grid.refresh(); // refresh the Grid.
+
+                                swal.fire("Success", "Holiday has successfully been added", "success");
+                            }
+                        },
+                        error: function (err) {
+                            Swal.hideLoading();
+                            if (isEditingHoliday)
+                                swal.fire("Failed", "Holiday couldn't be updated, please fix all errors and try again.", "error");
+                            else
+                                swal.fire("Failed", "Holiday couldn't be added, please fix all errors and try again.", "error");
+
+                            console.log(err);
+                        }
+                    });
+                }
+                else
+                {
+                    Swal.close();
+                    Swal.hideLoading();
+                }
+            });
+
+            function ValidateForm()
+            {
+                var elmForm = $("#HolidayForm");
+                // stepDirection === 'forward' :- this condition allows to do the form validation
+                // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
+                var valid = false;
+                elmForm.validator('validate');
+                if (elmForm)
+                {
+                    var elmErr = elmForm.find('.has-error');
+                    if (elmErr)
+                    {
+                        if (elmErr.length > 0)
+                        {
+                            // Form validation failed
+                            valid = false;
+                        }
+                        else
+                        {
+                            valid = true;
+                        }
+                    }
+                }
+                return valid;
+            }
+        });
+    </script>
 
 <style>
+    .e-c-moveup:before {
+        content: '\e307'
+    }
 
+    .e-c-movedown:before {
+        content: '\e305'
+    }
 </style>
 
-<div class="col-md-4">
+<div class="m-l-20 m-t-0">
+    <h2>Holidays</h2>
+    <p>
+        Provide details to setup holidays
+    </p>
+</div>
+<hr />
+<div class="panel-body p-t-0" style="padding-bottom:0;">
+    <div id="addHolidayBtnSection" style="">
+        <button id="addHolidayBtn" type="button" class="btn btn-primary btn-block"><i class="fa fa-plus p-r-5"></i> Add Holiday</button>
+    </div>
+    <form id="HolidayForm" class="row" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="control-label m-b-5 ">Holiday Title:</label>
+                    <input type="text" id="hTitle" name="HTitle" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="control-label m-b-5 ">Holiday Title (In Arabic):</label>
+                    <input type="text" id="hTitleLocalized" name="HTitleLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="margin-bottom-5 control-label">Holiday Type:</label>
+                    <select id="hTypeId" name="HTypeId" class="form-control" required>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row" id="publicHolidaySec" style="display: none">
+            <div class="col-lg-4 col-md-6 col-sm-6 col-12">
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5">Start Date:</label>
+                        <input type="text" id="hStartDate" name="HStartDate" style="width: 100% !important; cursor: default;" class="text-left form-control inline pull-left DatePicker is-calendarsPicker" autocomplete="off" required>
+                    </div>
+                </div>
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5 pull-right ">(Hijri date)</label>
+                        <input type="text" id="hStartDateH" name="HStartDate_H" style="width:100% !important" class="text-right form-control inline DatePickerHijri is-calendarsPicker" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-6 col-12">
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5">End Date:</label>
+                        <input type="text" id="hEndDate" name="HEndDate" style="width: 100% !important; cursor: default;" class="text-left form-control inline pull-left DatePicker is-calendarsPicker" autocomplete="off" required>
+                    </div>
+                </div>
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5 pull-right ">(Hijri date)</label>
+                        <input type="text" id="hEndDateH" name="HEndDate_H" style="width:100% !important" class="text-right form-control inline DatePickerHijri is-calendarsPicker" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="margin-bottom-5 control-label">Religious Denomination:</label>
+                    <select id="hReligiousDenominationId" name="HReligiousDenominationId" class="form-control" required>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-lg-12">
+                <input id="submitHolidayBtn" type="submit" class="btn btn-primary btn-block" value="Add Holiday" required />
+            </div>
+        </div>
+    </form>
+    <hr />
+    <div id="HolidaysCS" class="control-section m-t-10">
+        <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
+            <h3 class="control-label" style="flex-grow: 1; margin:0">Current Holidays</h3>
+        </div>
+        <ejs-grid id="AllHolidaysGrid" enableAutoFill="true" columns="@HolidaysGridColumns"
+                    dataBound="dataBoundResponsive" commandClick="holidaysCommandClick" actionBegin="holidaysActionBegin"
+                    allowExcelExport="true" height="100%" allowPdfExport="true"
+                    hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                    allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                    toolbarClick="holidaysToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
+                    allowPaging="true" allowResizing="true">
 
+            @*<e-data-manager url="/api/app/HolidayTemplates/getAllAsync" adaptor="WebApiAdaptor" ></e-data-manager>*@
+
+            <e-grid-filterSettings type="CheckBox">
+            </e-grid-filterSettings>
+            <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
+            <e-grid-selectionsettings type="Multiple">
+            </e-grid-selectionsettings>
+            <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+        </ejs-grid>
+    </div>
 </div>
 
 <script>
+
+    function holidaysActionBegin(args) {
+        if (args.requestType == "save") {
+
+        }
+        else if (args.requestType == "delete") {
+            Swal.showLoading();
+
+            let formData = new FormData();
+            formData.append("Holidays", JSON.stringify(args.data));
+            var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+            formData.append("__RequestVerificationToken", xhrToken);
+
+            $.ajax({
+                url: '?handler=Holiday',
+                async: true,
+                type: "DELETE",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    //console.log(data.success);
+                    swal.fire("Success", "Holiday(s) successfully deleted", "success");
+
+                    if ($('#HolidayForm').css('display') !== 'none') {
+                        $('#addHolidayBtnSection').slideUp(200);
+                        $('#HolidayForm').slideUp(200);
+                        setTimeout(function () { $('#addHolidayBtn', '#addHolidayBtnSection').html('<i class="fa fa-plus p-r-5"></i> Add Holiday') }, 200)
+                        $('#addHolidayBtnSection').slideDown(200);
+                    }
+                },
+                error: function (err) {
+                    swal.fire("Failed", "Holiday(s) couldn't be deleted, please fix all errors and try again.", "error");
+
+                    console.log(err);
+                }
+            });
+        }
+    }
+    function holidaysCommandClick(args) {
+        if (args.commandColumn.type == "Edit") {
+            curHEditRow = args.rowData;
+            isEditingHoliday = true;
+            isEditingHolidayLoaded = false;
+            var isCollapsed = $('#HolidayForm').css('display') == 'none';
+
+            var timeout = 0;
+            if (!isCollapsed) {
+                $('#addHolidayBtnSection').slideUp(200);
+                $('#HolidayForm').slideUp(200);
+
+                timeout = 200;
+            }
+            setTimeout(function () {
+                $('#addHolidayBtnSection').slideUp(200);
+                $('#HolidayForm').slideDown(200);
+                $('#addHolidayBtnSection').slideDown(200);
+
+                setTimeout(function () {
+                    $('#addHolidayBtn', '#addHolidayBtnSection').html('<i class="fa fa-arrow-up p-r-5"></i> Cancel Update');
+                    $('#submitHolidayBtn').val('Update Holiday');
+
+                    $('#hTitle').val(curHEditRow.title);
+                    $('#hTitleLocalized').val(curHEditRow.titleLocalized);
+                    $("#hHolidayTypeId").multiselect('select', curHEditRow.holidayTypeId);
+                    $('#hHolidayTypeId').multiselect('refresh');
+                    $('#hStartDate').val(curHEditRow.startDate);
+                    $('#hEndDate').val(curHEditRow.endDate);
+                    $("#hReligiousDenominationId").multiselect('select', curHEditRow.religiousDenominationId);
+                    $('#hReligiousDenominationId').multiselect('refresh');
+                }, 150);
+            }, timeout);
+        }
+        else if (args.commandColumn.type == "Copy") {
+            this.copy(false);
+        }
+    }
+    function holidaysToolbarClick(args) {
+        var gridObj = document.getElementById("AllWorkshiftsGrid").ej2_instances[0];
+        if (args.item.id === 'AllWorkshiftsGrid_pdfexport') {
+            gridObj.pdfExport();
+        }
+        if (args.item.id === 'AllWorkshiftsGrid_excelexport') {
+            gridObj.excelExport();
+        }
+        if (args.item.id === 'AllWorkshiftsGrid_csvexport') {
+            gridObj.csvExport();
+        }
+        if (this.getSelectedRecords().length > 0) {
+            var withHeader = false;
+            if (args.item.id === 'copyHeader') {
+                withHeader = true;
+            }
+            this.copy(withHeader);
+        }
+        else {
+            if (args.item.id === 'copyHeader') {
+                var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+                dialogObj.show();
+            }
+            else if (args.item.id === 'copy') {
+                var dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+                dialogObj.show();
+            }
+        }
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", "Delete", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.showColumnChooser = true;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            var visCount = 0;
+            for (var i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+        }
+    }
+
+    function alertBtnClick() {
+        var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+        var dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
+        dialogObj.hide();
+        dialogObj1.hide();
+    }
 
 </script>

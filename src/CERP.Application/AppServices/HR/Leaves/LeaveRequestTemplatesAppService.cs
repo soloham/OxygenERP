@@ -16,12 +16,23 @@ namespace CERP.AppServices.HR.LeaveRequestService
 {
     public class LeaveRequestTemplatesAppService : CrudAppService<LeaveRequestTemplate, LeaveRequestTemplate_Dto, int, PagedAndSortedResultRequestDto, LeaveRequestTemplate_Dto, LeaveRequestTemplate_Dto>
     {
-        public LeaveRequestTemplatesAppService(IRepository<LeaveRequestTemplate, int> repository) : base(repository)
+        public LeaveRequestTemplatesAppService(IRepository<LeaveRequestTemplate, int> repository, IRepository<LeaveRequestTemplateDepartment> departmentsRepository, IRepository<LeaveRequestTemplatePosition> positionsRepository, IRepository<LeaveRequestTemplateEmploymentType> employeeTypesRepository, IRepository<LeaveRequestTemplateEmployeeStatus> employeeStatusesRepository, IRepository<LeaveRequestTemplateHoliday> holidaysRepository) : base(repository)
         {
             Repository = repository;
+            DepartmentsRepository = departmentsRepository;
+            PositionsRepository = positionsRepository;
+            EmployeeTypesRepository = employeeTypesRepository;
+            EmployeeStatusesRepository = employeeStatusesRepository;
+            HolidaysRepository = holidaysRepository;
         }
 
         public IRepository<LeaveRequestTemplate, int> Repository { get; }
+        public IRepository<LeaveRequestTemplateDepartment> DepartmentsRepository { get; }
+        public IRepository<LeaveRequestTemplatePosition> PositionsRepository { get; }
+        public IRepository<LeaveRequestTemplateEmploymentType> EmployeeTypesRepository { get; }
+        public IRepository<LeaveRequestTemplateEmployeeStatus> EmployeeStatusesRepository { get; }
+        public IRepository<LeaveRequestTemplateHoliday> HolidaysRepository { get; }
+
 
         [Route("/api/app/leaveRequestTemplates/getAllAsync")]
         public async Task<List<LeaveRequestTemplate_Dto>> GetAllAsync()

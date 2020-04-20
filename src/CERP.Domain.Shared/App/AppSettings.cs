@@ -62,6 +62,10 @@ namespace CERP
         [Description("Indemnity Type")]
         IndemnityType,
         [Description("Social Insurance Type")]
-        SocialInsuranceType
+        SocialInsuranceType,
+        [Description("Leave Type")]
+        LeaveType,
+        [Description("Holiday Type")]
+        HolidayType
     }
 }

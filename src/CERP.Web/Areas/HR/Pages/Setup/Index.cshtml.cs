@@ -34,6 +34,12 @@ using CERP.AppServices.HR.LeaveRequestService;
 using CERP.AppServices.App.ApprovalRouteService;
 using CERP.HR.Leaves;
 using CERP.AppServices.Setup.Lookup;
+using CERP.AppServices.App.TaskService;
+using CERP.AppServices.HR.HolidayService;
+using CERP.HR.Holidays;
+using CERP.HR.Attendance;
+using CERP.AppServices.HR.AttendanceService;
+using System.Threading;
 
 namespace CERP.Web.Areas.HR.Pages.Setup
 {
@@ -50,12 +56,16 @@ namespace CERP.Web.Areas.HR.Pages.Setup
         public EmployeeAppService EmployeeAppService { get; set; }
         public WorkshiftAppService WorkShiftsAppService { get; set; }
         public ApprovalRouteTemplatesAppService ApprovalRouteTemplatesAppService { get; set; }
+        public TaskTemplatesAppService TaskTemplatesAppService { get; set; }
         public LeaveRequestTemplatesAppService LeaveRequestTemplatesAppService { get; set; }
+        public HolidaysAppService HolidaysAppService { get; set; }
+        public ApprovalRouteTemplateItemsAppService ApprovalRouteTemplateItemsAppService { get; set; }
         public DeductionMethodsAppService DeductionMethodsAppService { get; set; }
+        public AttendanceAppService AttendanceAppService { get; set; }
 
         public bool IsUsingAttendanceSystem { get; set; }
 
-        public IndexModel(IRepository<DictionaryValue, Guid> dictionaryValuesRepo, IGuidGenerator guidGenerator, IJsonSerializer jsonSerializer, DepartmentAppService departmentAppService, WorkshiftAppService workShiftsAppService, DeductionMethodsAppService deductionMethodsAppService, PositionAppService positionAppService, EmployeeAppService employeeAppService, LeaveRequestTemplatesAppService leaveRequestTemplatesAppService, ApprovalRouteTemplatesAppService approvalRouteTemplatesAppService, DictionaryValueAppService dictionaryValueAppService)
+        public IndexModel(IRepository<DictionaryValue, Guid> dictionaryValuesRepo, IGuidGenerator guidGenerator, IJsonSerializer jsonSerializer, DepartmentAppService departmentAppService, WorkshiftAppService workShiftsAppService, DeductionMethodsAppService deductionMethodsAppService, PositionAppService positionAppService, EmployeeAppService employeeAppService, LeaveRequestTemplatesAppService leaveRequestTemplatesAppService, ApprovalRouteTemplatesAppService approvalRouteTemplatesAppService, DictionaryValueAppService dictionaryValueAppService, ApprovalRouteTemplateItemsAppService approvalRouteTemplateItemsAppService, TaskTemplatesAppService taskTemplatesAppService, HolidaysAppService holidaysAppService, AttendanceAppService attendanceAppService)
         {
             DictionaryValuesRepo = dictionaryValuesRepo;
             this.guidGenerator = guidGenerator;
@@ -68,6 +78,10 @@ namespace CERP.Web.Areas.HR.Pages.Setup
             LeaveRequestTemplatesAppService = leaveRequestTemplatesAppService;
             ApprovalRouteTemplatesAppService = approvalRouteTemplatesAppService;
             DictionaryValueAppService = dictionaryValueAppService;
+            ApprovalRouteTemplateItemsAppService = approvalRouteTemplateItemsAppService;
+            TaskTemplatesAppService = taskTemplatesAppService;
+            HolidaysAppService = holidaysAppService;
+            AttendanceAppService = attendanceAppService;
         }
 
         public void OnGet()
@@ -106,9 +120,56 @@ namespace CERP.Web.Areas.HR.Pages.Setup
             List<object> result = EmployeeAppService.GetEmployeesByPositionId(positionId).Select<Employee_Dto, object>(x => new { Id = x.Id, Name = x.Name }).ToList();
             return new JsonResult(result);
         }
-        public IActionResult OnPostAttendanceSystem(bool use)
+        public async Task<IActionResult> OnPostAttendanceSystem(bool use)
         {
+            var attendances = await AttendanceAppService.GetAllAsync();
 
+            if(attendances.Count == 0)
+            {
+                Attendance_Dto attendance = new Attendance_Dto();
+                attendance.UseAttendanceSystem = use;
+
+                await AttendanceAppService.CreateAsync(attendance);
+            }
+            else
+            {
+                for (int i = 0; i < attendances.Count; i++)
+                {
+                    Attendance_Dto attendance = attendances[i];
+                    attendance.UseAttendanceSystem = use;
+
+                    await AttendanceAppService.UpdateAsync(attendance.Id, attendance);
+                }
+            }
+            return StatusCode(200);
+        }
+        public async Task<IActionResult> OnPostAttendanceMappings(string employeeIdMap, string dateMap, string timeInMap, string timeOutMap)
+        {
+            var attendances = await AttendanceAppService.GetAllAsync();
+
+            if(attendances.Count == 0)
+            {
+                Attendance_Dto attendance = new Attendance_Dto();
+                attendance.EmployeeIDMap = employeeIdMap;
+                attendance.DateMap = dateMap;
+                attendance.TimeInMap = timeInMap;
+                attendance.TimeOutMap = timeOutMap;
+
+                await AttendanceAppService.CreateAsync(attendance);
+            }
+            else
+            {
+                for (int i = 0; i < attendances.Count; i++)
+                {
+                    Attendance_Dto attendance = attendances[i];
+                    attendance.EmployeeIDMap = employeeIdMap;
+                    attendance.DateMap = dateMap;
+                    attendance.TimeInMap = timeInMap;
+                    attendance.TimeOutMap = timeOutMap;
+
+                    await AttendanceAppService.UpdateAsync(attendance.Id, attendance);
+                }
+            }
             return StatusCode(200);
         }
 
@@ -121,7 +182,6 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                 await WorkShiftsAppService.DeleteAsync(workshift.Id);
             }
         }
-
         public async Task OnDeleteDeductionMethod()
         {
             List<DeductionMethod_Dto> deductionMethods = JsonSerializer.Deserialize<List<DeductionMethod_Dto>>(Request.Form["deductionMethods"]);
@@ -247,7 +307,7 @@ namespace CERP.Web.Areas.HR.Pages.Setup
 
                     if (lrTemplateVM.IsEditing)
                     {
-                        LeaveRequestTemplate leaveRequestTemplate = await LeaveRequestTemplatesAppService.Repository.GetAsync(lrTemplateVM.Id, false);
+                        LeaveRequestTemplate leaveRequestTemplate = await LeaveRequestTemplatesAppService.Repository.GetAsync(lrTemplateVM.Id);
                         //leaveRequestTemplate.Id = 0;
                         //LeaveRequestTemplate_Dto leaveRequestTemplate = new LeaveRequestTemplate_Dto();
 
@@ -255,7 +315,217 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                         leaveRequestTemplate.TitleLocalized = lrTemplateVM.LRTitleLocalized;
                         leaveRequestTemplate.Prefix = lrTemplateVM.LRPrefix;
                         leaveRequestTemplate.StartingNo = lrTemplateVM.LRStartingNo;
+                        leaveRequestTemplate.LeaveTypeId = lrTemplateVM.LRLeaveTypeId;
                         leaveRequestTemplate.EntitlementDays = lrTemplateVM.LREntitlementDays;
+
+                        Guid[] vmDepIds = lrTemplateVM.LRDepartmentIds;
+                        Guid[] depIds = leaveRequestTemplate.Departments.Select(x => x.DepartmentId).ToArray();
+
+                        for (int i = 0; i < vmDepIds.Length; i++)
+                        {
+                            if(!depIds.Contains(vmDepIds[i]))
+                            {
+                                leaveRequestTemplate.Departments.Add(new LeaveRequestTemplateDepartment() { DepartmentId = vmDepIds[i] });
+                            }
+                        }
+                        List<Guid> toDeleteDeps = new List<Guid>();
+                        for (int i = 0; i < depIds.Length; i++)
+                        {
+                            if(!vmDepIds.Contains(depIds[i]))
+                            {
+                                leaveRequestTemplate.Departments.Remove(leaveRequestTemplate.Departments.First(x => x.DepartmentId == depIds[i]));
+                                toDeleteDeps.Add(depIds[i]);
+                            }
+                        }
+
+                        Guid[] vmPosIds = lrTemplateVM.LRPositionsIds;
+                        Guid[] posIds = leaveRequestTemplate.Positions.Select(x => x.PositionId).ToArray();
+
+                        for (int i = 0; i < vmPosIds.Length; i++)
+                        {
+                            if(!posIds.Contains(vmPosIds[i]))
+                            {
+                                leaveRequestTemplate.Positions.Add(new LeaveRequestTemplatePosition() { PositionId = vmPosIds[i] });
+                            }
+                        }
+                        List<Guid> toDeletePoses = new List<Guid>();
+                        for (int i = 0; i < posIds.Length; i++)
+                        {
+                            if(!vmPosIds.Contains(posIds[i]))
+                            {
+                                leaveRequestTemplate.Positions.Remove(leaveRequestTemplate.Positions.First(x => x.PositionId == posIds[i]));
+                                toDeletePoses.Add(posIds[i]);
+                            }
+                        }
+
+                        Guid[] vmEmpTypesIds = lrTemplateVM.LREmploymentTypeIds;
+                        Guid[] empTypesIds = leaveRequestTemplate.EmploymentTypes.Select(x => x.EmploymentTypeId).ToArray();
+
+                        for (int i = 0; i < vmEmpTypesIds.Length; i++)
+                        {
+                            if(!empTypesIds.Contains(vmEmpTypesIds[i]))
+                            {
+                                leaveRequestTemplate.EmploymentTypes.Add(new LeaveRequestTemplateEmploymentType() { EmploymentTypeId = vmEmpTypesIds[i] });
+                            }
+                        }
+                        List<Guid> toDeleteEmpTypes = new List<Guid>();
+                        for (int i = 0; i < empTypesIds.Length; i++)
+                        {
+                            if(!vmEmpTypesIds.Contains(empTypesIds[i]))
+                            {
+                                leaveRequestTemplate.EmploymentTypes.Remove(leaveRequestTemplate.EmploymentTypes.First(x => x.EmploymentTypeId == empTypesIds[i]));
+                                toDeleteEmpTypes.Add(empTypesIds[i]);
+                            }
+                        }
+
+                        int[] vmHolidaysIds = lrTemplateVM.LRDeductionHolidaysIds;
+                        int[] holidaysIds = leaveRequestTemplate.Holidays.Select(x => x.HolidayId).ToArray();
+
+                        for (int i = 0; i < vmHolidaysIds.Length; i++)
+                        {
+                            if(!holidaysIds.Contains(vmHolidaysIds[i]))
+                            {
+                                leaveRequestTemplate.Holidays.Add(new LeaveRequestTemplateHoliday() { HolidayId = vmHolidaysIds[i] });
+                            }
+                        }
+                        List<int> toDeleteHolidaysIds = new List<int>();
+                        for (int i = 0; i < holidaysIds.Length; i++)
+                        {
+                            if(!vmHolidaysIds.Contains(holidaysIds[i]))
+                            {
+                                leaveRequestTemplate.Holidays.Remove(leaveRequestTemplate.Holidays.First(x => x.HolidayId == holidaysIds[i]));
+                                toDeleteHolidaysIds.Add(holidaysIds[i]);
+                            }
+                        }
+                        
+                        Guid[] vmEmpStatusesIds = lrTemplateVM.LREmployeeStatusIds;
+                        Guid[] empStatusesIds = leaveRequestTemplate.EmployeeStatuses.Select(x => x.EmployeeStatusId).ToArray();
+
+                        for (int i = 0; i < vmEmpStatusesIds.Length; i++)
+                        {
+                            if(!empStatusesIds.Contains(vmEmpStatusesIds[i]))
+                            {
+                                leaveRequestTemplate.EmployeeStatuses.Add(new LeaveRequestTemplateEmployeeStatus() { EmployeeStatusId = vmEmpStatusesIds[i] });
+                            }
+                        }
+                        List<Guid> toDeleteEmpStatuses = new List<Guid>();
+                        for (int i = 0; i < empStatusesIds.Length; i++)
+                        {
+                            if(!vmEmpStatusesIds.Contains(empStatusesIds[i]))
+                            {
+                                leaveRequestTemplate.EmployeeStatuses.Remove(leaveRequestTemplate.EmployeeStatuses.First(x => x.EmployeeStatusId == empStatusesIds[i]));
+                                toDeleteEmpStatuses.Add(empStatusesIds[i]);
+                            }
+                        }
+
+                        var vmApprovalRouteTemplateItems = lrTemplateVM.LRApprovalRoute;
+                        ApprovalRouteTemplate approvalRouteTemplate = leaveRequestTemplate.ApprovalRouteTemplate;
+                        List<ApprovalRouteTemplateItem> approvalRouteTemplateItems = approvalRouteTemplate.ApprovalRouteTemplateItems.ToList();
+
+                        List<ApprovalRouteTemplateItem> toUpdateAPItems = new List<ApprovalRouteTemplateItem>();
+                        for (int i = 0; i < vmApprovalRouteTemplateItems.Count; i++)
+                        {
+                            LeaveRequestTemplateViewModel.LRApprovalRouteVM cur = vmApprovalRouteTemplateItems[i];
+                            //int curId = -1;
+                            //int.TryParse(cur.Id, out curId);
+                            if (!approvalRouteTemplateItems.Any(x => x.Id.ToString() == cur.Id))
+                            {
+                                ApprovalRouteTemplateItem approvalRouteTemplateItem = new ApprovalRouteTemplateItem();
+
+                                approvalRouteTemplateItem.Active = cur.Active;
+                                if (cur.IsDepartmentHead)
+                                {
+                                    approvalRouteTemplateItem.IsDepartmentHead = true;
+                                    approvalRouteTemplateItem.DepartmentId = null;
+                                    approvalRouteTemplateItem.PositionId = null;
+                                    approvalRouteTemplateItem.EmployeeId = null;
+                                }
+                                else if (cur.IsReportingTo)
+                                {
+                                    approvalRouteTemplateItem.IsReportingTo = true;
+                                    approvalRouteTemplateItem.DepartmentId = null;
+                                    approvalRouteTemplateItem.PositionId = null;
+                                    approvalRouteTemplateItem.EmployeeId = null;
+                                }
+                                else
+                                {
+                                    approvalRouteTemplateItem.IsDepartmentHead = false;
+                                    approvalRouteTemplateItem.IsReportingTo = false;
+                                    approvalRouteTemplateItem.DepartmentId = cur.DepartmentId;
+                                    approvalRouteTemplateItem.PositionId = cur.PositionId;
+                                    approvalRouteTemplateItem.EmployeeId = cur.EmployeeId;
+                                }
+                                approvalRouteTemplateItem.RouteIndex = i + 1;
+
+                                leaveRequestTemplate.ApprovalRouteTemplate.ApprovalRouteTemplateItems.Add(approvalRouteTemplateItem);
+                            }
+                            else
+                            {
+                                ApprovalRouteTemplateItem item = leaveRequestTemplate.ApprovalRouteTemplate.ApprovalRouteTemplateItems.First(x => x.Id.ToString() == cur.Id);
+
+                                item.Active = cur.Active;
+                                item.RouteIndex = i + 1;
+
+                                toUpdateAPItems.Add(item);
+                            }
+                        }
+                        List<ApprovalRouteTemplateItem> toDeleteAPItems = new List<ApprovalRouteTemplateItem>();
+                        for (int i = 0; i < approvalRouteTemplateItems.Count; i++)
+                        {
+                            ApprovalRouteTemplateItem cur = approvalRouteTemplateItems[i];
+                            if (!vmApprovalRouteTemplateItems.Any(x => x.Id == cur.Id.ToString()))
+                            {
+                                leaveRequestTemplate.ApprovalRouteTemplate.ApprovalRouteTemplateItems.Remove(cur);
+                                toDeleteAPItems.Add(cur);
+                            }
+                        }
+
+                        var vmTasksTemplateItems = lrTemplateVM.LRTasks;
+                        TaskTemplate taskTemplate = leaveRequestTemplate.TaskTemplate;
+                        List<TaskTemplateItem> taskTemplateItems = taskTemplate.TaskTemplateItems.ToList();
+
+                        List<TaskTemplateItem> toUpdateTaskItems = new List<TaskTemplateItem>();
+                        for (int i = 0; i < vmTasksTemplateItems.Count; i++)
+                        {
+                            LeaveRequestTemplateViewModel.LRTaskVM cur = vmTasksTemplateItems[i];
+                            //int curId = -1;
+                            //int.TryParse(cur.Id, out curId);
+                            if (!taskTemplateItems.Any(x => x.Id.ToString() == cur.Id))
+                            {
+                                TaskTemplateItem taskTemplateItem = new TaskTemplateItem();
+
+                                taskTemplateItem.Active = cur.Active;
+                                taskTemplateItem.TaskDescription = cur.TaskDescription;
+
+                                taskTemplateItem.DepartmentId = cur.DepartmentId;
+                                taskTemplateItem.PositionId = cur.PositionId;
+                                taskTemplateItem.EmployeeId = cur.EmployeeId;
+
+                                taskTemplateItem.RouteIndex = i + 1;
+
+                                leaveRequestTemplate.TaskTemplate.TaskTemplateItems.Add(taskTemplateItem);
+                            }
+                            else
+                            {
+                                TaskTemplateItem item = leaveRequestTemplate.TaskTemplate.TaskTemplateItems.First(x => x.Id.ToString() == cur.Id);
+
+                                item.Active = cur.Active;
+                                item.RouteIndex = i + 1;
+                                item.TaskDescription = cur.TaskDescription;
+
+                                toUpdateTaskItems.Add(item);
+                            }
+                        }
+                        List<TaskTemplateItem> toDeleteTaskItems = new List<TaskTemplateItem>();
+                        for (int i = 0; i < taskTemplateItems.Count; i++)
+                        {
+                            TaskTemplateItem cur = taskTemplateItems[i];
+                            if (!vmTasksTemplateItems.Any(x => x.Id == cur.Id.ToString()))
+                            {
+                                leaveRequestTemplate.TaskTemplate.TaskTemplateItems.Remove(cur);
+                                toDeleteTaskItems.Add(cur);
+                            }
+                        }
 
                         leaveRequestTemplate.HasAdvanceSalaryRequest = lrTemplateVM.LRAdvanceSalaryAD;
                         leaveRequestTemplate.HasAirTicketRequest = lrTemplateVM.LRAirTicketAD;
@@ -264,7 +534,45 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                         leaveRequestTemplate.HasNotesRequirement = lrTemplateVM.LRNotesAR;
                         leaveRequestTemplate.HasAttachmentRequirement = lrTemplateVM.LRAttachmentAR;
 
-                        //var lrTempUpdated = await LeaveRequestTemplatesAppService.Repository.UpdateAsync(_leaveRequestTemplate);
+                        for (int i = 0; i < toDeleteDeps.Count; i++)
+                        {
+                            await LeaveRequestTemplatesAppService.DepartmentsRepository.DeleteAsync(x => x.DepartmentId == toDeleteDeps[i]);
+                        }
+                        for (int i = 0; i < toDeletePoses.Count; i++)
+                        {
+                            await LeaveRequestTemplatesAppService.PositionsRepository.DeleteAsync(x => x.PositionId == toDeletePoses[i]);
+                        }
+                        for (int i = 0; i < toDeleteEmpTypes.Count; i++)
+                        {
+                            await LeaveRequestTemplatesAppService.EmployeeTypesRepository.DeleteAsync(x => x.EmploymentTypeId == toDeleteEmpTypes[i]);
+                        }
+                        for (int i = 0; i < toDeleteEmpStatuses.Count; i++)
+                        {
+                            await LeaveRequestTemplatesAppService.EmployeeStatusesRepository.DeleteAsync(x => x.EmployeeStatusId == toDeleteEmpStatuses[i]);
+                        }
+                        for (int i = 0; i < toDeleteHolidaysIds.Count; i++)
+                        {
+                            await LeaveRequestTemplatesAppService.HolidaysRepository.DeleteAsync(x => x.HolidayId == toDeleteHolidaysIds[i]);
+                        }
+
+                        for (int i = 0; i < toDeleteAPItems.Count; i++)
+                        {
+                            await ApprovalRouteTemplateItemsAppService.Repository.DeleteAsync(toDeleteAPItems[i]);
+                        }
+                        for (int i = 0; i < toUpdateAPItems.Count; i++)
+                        {
+                            await ApprovalRouteTemplateItemsAppService.Repository.UpdateAsync(toUpdateAPItems[i]);
+                        }
+
+                        for (int i = 0; i < toDeleteTaskItems.Count; i++)
+                        {
+                            await TaskTemplatesAppService.ItemsRepository.DeleteAsync(toDeleteTaskItems[i]);
+                        }
+                        for (int i = 0; i < toUpdateTaskItems.Count; i++)
+                        {
+                            await TaskTemplatesAppService.ItemsRepository.UpdateAsync(toUpdateTaskItems[i]);
+                        }
+
                         var lrTempUpdated = await LeaveRequestTemplatesAppService.Repository.UpdateAsync(leaveRequestTemplate);
 
                         return StatusCode(200, lrTempUpdated);
@@ -276,6 +584,7 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                         leaveRequestTemplate.TitleLocalized = lrTemplateVM.LRTitleLocalized;
                         leaveRequestTemplate.Prefix = lrTemplateVM.LRPrefix;
                         leaveRequestTemplate.StartingNo = lrTemplateVM.LRStartingNo;
+                        leaveRequestTemplate.LeaveTypeId = lrTemplateVM.LRLeaveTypeId;
                         leaveRequestTemplate.EntitlementDays = lrTemplateVM.LREntitlementDays;
 
                         leaveRequestTemplate.Departments = new List<LeaveRequestTemplateDepartment_Dto>();
@@ -313,6 +622,15 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                             //employmentType.LeaveRequestTemplate = leaveRequestTemplate;
 
                             leaveRequestTemplate.EmploymentTypes.Add(employmentType);
+                        }
+                        leaveRequestTemplate.Holidays = new List<LeaveRequestTemplateHoliday_Dto>();
+                        for (int i = 0; i < lrTemplateVM.LRDeductionHolidaysIds.Length; i++)
+                        {
+                            LeaveRequestTemplateHoliday_Dto holiday = new LeaveRequestTemplateHoliday_Dto();
+                            holiday.HolidayId = lrTemplateVM.LRDeductionHolidaysIds[i];
+                            //employmentType.LeaveRequestTemplate = leaveRequestTemplate;
+
+                            leaveRequestTemplate.Holidays.Add(holiday);
                         }
 
                         ApprovalRouteTemplate_Dto approvalRouteTemplate = new ApprovalRouteTemplate_Dto();
@@ -353,6 +671,30 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                         }
 
                         leaveRequestTemplate.ApprovalRouteTemplate = approvalRouteTemplate;
+                        
+
+                        TaskTemplate_Dto taskTemplate = new TaskTemplate_Dto();
+                        taskTemplate.TaskTemplateItems = new List<TaskTemplateItem_Dto>();
+                        taskTemplate.TaskModule = TaskModule.LeaveRequest;
+
+                        for (int i = 0; i < lrTemplateVM.LRTasks.Count; i++)
+                        {
+                            LeaveRequestTemplateViewModel.LRTaskVM lRTaskVM = lrTemplateVM.LRTasks[i];
+                            TaskTemplateItem_Dto taskTemplateItem = new TaskTemplateItem_Dto();
+
+                            taskTemplateItem.Active = lRTaskVM.Active;
+                            taskTemplateItem.TaskDescription = lRTaskVM.TaskDescription;
+
+                            taskTemplateItem.DepartmentId = lRTaskVM.DepartmentId;
+                            taskTemplateItem.PositionId = lRTaskVM.PositionId;
+                            taskTemplateItem.EmployeeId = lRTaskVM.EmployeeId;
+
+                            taskTemplateItem.RouteIndex = i + 1;
+
+                            taskTemplate.TaskTemplateItems.Add(taskTemplateItem);
+                        }
+
+                        leaveRequestTemplate.TaskTemplate = taskTemplate;
 
                         leaveRequestTemplate.HasAdvanceSalaryRequest = lrTemplateVM.LRAdvanceSalaryAD;
                         leaveRequestTemplate.HasAirTicketRequest = lrTemplateVM.LRAirTicketAD;
@@ -373,7 +715,87 @@ namespace CERP.Web.Areas.HR.Pages.Setup
             }
             return NoContent();
         }
+        
+        public async Task<IActionResult> OnPostHoliday()
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var formData = Request.Form;
 
+                    HolidayViewModel holidayVM = new HolidayViewModel();
+                    holidayVM = JsonSerializer.Deserialize<HolidayViewModel>(formData["info"].ToString());
+
+                    if (holidayVM.IsEditing)
+                    {
+                        Holiday Holiday = await HolidaysAppService.Repository.GetAsync(holidayVM.Id, false);
+                        //leaveRequestTemplate.Id = 0;
+                        //LeaveRequestTemplate_Dto leaveRequestTemplate = new LeaveRequestTemplate_Dto();
+
+                        Holiday.Title = holidayVM.HTitle;
+                        Holiday.TitleLocalized = holidayVM.HTitleLocalized;
+                       
+                        Holiday.HolidayTypeId = holidayVM.HTypeId;
+                        Holiday.IsPublic = holidayVM.IsPublic;
+
+                        if (holidayVM.IsPublic)
+                        {
+                            Holiday.StartDate = holidayVM.HStartDate;
+                            Holiday.EndDate = holidayVM.HEndDate;
+                            Holiday.ReligiousDenominationId = holidayVM.HReligiousDenominationId;
+                        }
+
+                        var holidayUpdated = await HolidaysAppService.Repository.UpdateAsync(Holiday);
+                        var returnHoliday = await HolidaysAppService.GetCustomAsync(holidayUpdated.Id);
+                        return StatusCode(200, returnHoliday);
+                    }
+                    else
+                    {
+                        Holiday_Dto Holiday = new Holiday_Dto();
+                        Holiday.Title = holidayVM.HTitle;
+                        Holiday.TitleLocalized = holidayVM.HTitleLocalized;
+
+                        Holiday.HolidayTypeId = holidayVM.HTypeId;
+                        Holiday.IsPublic = holidayVM.IsPublic;
+
+                        if (holidayVM.IsPublic)
+                        {
+                            Holiday.StartDate = holidayVM.HStartDate;
+                            Holiday.EndDate = holidayVM.HEndDate;
+                            Holiday.ReligiousDenominationId = holidayVM.HReligiousDenominationId;
+                        }
+
+                        var holidayCreated = await HolidaysAppService.CreateCustomAsync(Holiday);
+
+                        return StatusCode(200, holidayCreated);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500);
+                }
+            }
+            return NoContent();
+        }
+
+        public class HolidayViewModel
+        {
+            public HolidayViewModel()
+            {
+                IsEditing = false;
+            }
+            public int Id { get; set; }
+
+            public bool IsEditing { get; set; }
+            public string HTitle { get; set; }
+            public string HTitleLocalized { get; set; }
+            public bool IsPublic { get; set; }
+            public Guid HTypeId { get; set; }
+            public DateTime? HStartDate { get; set; }
+            public DateTime? HEndDate { get; set; }
+            public Guid? HReligiousDenominationId { get; set; }
+        }
         public class LeaveRequestTemplateViewModel
         {
             public LeaveRequestTemplateViewModel()
@@ -384,6 +806,7 @@ namespace CERP.Web.Areas.HR.Pages.Setup
             public void Initialize()
             {
                 LRApprovalRoute.ForEach(x => x.Initialize());
+                LRTasks.ForEach(x => x.Initialize());
             }
 
             public int Id { get; set; }
@@ -393,15 +816,17 @@ namespace CERP.Web.Areas.HR.Pages.Setup
             public string LRTitleLocalized { get; set; }
             public string LRPrefix { get; set; }
             public int LRStartingNo { get; set; }
+            public Guid LRLeaveTypeId { get; set; }
             public int LREntitlementDays { get; set; }
             public Guid[] LRDepartmentIds { get; set; }
             public Guid[] LRPositionsIds { get; set; }
             public Guid[] LREmploymentTypeIds { get; set; }
             public Guid[] LREmployeeStatusIds { get; set; }
 
+            public List<LRTaskVM> LRTasks { get; set; }
             public List<LRApprovalRouteVM> LRApprovalRoute { get; set; }
 
-            public Guid[] LRDeductionHolidaysIds { get; set; }
+            public int[] LRDeductionHolidaysIds { get; set; }
 
             public bool LRAdvanceSalaryAD { get; set; }
             public bool LRExitReentryAD { get; set; }
@@ -431,6 +856,26 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                 public Employee_Dto Employee { get; set; }
                 public Guid? EmployeeId { get; set; }
                 public bool Active { get; set; }
+            }
+            public class LRTaskVM
+            {
+                public void Initialize()
+                {
+                    DepartmentId = Department.Id;
+                    PositionId = Position.Id;
+                    EmployeeId = Employee.Id;
+                }
+
+                public string Id { get; set; }
+                public bool Active { get; set; }
+                public string TaskDescription { get; set; }
+
+                public Department_Dto Department { get; set; }
+                public Guid? DepartmentId { get; set; }
+                public Position_Dto Position { get; set; }
+                public Guid? PositionId { get; set; }
+                public Employee_Dto Employee { get; set; }
+                public Guid? EmployeeId { get; set; }
             }
         }
         public class WorkShiftViewModel

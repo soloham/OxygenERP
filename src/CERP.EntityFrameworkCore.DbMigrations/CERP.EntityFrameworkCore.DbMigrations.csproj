@@ -8,6 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\a\**" />
+    <EmbeddedResource Remove="Migrations\a\**" />
+    <None Remove="Migrations\a\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Migrations\20200228040000_CreatedCOAEntites.cs" />
     <Compile Remove="Migrations\20200228040000_CreatedCOAEntites.Designer.cs" />
     <Compile Remove="Migrations\20200228040812_CreatedCOAEntites.cs" />
@@ -108,6 +114,14 @@
     <Compile Remove="Migrations\20200418074645_LRJoints.Designer.cs" />
     <Compile Remove="Migrations\20200418141030_ApprovalRouteTemplateActiveProp.cs" />
     <Compile Remove="Migrations\20200418141030_ApprovalRouteTemplateActiveProp.Designer.cs" />
+    <Compile Remove="Migrations\20200419233902_LRTemplateLeaveType.cs" />
+    <Compile Remove="Migrations\20200419233902_LRTemplateLeaveType.Designer.cs" />
+    <Compile Remove="Migrations\20200420105702_HolidayAndSchemas.cs" />
+    <Compile Remove="Migrations\20200420105702_HolidayAndSchemas.Designer.cs" />
+    <Compile Remove="Migrations\20200420122447_HolidayInLR.cs" />
+    <Compile Remove="Migrations\20200420122447_HolidayInLR.Designer.cs" />
+    <Compile Remove="Migrations\20200420123035_HolidayInLR.cs" />
+    <Compile Remove="Migrations\20200420123035_HolidayInLR.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -119,10 +133,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations\a\" />
   </ItemGroup>
 
 </Project>

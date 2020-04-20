@@ -374,6 +374,120 @@ namespace CERP.Migrations
                     b.ToTable("DictionaryValueTypes","OxygenERP");
                 });
 
+            modelBuilder.Entity("CERP.App.TaskTemplate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnName("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnName("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnName("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnName("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("TaskModule")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TaskTemplates","OxygenERP");
+                });
+
+            modelBuilder.Entity("CERP.App.TaskTemplateItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnName("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnName("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("DepartmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnName("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnName("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("PositionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("RouteIndex")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TaskDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TaskTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("PositionId");
+
+                    b.HasIndex("TaskTemplateId");
+
+                    b.ToTable("TaskTemplateItems","OxygenERP");
+                });
+
             modelBuilder.Entity("CERP.FM.AccountStatementType", b =>
                 {
                     b.Property<Guid>("Id")
@@ -985,6 +1099,62 @@ namespace CERP.Migrations
                     b.ToTable("Companies","OxygenERP");
                 });
 
+            modelBuilder.Entity("CERP.HR.Attendance.Attendance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnName("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnName("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DateMap")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmployeeIDMap")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnName("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnName("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TimeInMap")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TimeOutMap")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("UseAttendanceSystem")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Attendance","HR");
+                });
+
             modelBuilder.Entity("CERP.HR.Documents.Document", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1276,6 +1446,72 @@ namespace CERP.Migrations
                     b.ToTable("Employees","HR");
                 });
 
+            modelBuilder.Entity("CERP.HR.Holidays.Holiday", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnName("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnName("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("HolidayTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnName("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnName("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ReligiousDenominationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TitleLocalized")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HolidayTypeId");
+
+                    b.HasIndex("ReligiousDenominationId");
+
+                    b.ToTable("Holidays","HR");
+                });
+
             modelBuilder.Entity("CERP.HR.Leaves.LeaveRequestTemplate", b =>
                 {
                     b.Property<int>("Id")
@@ -1329,10 +1565,16 @@ namespace CERP.Migrations
                         .HasColumnName("LastModifierId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("LeaveTypeId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Prefix")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StartingNo")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TaskTemplateId")
                         .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")
@@ -1349,7 +1591,11 @@ namespace CERP.Migrations
 
                     b.HasIndex("ApprovalRouteTemplateId");
 
-                    b.ToTable("LeaveRequestTemplates","OxygenERP");
+                    b.HasIndex("LeaveTypeId");
+
+                    b.HasIndex("TaskTemplateId");
+
+                    b.ToTable("LeaveRequestTemplates","HR");
                 });
 
             modelBuilder.Entity("CERP.HR.Leaves.LeaveRequestTemplateDepartment", b =>
@@ -1396,7 +1642,7 @@ namespace CERP.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.ToTable("LeaveRequestTemplateDepartments","OxygenERP");
+                    b.ToTable("LeaveRequestTemplateDepartments","HR");
                 });
 
             modelBuilder.Entity("CERP.HR.Leaves.LeaveRequestTemplateEmployeeStatus", b =>
@@ -1443,7 +1689,7 @@ namespace CERP.Migrations
 
                     b.HasIndex("EmployeeStatusId");
 
-                    b.ToTable("LeaveRequestTemplateEmployeeStatuses","OxygenERP");
+                    b.ToTable("LeaveRequestTemplateEmployeeStatuses","HR");
                 });
 
             modelBuilder.Entity("CERP.HR.Leaves.LeaveRequestTemplateEmploymentType", b =>
@@ -1490,7 +1736,54 @@ namespace CERP.Migrations
 
                     b.HasIndex("EmploymentTypeId");
 
-                    b.ToTable("LeaveRequestTemplateEmploymentTypes","OxygenERP");
+                    b.ToTable("LeaveRequestTemplateEmploymentTypes","HR");
+                });
+
+            modelBuilder.Entity("CERP.HR.Leaves.LeaveRequestTemplateHoliday", b =>
+                {
+                    b.Property<int>("LeaveRequestTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HolidayId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnName("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnName("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnName("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnName("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("LeaveRequestTemplateId", "HolidayId");
+
+                    b.HasIndex("HolidayId");
+
+                    b.ToTable("LeaveRequestTemplateHolidays","HR");
                 });
 
             modelBuilder.Entity("CERP.HR.Leaves.LeaveRequestTemplatePosition", b =>
@@ -1537,7 +1830,7 @@ namespace CERP.Migrations
 
                     b.HasIndex("PositionId");
 
-                    b.ToTable("LeaveRequestTemplatePositions","OxygenERP");
+                    b.ToTable("LeaveRequestTemplatePositions","HR");
                 });
 
             modelBuilder.Entity("CERP.HR.Timesheets.Timesheet", b =>
@@ -4467,6 +4760,30 @@ namespace CERP.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
+            modelBuilder.Entity("CERP.App.TaskTemplateItem", b =>
+                {
+                    b.HasOne("CERP.Setup.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CERP.HR.Employees.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CERP.Setup.Position", "Position")
+                        .WithMany()
+                        .HasForeignKey("PositionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CERP.App.TaskTemplate", "TaskTemplate")
+                        .WithMany("TaskTemplateItems")
+                        .HasForeignKey("TaskTemplateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("CERP.FM.Branch", b =>
                 {
                     b.HasOne("CERP.FM.Company", "Company")
@@ -4686,11 +5003,37 @@ namespace CERP.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("CERP.HR.Holidays.Holiday", b =>
+                {
+                    b.HasOne("CERP.App.DictionaryValue", "HolidayType")
+                        .WithMany()
+                        .HasForeignKey("HolidayTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CERP.App.DictionaryValue", "ReligiousDenomination")
+                        .WithMany()
+                        .HasForeignKey("ReligiousDenominationId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("CERP.HR.Leaves.LeaveRequestTemplate", b =>
                 {
                     b.HasOne("CERP.App.ApprovalRouteTemplate", "ApprovalRouteTemplate")
                         .WithMany()
                         .HasForeignKey("ApprovalRouteTemplateId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.App.DictionaryValue", "LeaveType")
+                        .WithMany()
+                        .HasForeignKey("LeaveTypeId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.App.TaskTemplate", "TaskTemplate")
+                        .WithMany()
+                        .HasForeignKey("TaskTemplateId")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
                 });
@@ -4735,6 +5078,21 @@ namespace CERP.Migrations
 
                     b.HasOne("CERP.HR.Leaves.LeaveRequestTemplate", "LeaveRequestTemplate")
                         .WithMany("EmploymentTypes")
+                        .HasForeignKey("LeaveRequestTemplateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CERP.HR.Leaves.LeaveRequestTemplateHoliday", b =>
+                {
+                    b.HasOne("CERP.HR.Holidays.Holiday", "Holiday")
+                        .WithMany()
+                        .HasForeignKey("HolidayId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CERP.HR.Leaves.LeaveRequestTemplate", "LeaveRequestTemplate")
+                        .WithMany("Holidays")
                         .HasForeignKey("LeaveRequestTemplateId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
