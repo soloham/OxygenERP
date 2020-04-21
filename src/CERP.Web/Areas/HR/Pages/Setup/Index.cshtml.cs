@@ -173,22 +173,72 @@ namespace CERP.Web.Areas.HR.Pages.Setup
             return StatusCode(200);
         }
 
-        public async Task OnDeleteWorkShift()
+        public async Task<IActionResult> OnDeleteWorkShift()
         {
             List<WorkShift_Dto> workshifts = JsonSerializer.Deserialize<List<WorkShift_Dto>>(Request.Form["workshifts"]);
-            for (int i = 0; i < workshifts.Count; i++)
+            try
             {
-                WorkShift_Dto workshift = workshifts[i];
-                await WorkShiftsAppService.DeleteAsync(workshift.Id);
+                for (int i = 0; i < workshifts.Count; i++)
+                {
+                    WorkShift_Dto workshift = workshifts[i];
+                    await WorkShiftsAppService.DeleteAsync(workshift.Id);
+                }
+                return StatusCode(200);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500);
             }
         }
-        public async Task OnDeleteDeductionMethod()
+        public async Task<IActionResult> OnDeleteDeductionMethod()
         {
             List<DeductionMethod_Dto> deductionMethods = JsonSerializer.Deserialize<List<DeductionMethod_Dto>>(Request.Form["deductionMethods"]);
-            for (int i = 0; i < deductionMethods.Count; i++)
+            try
             {
-                DeductionMethod_Dto deductionMethod = deductionMethods[i];
-                await DeductionMethodsAppService.DeleteAsync(deductionMethod.Id);
+                for (int i = 0; i < deductionMethods.Count; i++)
+                {
+                    DeductionMethod_Dto deductionMethod = deductionMethods[i];
+                    await DeductionMethodsAppService.DeleteAsync(deductionMethod.Id);
+                }
+                return StatusCode(200);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500);
+            }
+        }
+        public async Task<IActionResult> OnDeleteLeaveRequest()
+        {
+            List<LeaveRequestTemplate_Dto> leaveRequests = JsonSerializer.Deserialize<List<LeaveRequestTemplate_Dto>>(Request.Form["leaveRequests"]);
+            try
+            {
+                for (int i = 0; i < leaveRequests.Count; i++)
+                {
+                    LeaveRequestTemplate_Dto leaveRequest = leaveRequests[i];
+                    await LeaveRequestTemplatesAppService.DeleteAsync(leaveRequest.Id);
+                }
+                return StatusCode(200);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500);
+            }
+        }
+        public async Task<IActionResult> OnDeleteHoliday()
+        {
+            List<Holiday_Dto> holidays = JsonSerializer.Deserialize<List<Holiday_Dto>>(Request.Form["holidays"]);
+            try
+            {
+                for (int i = 0; i < holidays.Count; i++)
+                {
+                    Holiday_Dto holiday = holidays[i];
+                    await HolidaysAppService.DeleteAsync(holiday.Id);
+                }
+                return StatusCode(200);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500);
             }
         }
 
@@ -231,7 +281,6 @@ namespace CERP.Web.Areas.HR.Pages.Setup
             }
             return NoContent();
         }
-
         public async Task<IActionResult> OnPostWorkshift()
         {
             if (ModelState.IsValid)
@@ -292,7 +341,6 @@ namespace CERP.Web.Areas.HR.Pages.Setup
             }
             return NoContent();
         }
-
         public async Task<IActionResult> OnPostLeaveRequestTemplate()
         {
             if (ModelState.IsValid)
@@ -715,7 +763,6 @@ namespace CERP.Web.Areas.HR.Pages.Setup
             }
             return NoContent();
         }
-        
         public async Task<IActionResult> OnPostHoliday()
         {
             if (ModelState.IsValid)

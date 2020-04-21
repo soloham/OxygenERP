@@ -52,7 +52,6 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
 
-                b.HasOne(x => x.ApprovalRouteTemplate).WithMany(x => x.ApprovalRouteTemplateItems).OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(x => x.Department).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(x => x.Position).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(x => x.Employee).WithMany().OnDelete(DeleteBehavior.Restrict);
@@ -74,7 +73,6 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
 
-                b.HasOne(x => x.TaskTemplate).WithMany(x => x.TaskTemplateItems).OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(x => x.Department).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(x => x.Position).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(x => x.Employee).WithMany().OnDelete(DeleteBehavior.Restrict);
@@ -804,9 +802,15 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
 
-                b.HasOne(x => x.LeaveType).WithMany().OnDelete(DeleteBehavior.ClientNoAction);
-                b.HasOne(x => x.ApprovalRouteTemplate).WithMany().OnDelete(DeleteBehavior.ClientNoAction);
-                b.HasOne(x => x.TaskTemplate).WithMany().OnDelete(DeleteBehavior.ClientNoAction);
+                b.HasOne(x => x.LeaveType).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.ApprovalRouteTemplate).WithOne().OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.TaskTemplate).WithOne().OnDelete(DeleteBehavior.Cascade);
+
+                b.HasMany(x => x.Departments).WithOne(x => x.LeaveRequestTemplate).OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(x => x.Positions).WithOne(x => x.LeaveRequestTemplate).OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(x => x.EmployeeStatuses).WithOne(x => x.LeaveRequestTemplate).OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(x => x.EmploymentTypes).WithOne(x => x.LeaveRequestTemplate).OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(x => x.Holidays).WithOne(x => x.LeaveRequestTemplate).OnDelete(DeleteBehavior.Cascade);
             });
             builder.Entity<LeaveRequestTemplateDepartment>(b =>
             {
@@ -816,8 +820,8 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureMultiTenant();
 
                 b.HasKey("LeaveRequestTemplateId", "DepartmentId");
-                b.HasOne(x => x.LeaveRequestTemplate).WithMany(x => x.Departments).OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(x => x.Department).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.LeaveRequestTemplate).WithMany(x => x.Departments).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.Department).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
             builder.Entity<LeaveRequestTemplatePosition>(b =>
             {
@@ -827,8 +831,8 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureMultiTenant();
 
                 b.HasKey("LeaveRequestTemplateId", "PositionId");
-                b.HasOne(x => x.LeaveRequestTemplate).WithMany(x => x.Positions).OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(x => x.Position).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.LeaveRequestTemplate).WithMany(x => x.Positions).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.Position).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
             builder.Entity<LeaveRequestTemplateEmployeeStatus>(b =>
             {
@@ -838,8 +842,8 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureMultiTenant();
 
                 b.HasKey("LeaveRequestTemplateId", "EmployeeStatusId");
-                b.HasOne(x => x.LeaveRequestTemplate).WithMany(x => x.EmployeeStatuses).OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(x => x.EmployeeStatus).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.LeaveRequestTemplate).WithMany(x => x.EmployeeStatuses).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.EmployeeStatus).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
             builder.Entity<LeaveRequestTemplateEmploymentType>(b =>
             {
@@ -849,10 +853,9 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureMultiTenant();
 
                 b.HasKey("LeaveRequestTemplateId", "EmploymentTypeId");
-                b.HasOne(x => x.LeaveRequestTemplate).WithMany(x => x.EmploymentTypes).OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(x => x.EmploymentType).WithMany().OnDelete(DeleteBehavior.Restrict);
-            });
-            
+                b.HasOne(x => x.LeaveRequestTemplate).WithMany(x => x.EmploymentTypes).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.EmploymentType).WithMany().OnDelete(DeleteBehavior.NoAction);
+            }); 
             builder.Entity<LeaveRequestTemplateHoliday>(b =>
             {
                 b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplateHolidays", CERPConsts.HRDbSchema);
@@ -861,8 +864,8 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureMultiTenant();
 
                 b.HasKey("LeaveRequestTemplateId", "HolidayId");
-                b.HasOne(x => x.LeaveRequestTemplate).WithMany(x => x.Holidays).OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(x => x.Holiday).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.LeaveRequestTemplate).WithMany(x => x.Holidays).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.Holiday).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
             
             builder.Entity<Attendance>(b =>

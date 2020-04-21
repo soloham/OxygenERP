@@ -7,9 +7,9 @@
 }
 
 <div class="site-content">
-    <ejs-grid id="TestGrid" allowRowDragAndDrop="true" gridLines="Both" allowSorting="true" height="400" rowDrop="RowDrop" toolbar='new List<object>(){ "Add", "Delete", "Cancel" }'>
+    @*<ejs-grid id="TestGrid" allowRowDragAndDrop="true" gridLines="Both" allowSorting="true" height="400" rowDrop="RowDrop" toolbar='new List<object>(){ "Add", "Delete", "Cancel" }'>
         <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
-        @*<e-data-manager url="/api/app/dictionaryValue/getAllCustom" adaptor="WebApiAdaptor"></e-data-manager>*@
+        <e-data-manager url="/api/app/dictionaryValue/getAllCustom" adaptor="WebApiAdaptor"></e-data-manager>
         <e-grid-editsettings allowAdding="true" allowDeleting="true" allowEditing="true" allowEditOnDblClick="true" allowNextRowEdit="true"></e-grid-editsettings>
         <e-grid-columns>
             <e-grid-column width="120" headerText="Id" field="id" visible="false" isPrimaryKey="true"></e-grid-column>
@@ -19,7 +19,7 @@
             <e-grid-column width="120" headerText="Value Type" field="valueType.valueTypeName" allowEditing="false" textAlign="Center"></e-grid-column>
         </e-grid-columns>
 
-    </ejs-grid>
+    </ejs-grid>*@
 
     @*<ejs-grid id="TestGrid" dataSource="@ViewData["DS"]" allowRowDragAndDrop="true" height="400">
         <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
@@ -33,7 +33,7 @@
         </e-grid-columns>
     </ejs-grid>*@
 </div>
-@section styles {
+@*@section styles {
     <link href="~/libs/syncfusion/ej2-grid/styles/fabric.css" rel="stylesheet" />
 
     <style>
@@ -142,4 +142,4 @@
             }
         }
     }
-</script>
+</script>*@

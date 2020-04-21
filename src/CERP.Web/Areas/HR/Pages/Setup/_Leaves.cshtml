@@ -505,9 +505,13 @@
                         </div>
                     </div>
                     <hr />
+
+                    <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
+                        <h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>
+                    </div>
                     <div id="addLRApprovalRouteBtnSection" class="row" style="margin-bottom: 10px">
-                        <div class="col-lg-12">
-                            <button id="addLRApprovalRouteBtn" type="button" class="btn btn-primary btn-block"><i class="fa fa-plus p-r-5"></i> Add To Approval Route</button>
+                        <div class="col-lg-2">
+                            <button id="addLRApprovalRouteBtn" type="button" class="btn btn-default btn-block" style="font-size: 18px"><i class="fa fa-plus p-r-5"></i> Add To Approval Route</button>
                         </div>
                     </div>
                     <div id="addApprovalRouteForm" role="form" data-toggle="validator" style="display: none">
@@ -545,10 +549,6 @@
                             </div>
                         </div>
                     </div>
-                    <hr />
-                    <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
-                        <h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>
-                    </div>
                     <ejs-grid id="LRApprovalRouteGrid" enableAutoFill="true" columns="@lrApprovalRouteGridColumns"
                               dataBound="dataBoundResponsive" commandClick="lrApprovalRouteCommandClick" actionBegin="lrApprovalRouteActionBegin"
                               allowExcelExport="true" allowPdfExport="true"
@@ -563,9 +563,12 @@
                         </e-grid-selectionsettings>
                     </ejs-grid>
                     <hr />
+                    <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
+                        <h3 class="control-label" style="flex-grow: 1; margin:0">Tasks</h3>
+                    </div>
                     <div id="addLRTaskBtnSection" class="row" style="margin-bottom: 10px">
-                        <div class="col-lg-12">
-                            <button id="addLRTaskBtn" type="button" class="btn btn-primary btn-block"><i class="fa fa-plus p-r-5"></i> Add Task</button>
+                        <div class="col-lg-2">
+                            <button id="addLRTaskBtn" type="button" class="btn btn-default btn-block" style="font-size: 18px"><i class="fa fa-plus p-r-5"></i> Add Task</button>
                         </div>
                     </div>
                     <div id="addTaskForm" role="form" data-toggle="validator" style="display: none">
@@ -611,10 +614,6 @@
                             </div>
                         </div>
                     </div>
-                    <hr />
-                    <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
-                        <h3 class="control-label" style="flex-grow: 1; margin:0">Tasks</h3>
-                    </div>
                     <ejs-grid id="LRTasksGrid" enableAutoFill="true" columns="@lrTasksGridColumns"
                               dataBound="dataBoundResponsive" commandClick="lrTaskCommandClick" actionBegin="lrTaskActionBegin"
                               allowExcelExport="true" allowPdfExport="true"
@@ -628,7 +627,7 @@
                         <e-grid-selectionsettings type="Multiple">
                         </e-grid-selectionsettings>
                     </ejs-grid>
-                    <hr />
+                    <hr />  
                     <div class="row">
                         <div class="form-group">
                             <div class="col-sm-3">
@@ -733,7 +732,6 @@
                 contentType: false,
                 processData: false,
                 success: function (data) {
-                    //console.log(data.success);
                     swal.fire("Success", "Leave request(s) successfully deleted", "success");
 
                     if ($('#leaveRequestForm').css('display') !== 'none') {
@@ -879,14 +877,14 @@
         }
     }
     function leaveRequestsToolbarClick(args) {
-        var gridObj = document.getElementById("AllWorkshiftsGrid").ej2_instances[0];
-        if (args.item.id === 'AllWorkshiftsGrid_pdfexport') {
+        var gridObj = document.getElementById("AllLeaveRequestsGrid").ej2_instances[0];
+        if (args.item.id === 'AllLeaveRequestsGrid_pdfexport') {
             gridObj.pdfExport();
         }
-        if (args.item.id === 'AllWorkshiftsGrid_excelexport') {
+        if (args.item.id === 'AllLeaveRequestsGrid_excelexport') {
             gridObj.excelExport();
         }
-        if (args.item.id === 'AllWorkshiftsGrid_csvexport') {
+        if (args.item.id === 'AllLeaveRequestsGrid_csvexport') {
             gridObj.csvExport();
         }
         if (this.getSelectedRecords().length > 0) {

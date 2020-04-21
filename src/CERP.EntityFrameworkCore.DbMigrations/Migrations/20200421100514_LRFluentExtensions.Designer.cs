@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200421100514_LRFluentExtensions")]
+    partial class LRFluentExtensions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1589,13 +1591,11 @@ namespace CERP.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApprovalRouteTemplateId")
-                        .IsUnique();
+                    b.HasIndex("ApprovalRouteTemplateId");
 
                     b.HasIndex("LeaveTypeId");
 
-                    b.HasIndex("TaskTemplateId")
-                        .IsUnique();
+                    b.HasIndex("TaskTemplateId");
 
                     b.ToTable("LeaveRequestTemplates","HR");
                 });
@@ -4696,7 +4696,7 @@ namespace CERP.Migrations
                     b.HasOne("CERP.App.ApprovalRouteTemplate", "ApprovalRouteTemplate")
                         .WithMany("ApprovalRouteTemplateItems")
                         .HasForeignKey("ApprovalRouteTemplateId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CERP.Setup.Department", "Department")
@@ -4782,7 +4782,7 @@ namespace CERP.Migrations
                     b.HasOne("CERP.App.TaskTemplate", "TaskTemplate")
                         .WithMany("TaskTemplateItems")
                         .HasForeignKey("TaskTemplateId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -5022,21 +5022,21 @@ namespace CERP.Migrations
             modelBuilder.Entity("CERP.HR.Leaves.LeaveRequestTemplate", b =>
                 {
                     b.HasOne("CERP.App.ApprovalRouteTemplate", "ApprovalRouteTemplate")
-                        .WithOne()
-                        .HasForeignKey("CERP.HR.Leaves.LeaveRequestTemplate", "ApprovalRouteTemplateId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithMany()
+                        .HasForeignKey("ApprovalRouteTemplateId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
                     b.HasOne("CERP.App.DictionaryValue", "LeaveType")
                         .WithMany()
                         .HasForeignKey("LeaveTypeId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
                     b.HasOne("CERP.App.TaskTemplate", "TaskTemplate")
-                        .WithOne()
-                        .HasForeignKey("CERP.HR.Leaves.LeaveRequestTemplate", "TaskTemplateId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithMany()
+                        .HasForeignKey("TaskTemplateId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
                 });
 
@@ -5045,13 +5045,13 @@ namespace CERP.Migrations
                     b.HasOne("CERP.Setup.Department", "Department")
                         .WithMany()
                         .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
                     b.HasOne("CERP.HR.Leaves.LeaveRequestTemplate", "LeaveRequestTemplate")
                         .WithMany("Departments")
                         .HasForeignKey("LeaveRequestTemplateId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
                 });
 
@@ -5060,13 +5060,13 @@ namespace CERP.Migrations
                     b.HasOne("CERP.App.DictionaryValue", "EmployeeStatus")
                         .WithMany()
                         .HasForeignKey("EmployeeStatusId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
                     b.HasOne("CERP.HR.Leaves.LeaveRequestTemplate", "LeaveRequestTemplate")
                         .WithMany("EmployeeStatuses")
                         .HasForeignKey("LeaveRequestTemplateId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
                 });
 
@@ -5075,13 +5075,13 @@ namespace CERP.Migrations
                     b.HasOne("CERP.App.DictionaryValue", "EmploymentType")
                         .WithMany()
                         .HasForeignKey("EmploymentTypeId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
                     b.HasOne("CERP.HR.Leaves.LeaveRequestTemplate", "LeaveRequestTemplate")
                         .WithMany("EmploymentTypes")
                         .HasForeignKey("LeaveRequestTemplateId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
                 });
 
@@ -5090,13 +5090,13 @@ namespace CERP.Migrations
                     b.HasOne("CERP.HR.Holidays.Holiday", "Holiday")
                         .WithMany()
                         .HasForeignKey("HolidayId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
                     b.HasOne("CERP.HR.Leaves.LeaveRequestTemplate", "LeaveRequestTemplate")
                         .WithMany("Holidays")
                         .HasForeignKey("LeaveRequestTemplateId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
                 });
 
@@ -5105,13 +5105,13 @@ namespace CERP.Migrations
                     b.HasOne("CERP.HR.Leaves.LeaveRequestTemplate", "LeaveRequestTemplate")
                         .WithMany("Positions")
                         .HasForeignKey("LeaveRequestTemplateId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.HasOne("CERP.Setup.Position", "Position")
                         .WithMany()
                         .HasForeignKey("PositionId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
                 });
 
