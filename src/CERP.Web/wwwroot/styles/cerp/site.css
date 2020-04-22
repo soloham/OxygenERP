@@ -387,8 +387,46 @@ vhr {
     background-color: #00b2f0;
     border-color: #00b2f0
 }
+.customContentArea {
+    position: unset !important;
+}
+
+.e-grid .e-headercell {
+    background-color: #dbdbdb;
+    font-weight: 600 !important
+    /*font-size: 18px;*/
+}
+.e-grid .e-headercelldiv {
+    font-weight: 500 !important
+    /*font-size: 18px;*/
+}
+.e-grid .e-tbar-btn-text {
+    display: none !important;
+}
+.e-toolbar .e-toolbar-items .e-toolbar-item .e-tbar-btn.e-btn.e-tbtn-txt .e-icons.e-icon-right.e-btn-icon {
+    padding: 0 1px 0 0;
+}
+.e-toolbar .e-toolbar-items .e-toolbar-item .e-tbar-btn.e-btn.e-tbtn-txt .e-icons.e-btn-icon {
+    padding: 0;
+    font-size: large !important;
+}
+.e-detailcell .e-headercell {
+    background-color: #dbdbdb !important;
+    color: rgb(253,253,253) !important;
+    font-weight: 600 !important
+    /*font-size: 18px;*/
+}
+.e-grid .e-groupheadercell {
+    background-color: #cfcfcf !important;
+    border-color: #c3c3c3 !important;
+}
+.e-grid .e-groupheadercell:hover {
+    background-color: #d8d8d8 !important;
+    border-color: #cecece !important;
+}
 .e-grid .e-groupdroparea {
-    background-color: #00b2f0 !important;
+    background-color: #dedede !important;
+    color: #646464 !important;
     flex: 0 1 auto;
 }
 .e-grid .e-gridheader {
@@ -409,31 +447,31 @@ vhr {
     flex: 1 1 auto;
 }
 .e-hscroll .e-scroll-nav {
-    background-color: #99d6e9 !important;
+    background-color: #d4d4d4 !important;
 }
-.e-hscroll .e-scroll-nav:hover{
-    background-color: #a7e0f2 !important;
+.e-hscroll .e-scroll-nav:hover {
+    background-color: #bebebe !important;
 }
 .e-toolbar .e-tbar-btn:hover {
-    background-color: #6dd4f3 !important;
+    background-color: #dbdbdb !important;
 }
 .e-toolbar .e-tbar-btn {
-    background-color: #5bcff3 !important;
-    color: #ffffff !important;
+    background-color: #eaeaea !important;
+    color: #2e2e2e !important;
 }
 .e-toolbar .e-toolbar-items .e-toolbar-item .e-tbar-btn-text {
-    color: #ffffff !important;
+    color: #2e2e2e !important;
 }
 .e-toolbar .e-icons {
-    color: #ffffff !important;
+    color: #2e2e2e !important;
 }
 .e-grid .e-ccdlg .e-checkbox-wrapper .e-frame {
     /*background-color: #0078d6;
     border-color: #0078d6;*/
-    color: #fff!important;
+    color: #fff !important;
 }
 .e-toolbar, .e-toolbar .e-toolbar-items {
-    background-color: #c0e4ef !important;
+    background-color: #eaeaea !important;
 }
 .e-toggledetailed:before {
     content: '\eb04';
@@ -517,13 +555,73 @@ p{
     font-size:15px;
     font-weight: 400
 }
+.areaForm {
+    padding: 20px;
+    padding-bottom: 15px;
+    box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.05), 0 0px 10px 0 rgba(0, 0, 0, 0.05);
+}
 .areaHeader {
     margin:0;
     width: 100%;
     text-align: center;
     background-color: #5BCFF3;
     color: white;
+    display:flex;
+}
+.areaHeaderTitle {
+    text-shadow: 0px 0px 30px #2c5173;
+    font-size: 22px;
+    font-family: Roboto;
+    font-weight: 300;
+    /*align-self: center;*/
+    flex: auto;
+    background-color: transparent;
+    height: inherit;
+    padding: 5px 0 5px 15px;
 }
 .areaHeader > h3 {
     padding:10px;
+}
+.areaHeaderBtnSec {
+    align-self: center;
+}
+.areaHeaderBtn {
+    padding: 10px 15px 5px 15px;
+    background-color: #53cef2;
+    box-shadow: 0 20px 30px 0 rgba(0, 0, 0, 0.1), 0 0px 0px 0 rgba(0, 0, 0, 0.19);
+    color: white;
+    font-size: 15px;
+    font-family: Roboto;
+    font-weight: 300;
+    margin-top: 0px
+}
+
+.areaHeaderBtn:hover {
+    background-color: #53cef2;
+    box-shadow: 0 20px 30px 0 rgba(0, 0, 0, 0.1), 0 0px 20px 0 rgba(0, 0, 0, 0.19);
+    color: white;
+    font-size: 15.1px;
+    font-family: Roboto;
+    font-weight: 300;
+    margin-top: 0px
+}
+
+.areaHeaderBtn:active {
+    background-color: #53cef2;
+    box-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.1), 0 0px 10px 0 rgba(0, 0, 0, 0.19);
+    color: white;
+    font-size: 15px;
+    font-family: Roboto;
+    font-weight: 300;
+    margin-top: 0px
+}
+
+.areaHeaderBtn:visited {
+    background-color: #53cef2;
+    box-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.1), 0 0px 10px 0 rgba(0, 0, 0, 0.19);
+    color: white;
+    font-size: 15px;
+    font-family: Roboto;
+    font-weight: 300;
+    margin-top: 0px
 }

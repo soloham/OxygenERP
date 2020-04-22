@@ -92,7 +92,7 @@ namespace CERP.Web.Areas.HR.Pages.Documents
 
             return new List<GridColumn>()
             {
-                new GridColumn { Width = "300", HeaderText = "Commands", TextAlign=TextAlign.Center, MinWidth="10", Commands = commands }
+                new GridColumn { Width = "300", HeaderText = "Actions", TextAlign=TextAlign.Center, MinWidth="10", Commands = commands }
             };
         }
         public List<GridColumn> GetPrimaryGridColumns()

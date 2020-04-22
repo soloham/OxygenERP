@@ -4,7 +4,28 @@
 // Write your Javascript code.
 $(document).ready(function () {
     initSettings(); 
+
 });
+function areaHeaderBtnClick(e) {
+    var btn = e.target.closest('.areaHeaderBtn');
+    var btnSec = e.target.closest('.areaHeaderBtnSec');
+    const areaHeader = e.target.closest('.areaHeader');
+    var form = $(areaHeader).next('.areaForm');
+    var isCollapsed = form.css('display') == 'none';
+
+    if (isCollapsed) {
+        $(btnSec).slideUp(200);
+        $(form).slideDown(200);
+        setTimeout(function () { $(btn).html('<i class="fa fa-arrow-up p-r-5"></i> Cancel') }, 200)
+        $(btnSec).slideDown(200);
+
+    } else {    
+        $(btnSec).slideUp(200);
+        $(form).slideUp(200);
+        setTimeout(function () { $(btn).html('<i class="fa fa-plus p-r-5"></i> Add New') }, 200)
+        $(btnSec).slideDown(200);
+    }
+}
 
 // Returns mathematic mod, not javascript mod
 // e.g. gmod(-3, 2) returns 1, whereas -3%2 returns -1

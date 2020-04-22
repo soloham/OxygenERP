@@ -16,11 +16,13 @@ namespace CERP.AppServices.App.ApprovalRouteService
 {
     public class ApprovalRouteTemplateItemsAppService : CrudAppService<ApprovalRouteTemplateItem, ApprovalRouteTemplate_Dto, int, PagedAndSortedResultRequestDto, ApprovalRouteTemplateItem_Dto, ApprovalRouteTemplateItem_Dto>
     {
-        public ApprovalRouteTemplateItemsAppService(IRepository<ApprovalRouteTemplateItem, int> repository) : base(repository)
+        public ApprovalRouteTemplateItemsAppService(IRepository<ApprovalRouteTemplateItem, int> repository, IRepository<ApprovalRouteTemplateItemEmployee> employeesRepository) : base(repository)
         {
             Repository = repository;
+            EmployeesRepository = employeesRepository;
         }
 
         public IRepository<ApprovalRouteTemplateItem, int> Repository { get; }
+        public IRepository<ApprovalRouteTemplateItemEmployee> EmployeesRepository { get; }
     }
 }

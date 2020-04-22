@@ -50,33 +50,38 @@ namespace CERP.EntityFrameworkCore
                 options.Entity<ApprovalRouteTemplate>(opt =>
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.ApprovalRouteTemplateItems)
-                                                        .ThenInclude(x => x.Department)
-                                                       .Include(p => p.ApprovalRouteTemplateItems)
-                                                        .ThenInclude(x => x.Position)
-                                                       .Include(p => p.ApprovalRouteTemplateItems)
+                                                        .ThenInclude(x => x.ApprovalRouteItemEmployees)
                                                         .ThenInclude(x => x.Employee);
                 });
                 options.Entity<ApprovalRouteTemplateItem>(opt =>
                 {
-                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.Department)
-                                                       .Include(p => p.Position)
-                                                       .Include(p => p.Employee);
+                    opt.DefaultWithDetailsFunc = q => q.Include(x => x.ApprovalRouteItemEmployees)
+                                                       .ThenInclude(x => x.Employee);
+                });
+                options.Entity<ApprovalRouteTemplateItemEmployee>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(x => x.Employee);
                 });
 
                 options.Entity<TaskTemplate>(opt =>
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.TaskTemplateItems)
+                                                        .ThenInclude(x => x.TaskEmployees)
+                                                        .ThenInclude(x => x.Employee)
                                                         .ThenInclude(x => x.Department)
                                                        .Include(p => p.TaskTemplateItems)
-                                                        .ThenInclude(x => x.Position)
-                                                       .Include(p => p.TaskTemplateItems)
-                                                        .ThenInclude(x => x.Employee);
+                                                        .ThenInclude(x => x.TaskEmployees)
+                                                        .ThenInclude(x => x.Employee)
+                                                        .ThenInclude(x => x.Position);
                 });
                 options.Entity<TaskTemplateItem>(opt =>
                 {
-                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.Department)
-                                                       .Include(p => p.Position)
-                                                       .Include(p => p.Employee);
+                    opt.DefaultWithDetailsFunc = q => q.Include(x => x.TaskEmployees)
+                                                        .ThenInclude(x => x.Employee)
+                                                        .ThenInclude(x => x.Department)
+                                                       .Include(x => x.TaskEmployees)
+                                                        .ThenInclude(x => x.Employee)
+                                                        .ThenInclude(x => x.Position);
                 });
 
                 options.Entity<COA_Account>(opt =>
@@ -214,14 +219,20 @@ namespace CERP.EntityFrameworkCore
 
                 options.Entity<LeaveRequestTemplate>(opt =>
                 {
-                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.ApprovalRouteTemplate).ThenInclude(p => p.ApprovalRouteTemplateItems)
-                                                      .Include(p => p.TaskTemplate).ThenInclude(p => p.TaskTemplateItems)
-                                                      .Include(p => p.LeaveType)
-                                                      .Include(p => p.Departments)
-                                                      .Include(p => p.Positions)
-                                                      .Include(p => p.EmployeeStatuses)
-                                                      .Include(p => p.EmploymentTypes)
-                                                      .Include(p => p.Holidays);
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.ApprovalRouteTemplate)
+                                                        .ThenInclude(p => p.ApprovalRouteTemplateItems)
+                                                        .ThenInclude(p => p.ApprovalRouteItemEmployees)
+                                                       .Include(p => p.ApprovalRouteTemplate)
+                                                        .ThenInclude(p => p.ApprovalRouteTemplateItems)
+                                                        .ThenInclude(p => p.TaskTemplate)
+                                                        .ThenInclude(p => p.TaskTemplateItems)
+                                                        .ThenInclude(p => p.TaskEmployees)
+                                                       .Include(p => p.LeaveType)
+                                                       .Include(p => p.Departments)
+                                                       .Include(p => p.Positions)
+                                                       .Include(p => p.EmployeeStatuses)
+                                                       .Include(p => p.EmploymentTypes)
+                                                       .Include(p => p.Holidays);
                 });
 
                 options.Entity<Holiday>(opt =>

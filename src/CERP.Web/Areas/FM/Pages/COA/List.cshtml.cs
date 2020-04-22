@@ -208,7 +208,7 @@ namespace CERP.Web.Areas.FM.COA
 
             return new List<GridColumn>()
             {
-                new GridColumn { Width = "200", HeaderText = "Commands", TextAlign=TextAlign.Center, MinWidth="10", Commands = commands }
+                new GridColumn { Width = "200", HeaderText = "Actions", TextAlign=TextAlign.Center, MinWidth="10", Commands = commands }
             };
         }
 

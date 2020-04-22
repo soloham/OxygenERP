@@ -20,33 +20,10 @@
     string TabPlaceholder = "Area";
 }
 @section Styles {
-    <link href="~/libs/smartwizard/dist/css/smart_wizard.min.css" rel="stylesheet" />
-    <link href="~/libs/smartwizard/dist/css/smart_wizard_theme_arrows.min.css" rel="stylesheet" />
-    <link href="~/libs/syncfusion/ej2-grid/styles/fabric.css" rel="stylesheet" />
+    
 
-    <style>
-        .customContentArea {
-            position: unset !important;
-        }
-
-        .e-grid .e-headercell {
-            background-color: #dbdbdb;
-            font-weight: 600
-            /*font-size: 18px;*/
-        }
-
-        .e-detailcell .e-headercell {
-            background-color: #dbdbdb !important;
-            color: rgb(253,253,253);
-            font-weight: 600
-            /*font-size: 18px;*/
-        }
-    </style>
 }
 @section scripts {
-    <!-- Syncfusion Essential JS 2 Scripts -->
-    <script src="~/libs/smartwizard/dist/js/jquery.smartWizard.min.js"></script>
-    <script src="~/libs/syncfusion/ej2-grid/scripts/ej2.min.js"></script>
     <script type="text/javascript">
         var departments = [];
         $(document).ready(function () {
@@ -185,9 +162,7 @@
                 $("#next-btn").removeClass('disabled');
             });
         });
-
     </script>
-    <ejs-scripts></ejs-scripts>
 }
 <partial name="_DefaultPageHeader" />
 <div class="site-content customContentArea">

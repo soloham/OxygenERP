@@ -52,9 +52,19 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
 
-                b.HasOne(x => x.Department).WithMany().OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(x => x.Position).WithMany().OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(x => x.Employee).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(x => x.TaskTemplate).WithOne(x => x.ApprovalRouteTemplateItem).OnDelete(DeleteBehavior.Restrict);
+                b.HasMany(x => x.ApprovalRouteItemEmployees).WithOne(x => x.ApprovalRouteTemplateItem).OnDelete(DeleteBehavior.Restrict);
+            });
+            builder.Entity<ApprovalRouteTemplateItemEmployee>(b =>
+            {
+                b.ToTable(CERPConsts.DbTablePrefix + "ApprovalRouteTemplateItemEmployees", CERPConsts.DbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureMultiTenant();
+
+                b.HasKey("ApprovalRouteTemplateItemId", "EmployeeId");
+                b.HasOne(x => x.ApprovalRouteTemplateItem).WithMany(x => x.ApprovalRouteItemEmployees).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.Employee).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
 
             builder.Entity<TaskTemplate>(b =>
@@ -73,11 +83,20 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
 
-                b.HasOne(x => x.Department).WithMany().OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(x => x.Position).WithMany().OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(x => x.Employee).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasMany(x => x.TaskEmployees).WithOne(x => x.TaskTemplateItem).OnDelete(DeleteBehavior.Restrict);
             });
-            
+            builder.Entity<TaskTemplateItemEmployee>(b =>
+            {
+                b.ToTable(CERPConsts.DbTablePrefix + "TaskTemplateItemEmployees", CERPConsts.HRDbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureMultiTenant();
+
+                b.HasKey("TaskTemplateItemId", "EmployeeId");
+                b.HasOne(x => x.TaskTemplateItem).WithMany(x => x.TaskEmployees).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.Employee).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+
             builder.Entity<CustomEntityChange>(b =>
             {
                 b.ToTable(CERPConsts.DbTablePrefix + "CustomEntityChanges", CERPConsts.DbSchema);
@@ -804,7 +823,6 @@ namespace CERP.EntityFrameworkCore
 
                 b.HasOne(x => x.LeaveType).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(x => x.ApprovalRouteTemplate).WithOne().OnDelete(DeleteBehavior.Cascade);
-                b.HasOne(x => x.TaskTemplate).WithOne().OnDelete(DeleteBehavior.Cascade);
 
                 b.HasMany(x => x.Departments).WithOne(x => x.LeaveRequestTemplate).OnDelete(DeleteBehavior.Cascade);
                 b.HasMany(x => x.Positions).WithOne(x => x.LeaveRequestTemplate).OnDelete(DeleteBehavior.Cascade);

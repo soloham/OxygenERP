@@ -24,6 +24,7 @@ namespace CERP.AppServices.App.TaskService
 
         public IRepository<TaskTemplate, int> Repository { get; }
         public IRepository<TaskTemplateItem, int> ItemsRepository { get; }
+        public IRepository<TaskTemplateItemEmployee> EmployeesRepository { get; set; }
 
         public async Task<TaskTemplate_Dto> GetFull(int id)
         {

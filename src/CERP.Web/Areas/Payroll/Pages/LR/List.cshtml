@@ -21,25 +21,15 @@
     var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search",new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
 }
 @section styles {
-    <link href="~/libs/syncfusion/ej2-grid/styles/fabric.css" rel="stylesheet" />
+    
 
     <style>
-        .e-grid .e-headercell {
-            background-color: #f5f5f5;
-            /*font-size: 18px;*/
-        }
-
-        .e-detailcell .e-headercell {
-            background-color: #6691b1 !important;
-            color: rgb(253,253,253);
-            /*font-size: 18px;*/
-        }
 
     </style>
 }
 @section scripts {
     <!-- Syncfusion Essential JS 2 Scripts -->
-    <script src="~/libs/syncfusion/ej2-grid/scripts/ej2.min.js"></script>
+    
     <script>
         $(document).ready(function () {
             if ('@isReconDS' == 'True')
@@ -104,7 +94,7 @@
                 });
 
     </script>
-    <ejs-scripts></ejs-scripts>
+    
 
 }
 <partial name="_DefaultPageHeader" />

@@ -165,8 +165,8 @@
     //var coaInput = Model.COAInput;
 }
 @section styles {
-    <link href="~/libs/smartwizard/dist/css/smart_wizard.min.css" rel="stylesheet" />
-    <link href="~/libs/smartwizard/dist/css/smart_wizard_theme_arrows.min.css" rel="stylesheet" />
+    
+    
     @if ((bool)ViewData["IsEditing"])
     {
         <link href="~/libs/smartwizard/dist/css/smart_wizard_theme_circles.min.css" rel="stylesheet" />
@@ -174,13 +174,9 @@
     else
     {
     }
-    <link href="~/libs/syncfusion/ej2-grid/styles/fabric.css" rel="stylesheet" />
+    
 
     <style>
-        .e-grid .e-headercell {
-            background-color: #f5f5f5;
-            /*font-size: 18px;*/
-        }
 
         .customContentArea {
             position: unset !important;
@@ -189,8 +185,7 @@
 }
 @section scripts {
 
-    <script src="~/libs/smartwizard/dist/js/jquery.smartWizard.min.js"></script>
-    <script src="~/libs/syncfusion/ej2-grid/scripts/ej2.min.js"></script>
+    
 
     @*<script src="~/libs/syncfusion/ej2-according/scripts/ej2-according.min.js"></script>*@
     <script type="text/javascript">
@@ -1697,7 +1692,7 @@
             });
         });
     </script>
-    <ejs-scripts></ejs-scripts>
+    
 }
 
 

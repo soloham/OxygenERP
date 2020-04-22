@@ -21,5 +21,8 @@ namespace CERP.App
         public TaskModule TaskModule { get; set; }
 
         public virtual ICollection<TaskTemplateItem> TaskTemplateItems { get; set; }
+
+        public virtual ApprovalRouteTemplateItem? ApprovalRouteTemplateItem { get; set; }
+        public int? ApprovalRouteTemplateItemId { get; set; }
     }
 }

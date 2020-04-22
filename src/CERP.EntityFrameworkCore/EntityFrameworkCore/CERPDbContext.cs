@@ -40,9 +40,11 @@ namespace CERP.EntityFrameworkCore
 
         public DbSet<ApprovalRouteTemplate> ApprovalRouteTemplates { get; set; }
         public DbSet<ApprovalRouteTemplateItem> ApprovalRouteTemplateItems { get; set; }
+        public DbSet<ApprovalRouteTemplateItemEmployee> ApprovalRouteTemplateItemEmployees { get; set; }
 
         public DbSet<TaskTemplate> TaskTemplates { get; set; }
         public DbSet<TaskTemplateItem> TaskTemplateItems { get; set; }
+        public DbSet<TaskTemplateItemEmployee> TaskTemplateItemEmployees { get; set; }
 
         public DbSet<CustomEntityChange> CustomEntityChanges { get; set; }
         public DbSet<CustomEntityPropertyChange> CustomEntityPropertyChanges { get; set; }
@@ -80,6 +82,7 @@ namespace CERP.EntityFrameworkCore
         public DbSet<SIContribution> SIContributions { get; set; }
 
         public DbSet<PayrunDetailIndemnity> PayrunDetailIndemnities { get; set; }
+
         public DbSet<LeaveRequestTemplate> LeaveRequestTemplates { get; set; }
         public DbSet<LeaveRequestTemplateDepartment> LeaveRequestTemplateDepartment { get; set; }
         public DbSet<LeaveRequestTemplatePosition> LeaveRequestTemplatePosition { get; set; }

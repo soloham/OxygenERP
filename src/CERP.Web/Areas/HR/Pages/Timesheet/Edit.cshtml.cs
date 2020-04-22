@@ -197,7 +197,7 @@ namespace CERP.Web.Areas.HR.Pages.TimeSheets
 
             return new List<GridColumn>()
             {
-                new GridColumn { Width = "65", HeaderText = "Commands", TextAlign=TextAlign.Center, MinWidth="10", Commands = commands }
+                new GridColumn { Width = "65", HeaderText = "Actions", TextAlign=TextAlign.Center, MinWidth="10", Commands = commands }
             };
         }
         public List<GridColumn> GetPrimaryGridColumns()

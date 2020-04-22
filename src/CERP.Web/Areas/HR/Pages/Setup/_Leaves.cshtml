@@ -15,7 +15,7 @@
     });
 
     List<GridColumn> leaveRequestsGridColumns = new List<GridColumn>()
-    {
+{
         new GridColumn { Field = "id", Width = "80", HeaderText = "", Visible=false, ShowInColumnChooser=false, TextAlign=TextAlign.Center, MinWidth="10", IsPrimaryKey=true  },
         new GridColumn { Field = "title", Width = "110", HeaderText = "Title", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "titleLocalized", Width = "110", HeaderText = "Title (In Arabic)", TextAlign=TextAlign.Center,  MinWidth="10"  },
@@ -38,7 +38,7 @@
                 new GridColumn { Field = "hasAttachmentRequirement", Width = "110", DisplayAsCheckBox=true, HeaderText = "Attachment", TextAlign=TextAlign.Center,  MinWidth="10"  },
             }
         },
-        new GridColumn { Width = "150", HeaderText = "Commands", TextAlign=TextAlign.Center, MinWidth="10", Commands = leaveRequestsCommands }
+        new GridColumn { Width = "150", HeaderText = "Actions", TextAlign=TextAlign.Center, MinWidth="10", Commands = leaveRequestsCommands }
     };
 
     List<object> lrApprovalRouteCommands = new List<object>();
@@ -50,13 +50,15 @@
     lrApprovalRouteCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
 
     List<GridColumn> lrApprovalRouteGridColumns = new List<GridColumn>()
-    {
+{
         new GridColumn { Field = "id", Visible=false, ShowInColumnChooser=false, IsPrimaryKey=true  },
         new GridColumn { Field = "routeIndex", Visible = false, HeaderText = "Route Index", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "active", AllowSorting = false, AutoFit=true, HeaderText = "Active", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "department.name", AllowSorting = false, AutoFit=true, HeaderText = "Department", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "position.title", AllowSorting = false, AutoFit=true, HeaderText = "Position", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "employee.name", AllowSorting = false,AutoFit=true, HeaderText = "Employee", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "nofityEmployee", AllowSorting = false, AutoFit=true, HeaderText = "Notify", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "isPoster", AllowSorting = false, AutoFit=true, HeaderText = "Poster", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "getAllDepartmentNames", AllowSorting = false, AutoFit=true, HeaderText = "Department", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "getAllPositionTitles", AllowSorting = false, AutoFit=true, HeaderText = "Position", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "getAllEmployeeNames", AllowSorting = false,AutoFit=true, HeaderText = "Employee", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Width = "50", HeaderText = "Actions", TextAlign=TextAlign.Center, MinWidth="10", Commands = lrApprovalRouteCommands }
     };
 
@@ -69,22 +71,23 @@
     lrTasksCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
 
     List<GridColumn> lrTasksGridColumns = new List<GridColumn>()
-    {
+{
         new GridColumn { Field = "id", Visible=false, ShowInColumnChooser=false, IsPrimaryKey=true  },
         new GridColumn { Field = "routeIndex", Visible = false, HeaderText = "Route Index", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "active", AllowSorting = false, AutoFit=true, HeaderText = "Active", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "department.name", AllowSorting = false, AutoFit=true, HeaderText = "Department", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "position.title", AllowSorting = false, AutoFit=true, HeaderText = "Position", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "employee.name", AllowSorting = false,AutoFit=true, HeaderText = "Employee", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "notifyEmployee", AllowSorting = false, AutoFit=true, HeaderText = "Notify", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "getAllDepartmentNames", AllowSorting = false, AutoFit=true, HeaderText = "Department", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "getAllPositionTitles", AllowSorting = false, AutoFit=true, HeaderText = "Position", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "getAllEmployeeNames", AllowSorting = false,AutoFit=true, HeaderText = "Employee", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "taskDescription", AllowSorting = false, AutoFit=true, HeaderText = "Description", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Width = "50", HeaderText = "Actions", TextAlign=TextAlign.Center, MinWidth="10", Commands = lrTasksCommands }
     };
 }
-    <script>
+<script>
         isEditingLR = false;
         isEditingLRLoaded = false;
         var curLREditRow;
-        
+
         $(document).ready(function () {
             var lrGrid = $("#AllLeaveRequestsGrid")[0].ej2_instances[0];
             lrGrid.showSpinner();
@@ -98,14 +101,14 @@
                 var leaveTypes = [];
                 $.each(data, function (i, d) {
                     leaveTypes.push({ label: d.value, value: d.id });
-                }); 
+                });
                 $("#lrLeaveTypeId").multiselect('dataprovider', leaveTypes);
             });
             cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.EmployeeType).done(function (data) {
                 var employmentTypes = [];
                 $.each(data, function (i, d) {
                     employmentTypes.push({ label: d.value, value: d.id });
-                }); 
+                });
                 $("#lrEmploymentTypeId").multiselect('dataprovider', employmentTypes);
             });
             cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.EmployeeStatus).done(function (data) {
@@ -142,95 +145,110 @@
             //});
 
             $('#addLeaveRequestBtn').on('click', function () {
-                var isCollapsed = $('#leaveRequestForm').css('display') == 'none';
+                $('#submitLeaveRequestBtn').val('Add Leave Request');
 
-                if (isCollapsed) {
-                    curLREditRow = null;
-                    isEditingLR = false;
-                    isEditingLRLoaded = false;
+                $('#lrTitle').val('');
+                $('#lrTitleLocalized').val('');
+                $('#lrPrefix').val('');
+                $('#lrStartingNo').val('');
+                $('#lrEntitlementDays').val('');
 
-                    $('#submitLeaveRequestBtn').val('Add Leave Request');
+                //$('#lrLeaveTypeId').multiselect('deselectAll', false);
+                //$('#lrLeaveTypeId').multiselect('updateButtonText');
 
-                    $('#addLeaveRequestBtnSection').slideUp(200);
-                    $('#leaveRequestForm').slideDown(200);
-                    setTimeout(function () { $('#addLeaveRequestBtn', '#addLeaveRequestBtnSection').html('<i class="fa fa-arrow-up p-r-5"></i> Cancel Add') }, 200)
-                    $('#addLeaveRequestBtnSection').slideDown(200);
+                $('#lrDepartmentId').multiselect('deselectAll', false);
+                $('#lrDepartmentId').multiselect('updateButtonText');
+                $('#lrPositionId').multiselect('deselectAll', false);
+                $('#lrPositionId').multiselect('updateButtonText');
+                $('#lrEmploymentTypeId').multiselect('deselectAll', false);
+                $('#lrEmploymentTypeId').multiselect('updateButtonText');
+                $('#lrEmployeeStatusId').multiselect('deselectAll', false);
+                $('#lrEmployeeStatusId').multiselect('updateButtonText');
 
-                    $('#lrTitle').val('');
-                    $('#lrTitleLocalized').val('');
-                    $('#lrPrefix').val('');
-                    $('#lrStartingNo').val('');
-                    $('#lrEntitlementDays').val('');
+                $('#lrHolidaysDeductionIds').multiselect('deselectAll', false);
+                $('#lrHolidaysDeductionIds').multiselect('updateButtonText');
 
-                    //$('#lrLeaveTypeId').multiselect('deselectAll', false);
-                    //$('#lrLeaveTypeId').multiselect('updateButtonText');
-
-                    $('#lrDepartmentId').multiselect('deselectAll', false);
-                    $('#lrDepartmentId').multiselect('updateButtonText');
-                    $('#lrPositionId').multiselect('deselectAll', false);
-                    $('#lrPositionId').multiselect('updateButtonText');
-                    $('#lrEmploymentTypeId').multiselect('deselectAll', false);
-                    $('#lrEmploymentTypeId').multiselect('updateButtonText');
-                    $('#lrEmployeeStatusId').multiselect('deselectAll', false);
-                    $('#lrEmployeeStatusId').multiselect('updateButtonText');
-
-                    $('#lrHolidaysDeductionIds').multiselect('deselectAll', false);
-                    $('#lrHolidaysDeductionIds').multiselect('updateButtonText');
-
-                    cERP.appServices.hR.holidayService.holidays.getAll().done(function (data) {
-                        var holidays = [];
-                        $.each(data, function (i, d) {
-                            holidays.push({ label: d.title, value: d.id });
-                        });
-                        $("#lrHolidaysDeductionIds").multiselect('dataprovider', holidays);
+                cERP.appServices.hR.holidayService.holidays.getAll().done(function (data) {
+                    var holidays = [];
+                    $.each(data, function (i, d) {
+                        holidays.push({ label: d.title, value: d.id });
                     });
+                    $("#lrHolidaysDeductionIds").multiselect('dataprovider', holidays);
+                });
 
-                    var apGrid = $("#LRApprovalRouteGrid")[0].ej2_instances[0];
-                    apGrid.dataSource = [];
-                    apGrid.dataSource.push({ id: 0, active: true, isDepartmentHead:true, department: { id: "@Guid.Empty", name: "Selected" }, position: { id: "@Guid.Empty", title: "Head" }, employee: { id: "@Guid.Empty", name: "Auto" } })
-                    apGrid.dataSource.push({ id: 1, active: true, isReportingTo:true, department: { id: "@Guid.Empty", name: "Selected" }, position: { id: "@Guid.Empty", title: "Auto" }, employee: { id: "@Guid.Empty", name: "Auto [Reporting To]" } })
-                    apGrid.refresh();
+                var apGrid = $("#LRApprovalRouteGrid")[0].ej2_instances[0];
+                apGrid.dataSource = [];
+                apGrid.dataSource.push({ id: 0, active: true, isDepartmentHead:true, department: { id: "@Guid.Empty", name: "Selected" }, position: { id: "@Guid.Empty", title: "Head" }, employee: { id: "@Guid.Empty", name: "Auto" } })
+                apGrid.dataSource.push({ id: 1, active: true, isReportingTo:true, department: { id: "@Guid.Empty", name: "Selected" }, position: { id: "@Guid.Empty", title: "Auto" }, employee: { id: "@Guid.Empty", name: "Auto [Reporting To]" } })
+                apGrid.refresh();
 
-                    var tasksGrid = $("#LRTasksGrid")[0].ej2_instances[0];
-                    tasksGrid.dataSource = [];
-                } else {
-                    $('#addLeaveRequestBtnSection').slideUp(200);
-                    $('#leaveRequestForm').slideUp(200);
-                    setTimeout(function () { $('#addLeaveRequestBtn', '#addLeaveRequestBtnSection').html('<i class="fa fa-plus p-r-5"></i> Add Leave Request') }, 200)
-                    $('#addLeaveRequestBtnSection').slideDown(200);
-                }
+                var tasksGrid = $("#LRTasksGrid")[0].ej2_instances[0];
+                tasksGrid.dataSource = [];
             });
 
-            $('#addLRApprovalRouteBtn').on('click', function () {
-                var isCollapsed = $('#addApprovalRouteForm').css('display') == 'none';
-
-                if (isCollapsed) {
-                    $('#addLRApprovalRouteBtnSection').slideUp(200);
-                    $('#addApprovalRouteForm').slideDown(200);
-                    setTimeout(function () { $('#addLRApprovalRouteBtn', '#addLRApprovalRouteBtnSection').html('<i class="fa fa-arrow-up p-r-5"></i> Cancel Add') }, 200)
-                    $('#addLRApprovalRouteBtnSection').slideDown(200);
-
-                } else {
-                    $('#addLRApprovalRouteBtnSection').slideUp(200);
-                    $('#addApprovalRouteForm').slideUp(200);
-                    setTimeout(function () { $('#addLRApprovalRouteBtn', '#addLRApprovalRouteBtnSection').html('<i class="fa fa-plus p-r-5"></i> Add To Arroval Route') }, 200)
-                    $('#addLRApprovalRouteBtnSection').slideDown(200);
-                }
-            });
+            
             $("#addToApprovalRouteBtn").on('click', function (args) {
                 var apGrid = $("#LRApprovalRouteGrid")[0].ej2_instances[0];
-                var depId = $("#apDepartmentId").val();
-                var posId = $("#apPositionId").val();
-                var empId = $("#apEmployeeId").val();
-                if (depId == '' || posId == '' || empId == '' || apGrid.dataSource.filter(function (e) { return e.employee.id === empId; }).length > 0)
+                //var depIds = $("#apDepartmentId").val();
+                //var posIds = $("#apPositionId").val();
+                var emps = $("#apEmployeeId").val();
+                if (depId == '' || posId == '' || empId == '' || apGrid.dataSource.filter(function (e) { return e.employees.id === empId; }).length > 0)
                     return;
-                var apRoute = {
-                    id: empId,
-                    active: true,
-                    department: { id: depId, name: $("#apDepartmentId option:selected").text() },
-                    position: { id: posId, title: $("#apPositionId option:selected").text() },
-                    employee: { id: empId, name: $("#apEmployeeId option:selected").text() }
+
+                var isActive = $("#APIsActive").parent().hasClass('active');
+                var notifyEmployee = $("#APNotify").parent().hasClass('active');
+                var isPoster = $("#APIsPoster").parent().hasClass('active');
+
+                var employees = [];
+                for (var i = 0; i < emps.length; i++) {
+                    var emp = emps[i];
+                    employees.push(
+                        {
+                            id: emp.id,
+                            name: emp.name,
+                            department: { id: emp.departmentId, name: emp.depName },
+                            position: { id: emp.positionId, title: emp.posName }
+                        }
+                    );
                 }
+                function getAllEmployeeNames() {
+                    var names = '';
+                    for (var i = 0; i < this.employees.length; i++) {
+                        names += this.employees[i].name + (i == this.employees.length)? '' : ', ';
+                    }
+                    return names;
+                }
+                function getAllPositionTitles() {
+                    var titles = '';
+                    for (var i = 0; i < this.employees.length; i++) {
+                        titles += this.employees[i].position.name + (i == this.employees.length) ? '' : ', ';
+                    }
+                    return titles;
+                }
+                function getAllDepartmentNames() {
+                    var names = '';
+                    for (var i = 0; i < this.employees.length; i++) {
+                        names += this.employees[i].department.name + (i == this.employees.length) ? '' : ', ';
+                    }
+                    return names;
+                }
+
+                var tasks = $('#LRTasksGrid')[0].ej2_instances[0].dataSource;
+
+                var apRoute = {
+                    id: '',
+                    active: isActive,
+                    //isAny: isAny,
+                    isAny: true,
+                    notifyEmployee: notifyEmployee,
+                    isPoster: isPoster,
+                    employees: employees,
+                    tasks: tasks,
+                    getAllEmployeeNames: getAllEmployeeNames,
+                    getAllPositionTitles: getAllPositionTitles,
+                    getAllDepartmentNames: getAllDepartmentNames
+                }
+                apRoute.id = apRoute.getAllEmployeeNames;
                 apGrid.dataSource.push(apRoute);
                 apGrid.refresh();
             })
@@ -253,20 +271,62 @@
             });
             $("#addTaskBtn").on('click', function (args) {
                 var taskGrid = $("#LRTasksGrid")[0].ej2_instances[0];
-                var depId = $("#taskDepartmentId").val();
-                var posId = $("#taskPositionId").val();
-                var empId = $("#taskEmployeeId").val();
+                var depIds = $("#taskDepartmentId").val();
+                var posIds = $("#taskPositionId").val();
+                var emps = $("#taskEmployeeId").val();
                 var taskDescription = $("#lrTaskDescription").val();
                 if (depId == '' || posId == '' || empId == '' || taskDescription == '' || (taskGrid.dataSource.length > 0 && taskGrid.dataSource.filter(function (e) { return e.employee.id === empId; }).length > 0))
                     return;
-                var task = {
-                    id: empId,
-                    active: true,
-                    taskDescription: taskDescription,
-                    department: { id: depId, name: $("#taskDepartmentId option:selected").text() },
-                    position: { id: posId, title: $("#taskPositionId option:selected").text() },
-                    employee: { id: empId, name: $("#taskEmployeeId option:selected").text() }
+
+                var isActive = $("#taskIsActive").parent().hasClass('active');
+                var notifyEmployee = $("#taskNotify").parent().hasClass('active');
+
+                var employees = [];
+                for (var i = 0; i < emps.length; i++) {
+                    var emp = emps[i];
+                    employees.push(
+                        {
+                            id: emp.id,
+                            name: emp.name,
+                            department: { id: emp.departmentId, name: emp.depName },
+                            position: { id: emp.positionId, title: emp.posName }
+                        }
+                    );
                 }
+                function getAllEmployeeNames() {
+                    var names = '';
+                    for (var i = 0; i < this.employees.length; i++) {
+                        names += this.employees[i].name + (i == this.employees.length) ? '' : ', ';
+                    }
+                    return names;
+                }
+                function getAllPositionTitles() {
+                    var titles = '';
+                    for (var i = 0; i < this.employees.length; i++) {
+                        titles += this.employees[i].position.name + (i == this.employees.length) ? '' : ', ';
+                    }
+                    return titles;
+                }
+                function getAllDepartmentNames() {
+                    var names = '';
+                    for (var i = 0; i < this.employees.length; i++) {
+                        names += this.employees[i].department.name + (i == this.employees.length) ? '' : ', ';
+                    }
+                    return names;
+                }
+
+                var task = {
+                    id: '',
+                    active: isActive,
+                    //isAny: isAny,
+                    isAny: true,
+                    notifyEmployee: notifyEmployee,
+                    employees: employees,
+                    getAllEmployeeNames: getAllEmployeeNames,
+                    getAllPositionTitles: getAllPositionTitles,
+                    getAllDepartmentNames: getAllDepartmentNames
+                }
+                task.id = task.getAllEmployeeNames;
                 taskGrid.dataSource.push(task);
                 taskGrid.refresh();
             })
@@ -291,8 +351,6 @@
                     params.LRDeductionHolidaysIds = $("#lrHolidaysDeductionIds").val();
 
                     params.LRApprovalRoute = $("#LRApprovalRouteGrid")[0].ej2_instances[0].dataSource;
-
-                    params.LRTasks = $("#LRTasksGrid")[0].ej2_instances[0].dataSource;
 
                     params.LRAdvanceSalaryAD = $("#LRAdvanceSalaryAD").parent().hasClass('active');
                     params.LRExitReentryAD = $("#LRExitReentryAD").parent().hasClass('active');
@@ -390,329 +448,362 @@
                 return valid;
             }
         });
-    </script>
+</script>
 
 <style>
-.e-c-moveup:before { content: '\e307' }
-.e-c-movedown:before { content: '\e305' }
+    .e-c-moveup:before {
+        content: '\e307'
+    }
+
+    .e-c-movedown:before {
+        content: '\e305'
+    }
 </style>
 
 <div class="m-l-20 m-t-0">
-    <h2>Leaves</h2>
+    <h2>Leave Requests</h2>
     <p>
-        Provide details to setup leaves and leave requests
+        Types of leave requests made by employees
     </p>
 </div>
 <hr />
 <div class="panel-body p-t-0" style="padding-bottom:0;">
     <div class="col-lg-12 padding-right-0">
-        @*<div id="attendanceSystem" class="row">
-            <div id="enableATS" class="col-lg-12">
-                <input id="submitUseAttendanceSystem" class="btn btn-primary btn-block" value="Use Attendance System" required />
+
+        <div class="areaHeader" style="display:flex;">
+            <div class="areaHeaderTitle">
+                <span id="areHeadertitle" class="menu-text">Current Leave Requests</span>
+                @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
+            </div>
+            @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
+            <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                @*<div class="clearfix margin-15"></div>*@
+                <a id="addLeaveRequestBtn" onclick="areaHeaderBtnClick(event)" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
             </div>
         </div>
-        <hr />*@
-        <div class="m-l-20 m-t-0">
-            <h2>Leave Requests</h2>
-            <p>
-                Types of leave requests made by employees
-            </p>
-        </div>
-        <hr />
-        <div class="panel-body p-t-0" style="padding-bottom:0;">
-            <div id="addLeaveRequestBtnSection" style="">
-                <button id="addLeaveRequestBtn" type="button" class="btn btn-primary btn-block"><i class="fa fa-plus p-r-5"></i> Add Leave Request</button>
+        <form id="leaveRequestForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 ">LR Title:</label>
+                            <input type="text" id="lrTitle" name="LRTitle" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                        </div>
+                    </div>
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 ">LR Title (In Arabic):</label>
+                            <input type="text" id="lrTitleLocalized" name="LRTitleLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="margin-bottom-5 control-label">LR Prefix:</label>
+                            <input type="text" id="lrPrefix" name="LRPrefix" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="margin-bottom-5 control-label">LR Starting No:</label>
+                            <input type="number" min="0" id="lrStartingNo" name="LRStartingNo" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5 control-label">Leave Type:</label>
+                        <select id="lrLeaveTypeId" name="LRLeaveTypeId" class="form-control" required>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5 control-label">Entitlement Days:</label>
+                        <input type="number" min="1" id="lrEntitlementDays" name="LREntitlementDays" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                    </div>
+                </div>
             </div>
-            <form id="leaveRequestForm" class="row" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
-                    <div class="row">
-                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                            <div class="col-sm-6" style="padding:0">
-                                <div class="form-group">
-                                    <label class="control-label m-b-5 ">LR Title:</label>
-                                    <input type="text" id="lrTitle" name="LRTitle" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
-                                </div>
-                            </div>
-                            <div class="col-sm-6" style="padding:0">
-                                <div class="form-group">
-                                    <label class="control-label m-b-5 ">LR Title (In Arabic):</label>
-                                    <input type="text" id="lrTitleLocalized" name="LRTitleLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                            <div class="col-sm-6" style="padding:0">
-                                <div class="form-group">
-                                    <label class="margin-bottom-5 control-label">LR Prefix:</label>
-                                    <input type="text" id="lrPrefix" name="LRPrefix" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
-                                </div>
-                            </div>
-                            <div class="col-sm-6" style="padding:0">
-                                <div class="form-group">
-                                    <label class="margin-bottom-5 control-label">LR Starting No:</label>
-                                    <input type="number" min="0" id="lrStartingNo" name="LRStartingNo" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Leave Type:</label>
-                                <select id="lrLeaveTypeId" name="LRLeaveTypeId" class="form-control" required>
-                                </select>                            
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Entitlement Days:</label>
-                                <input type="number" min="1" id="lrEntitlementDays" name="LREntitlementDays" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
+            <div class="row">
 
-                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                            <div class="form-group">
-                                <label class="control-label m-b-5 ">Department:</label>
-                                <select id="lrDepartmentId" name="LRDepartmentId" multiple="multiple" class="form-control" onchange="SelectDepartmentPositions();" required>                                    
-                                    
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Position:</label>
-                                <select id="lrPositionId" name="LRPositionId" multiple="multiple" class="form-control" required>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Employment Type:</label>
-                                <select id="lrEmploymentTypeId" name="EmployementTypeId" multiple="multiple" class="form-control" required>
-                                    
-                                </select>
-                                @*<ejs-dropdownlist id="vegetables" placeholder="Select an employment type" popupHeight="200px" dataSource="@employementTypes">
-                                    <e-dropdownlist-fields text="Value" value="Id"></e-dropdownlist-fields>
-                                </ejs-dropdownlist>*@
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Employmee Status:</label>
-                                <select id="lrEmployeeStatusId" name="EmployementStatusId" multiple="multiple" class="form-control" required>
-                                    
-                                </select>
-                            </div>
-                        </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="control-label m-b-5 ">Department:</label>
+                        <select id="lrDepartmentId" name="LRDepartmentId" multiple="multiple" class="form-control" onchange="SelectDepartmentPositions();" required>
+                        </select>
                     </div>
-                    <hr />
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5 control-label">Position:</label>
+                        <select id="lrPositionId" name="LRPositionId" multiple="multiple" class="form-control" required>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5 control-label">Employment Type:</label>
+                        <select id="lrEmploymentTypeId" name="EmployementTypeId" multiple="multiple" class="form-control" required>
+                        </select>
+                        @*<ejs-dropdownlist id="vegetables" placeholder="Select an employment type" popupHeight="200px" dataSource="@employementTypes">
+                            <e-dropdownlist-fields text="Value" value="Id"></e-dropdownlist-fields>
+                        </ejs-dropdownlist>*@
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5 control-label">Employmee Status:</label>
+                        <select id="lrEmployeeStatusId" name="EmployementStatusId" multiple="multiple" class="form-control" required>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="areaHeader" style="display:flex;">
+                <div class="areaHeaderTitle">
+                    <span id="areHeadertitle" class="menu-text">Approval Route</span>
+                    @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
+                </div>
+                @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
+                <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                    @*<div class="clearfix margin-15"></div>*@
+                    <a id="addLRApprovalRouteBtn" onclick="areaHeaderBtnClick(event)" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                </div>
+            </div>
+            <div id="addApprovalRouteForm" class="areaForm" role="form" data-toggle="validator" style="display: none">
+                <div class="row">
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 ">Department:</label>
+                            <select id="apDepartmentId" name="DepartmentId" class="form-control" onchange="SelectAPDepartmentPositions();">
+                                <option selected>Select Department</option>
 
-                    <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
-                        <h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>
-                    </div>
-                    <div id="addLRApprovalRouteBtnSection" class="row" style="margin-bottom: 10px">
-                        <div class="col-lg-2">
-                            <button id="addLRApprovalRouteBtn" type="button" class="btn btn-default btn-block" style="font-size: 18px"><i class="fa fa-plus p-r-5"></i> Add To Approval Route</button>
+                            </select>
                         </div>
                     </div>
-                    <div id="addApprovalRouteForm" role="form" data-toggle="validator" style="display: none">
-                        <div class="row">
-                            <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label class="margin-bottom-5 control-label">Position:</label>
+                            <select id="apPositionId" name="PositionId" class="form-control" onchange="SelectAPPositionEmployees()">
+                                <option></option>
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label class="margin-bottom-5 control-label">Employee:</label>
+                            <select id="apEmployeeId" name="Employee" class="form-control">
+                                <option></option>
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                        <label class="margin-bottom-5 control-label"></label>
+                        <button id="addToApprovalRouteBtn" type="button" class="btn btn-primary btn-block"><i class="fa fa-plus p-r-5"></i> Add To Approval Route</button>
+                    </div>
+                </div>
+                <div class="row m-md-t-5">
+                    <div class="form-group">
+                        <div class="col-sm-3">
+                            <label class="control-label m-b-5 ">Additional Information:</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="btn-group" data-toggle="buttons">
+                                <label class="btn btn-default active">
+                                    <input type="checkbox" id="taskIsActive" autocomplete="off"> Active
+                                </label>
+                                <label class="btn btn-default active">
+                                    <input type="checkbox" id="taskNotify" autocomplete="off"> Notify Employee
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @*<hr style="margin-top:6px">*@
+                <div class="areaHeader" style="display:flex;">
+                    <div class="areaHeaderTitle">
+                        <span id="areHeadertitle" class="menu-text">Tasks</span>
+                        @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
+                    </div>
+                    @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
+                    <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                        @*<div class="clearfix margin-15"></div>*@
+                        <a id="" onclick="areaHeaderBtnClick(event)" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                    </div>
+                </div>
+                <div id="addTaskForm" class="areaForm" role="form" data-toggle="validator" style="display: none">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                            <div class="col-sm-6" style="padding:0">
                                 <div class="form-group">
                                     <label class="control-label m-b-5 ">Department:</label>
-                                    <select id="apDepartmentId" name="DepartmentId" class="form-control" onchange="SelectAPDepartmentPositions();">
+                                    <select id="taskDepartmentId" name="DepartmentId" multiple="multiple" class="form-control" onchange="SelectTaskDepartmentPositions();">
                                         <option selected>Select Department</option>
-                                        
+
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                            <div class="col-sm-6" style="padding:0">
                                 <div class="form-group">
                                     <label class="margin-bottom-5 control-label">Position:</label>
-                                    <select id="apPositionId" name="PositionId" class="form-control" onchange="SelectAPPositionEmployees()">
+                                    <select id="taskPositionId" name="PositionId" multiple="multiple" class="form-control" onchange="SelectTaskPositionEmployees()">
                                         <option></option>
 
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                                <div class="form-group">
-                                    <label class="margin-bottom-5 control-label">Employee:</label>
-                                    <select id="apEmployeeId" name="Employee" class="form-control">
-                                        <option></option>
-
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                                <label class="margin-bottom-5 control-label"></label>
-                                <button id="addToApprovalRouteBtn" type="button" class="btn btn-primary btn-block"><i class="fa fa-plus p-r-5"></i> Add To Approval Route</button>
-                            </div>
                         </div>
-                    </div>
-                    <ejs-grid id="LRApprovalRouteGrid" enableAutoFill="true" columns="@lrApprovalRouteGridColumns"
-                              dataBound="dataBoundResponsive" commandClick="lrApprovalRouteCommandClick" actionBegin="lrApprovalRouteActionBegin"
-                              allowExcelExport="true" allowPdfExport="true"
-                              hierarchyPrintMode="Expanded" allowSelection="true" allowSorting="true"
-                              gridLines="Both" rowDataBound="lrApprovalRouteRowDataBound"
-                              toolbarClick="lrApprovalRouteToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
-                              allowResizing="true">
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Employee:</label>
+                                <select id="taskEmployeeId" name="Employee" multiple="multiple" class="form-control">
+                                    <option></option>
 
-                        <e-grid-sortsettings columns="@(new List<object>() { new { field = "routeIndex", direction = "Ascending" } })"></e-grid-sortsettings>
-                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowEditing="true" allowDeleting="true"></e-grid-editSettings>
-                        <e-grid-selectionsettings type="Multiple">
-                        </e-grid-selectionsettings>
-                    </ejs-grid>
-                    <hr />
-                    <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
-                        <h3 class="control-label" style="flex-grow: 1; margin:0">Tasks</h3>
-                    </div>
-                    <div id="addLRTaskBtnSection" class="row" style="margin-bottom: 10px">
-                        <div class="col-lg-2">
-                            <button id="addLRTaskBtn" type="button" class="btn btn-default btn-block" style="font-size: 18px"><i class="fa fa-plus p-r-5"></i> Add Task</button>
-                        </div>
-                    </div>
-                    <div id="addTaskForm" role="form" data-toggle="validator" style="display: none">
-                        <div class="row">
-                            <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                                <div class="col-sm-6" style="padding:0">
-                                    <div class="form-group">
-                                        <label class="control-label m-b-5 ">Department:</label>
-                                        <select id="taskDepartmentId" name="DepartmentId" class="form-control" onchange="SelectTaskDepartmentPositions();">
-                                            <option selected>Select Department</option>
-
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6" style="padding:0">
-                                    <div class="form-group">
-                                        <label class="margin-bottom-5 control-label">Position:</label>
-                                        <select id="taskPositionId" name="PositionId" class="form-control" onchange="SelectTaskPositionEmployees()">
-                                            <option></option>
-
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                                <div class="form-group">
-                                    <label class="margin-bottom-5 control-label">Employee:</label>
-                                    <select id="taskEmployeeId" name="Employee" class="form-control">
-                                        <option></option>
-
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                                <div class="form-group">
-                                    <label class="margin-bottom-5 control-label">Task Description:</label>
-                                    <input type="text" id="lrTaskDescription" name="LRTaskDescription" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                                <label class="margin-bottom-5 control-label"></label>
-                                <button id="addTaskBtn" type="button" class="btn btn-primary btn-block"><i class="fa fa-plus p-r-5"></i> Add Task</button>
-                            </div>
-                        </div>
-                    </div>
-                    <ejs-grid id="LRTasksGrid" enableAutoFill="true" columns="@lrTasksGridColumns"
-                              dataBound="dataBoundResponsive" commandClick="lrTaskCommandClick" actionBegin="lrTaskActionBegin"
-                              allowExcelExport="true" allowPdfExport="true"
-                              hierarchyPrintMode="Expanded" allowSelection="true" allowSorting="true"
-                              gridLines="Both" rowDataBound="lrTaskRowDataBound"
-                              toolbarClick="lrTaskToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
-                              allowResizing="true">
-
-                        <e-grid-sortsettings columns="@(new List<object>() { new { field = "routeIndex", direction = "Ascending" } })"></e-grid-sortsettings>
-                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowEditing="true" allowDeleting="true"></e-grid-editSettings>
-                        <e-grid-selectionsettings type="Multiple">
-                        </e-grid-selectionsettings>
-                    </ejs-grid>
-                    <hr />  
-                    <div class="row">
-                        <div class="form-group">
-                            <div class="col-sm-3">
-                                <label class="control-label m-b-5 ">Holidays for deduction:</label>
-                            </div>
-                            <div class="col-sm-9">
-                                <select id="lrHolidaysDeductionIds" name="LRHolidaysDeductionIds" multiple="multiple" class="form-control">
-                                    
                                 </select>
                             </div>
                         </div>
-                    </div>
-                    <div class="row m-md-t-5">
-                        <div class="form-group">
-                            <div class="col-sm-3">
-                                <label class="control-label m-b-5 ">Additional Requests:</label>
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Task Description:</label>
+                                <input type="text" id="lrTaskDescription" name="LRTaskDescription" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                             </div>
-                            <div class="col-sm-9">
-                                <div class="btn-group" data-toggle="buttons">
-                                    <label class="btn btn-default active">
-                                        <input type="checkbox" id="LRAdvanceSalaryAD" autocomplete="off"> Advance Salary
-                                    </label>
-                                    <label class="btn btn-default active">
-                                        <input type="checkbox" id="LRExitReentryAD" autocomplete="off"> Exit Re-Entry
-                                    </label>
-                                    <label class="btn btn-default active">
-                                        <input type="checkbox" id="LRAirTicketAD" autocomplete="off"> Air Ticket
-                                    </label>
-                                </div>
-                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                            <label class="margin-bottom-5 control-label"></label>
+                            <button id="addTaskBtn" type="button" class="btn btn-primary btn-block"><i class="fa fa-plus p-r-5"></i> Add Task</button>
                         </div>
                     </div>
                     <div class="row m-md-t-5">
                         <div class="form-group">
                             <div class="col-sm-3">
-                                <label class="control-label m-b-5 ">Additional Requirements:</label>
+                                <label class="control-label m-b-5 ">Additional Information:</label>
                             </div>
                             <div class="col-sm-9">
                                 <div class="btn-group" data-toggle="buttons">
                                     <label class="btn btn-default active">
-                                        <input type="checkbox" id="LRNotesRequired" autocomplete="off"> Notes
+                                        <input type="checkbox" id="APIsActive" autocomplete="off"> Active
                                     </label>
                                     <label class="btn btn-default active">
-                                        <input type="checkbox" id="LRAttachmentRequired" autocomplete="off"> Attachment
+                                        <input type="checkbox" id="APNotify" autocomplete="off"> Notify Employee
+                                    </label>
+                                    <label class="btn btn-default active">
+                                        <input type="checkbox" id="APIsPoster" autocomplete="off"> Poster
                                     </label>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <hr />
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <input id="submitLeaveRequestBtn" type="submit" class="btn btn-primary btn-block" value="Add Leave Request" required />
-                        </div>
-                    </div>
-                </form>
-            <hr />
-            <div id="leaveRequestsCS" class="control-section m-t-10">
-                <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
-                    <h3 class="control-label" style="flex-grow: 1; margin:0">Current Leave Requests</h3>
                 </div>
-                <ejs-grid id="AllLeaveRequestsGrid" enableAutoFill="true" columns="@leaveRequestsGridColumns"
-                          dataBound="dataBoundResponsive" commandClick="leaveRequestsCommandClick" actionBegin="leaveRequestsActionBegin"
-                          allowExcelExport="true" height="100%" allowPdfExport="true"
-                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
-                          allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                          toolbarClick="leaveRequestsToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
-                          allowPaging="true" allowResizing="true">
+                <ejs-grid id="LRTasksGrid" enableAutoFill="true" columns="@lrTasksGridColumns"
+                          dataBound="dataBoundResponsive" commandClick="lrTaskCommandClick" actionBegin="lrTaskActionBegin"
+                          allowExcelExport="true" allowPdfExport="true"
+                          hierarchyPrintMode="Expanded" allowSelection="true" allowSorting="true"
+                          gridLines="Both" rowDataBound="lrTaskRowDataBound"
+                          toolbarClick="lrTaskToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
+                          allowResizing="true">
 
-                    @*<e-data-manager url="/api/app/leaveRequestTemplates/getAllAsync" adaptor="WebApiAdaptor" ></e-data-manager>*@
-
-                    <e-grid-filterSettings type="CheckBox">
-                    </e-grid-filterSettings>
-                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
+                    <e-grid-sortsettings columns="@(new List<object>() { new { field = "routeIndex", direction = "Ascending" } })"></e-grid-sortsettings>
+                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowEditing="true" allowDeleting="true"></e-grid-editSettings>
                     <e-grid-selectionsettings type="Multiple">
                     </e-grid-selectionsettings>
-                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
                 </ejs-grid>
             </div>
+            <ejs-grid id="LRApprovalRouteGrid" enableAutoFill="true" columns="@lrApprovalRouteGridColumns"
+                        dataBound="dataBoundResponsive" commandClick="lrApprovalRouteCommandClick" actionBegin="lrApprovalRouteActionBegin"
+                        allowExcelExport="true" allowPdfExport="true"
+                        hierarchyPrintMode="Expanded" allowSelection="true" allowSorting="true"
+                        gridLines="Both" rowDataBound="lrApprovalRouteRowDataBound"
+                        toolbarClick="lrApprovalRouteToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
+                        allowResizing="true">
+
+                <e-grid-sortsettings columns="@(new List<object>() { new { field = "routeIndex", direction = "Ascending" } })"></e-grid-sortsettings>
+                <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowEditing="true" allowDeleting="true"></e-grid-editSettings>
+                <e-grid-selectionsettings type="Multiple">
+                </e-grid-selectionsettings>
+            </ejs-grid>
+            <hr />
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-3">
+                        <label class="control-label m-b-5 ">Holidays for deduction:</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <select id="lrHolidaysDeductionIds" name="LRHolidaysDeductionIds" multiple="multiple" class="form-control">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row m-md-t-5">
+                <div class="form-group">
+                    <div class="col-sm-3">
+                        <label class="control-label m-b-5 ">Additional Requests:</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="btn-group" data-toggle="buttons">
+                            <label class="btn btn-default active">
+                                <input type="checkbox" id="LRAdvanceSalaryAD" autocomplete="off"> Advance Salary
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="checkbox" id="LRExitReentryAD" autocomplete="off"> Exit Re-Entry
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="checkbox" id="LRAirTicketAD" autocomplete="off"> Air Ticket
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row m-md-t-5">
+                <div class="form-group">
+                    <div class="col-sm-3">
+                        <label class="control-label m-b-5 ">Additional Requirements:</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="btn-group" data-toggle="buttons">
+                            <label class="btn btn-default active">
+                                <input type="checkbox" id="LRNotesRequired" autocomplete="off"> Notes
+                            </label>
+                            <label class="btn btn-default active">
+                                <input type="checkbox" id="LRAttachmentRequired" autocomplete="off"> Attachment
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-lg-12">
+                    <input id="submitLeaveRequestBtn" type="submit" class="btn btn-primary btn-block" value="Add Leave Request" required />
+                </div>
+            </div>
+        </form>
+        <div id="leaveRequestsCS" class="control-section m-t-10">
+            <ejs-grid id="AllLeaveRequestsGrid" enableAutoFill="true" columns="@leaveRequestsGridColumns"
+                        dataBound="dataBoundResponsive" commandClick="leaveRequestsCommandClick" actionBegin="leaveRequestsActionBegin"
+                        allowExcelExport="true" height="100%" allowPdfExport="true"
+                        hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                        allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                        toolbarClick="leaveRequestsToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
+                        allowPaging="true" allowResizing="true">
+
+                @*<e-data-manager url="/api/app/leaveRequestTemplates/getAllAsync" adaptor="WebApiAdaptor" ></e-data-manager>*@
+
+                <e-grid-filterSettings type="CheckBox">
+                </e-grid-filterSettings>
+                <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
+                <e-grid-selectionsettings type="Multiple">
+                </e-grid-selectionsettings>
+                <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+            </ejs-grid>
+        </div>
         </div>
     </div>
-</div>
 <script>
 
-    function leaveRequestsActionBegin (args) {
+    function leaveRequestsActionBegin(args) {
         if (args.requestType == "save") {
 
         }
@@ -958,7 +1049,7 @@
         return arr; // for testing purposes
     };
 
-    function lrApprovalRouteActionBegin (args) {
+    function lrApprovalRouteActionBegin(args) {
         if (args.requestType == "save") {
 
         }
@@ -986,10 +1077,10 @@
                 grid.dataSource[i].routeIndex = i + 1;
             }
             grid.refresh();
-            
+
         }
         if (args.commandColumn.type == "Edit") {
-            
+
         }
         else if (args.commandColumn.type == "Copy") {
             this.copy(false);
@@ -1083,7 +1174,7 @@
         }
     }
 
-    function lrTaskActionBegin (args) {
+    function lrTaskActionBegin(args) {
         if (args.requestType == "save") {
 
         }
@@ -1111,10 +1202,10 @@
                 grid.dataSource[i].routeIndex = i + 1;
             }
             grid.refresh();
-            
+
         }
         if (args.commandColumn.type == "Edit") {
-            
+
         }
         else if (args.commandColumn.type == "Copy") {
             this.copy(false);
@@ -1238,24 +1329,60 @@
     }
 
     function SelectAPDepartmentPositions() {
-        var departmentId = $("#apDepartmentId").val();
+        var departmentIds = $("#apDepartmentId").val();
         $("#apPositionId").empty();
         $("#apEmployeeId").empty();
-        $("#apPositionId").append("<option value=''>Select Position</option>");
-        $.getJSON(`?handler=Positions&departmentId=${departmentId}`, (data) => {
-            $.each(data, function (i, item) {
-                $("#apPositionId").append(`<option value="${item.id}">${item.title}</option>`);
-            });
+
+        $.ajax({
+            type: "GET",
+            url: '?handler=DepartmentsPositions',
+            data: { departmentIds: JSON.stringify(departmentIds) },
+            success: function (data) {
+                var dataMS = [];
+                $.each(departmentIds, function (i, departmentId) {
+                    var positions = [];
+                    $.each(data, function (j, position) {
+                        if (position.departmentId == departmentId)
+                            positions.push({ label: position.title, value: position.id });
+                    });
+                    dataMS.push({
+                        label: $(`#lrDepartmentId option[value='${departmentId}']`).text(), children: positions
+                    });
+                });
+                $("#apPositionId").multiselect('dataprovider', dataMS);
+            }
         });
     }
     function SelectAPPositionEmployees() {
-        var positionId = $("#apPositionId").val();
+        var positionIds = $("#apPositionId").val();
+        var positions = $("#apPositionId").multiselect('dataprovider');
+        var departmentIds = $("#apDepartmentId").val();
         $("#apEmployeeId").empty();
-        $("#apEmployeeId").append("<option value=''>Select Employee</option>");
-        $.getJSON(`?handler=Employees&positionId=${positionId}`, (data) => {
-            $.each(data, function (i, item) {
-                $("#apEmployeeId").append(`<option value="${item.id}">${item.name}</option>`);
-            });
+
+        $.ajax({
+            type: "GET",
+            url: '?handler=Employees',
+            data: { positionIds: JSON.stringify(positionIds) },
+            success: function (data) {
+                var dataMS = [];
+                $.each(departmentIds, function (i, departmentId) {
+                    var positionEmployees = [];
+
+                    $.each(positions, function (i, position) {
+                        var employees = [];
+                        $.each(data, function (j, employee) {
+                            if (employee.positionId == position.id)
+                                employees.push({ id: item.id, name: item.name, label: item.name, departmentId: item.departmentId, depName: item.depName, positionId: item.positionId, posName: item.posName });
+                        });
+                        positionEmployees.push({ label: position.title, children: employees })
+                    });
+                    dataMS.push({
+                        label: $(`#lrDepartmentId option[value='${departmentId}']`).text(), children: positionEmployees
+                    });
+                    $("#apEmployeeId").multiselect('dataprovider', dataMS);
+                });
+                
+            }
         });
     }
 
@@ -1271,13 +1398,34 @@
         });
     }
     function SelectTaskPositionEmployees() {
-        var positionId = $("#taskPositionId").val();
+        var positions = $("#apPositionId").multiselect('dataprovider');
+        var departmentIds = $("taskDepartmentId").val();
         $("#taskEmployeeId").empty();
-        $("#taskEmployeeId").append("<option value=''>Select Employee</option>");
-        $.getJSON(`?handler=Employees&positionId=${positionId}`, (data) => {
-            $.each(data, function (i, item) {
-                $("#taskEmployeeId").append(`<option value="${item.id}">${item.name}</option>`);
-            });
+
+        $.ajax({
+            type: "GET",
+            url: '?handler=Employees',
+            data: { positionIds: JSON.stringify(positionIds) },
+            success: function (data) {
+                var dataMS = [];
+                $.each(departmentIds, function (i, departmentId) {
+                    var positionEmployees = [];
+
+                    $.each(positions, function (i, position) {
+                        var employees = [];
+                        $.each(data, function (j, employee) {
+                            if (employee.positionId == position.id)
+                                employees.push({ id: item.id, name: item.name, label: item.name, departmentId: item.departmentId, depName: item.depName, positionId: item.positionId, posName: item.posName });
+                        });
+                        positionEmployees.push({ label: position.title, children: employees })
+                    });
+                    dataMS.push({
+                        label: $(`#taskDepartmentId option[value='${departmentId}']`).text(), children: positionEmployees
+                    });
+                    $("#taskEmployeeId").multiselect('dataprovider', dataMS);
+                });
+
+            }
         });
     }
 

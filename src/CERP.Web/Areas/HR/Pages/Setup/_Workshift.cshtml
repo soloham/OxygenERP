@@ -24,7 +24,7 @@
         new GridColumn { Field = "id", Width = "80", HeaderText = "#", TextAlign=TextAlign.Center, MinWidth="10", IsPrimaryKey=true  },
         new GridColumn { Field = "title", Width = "110", HeaderText = "Title", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "hoursMultiplicationFactor", Width = "110", HeaderText = "Hours Multiplication Factor", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Width = "150", HeaderText = "Commands", TextAlign=TextAlign.Center, MinWidth="10", Commands = deductionMethodsCommands }
+        new GridColumn { Width = "150", HeaderText = "Actions", TextAlign=TextAlign.Center, MinWidth="10", Commands = deductionMethodsCommands }
     };
 
     List<object> workshiftsCommands = new List<object>();
@@ -56,7 +56,7 @@
                 new GridColumn { Field = "isSAT", Width = "110", HeaderText = "SAT", DisplayAsCheckBox=true, TextAlign=TextAlign.Center, AutoFit=true  },
             }
         },
-        new GridColumn { Width = "150", HeaderText = "Commands", TextAlign=TextAlign.Center, MinWidth="10", Commands = workshiftsCommands }
+        new GridColumn { Width = "150", HeaderText = "Actions", TextAlign=TextAlign.Center, MinWidth="10", Commands = workshiftsCommands }
     };
 }
 <script>

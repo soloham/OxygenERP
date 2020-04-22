@@ -3,6 +3,7 @@ using CERP.HR.Employees;
 using CERP.Setup;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace CERP.App
@@ -28,13 +29,15 @@ namespace CERP.App
         public bool IsDepartmentHead { get; set; }
         public bool IsReportingTo { get; set; }
 
-        public virtual Department? Department { get; set; }
-        public Guid? DepartmentId { get; set; }
-        
-        public virtual Position? Position { get; set; }
-        public Guid? PositionId { get; set; }
+        public virtual ICollection<ApprovalRouteTemplateItemEmployee> ApprovalRouteItemEmployees { get; set; }
 
-        public virtual Employee? Employee { get; set; }
-        public Guid? EmployeeId { get; set; }
+        public bool IsAny { get; set; }
+
+        public bool NotifyEmployee { get; set; }
+        public bool IsPoster { get; set; }
+
+        [ForeignKey("TaskTemplateId")]
+        public virtual TaskTemplate? TaskTemplate { get; set; }
+        public int? TaskTemplateId { get; set; }
     }
 }

@@ -7258,7 +7258,8 @@ textarea.e-input.e-css:hover:not(.e-success):not(.e-warning):not(.e-error):not([
   .e-control-wrapper.e-slider-container .e-range {
     border-radius: 4px;
     position: absolute;
-    transition: left 300ms ease-out, right 300ms ease-out, bottom 300ms ease-out, width 300ms ease-out, height 300ms ease-out; }
+    transition: left 300ms ease-out, right 300ms ease-out, bottom 300ms ease-out, width 300ms ease-out,
+ height 300ms ease-out; }
     .e-control-wrapper.e-slider-container .e-range.e-drag-horizontal {
       cursor: ew-resize; }
     .e-control-wrapper.e-slider-container .e-range.e-drag-vertical {

@@ -20,18 +20,23 @@
 
     <link href="~/libs/@@fortawesome/fontawesome-free/css/all.css" rel="stylesheet" />
 
-    <link href="~/libs/fabricUI/fabric.min.css" rel="stylesheet" />
+    @*<link href="~/libs/fabricUI/fabric.min.css" rel="stylesheet" />
     <link href="~/libs/fabricUI/fabric-11.0.0.scoped.min.css" rel="stylesheet" />
-    <link href="~/libs/fabricUI/fabric-11.0.0.scoped.min.css" rel="stylesheet" />
+    <link href="~/libs/fabricUI/fabric-11.0.0.scoped.min.css" rel="stylesheet" />*@
 
     @*<link href="~/libs/JqueryDatepicker/css/jquery.calendars.picker.css" />*@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link href="~/libs/sweetalert2/dist/sweetalert2.css" rel="stylesheet" />
-    <link href="~/styles/cerp/site.css" rel="stylesheet" asp-append-version="true" />
     <link href="~/libs/toastr/toastr.min.css" rel="stylesheet" />
 
     <script src="~/scripts/cerp/vendor.min.js"></script>
     <link href="~/libs/bootstrap-multiselect-0.9.15/css/bootstrap-multiselect.css" rel="stylesheet" />
+
+    <link href="~/libs/smartwizard/dist/css/smart_wizard.min.css" rel="stylesheet" />
+    <link href="~/libs/smartwizard/dist/css/smart_wizard_theme_arrows.min.css" rel="stylesheet" />
+    <link href="~/libs/syncfusion/ej2-grid/styles/fabric.css" rel="stylesheet" />
+
+    <link href="~/styles/cerp/site.css" rel="stylesheet" asp-append-version="true" />
     <style>
         .calendars-popup {
             z-index: 10000 !important;
@@ -882,15 +887,24 @@
         <script src="~/libs/JqueryDatepicker/js/jquery.calendars.picker.js"></script>
         <script src="~/libs/JqueryDatepicker/js/jquery.calendars.islamic.js"></script>*@
 
-    <script src="~/scripts/cerp/site.js" asp-append-version="true"></script>
+    <script src="~/libs/smartwizard/dist/js/jquery.smartWizard.min.js"></script>
+    <script src="~/libs/syncfusion/ej2-grid/scripts/ej2.min.js"></script>
+
+
     @*<script src="~/libsfont-awesome/js/fontawesome.min.js"></script>*@
+
 
     <script src="/libs/abp/core/abp.js?_v=637228051040000000"></script>
     <script src="~/libs/abp/jquery/abp.jquery.js"></script>
     <script src="/Abp/ApplicationConfigurationScript"></script>
     <script src="/Abp/ServiceProxyScript"></script>
 
+    <script src="~/scripts/cerp/site.js" asp-append-version="true"></script>
+
+    <ejs-scripts></ejs-scripts>
+
     @RenderSection("Scripts", required: false)
+
 
 </body>
 </html>

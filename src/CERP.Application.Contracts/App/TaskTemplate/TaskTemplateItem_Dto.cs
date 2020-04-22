@@ -27,12 +27,14 @@ namespace CERP.App
 
         public int RouteIndex { get; set; }
 
-        public virtual Department_Dto? Department { get; set; }
-        public Guid? DepartmentId { get; set; }
-        public virtual Position_Dto? Position { get; set; }
-        public Guid? PositionId { get; set; }
-        public virtual Employee_Dto? Employee { get; set; }
-        public Guid? EmployeeId { get; set; }
+        public virtual List<Department_Dto> Departments { get; set; }
+
+        public virtual List<Position_Dto> Positions { get; set; }
+
+        public virtual List<TaskTemplateItemEmployee_Dto> TaskEmployees { get; set; }
+
+        public bool IsAny { get; set; }
+        public bool NotifyEmployee { get; set; }
 
         public string TaskDescription { get; set; }
     }

@@ -2,6 +2,7 @@
 using CERP.HR.Employees.DTOs;
 using CERP.Setup.DTOs;
 using System;
+using System.Collections.Generic;
 
 namespace CERP.App
 {
@@ -20,15 +21,15 @@ namespace CERP.App
         {
             if(IsDepartmentHead)
             {
-                Department = new Department_Dto() { Name = "Selected" };
-                Position = new Position_Dto() { Title = "Head" };
-                Employee = new Employee_Dto() { FirstName = "Auto" };
+                Department = new List<Department_Dto>() { new Department_Dto() { Name = "Selected" } };
+                Position = new List<Position_Dto>(){ new Position_Dto() { Title = "Head" } };
+                ApprovalRouteEmployees = new List<ApprovalRouteTemplateItemEmployee_Dto> { new ApprovalRouteTemplateItemEmployee_Dto() { Employee = new Employee_Dto() { FirstName = "Auto" } } };
             }
             else if(IsReportingTo)
             {
-                Department = new Department_Dto() { Name = "Selected" };
-                Position = new Position_Dto() { Title = "Auto" };
-                Employee = new Employee_Dto() { FirstName = "Auto [Reporting To]" };
+                Department = new List<Department_Dto>() { new Department_Dto() { Name = "Selected" } };
+                Position = new List<Position_Dto>() { new Position_Dto() { Title = "Auto" } };
+                ApprovalRouteEmployees = new List<ApprovalRouteTemplateItemEmployee_Dto> { new ApprovalRouteTemplateItemEmployee_Dto() { Employee = new Employee_Dto() { FirstName = "Auto [Reporting To]" } } };
             }
         }
 
@@ -42,13 +43,18 @@ namespace CERP.App
         public bool IsDepartmentHead { get; set; }
         public bool IsReportingTo { get; set; }
 
-        public virtual Department_Dto Department { get; set; }
-        public Guid? DepartmentId { get; set; }
+        public virtual List<Department_Dto> Department { get; set; }
         
-        public virtual Position_Dto Position { get; set; }
-        public Guid? PositionId { get; set; }
+        public virtual List<Position_Dto> Position { get; set; }
 
-        public virtual Employee_Dto Employee { get; set; }
-        public Guid? EmployeeId { get; set; }
+        public virtual List<ApprovalRouteTemplateItemEmployee_Dto> ApprovalRouteEmployees { get; set; }
+
+        public bool IsAny { get; set; }
+
+        public bool NotifyEmployee { get; set; }
+        public bool IsPoster { get; set; }
+
+        public virtual TaskTemplate_Dto? TaskTemplate { get; set; }
+        public int? TaskTemplateId { get; set; }
     }
 }

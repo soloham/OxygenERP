@@ -40,6 +40,7 @@ using CERP.HR.Holidays;
 using CERP.HR.Attendance;
 using CERP.AppServices.HR.AttendanceService;
 using System.Threading;
+using CERP.HR.Employees;
 
 namespace CERP.Web.Areas.HR.Pages.Setup
 {
@@ -115,10 +116,31 @@ namespace CERP.Web.Areas.HR.Pages.Setup
             }
             return new JsonResult(positions);
         }
-        public JsonResult OnGetEmployees(Guid positionId)
+        public JsonResult OnGetEmployees(string positionIds)
         {
-            List<object> result = EmployeeAppService.GetEmployeesByPositionId(positionId).Select<Employee_Dto, object>(x => new { Id = x.Id, Name = x.Name }).ToList();
-            return new JsonResult(result);
+            Guid[] _positionIds = JsonSerializer.Deserialize<Guid[]>(positionIds);
+            List<dynamic> employees = new List<dynamic>();
+            for (int i = 0; i < _positionIds.Length; i++)
+            {
+                List<Employee_Dto> result = EmployeeAppService.GetEmployeesByPositionId(_positionIds[i]);
+                List<dynamic> dynamicResult = new List<dynamic>();
+                for (int j = 0; j < result.Count; j++)
+                {
+                    Employee_Dto empDto = result[j];
+
+                    dynamic res = new ExpandoObject();
+                    res.id = empDto.Id;
+                    res.name = empDto.Name;
+                    res.posId = empDto.PositionId;
+                    res.posTitle = empDto.Position.Title;
+                    res.depId = empDto.DepartmentId;
+                    res.depName = empDto.Department.Name;
+
+                    dynamicResult.Add(res);
+                }
+                employees.AddRange(dynamicResult);
+            }
+            return new JsonResult(employees);
         }
         public async Task<IActionResult> OnPostAttendanceSystem(bool use)
         {
@@ -359,6 +381,8 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                         //leaveRequestTemplate.Id = 0;
                         //LeaveRequestTemplate_Dto leaveRequestTemplate = new LeaveRequestTemplate_Dto();
 
+                        #region LR Template Settings
+                        #region General
                         leaveRequestTemplate.Title = lrTemplateVM.LRTitle;
                         leaveRequestTemplate.TitleLocalized = lrTemplateVM.LRTitleLocalized;
                         leaveRequestTemplate.Prefix = lrTemplateVM.LRPrefix;
@@ -368,7 +392,6 @@ namespace CERP.Web.Areas.HR.Pages.Setup
 
                         Guid[] vmDepIds = lrTemplateVM.LRDepartmentIds;
                         Guid[] depIds = leaveRequestTemplate.Departments.Select(x => x.DepartmentId).ToArray();
-
                         for (int i = 0; i < vmDepIds.Length; i++)
                         {
                             if(!depIds.Contains(vmDepIds[i]))
@@ -388,7 +411,6 @@ namespace CERP.Web.Areas.HR.Pages.Setup
 
                         Guid[] vmPosIds = lrTemplateVM.LRPositionsIds;
                         Guid[] posIds = leaveRequestTemplate.Positions.Select(x => x.PositionId).ToArray();
-
                         for (int i = 0; i < vmPosIds.Length; i++)
                         {
                             if(!posIds.Contains(vmPosIds[i]))
@@ -408,7 +430,6 @@ namespace CERP.Web.Areas.HR.Pages.Setup
 
                         Guid[] vmEmpTypesIds = lrTemplateVM.LREmploymentTypeIds;
                         Guid[] empTypesIds = leaveRequestTemplate.EmploymentTypes.Select(x => x.EmploymentTypeId).ToArray();
-
                         for (int i = 0; i < vmEmpTypesIds.Length; i++)
                         {
                             if(!empTypesIds.Contains(vmEmpTypesIds[i]))
@@ -425,30 +446,9 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                                 toDeleteEmpTypes.Add(empTypesIds[i]);
                             }
                         }
-
-                        int[] vmHolidaysIds = lrTemplateVM.LRDeductionHolidaysIds;
-                        int[] holidaysIds = leaveRequestTemplate.Holidays.Select(x => x.HolidayId).ToArray();
-
-                        for (int i = 0; i < vmHolidaysIds.Length; i++)
-                        {
-                            if(!holidaysIds.Contains(vmHolidaysIds[i]))
-                            {
-                                leaveRequestTemplate.Holidays.Add(new LeaveRequestTemplateHoliday() { HolidayId = vmHolidaysIds[i] });
-                            }
-                        }
-                        List<int> toDeleteHolidaysIds = new List<int>();
-                        for (int i = 0; i < holidaysIds.Length; i++)
-                        {
-                            if(!vmHolidaysIds.Contains(holidaysIds[i]))
-                            {
-                                leaveRequestTemplate.Holidays.Remove(leaveRequestTemplate.Holidays.First(x => x.HolidayId == holidaysIds[i]));
-                                toDeleteHolidaysIds.Add(holidaysIds[i]);
-                            }
-                        }
                         
                         Guid[] vmEmpStatusesIds = lrTemplateVM.LREmployeeStatusIds;
                         Guid[] empStatusesIds = leaveRequestTemplate.EmployeeStatuses.Select(x => x.EmployeeStatusId).ToArray();
-
                         for (int i = 0; i < vmEmpStatusesIds.Length; i++)
                         {
                             if(!empStatusesIds.Contains(vmEmpStatusesIds[i]))
@@ -466,11 +466,42 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                             }
                         }
 
-                        var vmApprovalRouteTemplateItems = lrTemplateVM.LRApprovalRoute;
+                        int[] vmHolidaysIds = lrTemplateVM.LRDeductionHolidaysIds;
+                        int[] holidaysIds = leaveRequestTemplate.Holidays.Select(x => x.HolidayId).ToArray();
+                        for (int i = 0; i < vmHolidaysIds.Length; i++)
+                        {
+                            if(!holidaysIds.Contains(vmHolidaysIds[i]))
+                            {
+                                leaveRequestTemplate.Holidays.Add(new LeaveRequestTemplateHoliday() { HolidayId = vmHolidaysIds[i] });
+                            }
+                        }
+                        List<int> toDeleteHolidaysIds = new List<int>();
+                        for (int i = 0; i < holidaysIds.Length; i++)
+                        {
+                            if(!vmHolidaysIds.Contains(holidaysIds[i]))
+                            {
+                                leaveRequestTemplate.Holidays.Remove(leaveRequestTemplate.Holidays.First(x => x.HolidayId == holidaysIds[i]));
+                                toDeleteHolidaysIds.Add(holidaysIds[i]);
+                            }
+                        }
+
+                        leaveRequestTemplate.HasAdvanceSalaryRequest = lrTemplateVM.LRAdvanceSalaryAD;
+                        leaveRequestTemplate.HasAirTicketRequest = lrTemplateVM.LRAirTicketAD;
+                        leaveRequestTemplate.HasExitReentryRequest = lrTemplateVM.LRExitReentryAD;
+
+                        leaveRequestTemplate.HasNotesRequirement = lrTemplateVM.LRNotesAR;
+                        leaveRequestTemplate.HasAttachmentRequirement = lrTemplateVM.LRAttachmentAR;
+                        #endregion
+                        #region Approval Route Settings
+                        List<LeaveRequestTemplateViewModel.LRApprovalRouteVM> vmApprovalRouteTemplateItems = lrTemplateVM.LRApprovalRoute;
                         ApprovalRouteTemplate approvalRouteTemplate = leaveRequestTemplate.ApprovalRouteTemplate;
                         List<ApprovalRouteTemplateItem> approvalRouteTemplateItems = approvalRouteTemplate.ApprovalRouteTemplateItems.ToList();
 
                         List<ApprovalRouteTemplateItem> toUpdateAPItems = new List<ApprovalRouteTemplateItem>();
+                        List<TaskTemplateItem> toUpdateAPTaskItems = new List<TaskTemplateItem>();
+                        List<ApprovalRouteTemplateItemEmployee> toDeleteAPEmployeeItems = new List<ApprovalRouteTemplateItemEmployee>();
+                        List<TaskTemplateItem> toDeleteAPTaskItems = new List<TaskTemplateItem>();
+                        List<TaskTemplateItemEmployee> toDeleteAPTaskEmployeeItems = new List<TaskTemplateItemEmployee>();
                         for (int i = 0; i < vmApprovalRouteTemplateItems.Count; i++)
                         {
                             LeaveRequestTemplateViewModel.LRApprovalRouteVM cur = vmApprovalRouteTemplateItems[i];
@@ -481,42 +512,160 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                                 ApprovalRouteTemplateItem approvalRouteTemplateItem = new ApprovalRouteTemplateItem();
 
                                 approvalRouteTemplateItem.Active = cur.Active;
+
                                 if (cur.IsDepartmentHead)
                                 {
                                     approvalRouteTemplateItem.IsDepartmentHead = true;
-                                    approvalRouteTemplateItem.DepartmentId = null;
-                                    approvalRouteTemplateItem.PositionId = null;
-                                    approvalRouteTemplateItem.EmployeeId = null;
                                 }
                                 else if (cur.IsReportingTo)
                                 {
                                     approvalRouteTemplateItem.IsReportingTo = true;
-                                    approvalRouteTemplateItem.DepartmentId = null;
-                                    approvalRouteTemplateItem.PositionId = null;
-                                    approvalRouteTemplateItem.EmployeeId = null;
                                 }
                                 else
                                 {
                                     approvalRouteTemplateItem.IsDepartmentHead = false;
                                     approvalRouteTemplateItem.IsReportingTo = false;
-                                    approvalRouteTemplateItem.DepartmentId = cur.DepartmentId;
-                                    approvalRouteTemplateItem.PositionId = cur.PositionId;
-                                    approvalRouteTemplateItem.EmployeeId = cur.EmployeeId;
+
+                                    approvalRouteTemplateItem.ApprovalRouteItemEmployees = new List<ApprovalRouteTemplateItemEmployee>();
+                                    for (int y = 0; y < cur.EmployeeIds.Length; y++)
+                                    {
+                                        ApprovalRouteTemplateItemEmployee approvalRouteTemplateItemEmployee = new ApprovalRouteTemplateItemEmployee();
+                                        approvalRouteTemplateItemEmployee.EmployeeId = cur.EmployeeIds[y].Value;
+
+                                        approvalRouteTemplateItem.ApprovalRouteItemEmployees.Add(approvalRouteTemplateItemEmployee);
+                                    }
+
+                                    TaskTemplate apItemTaskTemplate = new TaskTemplate();
+                                    apItemTaskTemplate.TaskModule = TaskModule.LeaveRequest;
+                                    apItemTaskTemplate.TaskTemplateItems = new List<TaskTemplateItem>();
+                                    for (int y = 0; y < cur.Tasks.Count; i++)
+                                    {
+                                        LeaveRequestTemplateViewModel.LRTaskVM lRTaskVM = cur.Tasks[y];
+                                        TaskTemplateItem taskTemplateItem = new TaskTemplateItem();
+
+                                        taskTemplateItem.Active = lRTaskVM.Active;
+                                        taskTemplateItem.TaskDescription = lRTaskVM.TaskDescription;
+
+                                        taskTemplateItem.TaskEmployees = new List<TaskTemplateItemEmployee>();
+                                        for (int z = 0; z < lRTaskVM.EmployeeIds.Length; z++) 
+                                        {
+                                            TaskTemplateItemEmployee taskTemplateItemEmployee = new TaskTemplateItemEmployee();
+                                            taskTemplateItemEmployee.EmployeeId = lRTaskVM.EmployeeIds[z].Value;
+                                        }
+
+                                        taskTemplateItem.RouteIndex = y + 1;
+                                        taskTemplateItem.IsAny = lRTaskVM.IsAny;
+                                        taskTemplateItem.NotifyEmployee = lRTaskVM.NotifyEmployee;
+
+                                        apItemTaskTemplate.TaskTemplateItems.Add(taskTemplateItem);
+                                    }
+
+                                    approvalRouteTemplateItem.TaskTemplate = apItemTaskTemplate;
                                 }
+
                                 approvalRouteTemplateItem.RouteIndex = i + 1;
+
+                                approvalRouteTemplateItem.IsAny = cur.IsAny;
+                                approvalRouteTemplateItem.NotifyEmployee = cur.NotifyEmployee;
+                                approvalRouteTemplateItem.IsPoster = cur.IsPoster;
 
                                 leaveRequestTemplate.ApprovalRouteTemplate.ApprovalRouteTemplateItems.Add(approvalRouteTemplateItem);
                             }
                             else
                             {
+                                leaveRequestTemplate.ApprovalRouteTemplate.ApprovalRouteModule = ApprovalRouteModule.LeaveRequest;
+
                                 ApprovalRouteTemplateItem item = leaveRequestTemplate.ApprovalRouteTemplate.ApprovalRouteTemplateItems.First(x => x.Id.ToString() == cur.Id);
 
                                 item.Active = cur.Active;
                                 item.RouteIndex = i + 1;
 
+                                item.IsAny = cur.IsAny;
+                                item.NotifyEmployee = cur.NotifyEmployee;
+                                item.IsPoster = cur.IsPoster;
+
+                                List<Employee_Dto> vmApprovalRouteEmployees = cur.Employees;
+                                List<ApprovalRouteTemplateItemEmployee> approvalRouteEmployees = item.ApprovalRouteItemEmployees.ToList();
+                                for (int j = 0; j < vmApprovalRouteEmployees.Count; j++)
+                                {
+                                    Employee_Dto curVMEMployee = vmApprovalRouteEmployees[j];
+                                    if (!approvalRouteEmployees.Any(x => x.EmployeeId == curVMEMployee.Id))
+                                    {
+                                        ApprovalRouteTemplateItemEmployee approvalRouteTemplateItemEmployee = new ApprovalRouteTemplateItemEmployee();
+                                        approvalRouteTemplateItemEmployee.EmployeeId = curVMEMployee.Id;
+
+                                        item.ApprovalRouteItemEmployees.Add(approvalRouteTemplateItemEmployee);
+                                    }
+                                }
+                                for (int j = 0; j < approvalRouteEmployees.Count; j++)
+                                {
+                                    ApprovalRouteTemplateItemEmployee curItemEmp = approvalRouteEmployees[j];
+                                    if(!cur.EmployeeIds.Any(x => x == curItemEmp.EmployeeId))
+                                    {
+                                        item.ApprovalRouteItemEmployees.Remove(curItemEmp);
+                                        toDeleteAPEmployeeItems.Add(curItemEmp);
+                                    }
+                                }
+
+
+                                TaskTemplate apItemTaskTemplate = item.TaskTemplate;
+                                apItemTaskTemplate.TaskModule = TaskModule.LeaveRequest;
+                                List<LeaveRequestTemplateViewModel.LRTaskVM> vmAPTaskTemplateItems = cur.Tasks;
+                                List<TaskTemplateItem> apTaskTemplateItems = apItemTaskTemplate.TaskTemplateItems.ToList();
+                                for (int y = 0; y < vmAPTaskTemplateItems.Count; i++)
+                                {
+                                    LeaveRequestTemplateViewModel.LRTaskVM vmAPTaskTemplateItem = vmAPTaskTemplateItems[i];
+
+                                    if (!apTaskTemplateItems.Any(x => x.Id == vmAPTaskTemplateItem.Id))
+                                    {
+                                        TaskTemplateItem apTaskTemplateItem = new TaskTemplateItem();
+
+                                        apTaskTemplateItem.Active = vmAPTaskTemplateItem.Active;
+                                        apTaskTemplateItem.TaskDescription = vmAPTaskTemplateItem.TaskDescription;
+
+                                        apTaskTemplateItem.TaskEmployees = new List<TaskTemplateItemEmployee>();
+                                        for (int z = 0; z < vmAPTaskTemplateItem.EmployeeIds.Length; z++)
+                                        {
+                                            TaskTemplateItemEmployee taskTemplateItemEmployee = new TaskTemplateItemEmployee();
+                                            taskTemplateItemEmployee.EmployeeId = vmAPTaskTemplateItem.EmployeeIds[z].Value;
+                                        }
+
+                                        apTaskTemplateItem.RouteIndex = y + 1;
+
+                                        apTaskTemplateItem.IsAny = vmAPTaskTemplateItem.IsAny;
+                                        apTaskTemplateItem.NotifyEmployee = vmAPTaskTemplateItem.NotifyEmployee;
+
+                                        item.TaskTemplate.TaskTemplateItems.Add(apTaskTemplateItem);
+                                    }
+                                    else
+                                    {
+                                        TaskTemplateItem taskTemplateItem = apTaskTemplateItems.First(x => x.Id == vmAPTaskTemplateItem.Id);
+
+                                        taskTemplateItem.Active = vmAPTaskTemplateItem.Active;
+                                        taskTemplateItem.TaskDescription = vmAPTaskTemplateItem.TaskDescription;
+
+                                        taskTemplateItem.RouteIndex = y + 1;
+
+                                        taskTemplateItem.IsAny = vmAPTaskTemplateItem.IsAny;
+                                        taskTemplateItem.NotifyEmployee = vmAPTaskTemplateItem.NotifyEmployee;
+
+                                        toUpdateAPTaskItems.Add(taskTemplateItem);
+                                    }
+                                }
+                                for (int y = 0; y < apTaskTemplateItems.Count; i++)
+                                {
+                                    TaskTemplateItem curAPTaskItem = apTaskTemplateItems[i];
+                                    if (!vmAPTaskTemplateItems.Any(x => x.Id == curAPTaskItem.Id))
+                                    {
+                                        item.TaskTemplate.TaskTemplateItems.Remove(curAPTaskItem);
+                                        toDeleteAPTaskItems.Add(curAPTaskItem);
+                                    }
+                                }
+
                                 toUpdateAPItems.Add(item);
                             }
                         }
+
                         List<ApprovalRouteTemplateItem> toDeleteAPItems = new List<ApprovalRouteTemplateItem>();
                         for (int i = 0; i < approvalRouteTemplateItems.Count; i++)
                         {
@@ -527,60 +676,8 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                                 toDeleteAPItems.Add(cur);
                             }
                         }
-
-                        var vmTasksTemplateItems = lrTemplateVM.LRTasks;
-                        TaskTemplate taskTemplate = leaveRequestTemplate.TaskTemplate;
-                        List<TaskTemplateItem> taskTemplateItems = taskTemplate.TaskTemplateItems.ToList();
-
-                        List<TaskTemplateItem> toUpdateTaskItems = new List<TaskTemplateItem>();
-                        for (int i = 0; i < vmTasksTemplateItems.Count; i++)
-                        {
-                            LeaveRequestTemplateViewModel.LRTaskVM cur = vmTasksTemplateItems[i];
-                            //int curId = -1;
-                            //int.TryParse(cur.Id, out curId);
-                            if (!taskTemplateItems.Any(x => x.Id.ToString() == cur.Id))
-                            {
-                                TaskTemplateItem taskTemplateItem = new TaskTemplateItem();
-
-                                taskTemplateItem.Active = cur.Active;
-                                taskTemplateItem.TaskDescription = cur.TaskDescription;
-
-                                taskTemplateItem.DepartmentId = cur.DepartmentId;
-                                taskTemplateItem.PositionId = cur.PositionId;
-                                taskTemplateItem.EmployeeId = cur.EmployeeId;
-
-                                taskTemplateItem.RouteIndex = i + 1;
-
-                                leaveRequestTemplate.TaskTemplate.TaskTemplateItems.Add(taskTemplateItem);
-                            }
-                            else
-                            {
-                                TaskTemplateItem item = leaveRequestTemplate.TaskTemplate.TaskTemplateItems.First(x => x.Id.ToString() == cur.Id);
-
-                                item.Active = cur.Active;
-                                item.RouteIndex = i + 1;
-                                item.TaskDescription = cur.TaskDescription;
-
-                                toUpdateTaskItems.Add(item);
-                            }
-                        }
-                        List<TaskTemplateItem> toDeleteTaskItems = new List<TaskTemplateItem>();
-                        for (int i = 0; i < taskTemplateItems.Count; i++)
-                        {
-                            TaskTemplateItem cur = taskTemplateItems[i];
-                            if (!vmTasksTemplateItems.Any(x => x.Id == cur.Id.ToString()))
-                            {
-                                leaveRequestTemplate.TaskTemplate.TaskTemplateItems.Remove(cur);
-                                toDeleteTaskItems.Add(cur);
-                            }
-                        }
-
-                        leaveRequestTemplate.HasAdvanceSalaryRequest = lrTemplateVM.LRAdvanceSalaryAD;
-                        leaveRequestTemplate.HasAirTicketRequest = lrTemplateVM.LRAirTicketAD;
-                        leaveRequestTemplate.HasExitReentryRequest = lrTemplateVM.LRExitReentryAD;
-
-                        leaveRequestTemplate.HasNotesRequirement = lrTemplateVM.LRNotesAR;
-                        leaveRequestTemplate.HasAttachmentRequirement = lrTemplateVM.LRAttachmentAR;
+                        #endregion
+                        #endregion
 
                         for (int i = 0; i < toDeleteDeps.Count; i++)
                         {
@@ -603,6 +700,24 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                             await LeaveRequestTemplatesAppService.HolidaysRepository.DeleteAsync(x => x.HolidayId == toDeleteHolidaysIds[i]);
                         }
 
+                        for (int i = 0; i < toDeleteAPEmployeeItems.Count; i++)
+                        {
+                            await ApprovalRouteTemplateItemsAppService.EmployeesRepository.DeleteAsync(x => x.EmployeeId == toDeleteAPEmployeeItems[i].EmployeeId);
+                        }
+
+                        for (int i = 0; i < toDeleteAPTaskEmployeeItems.Count; i++)
+                        {
+                            await TaskTemplatesAppService.EmployeesRepository.DeleteAsync(x => x.EmployeeId == toDeleteAPTaskEmployeeItems[i].EmployeeId);
+                        }
+                        for (int i = 0; i < toDeleteAPTaskItems.Count; i++)
+                        {
+                            await TaskTemplatesAppService.ItemsRepository.DeleteAsync(toDeleteAPTaskItems[i]);
+                        }
+                        for (int i = 0; i < toUpdateAPTaskItems.Count; i++)
+                        {
+                            await TaskTemplatesAppService.ItemsRepository.UpdateAsync(toUpdateAPTaskItems[i]);
+                        }
+                        
                         for (int i = 0; i < toDeleteAPItems.Count; i++)
                         {
                             await ApprovalRouteTemplateItemsAppService.Repository.DeleteAsync(toDeleteAPItems[i]);
@@ -612,15 +727,6 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                             await ApprovalRouteTemplateItemsAppService.Repository.UpdateAsync(toUpdateAPItems[i]);
                         }
 
-                        for (int i = 0; i < toDeleteTaskItems.Count; i++)
-                        {
-                            await TaskTemplatesAppService.ItemsRepository.DeleteAsync(toDeleteTaskItems[i]);
-                        }
-                        for (int i = 0; i < toUpdateTaskItems.Count; i++)
-                        {
-                            await TaskTemplatesAppService.ItemsRepository.UpdateAsync(toUpdateTaskItems[i]);
-                        }
-
                         var lrTempUpdated = await LeaveRequestTemplatesAppService.Repository.UpdateAsync(leaveRequestTemplate);
 
                         return StatusCode(200, lrTempUpdated);
@@ -628,6 +734,8 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                     else
                     {
                         LeaveRequestTemplate_Dto leaveRequestTemplate = new LeaveRequestTemplate_Dto();
+
+                        #region General Settings
                         leaveRequestTemplate.Title = lrTemplateVM.LRTitle;
                         leaveRequestTemplate.TitleLocalized = lrTemplateVM.LRTitleLocalized;
                         leaveRequestTemplate.Prefix = lrTemplateVM.LRPrefix;
@@ -681,6 +789,14 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                             leaveRequestTemplate.Holidays.Add(holiday);
                         }
 
+                        leaveRequestTemplate.HasAdvanceSalaryRequest = lrTemplateVM.LRAdvanceSalaryAD;
+                        leaveRequestTemplate.HasAirTicketRequest = lrTemplateVM.LRAirTicketAD;
+                        leaveRequestTemplate.HasExitReentryRequest = lrTemplateVM.LRExitReentryAD;
+
+                        leaveRequestTemplate.HasNotesRequirement = lrTemplateVM.LRNotesAR;
+                        leaveRequestTemplate.HasAttachmentRequirement = lrTemplateVM.LRAttachmentAR;
+                        #endregion
+                        #region Approval Route
                         ApprovalRouteTemplate_Dto approvalRouteTemplate = new ApprovalRouteTemplate_Dto();
                         approvalRouteTemplate.ApprovalRouteTemplateItems = new List<ApprovalRouteTemplateItem_Dto>();
                         approvalRouteTemplate.ApprovalRouteModule = ApprovalRouteModule.LeaveRequest;
@@ -691,65 +807,68 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                             ApprovalRouteTemplateItem_Dto approvalRouteTemplateItem = new ApprovalRouteTemplateItem_Dto();
 
                             approvalRouteTemplateItem.Active = lRApprovalRouteVM.Active;
+
                             if (lRApprovalRouteVM.IsDepartmentHead)
                             {
                                 approvalRouteTemplateItem.IsDepartmentHead = true;
-                                approvalRouteTemplateItem.DepartmentId = null;
-                                approvalRouteTemplateItem.PositionId = null;
-                                approvalRouteTemplateItem.EmployeeId = null;
                             }
                             else if (lRApprovalRouteVM.IsReportingTo)
                             {
                                 approvalRouteTemplateItem.IsReportingTo = true;
-                                approvalRouteTemplateItem.DepartmentId = null;
-                                approvalRouteTemplateItem.PositionId = null;
-                                approvalRouteTemplateItem.EmployeeId = null;
                             }
                             else
                             {
                                 approvalRouteTemplateItem.IsDepartmentHead = false;
                                 approvalRouteTemplateItem.IsReportingTo = false;
-                                approvalRouteTemplateItem.DepartmentId = lRApprovalRouteVM.DepartmentId;
-                                approvalRouteTemplateItem.PositionId = lRApprovalRouteVM.PositionId;
-                                approvalRouteTemplateItem.EmployeeId = lRApprovalRouteVM.EmployeeId;
+
+                                approvalRouteTemplateItem.ApprovalRouteEmployees = new List<ApprovalRouteTemplateItemEmployee_Dto>();
+                                for (int y = 0; y < lRApprovalRouteVM.EmployeeIds.Length; y++)
+                                {
+                                    ApprovalRouteTemplateItemEmployee_Dto approvalRouteTemplateItemEmployee = new ApprovalRouteTemplateItemEmployee_Dto();
+                                    approvalRouteTemplateItemEmployee.EmployeeId = lRApprovalRouteVM.EmployeeIds[y].Value;
+
+                                    approvalRouteTemplateItem.ApprovalRouteEmployees.Add(approvalRouteTemplateItemEmployee);
+                                }
+
+                                TaskTemplate_Dto apItemTaskTemplate = new TaskTemplate_Dto();
+                                apItemTaskTemplate.TaskModule = TaskModule.LeaveRequest;
+                                apItemTaskTemplate.TaskTemplateItems = new List<TaskTemplateItem_Dto>();
+                                for (int y = 0; y < lRApprovalRouteVM.Tasks.Count; i++)
+                                {
+                                    LeaveRequestTemplateViewModel.LRTaskVM lRTaskVM = lRApprovalRouteVM.Tasks[y];
+                                    TaskTemplateItem_Dto taskTemplateItem = new TaskTemplateItem_Dto();
+
+                                    taskTemplateItem.Active = lRTaskVM.Active;
+                                    taskTemplateItem.TaskDescription = lRTaskVM.TaskDescription;
+
+                                    taskTemplateItem.TaskEmployees = new List<TaskTemplateItemEmployee_Dto>();
+                                    for (int z = 0; z < lRTaskVM.EmployeeIds.Length; z++)
+                                    {
+                                        TaskTemplateItemEmployee_Dto taskTemplateItemEmployee = new TaskTemplateItemEmployee_Dto();
+                                        taskTemplateItemEmployee.EmployeeId = lRTaskVM.EmployeeIds[z].Value;
+                                    }
+
+                                    taskTemplateItem.RouteIndex = y + 1;
+                                    taskTemplateItem.IsAny = lRTaskVM.IsAny;
+                                    taskTemplateItem.NotifyEmployee = lRTaskVM.NotifyEmployee;
+
+                                    apItemTaskTemplate.TaskTemplateItems.Add(taskTemplateItem);
+                                }
+
+                                approvalRouteTemplateItem.TaskTemplate = apItemTaskTemplate;
                             }
+
                             approvalRouteTemplateItem.RouteIndex = i + 1;
+
+                            approvalRouteTemplateItem.IsAny = lRApprovalRouteVM.IsAny;
+                            approvalRouteTemplateItem.NotifyEmployee = lRApprovalRouteVM.NotifyEmployee;
+                            approvalRouteTemplateItem.IsPoster = lRApprovalRouteVM.IsPoster;
 
                             approvalRouteTemplate.ApprovalRouteTemplateItems.Add(approvalRouteTemplateItem);
                         }
 
                         leaveRequestTemplate.ApprovalRouteTemplate = approvalRouteTemplate;
-                        
-
-                        TaskTemplate_Dto taskTemplate = new TaskTemplate_Dto();
-                        taskTemplate.TaskTemplateItems = new List<TaskTemplateItem_Dto>();
-                        taskTemplate.TaskModule = TaskModule.LeaveRequest;
-
-                        for (int i = 0; i < lrTemplateVM.LRTasks.Count; i++)
-                        {
-                            LeaveRequestTemplateViewModel.LRTaskVM lRTaskVM = lrTemplateVM.LRTasks[i];
-                            TaskTemplateItem_Dto taskTemplateItem = new TaskTemplateItem_Dto();
-
-                            taskTemplateItem.Active = lRTaskVM.Active;
-                            taskTemplateItem.TaskDescription = lRTaskVM.TaskDescription;
-
-                            taskTemplateItem.DepartmentId = lRTaskVM.DepartmentId;
-                            taskTemplateItem.PositionId = lRTaskVM.PositionId;
-                            taskTemplateItem.EmployeeId = lRTaskVM.EmployeeId;
-
-                            taskTemplateItem.RouteIndex = i + 1;
-
-                            taskTemplate.TaskTemplateItems.Add(taskTemplateItem);
-                        }
-
-                        leaveRequestTemplate.TaskTemplate = taskTemplate;
-
-                        leaveRequestTemplate.HasAdvanceSalaryRequest = lrTemplateVM.LRAdvanceSalaryAD;
-                        leaveRequestTemplate.HasAirTicketRequest = lrTemplateVM.LRAirTicketAD;
-                        leaveRequestTemplate.HasExitReentryRequest = lrTemplateVM.LRExitReentryAD;
-
-                        leaveRequestTemplate.HasNotesRequirement = lrTemplateVM.LRNotesAR;
-                        leaveRequestTemplate.HasAttachmentRequirement = lrTemplateVM.LRAttachmentAR;
+                        #endregion
 
                         var lrTempCreated = await LeaveRequestTemplatesAppService.CreateCustomAsync(leaveRequestTemplate);
 
@@ -853,7 +972,7 @@ namespace CERP.Web.Areas.HR.Pages.Setup
             public void Initialize()
             {
                 LRApprovalRoute.ForEach(x => x.Initialize());
-                LRTasks.ForEach(x => x.Initialize());
+                
             }
 
             public int Id { get; set; }
@@ -870,7 +989,6 @@ namespace CERP.Web.Areas.HR.Pages.Setup
             public Guid[] LREmploymentTypeIds { get; set; }
             public Guid[] LREmployeeStatusIds { get; set; }
 
-            public List<LRTaskVM> LRTasks { get; set; }
             public List<LRApprovalRouteVM> LRApprovalRoute { get; set; }
 
             public int[] LRDeductionHolidaysIds { get; set; }
@@ -886,9 +1004,11 @@ namespace CERP.Web.Areas.HR.Pages.Setup
             {
                 public void Initialize()
                 {
-                    DepartmentId = Department.Id;
-                    PositionId = Position.Id;
-                    EmployeeId = Employee.Id;
+                    DepartmentIds = Departments.Select(x => (Guid?)x.Id).ToArray();
+                    PositionIds = Positions.Select(x => (Guid?)x.Id).ToArray();
+                    EmployeeIds = Employees.Select(x => (Guid?)x.Id).ToArray();
+
+                    Tasks.ForEach(x => x.Initialize());
                 }
 
                 public string Id { get; set; }
@@ -896,33 +1016,44 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                 public bool IsDepartmentHead { get; set; }
                 public bool IsReportingTo { get; set; }
 
-                public Department_Dto Department { get; set; }
-                public Guid? DepartmentId { get; set; }
-                public Position_Dto Position { get; set; }
-                public Guid? PositionId { get; set; }
-                public Employee_Dto Employee { get; set; }
-                public Guid? EmployeeId { get; set; }
+                public List<Department_Dto> Departments { get; set; }
+                public Guid?[] DepartmentIds { get; set; }
+                public List<Position_Dto> Positions { get; set; }
+                public Guid?[] PositionIds { get; set; }
+                public List<Employee_Dto> Employees { get; set; }
+                public Guid?[] EmployeeIds { get; set; }
+
+                public List<LRTaskVM> Tasks { get; set; }
+                public Guid?[] TaskIds { get; set; }
+
                 public bool Active { get; set; }
+                public bool IsAny { get; set; }
+
+                public bool NotifyEmployee { get; set; }
+                public bool IsPoster { get; set; }
             }
             public class LRTaskVM
             {
                 public void Initialize()
                 {
-                    DepartmentId = Department.Id;
-                    PositionId = Position.Id;
-                    EmployeeId = Employee.Id;
+                    DepartmentIds = Departments.Select(x => (Guid?)x.Id).ToArray();
+                    PositionIds = Positions.Select(x => (Guid?)x.Id).ToArray();
+                    EmployeeIds = Employees.Select(x => (Guid?)x.Id).ToArray();
                 }
 
-                public string Id { get; set; }
+                public int Id { get; set; }
                 public bool Active { get; set; }
                 public string TaskDescription { get; set; }
 
-                public Department_Dto Department { get; set; }
-                public Guid? DepartmentId { get; set; }
-                public Position_Dto Position { get; set; }
-                public Guid? PositionId { get; set; }
-                public Employee_Dto Employee { get; set; }
-                public Guid? EmployeeId { get; set; }
+                public List<Department_Dto> Departments { get; set; }
+                public Guid?[] DepartmentIds { get; set; }
+                public List<Position_Dto> Positions { get; set; }
+                public Guid?[] PositionIds { get; set; }
+                public List<Employee_Dto> Employees { get; set; }
+                public Guid?[] EmployeeIds { get; set; }
+
+                public bool IsAny { get; set; }
+                public bool NotifyEmployee { get; internal set; }
             }
         }
         public class WorkShiftViewModel
