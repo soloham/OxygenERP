@@ -51,7 +51,24 @@ namespace CERP.EntityFrameworkCore
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.ApprovalRouteTemplateItems)
                                                         .ThenInclude(x => x.ApprovalRouteItemEmployees)
-                                                        .ThenInclude(x => x.Employee);
+                                                        .ThenInclude(x => x.Employee)
+                                                        .ThenInclude(x => x.Department)
+                                                       .Include(p => p.ApprovalRouteTemplateItems)
+                                                        .ThenInclude(x => x.ApprovalRouteItemEmployees)
+                                                        .ThenInclude(x => x.Employee)
+                                                        .ThenInclude(x => x.Position)
+                                                       .Include(p => p.ApprovalRouteTemplateItems)
+                                                        .ThenInclude(x => x.TaskTemplate)
+                                                        .ThenInclude(x => x.TaskTemplateItems)
+                                                        .ThenInclude(x => x.TaskEmployees)
+                                                        .ThenInclude(x => x.Employee)
+                                                        .ThenInclude(x => x.Department)
+                                                       .Include(p => p.ApprovalRouteTemplateItems)
+                                                        .ThenInclude(x => x.TaskTemplate)
+                                                        .ThenInclude(x => x.TaskTemplateItems)
+                                                        .ThenInclude(x => x.TaskEmployees)
+                                                        .ThenInclude(x => x.Employee)
+                                                        .ThenInclude(x => x.Position);
                 });
                 options.Entity<ApprovalRouteTemplateItem>(opt =>
                 {

@@ -50,11 +50,12 @@
     lrApprovalRouteCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
 
     List<GridColumn> lrApprovalRouteGridColumns = new List<GridColumn>()
-{
+    {
         new GridColumn { Field = "id", Visible=false, ShowInColumnChooser=false, IsPrimaryKey=true  },
+        new GridColumn { Field = "apId", Visible=false, ShowInColumnChooser=false },
         new GridColumn { Field = "routeIndex", Visible = false, HeaderText = "Route Index", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "active", AllowSorting = false, AutoFit=true, HeaderText = "Active", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "nofityEmployee", AllowSorting = false, AutoFit=true, HeaderText = "Notify", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "notifyEmployee", AllowSorting = false, AutoFit=true, HeaderText = "Notify", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "isPoster", AllowSorting = false, AutoFit=true, HeaderText = "Poster", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "getAllDepartmentNames", AllowSorting = false, AutoFit=true, HeaderText = "Department", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "getAllPositionTitles", AllowSorting = false, AutoFit=true, HeaderText = "Position", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
@@ -70,8 +71,9 @@
     lrTasksCommands.Add(new { type = "MoveDown", buttonOption = new { iconCss = "e-icons e-c-movedown", cssClass = "e-flat" } });
     lrTasksCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
 
+
     List<GridColumn> lrTasksGridColumns = new List<GridColumn>()
-{
+    {
         new GridColumn { Field = "id", Visible=false, ShowInColumnChooser=false, IsPrimaryKey=true  },
         new GridColumn { Field = "routeIndex", Visible = false, HeaderText = "Route Index", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "active", AllowSorting = false, AutoFit=true, HeaderText = "Active", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
@@ -82,8 +84,44 @@
         new GridColumn { Field = "taskDescription", AllowSorting = false, AutoFit=true, HeaderText = "Description", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Width = "50", HeaderText = "Actions", TextAlign=TextAlign.Center, MinWidth="10", Commands = lrTasksCommands }
     };
+
+    List<GridColumn> APTasksGridColumns = new List<GridColumn>()
+    {
+        new GridColumn { Field = "id", Visible=false, ShowInColumnChooser=false, IsPrimaryKey=true  },
+        new GridColumn { Field = "apId", Visible=false, ShowInColumnChooser=false },
+        new GridColumn { Field = "routeIndex", Visible = false, HeaderText = "Route Index", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "active", AllowSorting = false, AutoFit=true, HeaderText = "Active", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "notifyEmployee", AllowSorting = false, AutoFit=true, HeaderText = "Notify", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "getAllDepartmentNames", AllowSorting = false, AutoFit=true, HeaderText = "Department", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "getAllPositionTitles", AllowSorting = false, AutoFit=true, HeaderText = "Position", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "getAllEmployeeNames", AllowSorting = false,AutoFit=true, HeaderText = "Employee", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "taskDescription", AllowSorting = false, AutoFit=true, HeaderText = "Description", TextAlign=TextAlign.Center,  MinWidth="10"  },
+    };
+
+    Grid APSecondaryDetailsGrid = new Grid()
+    {
+        DataSource = new List<dynamic>(),
+        QueryString = "apId",
+        EditSettings = new Syncfusion.EJ2.Grids.GridEditSettings() { },
+        AllowExcelExport = true,
+        //AllowGrouping = true,
+        AllowPdfExport = true,
+        HierarchyPrintMode = HierarchyGridPrintMode.All,
+        AllowSelection = true,
+        AllowFiltering = false,
+        AllowSorting = true,
+        AllowMultiSorting = true,
+        AllowResizing = true,
+        GridLines = GridLine.Both,
+        SearchSettings = new GridSearchSettings() { },
+        //Toolbar = new List<object>() { "ExcelExport", "CsvExport", "Print", "Search",new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } },
+        //ContextMenuItems = new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending", "Copy", "Edit", "Delete", "Save", "Cancel", "PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage", "LastPage", "NextPage" },
+        Columns = APTasksGridColumns
+
+    };
+
 }
-<script>
+    <script>
         isEditingLR = false;
         isEditingLRLoaded = false;
         var curLREditRow;
@@ -178,30 +216,25 @@
 
                 var apGrid = $("#LRApprovalRouteGrid")[0].ej2_instances[0];
                 apGrid.dataSource = [];
-                apGrid.dataSource.push({ id: 0, active: true, isDepartmentHead:true, department: { id: "@Guid.Empty", name: "Selected" }, position: { id: "@Guid.Empty", title: "Head" }, employee: { id: "@Guid.Empty", name: "Auto" } })
-                apGrid.dataSource.push({ id: 1, active: true, isReportingTo:true, department: { id: "@Guid.Empty", name: "Selected" }, position: { id: "@Guid.Empty", title: "Auto" }, employee: { id: "@Guid.Empty", name: "Auto [Reporting To]" } })
+                apGrid.childGrid.dataSource = [];
+                apGrid.dataSource.push({ id: 0, active: true, notifyEmployee: false, isPoster: false, isDepartmentHead: true, getAllDepartmentNames: "Selected", getAllPositionTitles: "Head", getAllEmployeeNames: "Auto", employees: [{ id: "@Guid.Empty", name: "Auto", position: { id: "@Guid.Empty", title: "Head" }, department: { id: "@Guid.Empty", name: "Selected" } }] })
+                apGrid.dataSource.push({ id: 1, active: true, notifyEmployee: false, isPoster: false, isReportingTo: true, getAllDepartmentNames: "Selected", getAllPositionTitles: "Auto", getAllEmployeeNames: "Auto", employees: [{ id: "@Guid.Empty", name: "Auto [Reporting To]", position: { id: "@Guid.Empty", title: "Head" }, department: { id: "@Guid.Empty", name: "Selected" } }] })
                 apGrid.refresh();
 
                 var tasksGrid = $("#LRTasksGrid")[0].ej2_instances[0];
                 tasksGrid.dataSource = [];
             });
 
-            
             $("#addToApprovalRouteBtn").on('click', function (args) {
                 var apGrid = $("#LRApprovalRouteGrid")[0].ej2_instances[0];
-                //var depIds = $("#apDepartmentId").val();
-                //var posIds = $("#apPositionId").val();
-                var emps = $("#apEmployeeId").val();
-                if (depId == '' || posId == '' || empId == '' || apGrid.dataSource.filter(function (e) { return e.employees.id === empId; }).length > 0)
-                    return;
-
-                var isActive = $("#APIsActive").parent().hasClass('active');
-                var notifyEmployee = $("#APNotify").parent().hasClass('active');
-                var isPoster = $("#APIsPoster").parent().hasClass('active');
+                var depIds = $("#apDepartmentId").val();
+                var posIds = $("#apPositionId").val();
+                var selectedEmpIds = $("#apEmployeeId").val();
+                var emps = curAPEmployees;
 
                 var employees = [];
-                for (var i = 0; i < emps.length; i++) {
-                    var emp = emps[i];
+                for (var i = 0; i < selectedEmpIds.length; i++) {
+                    var emp = emps.find(x => x.id == selectedEmpIds[i]);
                     employees.push(
                         {
                             id: emp.id,
@@ -211,35 +244,37 @@
                         }
                     );
                 }
-                function getAllEmployeeNames() {
-                    var names = '';
-                    for (var i = 0; i < this.employees.length; i++) {
-                        names += this.employees[i].name + (i == this.employees.length)? '' : ', ';
-                    }
-                    return names;
-                }
-                function getAllPositionTitles() {
-                    var titles = '';
-                    for (var i = 0; i < this.employees.length; i++) {
-                        titles += this.employees[i].position.name + (i == this.employees.length) ? '' : ', ';
-                    }
-                    return titles;
-                }
-                function getAllDepartmentNames() {
-                    var names = '';
-                    for (var i = 0; i < this.employees.length; i++) {
-                        names += this.employees[i].department.name + (i == this.employees.length) ? '' : ', ';
-                    }
-                    return names;
+
+                var curEmps = apGrid.dataSource.filter(function (e) { return e.employees === employees; });
+
+                if (depIds.length == 0 || posIds.length == 0 || employees.length == 0 || curEmps.length > 0)
+                    return;
+
+                var isActive = $("#APIsActive").parent().hasClass('active');
+                var notifyEmployee = $("#APNotify").parent().hasClass('active');
+                var isPoster = $("#APIsPoster").parent().hasClass('active');
+                var isAny = $("#APAllowAny").parent().hasClass('active');
+
+                var getAllEmployeeNames = '';
+                var getAllPositionTitles = '';
+                var getAllDepartmentNames = '';
+                for (var i = 0; i < employees.length; i++) {
+                    getAllEmployeeNames += employees[i].name + ((i == employees.length-1)? '' : ', ');
+                    getAllPositionTitles += employees[i].position.title + ((i == employees.length-1) ? '' : ', ');
+                    getAllDepartmentNames += employees[i].department.name + ((i == employees.length-1) ? '' : ', ');
                 }
 
                 var tasks = $('#LRTasksGrid')[0].ej2_instances[0].dataSource;
 
-                var apRoute = {
+                for (var i = 0; i < tasks.length; i++) {
+                    tasks[i].apId = getAllEmployeeNames;
+                    apGrid.childGrid.dataSource.push(tasks[i]);
+                }
+
+                var apRoute =  {
                     id: '',
                     active: isActive,
-                    //isAny: isAny,
-                    isAny: true,
+                    isAny: isAny,
                     notifyEmployee: notifyEmployee,
                     isPoster: isPoster,
                     employees: employees,
@@ -248,7 +283,10 @@
                     getAllPositionTitles: getAllPositionTitles,
                     getAllDepartmentNames: getAllDepartmentNames
                 }
+
                 apRoute.id = apRoute.getAllEmployeeNames;
+                apRoute.apId = apRoute.getAllEmployeeNames;
+
                 apGrid.dataSource.push(apRoute);
                 apGrid.refresh();
             })
@@ -271,19 +309,15 @@
             });
             $("#addTaskBtn").on('click', function (args) {
                 var taskGrid = $("#LRTasksGrid")[0].ej2_instances[0];
+
                 var depIds = $("#taskDepartmentId").val();
                 var posIds = $("#taskPositionId").val();
-                var emps = $("#taskEmployeeId").val();
-                var taskDescription = $("#lrTaskDescription").val();
-                if (depId == '' || posId == '' || empId == '' || taskDescription == '' || (taskGrid.dataSource.length > 0 && taskGrid.dataSource.filter(function (e) { return e.employee.id === empId; }).length > 0))
-                    return;
-
-                var isActive = $("#taskIsActive").parent().hasClass('active');
-                var notifyEmployee = $("#taskNotify").parent().hasClass('active');
+                var empIds = $("#taskEmployeeId").val();
+                var emps = curTaskEmployees;
 
                 var employees = [];
-                for (var i = 0; i < emps.length; i++) {
-                    var emp = emps[i];
+                for (var i = 0; i < empIds.length; i++) {
+                    var emp = emps.find(x => x.id == empIds[i]);
                     employees.push(
                         {
                             id: emp.id,
@@ -293,33 +327,31 @@
                         }
                     );
                 }
-                function getAllEmployeeNames() {
-                    var names = '';
-                    for (var i = 0; i < this.employees.length; i++) {
-                        names += this.employees[i].name + (i == this.employees.length) ? '' : ', ';
-                    }
-                    return names;
+
+                var getAllEmployeeNames = '';
+                var getAllPositionTitles = '';
+                var getAllDepartmentNames = '';
+                for (var i = 0; i < employees.length; i++) {
+                    getAllEmployeeNames += employees[i].name + ((i == employees.length - 1) ? '' : ', ');
+                    getAllPositionTitles += employees[i].position.title + ((i == employees.length - 1) ? '' : ', ');
+                    getAllDepartmentNames += employees[i].department.name + ((i == employees.length - 1) ? '' : ', ');
                 }
-                function getAllPositionTitles() {
-                    var titles = '';
-                    for (var i = 0; i < this.employees.length; i++) {
-                        titles += this.employees[i].position.name + (i == this.employees.length) ? '' : ', ';
-                    }
-                    return titles;
-                }
-                function getAllDepartmentNames() {
-                    var names = '';
-                    for (var i = 0; i < this.employees.length; i++) {
-                        names += this.employees[i].department.name + (i == this.employees.length) ? '' : ', ';
-                    }
-                    return names;
-                }
+
+                var curEmps = taskGrid.dataSource.filter(function (e) { return e.getAllEmployeeNames === getAllEmployeeNames && e.getAllPositionTitles === getAllPositionTitles && e.getAllDepartmentNames === getAllDepartmentNames; });
+
+                if (depIds.length == 0 || posIds.length == 0 || employees.length == 0 || curEmps.length > 0)
+                    return;
+
+                var isActive = $("#taskIsActive").parent().hasClass('active');
+                var notifyEmployee = $("#taskNotify").parent().hasClass('active');
+                var isAny = $("#taskAllowAny").parent().hasClass('active');
+                var taskDescription = $("#lrTaskDescription").val();
 
                 var task = {
                     id: '',
                     active: isActive,
-                    //isAny: isAny,
-                    isAny: true,
+                    isAny: isAny,
+                    taskDescription: taskDescription,
                     notifyEmployee: notifyEmployee,
                     employees: employees,
                     getAllEmployeeNames: getAllEmployeeNames,
@@ -447,7 +479,7 @@
                 return valid;
             }
         });
-</script>
+    </script>
 
 <style>
     .e-c-moveup:before {
@@ -712,7 +744,7 @@
                     </e-grid-selectionsettings>
                 </ejs-grid>
             </div>
-            <ejs-grid id="LRApprovalRouteGrid" enableAutoFill="true" columns="@lrApprovalRouteGridColumns"
+            <ejs-grid id="LRApprovalRouteGrid" enableAutoFill="true" columns="@lrApprovalRouteGridColumns" childGrid="APSecondaryDetailsGrid" queryString="id"
                         dataBound="dataBoundResponsive" commandClick="lrApprovalRouteCommandClick" actionBegin="lrApprovalRouteActionBegin"
                         allowExcelExport="true" allowPdfExport="true"
                         hierarchyPrintMode="Expanded" allowSelection="true" allowSorting="true"
@@ -911,15 +943,21 @@
                     cERP.appServices.app.approvalRouteService.approvalRouteTemplates.getFull(curLREditRow.approvalRouteTemplate.id).done(function (data) {
                         apGrid.hideSpinner();
                         apGrid.dataSource = data.approvalRouteTemplateItems;
+                        console.log(data);
+                        var allTaskTemplateItems = [];
+                        for (var i = 0; i < data.approvalRouteTemplateItems.length; i++) {
+                            var approvalRouteTempItem = data.approvalRouteTemplateItems[i];
+                            approvalRouteTempItem.apId = i;
+                            if (approvalRouteTempItem.taskTemplate != null) {
+                                for (var j = 0; j < approvalRouteTempItem.taskTemplate.taskTemplateItems.length; j++) {
+                                    var taskTemplateItem = approvalRouteTempItem.taskTemplate.taskTemplateItems[j];
+                                    taskTemplateItem.apId = i;
+                                    allTaskTemplateItems.push(taskTemplateItem);
+                                }
+                            }
+                        }
+                        apGrid.childGrid.dataSource = allTaskTemplateItems;
                         apGrid.refresh();
-                    });
-                    var taskGrid = $("#LRTasksGrid")[0].ej2_instances[0];
-                    taskGrid.dataSource = null;
-                    taskGrid.showSpinner();
-                    cERP.appServices.app.taskService.taskTemplates.getFull(curLREditRow.taskTemplate.id).done(function (data) {
-                        taskGrid.hideSpinner();
-                        taskGrid.dataSource = data.taskTemplateItems;
-                        taskGrid.refresh();
                     });
                     //for (var i = 0; i < approvalItems.length; i++) {
                     //    if (!approvalItems[i].isDepartmentHead && !approvalItems[i].isReportingTo) {
@@ -1331,6 +1369,7 @@
         var departmentIds = $("#apDepartmentId").val();
         $("#apPositionId").empty();
         $("#apEmployeeId").empty();
+        curAPPositions = [];
         if (departmentIds.length == 0) return;
         $.ajax({
             type: "GET",
@@ -1354,11 +1393,13 @@
         });
     }
 
+    var curAPEmployees = [];
     function SelectAPPositionEmployees() {
         var positionIds = $("#apPositionId").val();
         var positions = curAPPositions;
         //var departmentIds = $("#apDepartmentId").val();
         $("#apEmployeeId").empty();
+        curAPEmployees = [];
         if (positionIds.length == 0) return;
 
         $.ajax({
@@ -1372,8 +1413,11 @@
                     var position = positions.find(function (x) { return x.id == positionId });
                     var employees = [];
                     $.each(data, function (j, employee) {
-                        if (employee.posId == positionId)
-                            employees.push({ id: employee.id, value: employee.id, name: employee.name, label: employee.name, departmentId: employee.depId, depName: employee.depName, positionId: employee.posId, posName: employee.posTitle });
+                        if (employee.posId == positionId) {
+                            var emp = { id: employee.id, value: employee.id, name: employee.name, label: employee.name, departmentId: employee.depId, depName: employee.depName, positionId: employee.posId, posName: employee.posTitle };
+                            employees.push(emp);
+                            curAPEmployees.push(emp);
+                        }
                     });
                     positionEmployees.push({ label: position.title, children: employees })
                 });
@@ -1382,47 +1426,63 @@
         });
     }
 
+    var curTaskPositions = [];
     function SelectTaskDepartmentPositions() {
-        var departmentId = $("#taskDepartmentId").val();
+        var departmentIds = $("#taskDepartmentId").val();
         $("#taskPositionId").empty();
         $("#taskEmployeeId").empty();
-        if (departmentId == '') return;
-
-        $.getJSON(`?handler=Positions&departmentId=${departmentId}`, (data) => {
-            $.each(data, function (i, item) {
-                $("#taskPositionId").append(`<option value="${item.id}">${item.title}</option>`);
-            });
+        curTaskPositions = [];
+        if (departmentIds.length == 0) return;
+        $.ajax({
+            type: "GET",
+            url: '?handler=DepartmentsPositions',
+            data: { departmentIds: JSON.stringify(departmentIds) },
+            success: function (data) {
+                var dataMS = [];
+                $.each(departmentIds, function (i, departmentId) {
+                    var positions = [];
+                    $.each(data, function (j, position) {
+                        if (position.departmentId == departmentId)
+                            positions.push({ label: position.title, value: position.id });
+                    });
+                    dataMS.push({
+                        label: $(`#lrDepartmentId option[value='${departmentId}']`).text(), children: positions
+                    });
+                });
+                curTaskPositions = data;
+                $("#taskPositionId").multiselect('dataprovider', dataMS);
+            }
         });
     }
+    var curTaskEmployees = [];
     function SelectTaskPositionEmployees() {
-        var positions = $("#taskPositionId").multiselect('dataprovider');
-        var departmentIds = $("taskDepartmentId").val();
+        var positionIds = $("#taskPositionId").val();
+        var positions = curTaskPositions;
+        //var departmentIds = $("#apDepartmentId").val();
         $("#taskEmployeeId").empty();
-        if (departmentIds.length == 0) return;
+        curTaskEmployees = [];
+        if (positionIds.length == 0) return;
 
         $.ajax({
             type: "GET",
             url: '?handler=Employees',
             data: { positionIds: JSON.stringify(positionIds) },
             success: function (data) {
-                var dataMS = [];
-                $.each(departmentIds, function (i, departmentId) {
-                    var positionEmployees = [];
+                var positionEmployees = [];
 
-                    $.each(positions, function (i, position) {
-                        var employees = [];
-                        $.each(data, function (j, employee) {
-                            if (employee.positionId == position.id)
-                                employees.push({ id: item.id, name: item.name, label: item.name, departmentId: item.departmentId, depName: item.depName, positionId: item.positionId, posName: item.posName });
-                        });
-                        positionEmployees.push({ label: position.title, children: employees })
+                $.each(positionIds, function (i, positionId) {
+                    var position = positions.find(function (x) { return x.id == positionId });
+                    var employees = [];
+                    $.each(data, function (j, employee) {
+                        if (employee.posId == positionId) {
+                            var emp = { id: employee.id, value: employee.id, name: employee.name, label: employee.name, departmentId: employee.depId, depName: employee.depName, positionId: employee.posId, posName: employee.posTitle };
+                            employees.push(emp);
+                            curTaskEmployees.push(emp);
+                        }
                     });
-                    dataMS.push({
-                        label: $(`#taskDepartmentId option[value='${departmentId}']`).text(), children: positionEmployees
-                    });
-                    $("#taskEmployeeId").multiselect('dataprovider', dataMS);
+                    positionEmployees.push({ label: position.title, children: employees })
                 });
-
+                $("#taskEmployeeId").multiselect('dataprovider', positionEmployees);
             }
         });
     }

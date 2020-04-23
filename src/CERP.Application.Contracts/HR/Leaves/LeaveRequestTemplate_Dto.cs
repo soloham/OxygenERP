@@ -26,7 +26,8 @@ namespace CERP.HR.Leaves
         public DictionaryValue_Dto LeaveType { get; set; }
         public Guid LeaveTypeId { get; set; }
 
-        public string GetAllDepartments { get {
+        public string GetAllDepartments { 
+            get {
                 string result = "";
                 try
                 {
@@ -134,7 +135,7 @@ namespace CERP.HR.Leaves
         }
         public virtual ICollection<LeaveRequestTemplateHoliday_Dto> Holidays { get; set; }
 
-        public ApprovalRouteTemplate_Dto ApprovalRouteTemplate { get; set; }
+        public virtual ApprovalRouteTemplate_Dto ApprovalRouteTemplate { get; set; }
         public int ApprovalRouteTemplateId { get; set; }
 
         public bool HasAdvanceSalaryRequest { get; set; }
@@ -144,5 +145,4 @@ namespace CERP.HR.Leaves
         public bool HasNotesRequirement { get; set; }
         public bool HasAttachmentRequirement { get; set; }
     }
-    
 }

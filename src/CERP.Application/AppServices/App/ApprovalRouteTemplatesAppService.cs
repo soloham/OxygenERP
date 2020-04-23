@@ -25,7 +25,8 @@ namespace CERP.AppServices.App.ApprovalRouteService
 
         public async Task<ApprovalRouteTemplate_Dto> GetFull(int id)
         {
-            return ObjectMapper.Map<ApprovalRouteTemplate, ApprovalRouteTemplate_Dto>(await Repository.GetAsync(id, true));
+            ApprovalRouteTemplate source = await Repository.GetAsync(id, true);
+            return ObjectMapper.Map<ApprovalRouteTemplate, ApprovalRouteTemplate_Dto>(source);
         }
     }
 }

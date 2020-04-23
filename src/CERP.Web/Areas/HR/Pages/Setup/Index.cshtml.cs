@@ -615,8 +615,9 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                                 for (int y = 0; y < vmAPTaskTemplateItems.Count; i++)
                                 {
                                     LeaveRequestTemplateViewModel.LRTaskVM vmAPTaskTemplateItem = vmAPTaskTemplateItems[i];
-
-                                    if (!apTaskTemplateItems.Any(x => x.Id == vmAPTaskTemplateItem.Id))
+                                    int vmAPTaskTemplateItemId = -1;
+                                    int.TryParse(vmAPTaskTemplateItem.Id, out vmAPTaskTemplateItemId);
+                                    if (!apTaskTemplateItems.Any(x => x.Id == vmAPTaskTemplateItemId))
                                     {
                                         TaskTemplateItem apTaskTemplateItem = new TaskTemplateItem();
 
@@ -639,7 +640,7 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                                     }
                                     else
                                     {
-                                        TaskTemplateItem taskTemplateItem = apTaskTemplateItems.First(x => x.Id == vmAPTaskTemplateItem.Id);
+                                        TaskTemplateItem taskTemplateItem = apTaskTemplateItems.First(x => x.Id == vmAPTaskTemplateItemId);
 
                                         taskTemplateItem.Active = vmAPTaskTemplateItem.Active;
                                         taskTemplateItem.TaskDescription = vmAPTaskTemplateItem.TaskDescription;
@@ -652,10 +653,10 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                                         toUpdateAPTaskItems.Add(taskTemplateItem);
                                     }
                                 }
-                                for (int y = 0; y < apTaskTemplateItems.Count; i++)
+                                for (int y = 0; y < apTaskTemplateItems.Count; y++)
                                 {
                                     TaskTemplateItem curAPTaskItem = apTaskTemplateItems[i];
-                                    if (!vmAPTaskTemplateItems.Any(x => x.Id == curAPTaskItem.Id))
+                                    if (!vmAPTaskTemplateItems.Any(x => x.Id == curAPTaskItem.Id.ToString()))
                                     {
                                         item.TaskTemplate.TaskTemplateItems.Remove(curAPTaskItem);
                                         toDeleteAPTaskItems.Add(curAPTaskItem);
@@ -821,19 +822,19 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                                 approvalRouteTemplateItem.IsDepartmentHead = false;
                                 approvalRouteTemplateItem.IsReportingTo = false;
 
-                                approvalRouteTemplateItem.ApprovalRouteEmployees = new List<ApprovalRouteTemplateItemEmployee_Dto>();
+                                approvalRouteTemplateItem.ApprovalRouteItemEmployees = new List<ApprovalRouteTemplateItemEmployee_Dto>();
                                 for (int y = 0; y < lRApprovalRouteVM.EmployeeIds.Length; y++)
                                 {
                                     ApprovalRouteTemplateItemEmployee_Dto approvalRouteTemplateItemEmployee = new ApprovalRouteTemplateItemEmployee_Dto();
                                     approvalRouteTemplateItemEmployee.EmployeeId = lRApprovalRouteVM.EmployeeIds[y].Value;
 
-                                    approvalRouteTemplateItem.ApprovalRouteEmployees.Add(approvalRouteTemplateItemEmployee);
+                                    approvalRouteTemplateItem.ApprovalRouteItemEmployees.Add(approvalRouteTemplateItemEmployee);
                                 }
 
                                 TaskTemplate_Dto apItemTaskTemplate = new TaskTemplate_Dto();
                                 apItemTaskTemplate.TaskModule = TaskModule.LeaveRequest;
                                 apItemTaskTemplate.TaskTemplateItems = new List<TaskTemplateItem_Dto>();
-                                for (int y = 0; y < lRApprovalRouteVM.Tasks.Count; i++)
+                                for (int y = 0; y < lRApprovalRouteVM.Tasks.Count; y++)
                                 {
                                     LeaveRequestTemplateViewModel.LRTaskVM lRTaskVM = lRApprovalRouteVM.Tasks[y];
                                     TaskTemplateItem_Dto taskTemplateItem = new TaskTemplateItem_Dto();
@@ -846,6 +847,8 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                                     {
                                         TaskTemplateItemEmployee_Dto taskTemplateItemEmployee = new TaskTemplateItemEmployee_Dto();
                                         taskTemplateItemEmployee.EmployeeId = lRTaskVM.EmployeeIds[z].Value;
+
+                                        taskTemplateItem.TaskEmployees.Add(taskTemplateItemEmployee);
                                     }
 
                                     taskTemplateItem.RouteIndex = y + 1;
@@ -1016,14 +1019,14 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                 public bool IsDepartmentHead { get; set; }
                 public bool IsReportingTo { get; set; }
 
-                public List<Department_Dto> Departments { get; set; }
+                public List<Department_Dto> Departments { get; set; } = new List<Department_Dto>();
                 public Guid?[] DepartmentIds { get; set; }
-                public List<Position_Dto> Positions { get; set; }
+                public List<Position_Dto> Positions { get; set; } = new List<Position_Dto>();
                 public Guid?[] PositionIds { get; set; }
-                public List<Employee_Dto> Employees { get; set; }
+                public List<Employee_Dto> Employees { get; set; } = new List<Employee_Dto>();
                 public Guid?[] EmployeeIds { get; set; }
 
-                public List<LRTaskVM> Tasks { get; set; }
+                public List<LRTaskVM> Tasks { get; set; } = new List<LRTaskVM>();
                 public Guid?[] TaskIds { get; set; }
 
                 public bool Active { get; set; }
@@ -1041,15 +1044,15 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                     EmployeeIds = Employees.Select(x => (Guid?)x.Id).ToArray();
                 }
 
-                public int Id { get; set; }
+                public string Id { get; set; }
                 public bool Active { get; set; }
                 public string TaskDescription { get; set; }
 
-                public List<Department_Dto> Departments { get; set; }
+                public List<Department_Dto> Departments { get; set; } = new List<Department_Dto>();
                 public Guid?[] DepartmentIds { get; set; }
-                public List<Position_Dto> Positions { get; set; }
+                public List<Position_Dto> Positions { get; set; } = new List<Position_Dto>();
                 public Guid?[] PositionIds { get; set; }
-                public List<Employee_Dto> Employees { get; set; }
+                public List<Employee_Dto> Employees { get; set; } = new List<Employee_Dto>();
                 public Guid?[] EmployeeIds { get; set; }
 
                 public bool IsAny { get; set; }

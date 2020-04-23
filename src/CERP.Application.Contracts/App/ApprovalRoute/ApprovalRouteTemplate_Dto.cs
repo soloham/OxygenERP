@@ -20,6 +20,6 @@ namespace CERP.App
 
         public ApprovalRouteModule ApprovalRouteModule { get; set; }
 
-        public List<ApprovalRouteTemplateItem_Dto> ApprovalRouteTemplateItems { get; set; }
+        public virtual List<ApprovalRouteTemplateItem_Dto> ApprovalRouteTemplateItems { get; set; }
     }
 }
