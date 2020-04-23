@@ -64,6 +64,8 @@
                 },
                 onSelectAll: SelectAPDepartmentPositions()
             });
+            $('#apPositionId').multiselect(options);
+            $('#apEmployeeId').multiselect(options);
             $('#taskDepartmentId').multiselect({
                 buttonWidth: '100%',
                 includeSelectAllOption: true,
@@ -77,6 +79,8 @@
                 },
                 onSelectAll: SelectAPDepartmentPositions()
             });
+            $('#taskPositionId').multiselect(options);
+            $('#taskEmployeeId').multiselect(options);
             $('#lrPositionId').multiselect(options);
             $('#lrLeaveTypeId').multiselect(options);
             $('#lrEmploymentTypeId').multiselect(options);

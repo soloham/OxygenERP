@@ -41,9 +41,9 @@ namespace CERP.AppServices.HR.EmployeeService
             var result = Repository.WithDetails();
             return result.Select(MapToGetListOutputDto).ToList();
         }
-        public List<Employee_Dto> GetEmployeesByPositionId(Guid positionId)
+        public List<Employee_Dto> GetEmployeesByPositionId(Guid positionId, params System.Linq.Expressions.Expression<Func<Employee, object>>[] details)
         {
-            var result = Repository.Where(x => x.PositionId == positionId);
+            var result = Repository.WithDetails(details).Where(x => x.PositionId == positionId);
             return result.Select(MapToGetListOutputDto).ToList();
         }
 

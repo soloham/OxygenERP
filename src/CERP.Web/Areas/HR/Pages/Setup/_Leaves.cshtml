@@ -372,7 +372,6 @@
                     formData.append("info", JSON.stringify(params));
                     var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
                     formData.append("__RequestVerificationToken", xhrToken);
-                    console.log(params);
 
                     $.ajax({
                         url: "?handler=LeaveRequestTemplate",
@@ -574,53 +573,58 @@
             <div id="addApprovalRouteForm" class="areaForm" role="form" data-toggle="validator" style="display: none">
                 <div class="row">
                     <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label class="control-label m-b-5 ">Department:</label>
-                            <select id="apDepartmentId" name="DepartmentId" class="form-control" onchange="SelectAPDepartmentPositions();">
-                                <option selected>Select Department</option>
+                        <div class="col-sm-6" style="padding:0">
+                            <div class="form-group">
+                                <label class="control-label m-b-5 ">Department:</label>
+                                <select id="apDepartmentId" name="DepartmentId" multiple="multiple" class="form-control" onchange="SelectAPDepartmentPositions();">
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6" style="padding:0">
+                            <div class="form-group">
+                            <label class="margin-bottom-5 control-label">Position:</label>
+                            <select id="apPositionId" name="PositionId" class="form-control" multiple="multiple" onchange="SelectAPPositionEmployees()">
 
                             </select>
                         </div>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Position:</label>
-                            <select id="apPositionId" name="PositionId" class="form-control" onchange="SelectAPPositionEmployees()">
-                                <option></option>
-
-                            </select>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5 control-label">Employee:</label>
-                            <select id="apEmployeeId" name="Employee" class="form-control">
-                                <option></option>
+                            <select id="apEmployeeId" onchange="if ($('#apEmployeeId').val().length > 1) $('#APAllowAnySec').show(); else $('#APAllowAnySec').hide();" name="Employee" multiple="multiple" class="form-control">
 
                             </select>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <label class="margin-bottom-5 control-label"></label>
-                        <button id="addToApprovalRouteBtn" type="button" class="btn btn-primary btn-block"><i class="fa fa-plus p-r-5"></i> Add To Approval Route</button>
-                    </div>
-                </div>
-                <div class="row m-md-t-5">
-                    <div class="form-group">
-                        <div class="col-sm-3">
+                        <div class="form-group">
                             <label class="control-label m-b-5 ">Additional Information:</label>
-                        </div>
-                        <div class="col-sm-9">
+
                             <div class="btn-group" data-toggle="buttons">
                                 <label class="btn btn-default active">
-                                    <input type="checkbox" id="taskIsActive" autocomplete="off"> Active
+                                    <input type="checkbox" id="APIsActive" autocomplete="off"> Active
                                 </label>
                                 <label class="btn btn-default active">
-                                    <input type="checkbox" id="taskNotify" autocomplete="off"> Notify Employee
+                                    <input type="checkbox" id="APNotify" autocomplete="off"> Notify Employee
+                                </label>
+                                <label class="btn btn-default">
+                                    <input type="checkbox" id="APIsPoster" autocomplete="off"> Poster
+                                </label>
+                                <label class="btn btn-default" id="APAllowAnySec" style="display:none">
+                                    <input type="checkbox" id="APAllowAny" autocomplete="off"> Allow Any
                                 </label>
                             </div>
                         </div>
                     </div>
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                        <label class="margin-bottom-5 control-label"></label>
+                        <button id="addToApprovalRouteBtn" type="button" class="btn btn-success btn-block"><i class="fa fa-plus p-r-5"></i> Add To Approval Route</button>
+                    </div>
+                </div>
+                <div class="row m-md-t-5 m-md-b-10">
+                    
                 </div>
                 @*<hr style="margin-top:6px">*@
                 <div class="areaHeader" style="display:flex;">
@@ -641,7 +645,6 @@
                                 <div class="form-group">
                                     <label class="control-label m-b-5 ">Department:</label>
                                     <select id="taskDepartmentId" name="DepartmentId" multiple="multiple" class="form-control" onchange="SelectTaskDepartmentPositions();">
-                                        <option selected>Select Department</option>
 
                                     </select>
                                 </div>
@@ -659,7 +662,7 @@
                         <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                             <div class="form-group">
                                 <label class="margin-bottom-5 control-label">Employee:</label>
-                                <select id="taskEmployeeId" name="Employee" multiple="multiple" class="form-control">
+                                <select id="taskEmployeeId" name="Employee" onchange="if ($('#taskEmployeeId').val().length > 1) $('#taskAllowAnySec').show(); else $('#taskAllowAnySec').hide();" multiple="multiple" class="form-control">
                                     <option></option>
 
                                 </select>
@@ -673,24 +676,22 @@
                         </div>
                         <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                             <label class="margin-bottom-5 control-label"></label>
-                            <button id="addTaskBtn" type="button" class="btn btn-primary btn-block"><i class="fa fa-plus p-r-5"></i> Add Task</button>
+                            <button id="addTaskBtn" type="button" class="btn btn-success btn-block"><i class="fa fa-plus p-r-5"></i> Add Task</button>
                         </div>
                     </div>
                     <div class="row m-md-t-5">
                         <div class="form-group">
-                            <div class="col-sm-3">
+                            <div class="col-sm-5">
                                 <label class="control-label m-b-5 ">Additional Information:</label>
-                            </div>
-                            <div class="col-sm-9">
                                 <div class="btn-group" data-toggle="buttons">
                                     <label class="btn btn-default active">
-                                        <input type="checkbox" id="APIsActive" autocomplete="off"> Active
+                                        <input type="checkbox" id="taskIsActive" autocomplete="off"> Active
                                     </label>
-                                    <label class="btn btn-default active">
-                                        <input type="checkbox" id="APNotify" autocomplete="off"> Notify Employee
+                                    <label class="btn btn-default">
+                                        <input type="checkbox" id="taskNotify" autocomplete="off"> Notify Employee
                                     </label>
-                                    <label class="btn btn-default active">
-                                        <input type="checkbox" id="APIsPoster" autocomplete="off"> Poster
+                                    <label class="btn btn-default" id="taskAllowAnySec" style="display:none">
+                                        <input type="checkbox" id="taskAllowAny" autocomplete="off"> Allow Any
                                     </label>
                                 </div>
                             </div>
@@ -776,11 +777,11 @@
             <hr />
             <div class="row">
                 <div class="col-lg-12">
-                    <input id="submitLeaveRequestBtn" type="submit" class="btn btn-primary btn-block" value="Add Leave Request" required />
+                    <input id="submitLeaveRequestBtn" type="submit" class="btn btn-success btn-block" value="Add Leave Request" required />
                 </div>
             </div>
         </form>
-        <div id="leaveRequestsCS" class="control-section m-t-10">
+        <div id="leaveRequestsCS" class="control-section">
             <ejs-grid id="AllLeaveRequestsGrid" enableAutoFill="true" columns="@leaveRequestsGridColumns"
                         dataBound="dataBoundResponsive" commandClick="leaveRequestsCommandClick" actionBegin="leaveRequestsActionBegin"
                         allowExcelExport="true" height="100%" allowPdfExport="true"
@@ -842,7 +843,6 @@
     }
     function leaveRequestsCommandClick(args) {
         if (args.commandColumn.type == "Edit") {
-            console.log(args);
             curLREditRow = args.rowData;
             isEditingLR = true;
             isEditingLRLoaded = false;
@@ -1057,7 +1057,6 @@
         }
     }
     function lrApprovalRouteCommandClick(args) {
-        console.log(args.commandColumn.type);
         if (args.commandColumn.type == "MoveUp") {
             var grid = $('#LRApprovalRouteGrid')[0].ej2_instances[0];
             var rI = args.rowData.routeIndex - 1;
@@ -1155,7 +1154,6 @@
             ajax.send();
             ajax.onSuccess = function (data) {
                 var ds = JSON.parse(data);
-                console.log(args.rowData);
                 ds.push(args.rowData.valueTypeForDescription);
                 Obj.columns[4].edit.params.dataSource = ds;
                 //ddldist.dataBind();
@@ -1182,7 +1180,6 @@
         }
     }
     function lrTaskCommandClick(args) {
-        console.log(args.commandColumn.type);
         if (args.commandColumn.type == "MoveUp") {
             var grid = $('#LRTasksGrid')[0].ej2_instances[0];
             var rI = args.rowData.routeIndex - 1;
@@ -1292,11 +1289,11 @@
         dialogObj1.hide();
     }
 
+    var curLRPositions = [];
     function SelectDepartmentPositions() {
         var departmentIds = $("#lrDepartmentId").val();
         $("#lrPositionId").empty();
-        $("#lrPositionId").append("<option value=''>Select Position</option>");
-
+        if (departmentIds.length == 0) return;
         $.ajax({
             type: "GET",
             url: '?handler=DepartmentsPositions',
@@ -1313,6 +1310,7 @@
                         label: $(`#lrDepartmentId option[value='${departmentId}']`).text(), children: positions
                     });
                 });
+                curLRPositions = dataMS;
                 $("#lrPositionId").multiselect('dataprovider', dataMS);
                 if (isEditingLR && !isEditingLRLoaded) {
                     var posits = [];
@@ -1328,11 +1326,12 @@
         });
     }
 
+    var curAPPositions = [];
     function SelectAPDepartmentPositions() {
         var departmentIds = $("#apDepartmentId").val();
         $("#apPositionId").empty();
         $("#apEmployeeId").empty();
-
+        if (departmentIds.length == 0) return;
         $.ajax({
             type: "GET",
             url: '?handler=DepartmentsPositions',
@@ -1349,39 +1348,36 @@
                         label: $(`#lrDepartmentId option[value='${departmentId}']`).text(), children: positions
                     });
                 });
+                curAPPositions = data;
                 $("#apPositionId").multiselect('dataprovider', dataMS);
             }
         });
     }
+
     function SelectAPPositionEmployees() {
         var positionIds = $("#apPositionId").val();
-        var positions = $("#apPositionId").multiselect('dataprovider');
-        var departmentIds = $("#apDepartmentId").val();
+        var positions = curAPPositions;
+        //var departmentIds = $("#apDepartmentId").val();
         $("#apEmployeeId").empty();
+        if (positionIds.length == 0) return;
 
         $.ajax({
             type: "GET",
             url: '?handler=Employees',
             data: { positionIds: JSON.stringify(positionIds) },
             success: function (data) {
-                var dataMS = [];
-                $.each(departmentIds, function (i, departmentId) {
-                    var positionEmployees = [];
+                var positionEmployees = [];
 
-                    $.each(positions, function (i, position) {
-                        var employees = [];
-                        $.each(data, function (j, employee) {
-                            if (employee.positionId == position.id)
-                                employees.push({ id: item.id, name: item.name, label: item.name, departmentId: item.departmentId, depName: item.depName, positionId: item.positionId, posName: item.posName });
-                        });
-                        positionEmployees.push({ label: position.title, children: employees })
+                $.each(positionIds, function (i, positionId) {
+                    var position = positions.find(function (x) { return x.id == positionId });
+                    var employees = [];
+                    $.each(data, function (j, employee) {
+                        if (employee.posId == positionId)
+                            employees.push({ id: employee.id, value: employee.id, name: employee.name, label: employee.name, departmentId: employee.depId, depName: employee.depName, positionId: employee.posId, posName: employee.posTitle });
                     });
-                    dataMS.push({
-                        label: $(`#lrDepartmentId option[value='${departmentId}']`).text(), children: positionEmployees
-                    });
-                    $("#apEmployeeId").multiselect('dataprovider', dataMS);
+                    positionEmployees.push({ label: position.title, children: employees })
                 });
-                
+                $("#apEmployeeId").multiselect('dataprovider', positionEmployees);
             }
         });
     }
@@ -1390,7 +1386,8 @@
         var departmentId = $("#taskDepartmentId").val();
         $("#taskPositionId").empty();
         $("#taskEmployeeId").empty();
-        $("#taskPositionId").append("<option value=''>Select Position</option>");
+        if (departmentId == '') return;
+
         $.getJSON(`?handler=Positions&departmentId=${departmentId}`, (data) => {
             $.each(data, function (i, item) {
                 $("#taskPositionId").append(`<option value="${item.id}">${item.title}</option>`);
@@ -1398,9 +1395,10 @@
         });
     }
     function SelectTaskPositionEmployees() {
-        var positions = $("#apPositionId").multiselect('dataprovider');
+        var positions = $("#taskPositionId").multiselect('dataprovider');
         var departmentIds = $("taskDepartmentId").val();
         $("#taskEmployeeId").empty();
+        if (departmentIds.length == 0) return;
 
         $.ajax({
             type: "GET",
