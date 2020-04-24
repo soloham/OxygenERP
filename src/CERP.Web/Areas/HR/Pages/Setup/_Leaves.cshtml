@@ -130,7 +130,7 @@
             var lrGrid = $("#AllLeaveRequestsGrid")[0].ej2_instances[0];
             lrGrid.showSpinner();
 
-            cERP.appServices.hR.leaveRequestService.leaveRequestTemplates.getAll().done(function (data) {
+            cERP.appServices.hR.leaveRequestService.leaveRequestTemplates.getAll(false).done(function (data) {
                 lrGrid.hideSpinner();
                 lrGrid.dataSource = data;
                 lrGrid.refresh();
@@ -509,7 +509,7 @@
             @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
             <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
                 @*<div class="clearfix margin-15"></div>*@
-                <a id="addLeaveRequestBtn" onclick="areaHeaderBtnClick(event)" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                <a id="addLeaveRequestBtn" onclick="areaHeaderBtnClick(event); isEditingLR = false;" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
             </div>
         </div>
         <form id="leaveRequestForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
@@ -896,51 +896,52 @@
                     $('#addLeaveRequestBtn', '#addLeaveRequestBtnSection').html('<i class="fa fa-arrow-up p-r-5"></i> Cancel Update');
                     $('#submitLeaveRequestBtn').val('Update Leave Request');
 
+                    console.log(curLREditRow);
                     $('#lrTitle').val(curLREditRow.title);
                     $('#lrTitleLocalized').val(curLREditRow.titleLocalized);
                     $('#lrPrefix').val(curLREditRow.prefix);
                     $('#lrStartingNo').val(curLREditRow.startingNo);
-                    $('#lrEntitlementDays').val(curLREditRow.entitlementDays);
-                    $("#lrLeaveTypeId").multiselect('select', curLREditRow.leaveTypeId);
-                    $('#lrLeaveTypeId').multiselect('refresh');
+                    cERP.appServices.hR.leaveRequestService.leaveRequestTemplates.getCustom(curLREditRow.id).done(function (data) {
+                        curLREditRow = data;
+                        console.log(curLREditRow);
 
-                    $('#lrDepartmentId').multiselect('deselectAll', false);
-                    $('#lrPositionId').multiselect('deselectAll', false);
-                    $('#lrEmploymentTypeId').multiselect('deselectAll', false);
-                    $('#lrEmployeeStatusId').multiselect('deselectAll', false);
-                    $('#lrHolidaysDeductionIds').multiselect('deselectAll', false);
+                        $('#lrEntitlementDays').val(curLREditRow.entitlementDays);
+                        $("#lrLeaveTypeId").multiselect('select', curLREditRow.leaveTypeId);
+                        $('#lrLeaveTypeId').multiselect('refresh');
 
-                    var departs = [];
-                    for (var i = 0; i < curLREditRow.departments.length; i++) {
-                        departs.push(curLREditRow.departments[i].departmentId);
-                    }
-                    $('#lrDepartmentId').multiselect('select', departs);
-                    $('#lrDepartmentId').change();
-                    var empTypes = [];
-                    for (var i = 0; i < curLREditRow.employmentTypes.length; i++) {
-                        empTypes.push(curLREditRow.employmentTypes[i].employmentTypeId);
-                    }
-                    $('#lrEmploymentTypeId').multiselect('select', empTypes);
-                    var empStatuses = [];
-                    for (var i = 0; i < curLREditRow.employeeStatuses.length; i++) {
-                        empStatuses.push(curLREditRow.employeeStatuses[i].employeeStatusId);
-                    }
-                    $('#lrEmployeeStatusId').multiselect('select', empStatuses);
-                    var holidays = [];
-                    for (var i = 0; i < curLREditRow.holidays.length; i++) {
-                        holidays.push(curLREditRow.holidays[i].holidayId);
-                    }
-                    $('#lrHolidaysDeductionIds').multiselect('select', holidays);
-                    //var dedHolids = [];
-                    //for (var i = 0; i < curLREditRow.deductionHolidays.length; i++) {
-                    //    dedHolids.push(curLREditRow.deductionHolidays[i].deductionHolidayId);
-                    //}
-                    //$('#lrHolidaysDeductionIds').multiselect('select', dedHolids);
+                        $('#lrDepartmentId').multiselect('deselectAll', false);
+                        $('#lrPositionId').multiselect('deselectAll', false);
+                        $('#lrEmploymentTypeId').multiselect('deselectAll', false);
+                        $('#lrEmployeeStatusId').multiselect('deselectAll', false);
+                        $('#lrHolidaysDeductionIds').multiselect('deselectAll', false);
 
-                    var apGrid = $("#LRApprovalRouteGrid")[0].ej2_instances[0];
-                    apGrid.dataSource = null;
-                    apGrid.showSpinner();
-                    cERP.appServices.app.approvalRouteService.approvalRouteTemplates.getFull(curLREditRow.approvalRouteTemplate.id).done(function (data) {
+                        var departs = [];
+                        for (var i = 0; i < curLREditRow.departments.length; i++) {
+                            departs.push(curLREditRow.departments[i].departmentId);
+                        }
+                        $('#lrDepartmentId').multiselect('select', departs);
+                        $('#lrDepartmentId').change();
+                        var empTypes = [];
+                        for (var i = 0; i < curLREditRow.employmentTypes.length; i++) {
+                            empTypes.push(curLREditRow.employmentTypes[i].employmentTypeId);
+                        }
+                        $('#lrEmploymentTypeId').multiselect('select', empTypes);
+                        var empStatuses = [];
+                        for (var i = 0; i < curLREditRow.employeeStatuses.length; i++) {
+                            empStatuses.push(curLREditRow.employeeStatuses[i].employeeStatusId);
+                        }
+                        $('#lrEmployeeStatusId').multiselect('select', empStatuses);
+                        var holidays = [];
+                        for (var i = 0; i < curLREditRow.holidays.length; i++) {
+                            holidays.push(curLREditRow.holidays[i].holidayId);
+                        }
+                        $('#lrHolidaysDeductionIds').multiselect('select', holidays);
+
+                        var apGrid = $("#LRApprovalRouteGrid")[0].ej2_instances[0];
+                        apGrid.dataSource = null;
+                        apGrid.showSpinner();
+                        //cERP.appServices.app.approvalRouteService.approvalRouteTemplates.getFull(curLREditRow.approvalRouteTemplateId).done(function (data) {
+                        var data = curLREditRow.approvalRouteTemplate;
                         apGrid.hideSpinner();
                         apGrid.dataSource = data.approvalRouteTemplateItems;
                         console.log(data);
@@ -958,46 +959,47 @@
                         }
                         apGrid.childGrid.dataSource = allTaskTemplateItems;
                         apGrid.refresh();
+                        //});
+                        //for (var i = 0; i < approvalItems.length; i++) {
+                        //    if (!approvalItems[i].isDepartmentHead && !approvalItems[i].isReportingTo) {
+                        //        cERP.appServices.setup.departmentSetup.department.get(approvalItems[i].departmentId).done(function (data) {
+                        //            approvalItems[i].department = data;
+                        //        })
+                        //        cERP.appServices.setup.positionSetup.position.get(approvalItems[i].positionId).done(function (data) {
+                        //            approvalItems[i].position = data;
+                        //        })
+                        //        cERP.appServices.hR.employeeService.employee.get(approvalItems[i].employeeId).done(function (data) {
+                        //            approvalItems[i].employee = data;
+                        //        })
+                        //    }
+                        //}
+
+                        if (curLREditRow.hasAdvanceSalaryRequest)
+                            $('#LRAdvanceSalaryAD').parent().addClass('active');
+                        else
+                            $('#LRAdvanceSalaryAD').parent().removeClass('active');
+
+                        if (curLREditRow.hasExitReentryRequest)
+                            $('#LRExitReentryAD').parent().addClass('active');
+                        else
+                            $('#LRExitReentryAD').parent().removeClass('active');
+
+                        if (curLREditRow.hasAirTicketRequest)
+                            $('#LRAirTicketAD').parent().addClass('active');
+                        else
+                            $('#LRAirTicketAD').parent().removeClass('active');
+
+
+                        if (curLREditRow.hasNotesRequirement)
+                            $('#LRNotesRequired').parent().addClass('active');
+                        else
+                            $('#LRNotesRequired').parent().removeClass('active');
+
+                        if (curLREditRow.hasAttachmentRequirement)
+                            $('#LRAttachmentRequired').parent().addClass('active');
+                        else
+                            $('#LRAttachmentRequird').parent().removeClass('active');
                     });
-                    //for (var i = 0; i < approvalItems.length; i++) {
-                    //    if (!approvalItems[i].isDepartmentHead && !approvalItems[i].isReportingTo) {
-                    //        cERP.appServices.setup.departmentSetup.department.get(approvalItems[i].departmentId).done(function (data) {
-                    //            approvalItems[i].department = data;
-                    //        })
-                    //        cERP.appServices.setup.positionSetup.position.get(approvalItems[i].positionId).done(function (data) {
-                    //            approvalItems[i].position = data;
-                    //        })
-                    //        cERP.appServices.hR.employeeService.employee.get(approvalItems[i].employeeId).done(function (data) {
-                    //            approvalItems[i].employee = data;
-                    //        })
-                    //    }
-                    //}
-
-                    if (curLREditRow.hasAdvanceSalaryRequest)
-                        $('#LRAdvanceSalaryAD').parent().addClass('active');
-                    else
-                        $('#LRAdvanceSalaryAD').parent().removeClass('active');
-
-                    if (curLREditRow.hasExitReentryRequest)
-                        $('#LRExitReentryAD').parent().addClass('active');
-                    else
-                        $('#LRExitReentryAD').parent().removeClass('active');
-
-                    if (curLREditRow.hasAirTicketRequest)
-                        $('#LRAirTicketAD').parent().addClass('active');
-                    else
-                        $('#LRAirTicketAD').parent().removeClass('active');
-
-
-                    if (curLREditRow.hasNotesRequirement)
-                        $('#LRNotesRequired').parent().addClass('active');
-                    else
-                        $('#LRNotesRequired').parent().removeClass('active');
-
-                    if (curLREditRow.hasAttachmentRequirement)
-                        $('#LRAttachmentRequired').parent().addClass('active');
-                    else
-                        $('#LRAttachmentRequird').parent().removeClass('active');
                 }, 150);
             }, timeout);
         }

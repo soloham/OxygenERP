@@ -237,7 +237,18 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                 for (int i = 0; i < leaveRequests.Count; i++)
                 {
                     LeaveRequestTemplate_Dto leaveRequest = leaveRequests[i];
-                    await LeaveRequestTemplatesAppService.DeleteAsync(leaveRequest.Id);
+                    if (leaveRequest.ApprovalRouteTemplate != null)
+                    {
+                        for (int j = 0; j < leaveRequest.ApprovalRouteTemplate.ApprovalRouteTemplateItems.Count; j++)
+                        {
+                            int? taskTemplateId = leaveRequest.ApprovalRouteTemplate.ApprovalRouteTemplateItems[j].TaskTemplateId;
+                            if(taskTemplateId.HasValue)
+                                await TaskTemplatesAppService.Repository.DeleteAsync(taskTemplateId.Value);
+                        }
+                    }
+                    await ApprovalRouteTemplatesAppService.Repository.DeleteAsync(leaveRequest.ApprovalRouteTemplateId);
+                    //await TaskTemplatesAppService.Repository.DeleteAsync(leaveRequest.);
+                    await LeaveRequestTemplatesAppService.Repository.DeleteAsync(leaveRequest.Id);
                 }
                 return StatusCode(200);
             }
@@ -377,7 +388,7 @@ namespace CERP.Web.Areas.HR.Pages.Setup
 
                     if (lrTemplateVM.IsEditing)
                     {
-                        LeaveRequestTemplate leaveRequestTemplate = await LeaveRequestTemplatesAppService.Repository.GetAsync(lrTemplateVM.Id);
+                        LeaveRequestTemplate leaveRequestTemplate = await LeaveRequestTemplatesAppService.Repository.GetAsync(lrTemplateVM.Id, true);
                         //leaveRequestTemplate.Id = 0;
                         //LeaveRequestTemplate_Dto leaveRequestTemplate = new LeaveRequestTemplate_Dto();
 
@@ -607,62 +618,63 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                                     }
                                 }
 
-
-                                TaskTemplate apItemTaskTemplate = item.TaskTemplate;
-                                apItemTaskTemplate.TaskModule = TaskModule.LeaveRequest;
-                                List<LeaveRequestTemplateViewModel.LRTaskVM> vmAPTaskTemplateItems = cur.Tasks;
-                                List<TaskTemplateItem> apTaskTemplateItems = apItemTaskTemplate.TaskTemplateItems.ToList();
-                                for (int y = 0; y < vmAPTaskTemplateItems.Count; i++)
+                                if (item.TaskTemplate != null)
                                 {
-                                    LeaveRequestTemplateViewModel.LRTaskVM vmAPTaskTemplateItem = vmAPTaskTemplateItems[i];
-                                    int vmAPTaskTemplateItemId = -1;
-                                    int.TryParse(vmAPTaskTemplateItem.Id, out vmAPTaskTemplateItemId);
-                                    if (!apTaskTemplateItems.Any(x => x.Id == vmAPTaskTemplateItemId))
+                                    TaskTemplate apItemTaskTemplate = item.TaskTemplate;
+                                    apItemTaskTemplate.TaskModule = TaskModule.LeaveRequest;
+                                    List<LeaveRequestTemplateViewModel.LRTaskVM> vmAPTaskTemplateItems = cur.Tasks;
+                                    List<TaskTemplateItem> apTaskTemplateItems = apItemTaskTemplate.TaskTemplateItems.ToList();
+                                    for (int y = 0; y < vmAPTaskTemplateItems.Count; y++)
                                     {
-                                        TaskTemplateItem apTaskTemplateItem = new TaskTemplateItem();
-
-                                        apTaskTemplateItem.Active = vmAPTaskTemplateItem.Active;
-                                        apTaskTemplateItem.TaskDescription = vmAPTaskTemplateItem.TaskDescription;
-
-                                        apTaskTemplateItem.TaskEmployees = new List<TaskTemplateItemEmployee>();
-                                        for (int z = 0; z < vmAPTaskTemplateItem.EmployeeIds.Length; z++)
+                                        LeaveRequestTemplateViewModel.LRTaskVM vmAPTaskTemplateItem = vmAPTaskTemplateItems[y];
+                                        int vmAPTaskTemplateItemId = -1;
+                                        int.TryParse(vmAPTaskTemplateItem.Id, out vmAPTaskTemplateItemId);
+                                        if (!apTaskTemplateItems.Any(x => x.Id == vmAPTaskTemplateItemId))
                                         {
-                                            TaskTemplateItemEmployee taskTemplateItemEmployee = new TaskTemplateItemEmployee();
-                                            taskTemplateItemEmployee.EmployeeId = vmAPTaskTemplateItem.EmployeeIds[z].Value;
+                                            TaskTemplateItem apTaskTemplateItem = new TaskTemplateItem();
+
+                                            apTaskTemplateItem.Active = vmAPTaskTemplateItem.Active;
+                                            apTaskTemplateItem.TaskDescription = vmAPTaskTemplateItem.TaskDescription;
+
+                                            apTaskTemplateItem.TaskEmployees = new List<TaskTemplateItemEmployee>();
+                                            for (int z = 0; z < vmAPTaskTemplateItem.EmployeeIds.Length; z++)
+                                            {
+                                                TaskTemplateItemEmployee taskTemplateItemEmployee = new TaskTemplateItemEmployee();
+                                                taskTemplateItemEmployee.EmployeeId = vmAPTaskTemplateItem.EmployeeIds[z].Value;
+                                            }
+
+                                            apTaskTemplateItem.RouteIndex = y + 1;
+
+                                            apTaskTemplateItem.IsAny = vmAPTaskTemplateItem.IsAny;
+                                            apTaskTemplateItem.NotifyEmployee = vmAPTaskTemplateItem.NotifyEmployee;
+
+                                            item.TaskTemplate.TaskTemplateItems.Add(apTaskTemplateItem);
                                         }
+                                        else
+                                        {
+                                            TaskTemplateItem taskTemplateItem = apTaskTemplateItems.First(x => x.Id == vmAPTaskTemplateItemId);
 
-                                        apTaskTemplateItem.RouteIndex = y + 1;
+                                            taskTemplateItem.Active = vmAPTaskTemplateItem.Active;
+                                            taskTemplateItem.TaskDescription = vmAPTaskTemplateItem.TaskDescription;
 
-                                        apTaskTemplateItem.IsAny = vmAPTaskTemplateItem.IsAny;
-                                        apTaskTemplateItem.NotifyEmployee = vmAPTaskTemplateItem.NotifyEmployee;
+                                            taskTemplateItem.RouteIndex = y + 1;
 
-                                        item.TaskTemplate.TaskTemplateItems.Add(apTaskTemplateItem);
+                                            taskTemplateItem.IsAny = vmAPTaskTemplateItem.IsAny;
+                                            taskTemplateItem.NotifyEmployee = vmAPTaskTemplateItem.NotifyEmployee;
+
+                                            toUpdateAPTaskItems.Add(taskTemplateItem);
+                                        }
                                     }
-                                    else
+                                    for (int y = 0; y < apTaskTemplateItems.Count; y++)
                                     {
-                                        TaskTemplateItem taskTemplateItem = apTaskTemplateItems.First(x => x.Id == vmAPTaskTemplateItemId);
-
-                                        taskTemplateItem.Active = vmAPTaskTemplateItem.Active;
-                                        taskTemplateItem.TaskDescription = vmAPTaskTemplateItem.TaskDescription;
-
-                                        taskTemplateItem.RouteIndex = y + 1;
-
-                                        taskTemplateItem.IsAny = vmAPTaskTemplateItem.IsAny;
-                                        taskTemplateItem.NotifyEmployee = vmAPTaskTemplateItem.NotifyEmployee;
-
-                                        toUpdateAPTaskItems.Add(taskTemplateItem);
+                                        TaskTemplateItem curAPTaskItem = apTaskTemplateItems[y];
+                                        if (!vmAPTaskTemplateItems.Any(x => x.Id == curAPTaskItem.Id.ToString()))
+                                        {
+                                            item.TaskTemplate.TaskTemplateItems.Remove(curAPTaskItem);
+                                            toDeleteAPTaskItems.Add(curAPTaskItem);
+                                        }
                                     }
                                 }
-                                for (int y = 0; y < apTaskTemplateItems.Count; y++)
-                                {
-                                    TaskTemplateItem curAPTaskItem = apTaskTemplateItems[i];
-                                    if (!vmAPTaskTemplateItems.Any(x => x.Id == curAPTaskItem.Id.ToString()))
-                                    {
-                                        item.TaskTemplate.TaskTemplateItems.Remove(curAPTaskItem);
-                                        toDeleteAPTaskItems.Add(curAPTaskItem);
-                                    }
-                                }
-
                                 toUpdateAPItems.Add(item);
                             }
                         }

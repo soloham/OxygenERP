@@ -35,9 +35,16 @@ namespace CERP.AppServices.HR.LeaveRequestService
 
 
         [Route("/api/app/leaveRequestTemplates/getAllAsync")]
-        public async Task<List<LeaveRequestTemplate_Dto>> GetAllAsync()
+        public async Task<List<LeaveRequestTemplate_Dto>> GetAllAsync(bool includeDetails = true)
         {
-            List<LeaveRequestTemplate> all = await Repository.GetListAsync(true);
+            List<LeaveRequestTemplate> all = new List<LeaveRequestTemplate>();
+            if (!includeDetails) {
+                all = Repository.WithDetails(x => x.LeaveType).ToList();
+            }
+            else
+            {
+                all = await Repository.GetListAsync(includeDetails);
+            }
             List<LeaveRequestTemplate_Dto> mapped = ObjectMapper.Map<List<LeaveRequestTemplate>, List<LeaveRequestTemplate_Dto>>(all);
             return mapped;
         }

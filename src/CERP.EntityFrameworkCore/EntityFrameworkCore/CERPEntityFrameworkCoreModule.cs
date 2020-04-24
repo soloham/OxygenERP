@@ -73,11 +73,18 @@ namespace CERP.EntityFrameworkCore
                 options.Entity<ApprovalRouteTemplateItem>(opt =>
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(x => x.ApprovalRouteItemEmployees)
-                                                       .ThenInclude(x => x.Employee);
+                                                        .ThenInclude(x => x.Employee)
+                                                        .ThenInclude(x => x.Department)
+                                                       .Include(x => x.ApprovalRouteItemEmployees)
+                                                        .ThenInclude(x => x.Employee)
+                                                        .ThenInclude(x => x.Position);
                 });
                 options.Entity<ApprovalRouteTemplateItemEmployee>(opt =>
                 {
-                    opt.DefaultWithDetailsFunc = q => q.Include(x => x.Employee);
+                    opt.DefaultWithDetailsFunc = q => q.Include(x => x.Employee)
+                                                        .ThenInclude(x => x.Department)
+                                                       .Include(x => x.Employee)
+                                                        .ThenInclude(x => x.Position);
                 });
 
                 options.Entity<TaskTemplate>(opt =>
@@ -239,17 +246,36 @@ namespace CERP.EntityFrameworkCore
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.ApprovalRouteTemplate)
                                                         .ThenInclude(p => p.ApprovalRouteTemplateItems)
                                                         .ThenInclude(p => p.ApprovalRouteItemEmployees)
+                                                        .ThenInclude(p => p.Employee)
+                                                        .ThenInclude(p => p.Department)
+                                                       .Include(p => p.ApprovalRouteTemplate)
+                                                        .ThenInclude(p => p.ApprovalRouteTemplateItems)
+                                                        .ThenInclude(p => p.ApprovalRouteItemEmployees)
+                                                        .ThenInclude(p => p.Employee)
+                                                        .ThenInclude(p => p.Position)
                                                        .Include(p => p.ApprovalRouteTemplate)
                                                         .ThenInclude(p => p.ApprovalRouteTemplateItems)
                                                         .ThenInclude(p => p.TaskTemplate)
                                                         .ThenInclude(p => p.TaskTemplateItems)
                                                         .ThenInclude(p => p.TaskEmployees)
+                                                        .ThenInclude(p => p.Employee)
+                                                        .ThenInclude(p => p.Department)
+                                                       .Include(p => p.ApprovalRouteTemplate)
+                                                        .ThenInclude(p => p.ApprovalRouteTemplateItems)
+                                                        .ThenInclude(p => p.TaskTemplate)
+                                                        .ThenInclude(p => p.TaskTemplateItems)
+                                                        .ThenInclude(p => p.TaskEmployees)
+                                                        .ThenInclude(p => p.Employee)
+                                                        .ThenInclude(p => p.Position)
                                                        .Include(p => p.LeaveType)
                                                        .Include(p => p.Departments)
+                                                        .ThenInclude(p => p.Department)
                                                        .Include(p => p.Positions)
+                                                        .ThenInclude(p => p.Position)
                                                        .Include(p => p.EmployeeStatuses)
                                                        .Include(p => p.EmploymentTypes)
-                                                       .Include(p => p.Holidays);
+                                                       .Include(p => p.Holidays)
+                                                        .ThenInclude(p => p.Holiday);
                 });
 
                 options.Entity<Holiday>(opt =>

@@ -36,8 +36,16 @@ namespace CERP.App
             {
                 if (ApprovalRouteItemEmployees != null && ApprovalRouteItemEmployees.Count > 0)
                 {
-                    Departments = ApprovalRouteItemEmployees.Select(x => x.Employee.Department).ToList();
-                    Positions = ApprovalRouteItemEmployees.Select(x => x.Employee.Position).ToList();
+                    try
+                    {
+                        Departments = ApprovalRouteItemEmployees.Select(x => x.Employee.Department).ToList();
+                        Positions = ApprovalRouteItemEmployees.Select(x => x.Employee.Position).ToList();
+                    }
+                    catch
+                    {
+                        Departments = new List<Department_Dto>();
+                        Positions = new List<Position_Dto>();
+                    }
                 }
             }
         }
@@ -73,7 +81,7 @@ namespace CERP.App
                 return result;
             }
         }
-        public virtual List<Department_Dto> Departments { get; set; }
+        public virtual List<Department_Dto> Departments { get; set; } = new List<Department_Dto>();
 
         public string GetAllPositionTitles
         {
@@ -96,7 +104,7 @@ namespace CERP.App
                 return result;
             }
         }
-        public virtual List<Position_Dto> Positions { get; set; }
+        public virtual List<Position_Dto> Positions { get; set; } = new List<Position_Dto>();
 
         public string GetAllEmployeeNames
         {
@@ -119,7 +127,7 @@ namespace CERP.App
                 return result;
             }
         }
-        public virtual List<ApprovalRouteTemplateItemEmployee_Dto> ApprovalRouteItemEmployees { get; set; }
+        public virtual List<ApprovalRouteTemplateItemEmployee_Dto> ApprovalRouteItemEmployees { get; set; } = new List<ApprovalRouteTemplateItemEmployee_Dto>();
 
         public bool IsAny { get; set; }
 

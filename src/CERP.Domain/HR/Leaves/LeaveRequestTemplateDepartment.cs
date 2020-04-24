@@ -10,6 +10,7 @@ namespace CERP.HR.Leaves
     public class LeaveRequestTemplateDepartment : AuditedAggregateTenantRoot<Guid>
     {
         public LeaveRequestTemplateDepartment()
+
         {
 
         }

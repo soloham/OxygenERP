@@ -40,11 +40,17 @@ namespace CERP
             CreateMap<ApprovalRouteTemplateItem, ApprovalRouteTemplateItem_Dto>().ForMember(d => d.ApprovalRouteTemplate, opt => opt.Ignore()).AfterMap((x, y) => y.Initialize());
             CreateMap<ApprovalRouteTemplateItem_Dto, ApprovalRouteTemplateItem>();
 
+            CreateMap<ApprovalRouteTemplateItemEmployee, ApprovalRouteTemplateItemEmployee_Dto>().ForMember(d => d.ApprovalRouteTemplateItem, opt => opt.Ignore());
+            CreateMap<ApprovalRouteTemplateItemEmployee_Dto, ApprovalRouteTemplateItemEmployee>();
+
             CreateMap<TaskTemplate, TaskTemplate_Dto>();
             CreateMap<TaskTemplate_Dto, TaskTemplate>();
 
-            CreateMap<TaskTemplateItem, TaskTemplateItem_Dto>().ForMember(d => d.TaskTemplate, opt => opt.Ignore());
+            CreateMap<TaskTemplateItem, TaskTemplateItem_Dto>().ForMember(d => d.TaskTemplate, opt => opt.Ignore()).AfterMap((x, y) => y.Initialize());
             CreateMap<TaskTemplateItem_Dto, TaskTemplateItem>();
+
+            CreateMap<TaskTemplateItemEmployee, TaskTemplateItemEmployee_Dto>().ForMember(d => d.TaskTemplateItem, opt => opt.Ignore());
+            CreateMap<TaskTemplateItemEmployee_Dto, TaskTemplateItemEmployee>();
 
             CreateMap<COA_Account, COA_Account_Dto>();
             CreateMap<COA_Account_Dto, COA_Account>();

@@ -16,7 +16,7 @@ namespace CERP.App
 
         }
 
-        public virtual ApprovalRouteTemplateItem_Dto ApprovalRouteTemplate { get; set; }
+        public virtual ApprovalRouteTemplateItem_Dto ApprovalRouteTemplateItem { get; set; }
         public int ApprovalRouteTemplateItemId;
 
         public virtual Employee_Dto Employee { get; set; }

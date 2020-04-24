@@ -23,8 +23,17 @@ namespace CERP.App
 
         public void Initialize()
         {
-            Departments = TaskEmployees.Select(x => x.Employee.Department).ToList();
-            Positions = TaskEmployees.Select(x => x.Employee.Position).ToList();
+            if (TaskEmployees != null && TaskEmployees.Count > 0) {
+                try
+                {
+                    Departments = TaskEmployees.Select(x => x.Employee.Department).ToList();
+                    Positions = TaskEmployees.Select(x => x.Employee.Position).ToList();
+                }
+                catch
+                {
+
+                }
+            }
         }
 
         public virtual TaskTemplate_Dto TaskTemplate { get; set; }

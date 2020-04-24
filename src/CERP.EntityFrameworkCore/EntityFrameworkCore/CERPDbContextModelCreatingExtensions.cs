@@ -52,6 +52,7 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
 
+                b.HasOne(x => x.ApprovalRouteTemplate).WithMany(x => x.ApprovalRouteTemplateItems).OnDelete(DeleteBehavior.Cascade);
                 b.HasOne(x => x.TaskTemplate).WithOne(x => x.ApprovalRouteTemplateItem).OnDelete(DeleteBehavior.Cascade);
                 b.HasMany(x => x.ApprovalRouteItemEmployees).WithOne(x => x.ApprovalRouteTemplateItem).OnDelete(DeleteBehavior.Cascade);
             });
@@ -83,6 +84,7 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
 
+                b.HasOne(x => x.TaskTemplate).WithMany(x => x.TaskTemplateItems).OnDelete(DeleteBehavior.Cascade);
                 b.HasMany(x => x.TaskEmployees).WithOne(x => x.TaskTemplateItem).OnDelete(DeleteBehavior.Cascade);
             });
             builder.Entity<TaskTemplateItemEmployee>(b =>

@@ -16,8 +16,8 @@ namespace CERP.App
 
         }
 
-        public virtual TaskTemplateItemEmployee_Dto TaskTemplateEmployee { get; set; }
-        public int TaskTemplateEmployeeId;
+        public virtual TaskTemplateItem_Dto TaskTemplateItem { get; set; }
+        public int TaskTemplateItemId;
 
         public virtual Employee_Dto Employee { get; set; }
         public Guid EmployeeId;

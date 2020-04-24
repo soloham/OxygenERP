@@ -32,7 +32,7 @@ namespace CERP.HR.Leaves
         public virtual ICollection<LeaveRequestTemplateEmploymentType> EmploymentTypes { get; set; }
         public virtual ICollection<LeaveRequestTemplateEmployeeStatus> EmployeeStatuses { get; set; }
         public virtual ICollection<LeaveRequestTemplateHoliday> Holidays { get; set; }
-
+        
         public virtual ApprovalRouteTemplate ApprovalRouteTemplate { get; set; }
         public int ApprovalRouteTemplateId { get; set; }
 
