@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200424182646_LoanRequestTemplateUpdate")]
+    partial class LoanRequestTemplateUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1971,8 +1973,8 @@ namespace CERP.Migrations
                     b.Property<Guid>("LoanTypeId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double>("MaxIndemnityLimit")
-                        .HasColumnType("float");
+                    b.Property<int>("MaxIndemnityLimit")
+                        .HasColumnType("int");
 
                     b.Property<double>("MaxInstallmentAmount")
                         .HasColumnType("float");

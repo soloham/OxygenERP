@@ -5,40 +5,35 @@
     var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
     var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", "Delete", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
 
-    List<object> leaveRequestsCommands = new List<object>();
-    leaveRequestsCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
-    leaveRequestsCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
-    leaveRequestsCommands.Add(new
+    List<object> loanRequestsCommands = new List<object>();
+    loanRequestsCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
+    loanRequestsCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+    loanRequestsCommands.Add(new
     {
         type = "Cancel",
         buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" }
     });
 
-    List<GridColumn> leaveRequestsGridColumns = new List<GridColumn>()
-{
+    List<GridColumn> loanRequestsGridColumns = new List<GridColumn>()
+    {
         new GridColumn { Field = "id", Width = "80", HeaderText = "", Visible=false, ShowInColumnChooser=false, TextAlign=TextAlign.Center, MinWidth="10", IsPrimaryKey=true  },
         new GridColumn { Field = "title", Width = "110", HeaderText = "Title", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "titleLocalized", Width = "110", HeaderText = "Title (In Arabic)", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "prefix", Width = "110", HeaderText = "Prefix", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "startingNo", Width = "110", HeaderText = "Starting No", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "leaveType.value", Width = "110", HeaderText = "Leave Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "entitlementDays", Width = "110", HeaderText = "Employment Days", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "loanType.value", Width = "110", HeaderText = "Loan Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
         //new GridColumn { Field = "getAllDepartments", Width = "110", HeaderText = "Department", TextAlign=TextAlign.Center,  MinWidth="10"  },
         //new GridColumn { Field = "getAllPositions", Width = "110", HeaderText = "Position", TextAlign=TextAlign.Center,  MinWidth="10"  },
         //new GridColumn { Field = "getAllEmploymentTypes", Width = "110", HeaderText = "Employment Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
         //new GridColumn { Field = "getAllEmployeeStatuses", Width = "110", HeaderText = "Employment Status", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "", DisplayAsCheckBox=true, HeaderText = "Additional Requests", TextAlign=TextAlign.Center,  MinWidth="10", Columns = new List<GridColumn>(){
-                new GridColumn { Field = "hasAdvanceSalaryRequest", Width = "110", DisplayAsCheckBox=true, HeaderText = "Advance Salary", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "hasExitReentryRequest", Width = "110", DisplayAsCheckBox=true, HeaderText = "Exit-Reentry", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "hasAirTicketRequest", Width = "110", DisplayAsCheckBox=true, HeaderText = "Air Ticket", TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "", HeaderText = "Eligibility", TextAlign=TextAlign.Center,  MinWidth="10", Columns = new List<GridColumn>(){
+                new GridColumn { Field = "minEmployeeDependants", Width = "110", HeaderText = "Minimum Dependants", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "maxIndemnityLimit", Width = "110", HeaderText = "Maximum Indemnity", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "maxInstallmentsLimit", Width = "110", HeaderText = "Maximum Installments", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "maxInstallmentAmount", Width = "110", HeaderText = "Maximum Installment Amount", TextAlign=TextAlign.Center,  MinWidth="10"  },
             }
         },
-        new GridColumn { Field = "", DisplayAsCheckBox=true, HeaderText = "Additional Requirements", TextAlign=TextAlign.Center,  MinWidth="10", Columns = new List<GridColumn>(){
-                new GridColumn { Field = "hasNotesRequirement", Width = "110", DisplayAsCheckBox=true, HeaderText = "Notes", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "hasAttachmentRequirement", Width = "110", DisplayAsCheckBox=true, HeaderText = "Attachment", TextAlign=TextAlign.Center,  MinWidth="10"  },
-            }
-        },
-        new GridColumn { Width = "150", HeaderText = "Actions", TextAlign=TextAlign.Center, MinWidth="10", Commands = leaveRequestsCommands }
+        new GridColumn { Width = "150", HeaderText = "Actions", TextAlign=TextAlign.Center, MinWidth="10", Commands = loanRequestsCommands }
     };
 
     List<object> lrApprovalRouteCommands = new List<object>();
@@ -128,112 +123,105 @@
 
         $(document).ready(function () {
             //createSpinner({
-            //    target: document.getElementById('leaveRequestForm')
+            //    target: document.getElementById('loanRequestForm')
             //});
-            var lrGrid = $("#AllLeaveRequestsGrid")[0].ej2_instances[0];
-            lrGrid.showSpinner();
+            var loansGrid = $("#AllLoanRequestsGrid")[0].ej2_instances[0];
+            loansGrid.showSpinner();
 
-            cERP.appServices.hR.leaveRequestService.leaveRequestTemplates.getAll(false).done(function (data) {
-                lrGrid.hideSpinner();
-                lrGrid.dataSource = data;
-                lrGrid.refresh();
+            cERP.appServices.hR.loanRequestService.loanRequestTemplates.getAll(false).done(function (data) {
+                loansGrid.hideSpinner();
+                loansGrid.dataSource = data;
+                loansGrid.refresh();
             });
-            cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.LeaveType).done(function (data) {
-                var leaveTypes = [];
+            cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.LoanType).done(function (data) {
+                var loanTypes = [];
                 $.each(data, function (i, d) {
-                    leaveTypes.push({ label: d.value, value: d.id });
+                    loanTypes.push({ label: d.value, value: d.id });
                 });
-                $("#lrLeaveTypeId").multiselect('dataprovider', leaveTypes);
+                $("#loansLoanTypeId").multiselect('dataprovider', loanTypes);
             });
             cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.EmployeeType).done(function (data) {
                 var employmentTypes = [];
                 $.each(data, function (i, d) {
                     employmentTypes.push({ label: d.value, value: d.id });
                 });
-                $("#lrEmploymentTypeId").multiselect('dataprovider', employmentTypes);
+                $("#loansEmploymentTypeId").multiselect('dataprovider', employmentTypes);
             });
             cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.EmployeeStatus).done(function (data) {
                 var employmeeStatuses = [];
                 $.each(data, function (i, d) {
                     employmeeStatuses.push({ label: d.value, value: d.id });
                 });
-                $("#lrEmployeeStatusId").multiselect('dataprovider', employmeeStatuses);
+                $("#loansEmployeeStatusId").multiselect('dataprovider', employmeeStatuses);
             });
             cERP.appServices.hR.holidayService.holidays.getAll().done(function (data) {
                 var holidays = [];
                 $.each(data, function (i, d) {
                     holidays.push({ label: d.title, value: d.id });
                 });
-                $("#lrHolidaysDeductionIds").multiselect('dataprovider', holidays);
+                $("#loansHolidaysDeductionIds").multiselect('dataprovider', holidays);
             });
 
             //$.ajax({
-            //    url: '?handler=LeaveRequests',
+            //    url: '?handler=LoanRequests',
             //    async: true,
             //    type: 'GET',
             //    data: {},
             //    success: function (data) {
-            //        lrGrid.hideSpinner();
-            //        lrGrid.dataSource = data;
-            //        lrGrid.refresh();
+            //        loansGrid.hideSpinner();
+            //        loansGrid.dataSource = data;
+            //        loansGrid.refresh();
 
             //        isLRLoaded = true;
             //    },
             //    error: function (err) {
-            //        lrGrid.hideSpinner();
+            //        loansGrid.hideSpinner();
             //        isLRLoaded = false;
             //    }
             //});
 
-            $('#addLeaveRequestBtn').on('click', function () {
-                $('#submitLeaveRequestBtn').val('Add Leave Request');
+            $('#addLoanRequestBtn').on('click', function () {
+                $('#submitLoanRequestBtn').val('Add Loan Request');
 
-                $('#lrTitle').val('');
-                $('#lrTitleLocalized').val('');
-                $('#lrPrefix').val('');
-                $('#lrStartingNo').val('');
-                $('#lrEntitlementDays').val('');
+                $('#loansTitle').val('');
+                $('#loansTitleLocalized').val('');
+                $('#loansPrefix').val('');
+                $('#loansStartingNo').val('');
 
-                //$('#lrLeaveTypeId').multiselect('deselectAll', false);
-                //$('#lrLeaveTypeId').multiselect('updateButtonText');
+                //$('#loansLoanTypeId').multiselect('deselectAll', false);
+                //$('#loansLoanTypeId').multiselect('updateButtonText');
 
-                $('#lrDepartmentId').multiselect('deselectAll', false);
-                $('#lrDepartmentId').multiselect('updateButtonText');
-                $('#lrPositionId').multiselect('deselectAll', false);
-                $('#lrPositionId').multiselect('updateButtonText');
-                $('#lrEmploymentTypeId').multiselect('deselectAll', false);
-                $('#lrEmploymentTypeId').multiselect('updateButtonText');
-                $('#lrEmployeeStatusId').multiselect('deselectAll', false);
-                $('#lrEmployeeStatusId').multiselect('updateButtonText');
+                $('#loansDepartmentId').multiselect('deselectAll', false);
+                $('#loansDepartmentId').multiselect('updateButtonText');
+                $('#loansPositionId').multiselect('deselectAll', false);
+                $('#loansPositionId').multiselect('updateButtonText');
+                $('#loansEmploymentTypeId').multiselect('deselectAll', false);
+                $('#loansEmploymentTypeId').multiselect('updateButtonText');
+                $('#loansEmployeeStatusId').multiselect('deselectAll', false);
+                $('#loansEmployeeStatusId').multiselect('updateButtonText');
 
-                $('#lrHolidaysDeductionIds').multiselect('deselectAll', false);
-                $('#lrHolidaysDeductionIds').multiselect('updateButtonText');
+                $('#loansMinEmployeeDependants').val('');
+                $('#loansMaxIndemnityLimit').val('');
+                $('#loansMaxInstallmentsLimit').val('');
+                $('#loansMaxInstallmentAmount').val('');
 
-                cERP.appServices.hR.holidayService.holidays.getAll().done(function (data) {
-                    var holidays = [];
-                    $.each(data, function (i, d) {
-                        holidays.push({ label: d.title, value: d.id });
-                    });
-                    $("#lrHolidaysDeductionIds").multiselect('dataprovider', holidays);
-                });
-
-                var apGrid = $("#LRApprovalRouteGrid")[0].ej2_instances[0];
+                var apGrid = $("#LoansApprovalRouteGrid")[0].ej2_instances[0];
                 apGrid.dataSource = [];
                 apGrid.childGrid.dataSource = [];
                 apGrid.dataSource.push({ id: 0, active: true, notifyEmployee: false, isPoster: false, isDepartmentHead: true, getAllDepartmentNames: "Selected", getAllPositionTitles: "Head", getAllEmployeeNames: "Auto", employees: [{ id: "@Guid.Empty", name: "Auto", position: { id: "@Guid.Empty", title: "Head" }, department: { id: "@Guid.Empty", name: "Selected" } }] })
                 apGrid.dataSource.push({ id: 1, active: true, notifyEmployee: false, isPoster: false, isReportingTo: true, getAllDepartmentNames: "Selected", getAllPositionTitles: "Auto", getAllEmployeeNames: "Auto", employees: [{ id: "@Guid.Empty", name: "Auto [Reporting To]", position: { id: "@Guid.Empty", title: "Head" }, department: { id: "@Guid.Empty", name: "Selected" } }] })
                 apGrid.refresh();
 
-                var tasksGrid = $("#LRTasksGrid")[0].ej2_instances[0];
+                var tasksGrid = $("#LoansTasksGrid")[0].ej2_instances[0];
                 tasksGrid.dataSource = [];
             });
 
-            $("#addToApprovalRouteBtn").on('click', function (args) {
-                var apGrid = $("#LRApprovalRouteGrid")[0].ej2_instances[0];
-                var depIds = $("#apDepartmentId").val();
-                var posIds = $("#apPositionId").val();
-                var selectedEmpIds = $("#apEmployeeId").val();
-                var emps = curAPEmployees;
+            $("#addToLoansApprovalRouteBtn").on('click', function (args) {
+                var apGrid = $("#LoansApprovalRouteGrid")[0].ej2_instances[0];
+                var depIds = $("#loansAPDepartmentId").val();
+                var posIds = $("#loansAPPositionId").val();
+                var selectedEmpIds = $("#loansAPEmployeeId").val();
+                var emps = curLoansAPEmployees;
 
                 var employees = [];
                 for (var i = 0; i < selectedEmpIds.length; i++) {
@@ -253,10 +241,10 @@
                 if (depIds.length == 0 || posIds.length == 0 || employees.length == 0 || curEmps.length > 0)
                     return;
 
-                var isActive = $("#APIsActive").parent().hasClass('active');
-                var notifyEmployee = $("#APNotify").parent().hasClass('active');
-                var isPoster = $("#APIsPoster").parent().hasClass('active');
-                var isAny = $("#APAllowAny").parent().hasClass('active');
+                var isActive = $("#LoansAPIsActive").parent().hasClass('active');
+                var notifyEmployee = $("#LoansAPNotify").parent().hasClass('active');
+                var isPoster = $("#LoansAPIsPoster").parent().hasClass('active');
+                var isAny = $("#LoansAPIsPoster").parent().hasClass('active');
 
                 var getAllEmployeeNames = '';
                 var getAllPositionTitles = '';
@@ -267,7 +255,7 @@
                     getAllDepartmentNames += employees[i].department.name + ((i == employees.length-1) ? '' : ', ');
                 }
 
-                var tasks = $('#LRTasksGrid')[0].ej2_instances[0].dataSource;
+                var tasks = $('#LoansTasksGrid')[0].ej2_instances[0].dataSource;
 
                 for (var i = 0; i < tasks.length; i++) {
                     tasks[i].apId = getAllEmployeeNames;
@@ -294,29 +282,29 @@
                 apGrid.refresh();
             })
 
-            $('#addLRTaskBtn').on('click', function () {
+            $('#addLoansNewTaskBtn').on('click', function () {
                 var isCollapsed = $('#addTaskForm').css('display') == 'none';
 
                 if (isCollapsed) {
                     $('#addLRTaskBtnSection').slideUp(200);
                     $('#addTaskForm').slideDown(200);
-                    setTimeout(function () { $('#addLRTaskBtn', '#addLRTaskBtnSection').html('<i class="fa fa-arrow-up p-r-5"></i> Cancel Add') }, 200)
+                    setTimeout(function () { $('#addLoansNewTaskBtn', '#addLRTaskBtnSection').html('<i class="fa fa-arrow-up p-r-5"></i> Cancel Add') }, 200)
                     $('#addLRTaskBtnSection').slideDown(200);
 
                 } else {
                     $('#addLRTaskBtnSection').slideUp(200);
                     $('#addTaskForm').slideUp(200);
-                    setTimeout(function () { $('#addLRTaskBtn', '#addLRTaskBtnSection').html('<i class="fa fa-plus p-r-5"></i> Add Task') }, 200)
+                    setTimeout(function () { $('#addLoansNewTaskBtn', '#addLRTaskBtnSection').html('<i class="fa fa-plus p-r-5"></i> Add Task') }, 200)
                     $('#addLRTaskBtnSection').slideDown(200);
                 }
             });
-            $("#addTaskBtn").on('click', function (args) {
-                var taskGrid = $("#LRTasksGrid")[0].ej2_instances[0];
+            $("#addLoansTaskBtn").on('click', function (args) {
+                var taskGrid = $("#LoansTasksGrid")[0].ej2_instances[0];
 
-                var depIds = $("#taskDepartmentId").val();
-                var posIds = $("#taskPositionId").val();
-                var empIds = $("#taskEmployeeId").val();
-                var emps = curTaskEmployees;
+                var depIds = $("#loansTaskDepartmentId").val();
+                var posIds = $("#loansTaskPositionId").val();
+                var empIds = $("#loansTaskEmployeeId").val();
+                var emps = curLoansTaskEmployees;
 
                 var employees = [];
                 for (var i = 0; i < empIds.length; i++) {
@@ -348,7 +336,7 @@
                 var isActive = $("#taskIsActive").parent().hasClass('active');
                 var notifyEmployee = $("#taskNotify").parent().hasClass('active');
                 var isAny = $("#taskAllowAny").parent().hasClass('active');
-                var taskDescription = $("#lrTaskDescription").val();
+                var taskDescription = $("#loansTaskDescription").val();
 
                 var task = {
                     id: '',
@@ -366,45 +354,39 @@
                 taskGrid.refresh();
             })
 
-            $('#leaveRequestForm').on('submit', function (e) {
+            $('#loanRequestForm').on('submit', function (e) {
                 e.preventDefault();
                 if (ValidateForm())
                 {
                     Swal.showLoading();
 
                     let form = [];
-                    let lrDetails = $('#leaveRequestForm').find("textarea, input").serializeArray();
+                    let lrDetails = $('#loanRequestForm').find("textarea, input").serializeArray();
                     form = form.concat(lrDetails);
                     var params = objectifyForm(form);
 
                     params.isEditing = isEditingLR;
-                    params.LRLeaveTypeId = $("#lrLeaveTypeId").val();
-                    params.LRDepartmentIds = $("#lrDepartmentId").val();
-                    params.LRPositionsIds = $("#lrPositionId").val();
-                    params.LREmploymentTypeIds = $("#lrEmploymentTypeId").val();
-                    params.LREmployeeStatusIds = $("#lrEmployeeStatusId").val();
-                    params.LRDeductionHolidaysIds = $("#lrHolidaysDeductionIds").val();
+                    params.LRLoanTypeId = $("#loansLoanTypeId").val();
+                    params.LRDepartmentIds = $("#loansDepartmentId").val();
+                    params.LRPositionsIds = $("#loansPositionId").val();
+                    params.LREmploymentTypeIds = $("#loansEmploymentTypeId").val();
+                    params.LREmployeeStatusIds = $("#loansEmployeeStatusId").val();
 
-                    params.ApprovalRoute = $("#LRApprovalRouteGrid")[0].ej2_instances[0].dataSource;
+                    params.ApprovalRoute = $("#LoansApprovalRouteGrid")[0].ej2_instances[0].dataSource;
 
-                    params.LRAdvanceSalaryAD = $("#LRAdvanceSalaryAD").parent().hasClass('active');
-                    params.LRExitReentryAD = $("#LRExitReentryAD").parent().hasClass('active');
-                    params.LRAirTicketAD = $("#LRAirTicketAD").parent().hasClass('active');
-
-                    params.LRNotesAR = $("#LRNotesRequired").parent().hasClass('active');
-                    params.LRAttachmentAR = $("#LRAttachmentRequired").parent().hasClass('active');
-                    params.LRAdvanceSalaryAR = $("#LRAdvanceSalaryRequired").parent().hasClass('active');
-                    params.LRAirTicketAR = $("#LRAirTicketRequired").parent().hasClass('active');
-                    params.LRExitReentryAR = $("#LRExitReentryRequired").parent().hasClass('active');
+                    params.LRMinEmployeeDependants = $("#loansMinEmployeeDependants").val();
+                    params.LRMaxIndemnityLimit = $("#loansMaxIndemnityLimit").val();
+                    params.LRMaxInstallmentsLimit = $("#loansMaxInstallmentsLimit").val();
+                    params.LRMaxInstallmentAmount = $("#loansMaxInstallmentAmount").val();
 
                     if (isEditingLR) {
                         params.Id = curLREditRow.id;
 
-                        //cERP.appServices.hR.leaveRequestTemplates.update()
+                        //cERP.appServices.hR.loanRequestTemplates.update()
                     }
                     else {
 
-                        //cERP.appServices.hR.leaveRequestTemplates.update()
+                        //cERP.appServices.hR.loanRequestTemplates.update()
                     }
                     let formData = new FormData();
                     formData.append("info", JSON.stringify(params));
@@ -412,20 +394,20 @@
                     formData.append("__RequestVerificationToken", xhrToken);
 
                     $.ajax({
-                        url: "?handler=LeaveRequestTemplate",
+                        url: "?handler=LoanRequestTemplate",
                         async: true,
                         type: "POST",
                         data: formData,
                         contentType: false,
                         processData: false,
                         success: function (data) {
-                            var grid = $("#AllLeaveRequestsGrid")[0].ej2_instances[0];
+                            var grid = $("#AllLoanRequestsGrid")[0].ej2_instances[0];
 
                             Swal.hideLoading();
                             if (isEditingLR) {
                                 grid.refresh(); // refresh the Grid.
 
-                                swal.fire("Success", "Leave request has successfully been updated", "success");
+                                swal.fire("Success", "Loan request has successfully been updated", "success");
 
                                 for (var i = 0; i < grid.dataSource.length; i++) {
                                     if (grid.dataSource[i].id == data.id) {
@@ -438,15 +420,15 @@
                                 grid.dataSource.push(data);
                                 grid.refresh(); // refresh the Grid.
 
-                                swal.fire("Success", "Leave request has successfully been added", "success");
+                                swal.fire("Success", "Loan request has successfully been added", "success");
                             }
                         },
                         error: function (err) {
                             Swal.hideLoading();
                             if (isEditingLR)
-                                swal.fire("Failed", "Leave request couldn't be updated, please fix all errors and try again.", "error");
+                                swal.fire("Failed", "Loan request couldn't be updated, please fix all errors and try again.", "error");
                             else
-                                swal.fire("Failed", "Leave request couldn't be added, please fix all errors and try again.", "error");
+                                swal.fire("Failed", "Loan request couldn't be added, please fix all errors and try again.", "error");
 
                             console.log(err);
                         }
@@ -461,7 +443,7 @@
 
             function ValidateForm()
             {
-                var elmForm = $("#leaveRequestForm");
+                var elmForm = $("#loanRequestForm");
                 // stepDirection === 'forward' :- this condition allows to do the form validation
                 // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
                 var valid = false;
@@ -498,9 +480,9 @@
 </style>
 
 <div class="m-l-20 m-t-0">
-    <h2>Leave Requests</h2>
+    <h2>Loan Requests</h2>
     <p>
-        Types of leave requests made by employees
+        Types of loan requests made by employees
     </p>
 </div>
 <hr />
@@ -508,92 +490,110 @@
     <div class="col-lg-12 padding-right-0">
 
         <div class="areaHeader" style="display:flex;">
-            <div id="lrLoader" class="pull-left loader-inline" style="display:none"></div>        
+            <div id="loansLoader" class="pull-left loader-inline" style="display:none"></div>        
             <div class="areaHeaderTitle">
-                <span id="areHeadertitle" class="menu-text">Current Leave Requests</span>
+                <span id="areHeadertitle" class="menu-text">Current Loan Requests</span>
                 @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
             </div>
             @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
             <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
                 @*<div class="clearfix margin-15"></div>*@
-                <a id="addLeaveRequestBtn" onclick="areaHeaderBtnClick(event); isEditingLR = false;" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                <a id="addLoanRequestBtn" onclick="areaHeaderBtnClick(event); isEditingLR = false;" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
             </div>
         </div>
-        <form id="leaveRequestForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+        <form id="loanRequestForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
             <div class="row">
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                    <div class="col-sm-6" style="padding:0">
-                        <div class="form-group">
-                            <label class="control-label m-b-5 ">LR Title:</label>
-                            <input type="text" id="lrTitle" name="LRTitle" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
-                        </div>
+                    <div class="form-group">
+                        <label class="control-label m-b-5 ">LR Title:</label>
+                        <input type="text" id="loansTitle" name="LRTitle" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
                     </div>
-                    <div class="col-sm-6" style="padding:0">
-                        <div class="form-group">
-                            <label class="control-label m-b-5 ">LR Title (In Arabic):</label>
-                            <input type="text" id="lrTitleLocalized" name="LRTitleLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
-                        </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="control-label m-b-5 ">LR Title (In Arabic):</label>
+                        <input type="text" id="loansTitleLocalized" name="LRTitleLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="col-sm-6" style="padding:0">
                         <div class="form-group">
                             <label class="margin-bottom-5 control-label">LR Prefix:</label>
-                            <input type="text" id="lrPrefix" name="LRPrefix" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                            <input type="text" id="loansPrefix" name="LRPrefix" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                         </div>
                     </div>
                     <div class="col-sm-6" style="padding:0">
                         <div class="form-group">
                             <label class="margin-bottom-5 control-label">LR Starting No:</label>
-                            <input type="number" min="0" id="lrStartingNo" name="LRStartingNo" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                            <input type="number" min="0" id="loansStartingNo" name="LRStartingNo" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
-                        <label class="margin-bottom-5 control-label">Leave Type:</label>
-                        <select id="lrLeaveTypeId" name="LRLeaveTypeId" class="form-control" required>
+                        <label class="margin-bottom-5 control-label">Loan Type:</label>
+                        <select id="loansLoanTypeId" name="LRLoanTypeId" class="form-control" required>
                         </select>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label class="margin-bottom-5 control-label">Entitlement Days:</label>
-                        <input type="number" min="1" id="lrEntitlementDays" name="LREntitlementDays" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                     </div>
                 </div>
             </div>
             <div class="row">
-
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label class="control-label m-b-5 ">Department:</label>
-                        <select id="lrDepartmentId" name="LRDepartmentId" multiple="multiple" class="form-control" onchange="SelectDepartmentPositions();" required>
+                        <select id="loansDepartmentId" name="LRDepartmentId" multiple="multiple" class="form-control" onchange="SelectLoansDepartmentPositions();" required>
                         </select>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label class="margin-bottom-5 control-label">Position:</label>
-                        <select id="lrPositionId" name="LRPositionId" multiple="multiple" class="form-control" required>
+                        <select id="loansPositionId" name="LRPositionId" multiple="multiple" class="form-control" required>
                         </select>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label class="margin-bottom-5 control-label">Employment Type:</label>
-                        <select id="lrEmploymentTypeId" name="EmployementTypeId" multiple="multiple" class="form-control" required>
+                        <select id="loansEmploymentTypeId" name="EmployementTypeId" multiple="multiple" class="form-control" required>
                         </select>
                         @*<ejs-dropdownlist id="vegetables" placeholder="Select an employment type" popupHeight="200px" dataSource="@employementTypes">
-                            <e-dropdownlist-fields text="Value" value="Id"></e-dropdownlist-fields>
-                        </ejs-dropdownlist>*@
+                        <e-dropdownlist-fields text="Value" value="Id"></e-dropdownlist-fields>
+                    </ejs-dropdownlist>*@
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label class="margin-bottom-5 control-label">Employmee Status:</label>
-                        <select id="lrEmployeeStatusId" name="EmployementStatusId" multiple="multiple" class="form-control" required>
+                        <select id="loansEmployeeStatusId" name="EmployementStatusId" multiple="multiple" class="form-control" required>
                         </select>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="control-label m-b-5 ">Min Dependants:</label>
+                        <input type="number" min="0" id="loansMinEmployeeDependants" name="LRMinEmployeeDependants" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5 control-label">Maximum Indemnity:</label>
+                        <input type="number" min="1" step="0.01" id="loansMaxIndemnityLimit" name="LRMaxIndemnityLimit" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5 control-label">Maximum Installments:</label>
+                        <input type="number" min="1" id="loansMaxInstallmentsLimit" name="LRMaxInstallmentsLimit" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5 control-label">Maximum Amount Per Installment:</label>
+                        <input type="number" min="1" step="0.01" id="loansMaxInstallmentAmount" name="LRMaxInstallmentAmount" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                     </div>
                 </div>
             </div>
@@ -606,34 +606,31 @@
                 @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
                 <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
                     @*<div class="clearfix margin-15"></div>*@
-                    <a id="addLRApprovalRouteBtn" onclick="areaHeaderBtnClick(event)" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                    <a id="addLoansApprovalRouteBtn" onclick="areaHeaderBtnClick(event)" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
                 </div>
             </div>
-            <div id="addApprovalRouteForm" class="areaForm" role="form" data-toggle="validator" style="display: none">
+            <div id="addLoansApprovalRouteForm" class="areaForm" role="form" data-toggle="validator" style="display: none">
                 <div class="row">
                     <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                         <div class="col-sm-6" style="padding:0">
                             <div class="form-group">
                                 <label class="control-label m-b-5 ">Department:</label>
-                                <select id="apDepartmentId" name="DepartmentId" multiple="multiple" class="form-control" onchange="SelectAPDepartmentPositions();">
-
+                                <select id="loansAPDepartmentId" name="DepartmentId" multiple="multiple" class="form-control" onchange="SelectLoansAPDepartmentPositions();">
                                 </select>
                             </div>
                         </div>
                         <div class="col-sm-6" style="padding:0">
                             <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Position:</label>
-                            <select id="apPositionId" name="PositionId" class="form-control" multiple="multiple" onchange="SelectAPPositionEmployees()">
-
-                            </select>
-                        </div>
+                                <label class="margin-bottom-5 control-label">Position:</label>
+                                <select id="loansAPPositionId" name="PositionId" class="form-control" multiple="multiple" onchange="SelectLoansAPPositionEmployees()">
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5 control-label">Employee:</label>
-                            <select id="apEmployeeId" onchange="if ($('#apEmployeeId').val().length > 1) $('#APAllowAnySec').show(); else $('#APAllowAnySec').hide();" name="Employee" multiple="multiple" class="form-control">
-
+                            <select id="loansAPEmployeeId" onchange="if ($('#loansAPEmployeeId').val().length > 1) $('#APAllowAnySec').show(); else $('#APAllowAnySec').hide();" name="Employee" multiple="multiple" class="form-control">
                             </select>
                         </div>
                     </div>
@@ -643,27 +640,27 @@
 
                             <div class="btn-group" data-toggle="buttons">
                                 <label class="btn btn-default active">
-                                    <input type="checkbox" id="APIsActive" autocomplete="off"> Active
+                                    <input type="checkbox" id="LoansAPIsActive" autocomplete="off"> Active
                                 </label>
                                 <label class="btn btn-default active">
-                                    <input type="checkbox" id="APNotify" autocomplete="off"> Notify Employee
+                                    <input type="checkbox" id="LoansAPNotify" autocomplete="off"> Notify Employee
                                 </label>
                                 <label class="btn btn-default">
-                                    <input type="checkbox" id="APIsPoster" autocomplete="off"> Poster
+                                    <input type="checkbox" id="LoansAPIsPoster" autocomplete="off"> Poster
                                 </label>
                                 <label class="btn btn-default" id="APAllowAnySec" style="display:none">
-                                    <input type="checkbox" id="APAllowAny" autocomplete="off"> Allow Any
+                                    <input type="checkbox" id="LoansAPIsPoster" autocomplete="off"> Allow Any
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                         <label class="margin-bottom-5 control-label"></label>
-                        <button id="addToApprovalRouteBtn" type="button" class="btn btn-success btn-block"><i class="fa fa-plus p-r-5"></i> Add To Approval Route</button>
+                        <button id="addToLoansApprovalRouteBtn" type="button" class="btn btn-success btn-block"><i class="fa fa-plus p-r-5"></i> Add To Approval Route</button>
                     </div>
                 </div>
                 <div class="row m-md-t-5 m-md-b-10">
-                    
+
                 </div>
                 @*<hr style="margin-top:6px">*@
                 <div class="areaHeader" style="display:flex;">
@@ -683,15 +680,14 @@
                             <div class="col-sm-6" style="padding:0">
                                 <div class="form-group">
                                     <label class="control-label m-b-5 ">Department:</label>
-                                    <select id="taskDepartmentId" name="DepartmentId" multiple="multiple" class="form-control" onchange="SelectTaskDepartmentPositions();">
-
+                                    <select id="loansTaskDepartmentId" name="DepartmentId" multiple="multiple" class="form-control" onchange="SelectLoansTaskDepartmentPositions();">
                                     </select>
                                 </div>
                             </div>
                             <div class="col-sm-6" style="padding:0">
                                 <div class="form-group">
                                     <label class="margin-bottom-5 control-label">Position:</label>
-                                    <select id="taskPositionId" name="PositionId" multiple="multiple" class="form-control" onchange="SelectTaskPositionEmployees()">
+                                    <select id="loansTaskPositionId" name="PositionId" multiple="multiple" class="form-control" onchange="SelectLoansTaskPositionEmployees()">
                                         <option></option>
 
                                     </select>
@@ -701,7 +697,7 @@
                         <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                             <div class="form-group">
                                 <label class="margin-bottom-5 control-label">Employee:</label>
-                                <select id="taskEmployeeId" name="Employee" onchange="if ($('#taskEmployeeId').val().length > 1) $('#taskAllowAnySec').show(); else $('#taskAllowAnySec').hide();" multiple="multiple" class="form-control">
+                                <select id="loansTaskEmployeeId" name="Employee" onchange="if ($('#loansTaskEmployeeId').val().length > 1) $('#taskAllowAnySec').show(); else $('#taskAllowAnySec').hide();" multiple="multiple" class="form-control">
                                     <option></option>
 
                                 </select>
@@ -710,12 +706,12 @@
                         <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                             <div class="form-group">
                                 <label class="margin-bottom-5 control-label">Task Description:</label>
-                                <input type="text" id="lrTaskDescription" name="LRTaskDescription" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                <input type="text" id="loansTaskDescription" name="LRTaskDescription" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                             <label class="margin-bottom-5 control-label"></label>
-                            <button id="addTaskBtn" type="button" class="btn btn-success btn-block"><i class="fa fa-plus p-r-5"></i> Add Task</button>
+                            <button id="addLoansTaskBtn" type="button" class="btn btn-success btn-block"><i class="fa fa-plus p-r-5"></i> Add Task</button>
                         </div>
                     </div>
                     <div class="row m-md-t-5">
@@ -737,12 +733,12 @@
                         </div>
                     </div>
                 </div>
-                <ejs-grid id="LRTasksGrid" enableAutoFill="true" columns="@lrTasksGridColumns"
-                          dataBound="dataBoundResponsive" commandClick="lrTaskCommandClick" actionBegin="lrTaskActionBegin"
+                <ejs-grid id="LoansTasksGrid" enableAutoFill="true" columns="@lrTasksGridColumns"
+                          dataBound="dataBoundResponsive" commandClick="loansTaskCommandClick" actionBegin="loansTaskActionBegin"
                           allowExcelExport="true" allowPdfExport="true"
                           hierarchyPrintMode="Expanded" allowSelection="true" allowSorting="true"
-                          gridLines="Both" rowDataBound="lrTaskRowDataBound"
-                          toolbarClick="lrTaskToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
+                          gridLines="Both" rowDataBound="loansTaskRowDataBound"
+                          toolbarClick="loansTaskToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
                           allowResizing="true">
 
                     <e-grid-sortsettings columns="@(new List<object>() { new { field = "routeIndex", direction = "Ascending" } })"></e-grid-sortsettings>
@@ -751,13 +747,13 @@
                     </e-grid-selectionsettings>
                 </ejs-grid>
             </div>
-            <ejs-grid id="LRApprovalRouteGrid" enableAutoFill="true" columns="@lrApprovalRouteGridColumns" childGrid="APSecondaryDetailsGrid" queryString="id"
-                        dataBound="dataBoundResponsive" commandClick="lrApprovalRouteCommandClick" actionBegin="lrApprovalRouteActionBegin"
-                        allowExcelExport="true" allowPdfExport="true"
-                        hierarchyPrintMode="Expanded" allowSelection="true" allowSorting="true"
-                        gridLines="Both" rowDataBound="lrApprovalRouteRowDataBound"
-                        toolbarClick="lrApprovalRouteToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
-                        allowResizing="true">
+            <ejs-grid id="LoansApprovalRouteGrid" enableAutoFill="true" columns="@lrApprovalRouteGridColumns" childGrid="APSecondaryDetailsGrid" queryString="id"
+                      dataBound="dataBoundResponsive" commandClick="loansApprovalRouteCommandClick" actionBegin="loansApprovalRouteActionBegin"
+                      allowExcelExport="true" allowPdfExport="true"
+                      hierarchyPrintMode="Expanded" allowSelection="true" allowSorting="true"
+                      gridLines="Both" rowDataBound="loansApprovalRouteRowDataBound"
+                      toolbarClick="loansApprovalRouteToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
+                      allowResizing="true">
 
                 <e-grid-sortsettings columns="@(new List<object>() { new { field = "routeIndex", direction = "Ascending" } })"></e-grid-sortsettings>
                 <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowEditing="true" allowDeleting="true"></e-grid-editSettings>
@@ -766,79 +762,21 @@
             </ejs-grid>
             <hr />
             <div class="row">
-                <div class="form-group">
-                    <div class="col-sm-3">
-                        <label class="control-label m-b-5 ">Holidays for deduction:</label>
-                    </div>
-                    <div class="col-sm-9">
-                        <select id="lrHolidaysDeductionIds" name="LRHolidaysDeductionIds" multiple="multiple" class="form-control">
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="row m-md-t-5">
-                <div class="form-group">
-                    <div class="col-sm-3">
-                        <label class="control-label m-b-5 ">Additional Requests:</label>
-                    </div>
-                    <div class="col-sm-9">
-                        <div class="btn-group" data-toggle="buttons">
-                            <label class="btn btn-default">
-                                <input type="checkbox" id="LRAdvanceSalaryAD" onchange="if ($('#LRAdvanceSalaryAD').parent().hasClass('active')) { $('#LRAdvanceSalaryRequired').parent().show(); } else { $('#LRAdvanceSalaryRequired').parent().hide(); }" autocomplete="off"> Advance Salary
-                            </label>
-                            <label class="btn btn-default">
-                                <input type="checkbox" id="LRExitReentryAD" onchange="if ($('#LRExitReentryAD').parent().hasClass('active')) { $('#LRExitReentryRequired').parent().show(); } else { $('#LRExitReentryRequired').parent().hide(); }" autocomplete="off"> Exit Re-Entry
-                            </label>
-                            <label class="btn btn-default">
-                                <input type="checkbox" id="LRAirTicketAD" onchange="if ($('#LRAirTicketAD').parent().hasClass('active')) { $('#LRAirTicketRequired').parent().show(); } else { $('#LRAirTicketRequired').parent().hide(); }" autocomplete="off"> Air Ticket
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row m-md-t-5">
-                <div class="form-group">
-                    <div class="col-sm-3">
-                        <label class="control-label m-b-5 ">Additional Requirements:</label>
-                    </div>
-                    <div class="col-sm-9">
-                        <div class="btn-group" data-toggle="buttons">
-                            <label class="btn btn-default">
-                                <input type="checkbox" id="LRNotesRequired" autocomplete="off"> Notes
-                            </label>
-                            <label class="btn btn-default">
-                                <input type="checkbox" id="LRAttachmentRequired" autocomplete="off"> Attachment
-                            </label>
-                            <label class="btn btn-default" style="display: none;">
-                                <input type="checkbox" id="LRAdvanceSalaryRequired" autocomplete="off"> Advance Salary
-                            </label>
-                            <label class="btn btn-default" style="display: none;">
-                                <input type="checkbox" id="LRExitReentryRequired" autocomplete="off"> Exit Re-Entry
-                            </label>
-                            <label class="btn btn-default" style="display: none;">
-                                <input type="checkbox" id="LRAirTicketRequired" autocomplete="off"> Air Ticket
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <hr />
-            <div class="row">
                 <div class="col-lg-12">
-                    <input id="submitLeaveRequestBtn" type="submit" class="btn btn-success btn-block" value="Add Leave Request" required />
+                    <input id="submitLoanRequestBtn" type="submit" class="btn btn-success btn-block" value="Add Loan Request" required />
                 </div>
             </div>
         </form>
-        <div id="leaveRequestsCS" class="control-section">
-            <ejs-grid id="AllLeaveRequestsGrid" enableAutoFill="true" columns="@leaveRequestsGridColumns"
-                        dataBound="dataBoundResponsive" commandClick="leaveRequestsCommandClick" actionBegin="leaveRequestsActionBegin"
+        <div id="loanRequestsCS" class="control-section">
+            <ejs-grid id="AllLoanRequestsGrid" enableAutoFill="true" columns="@loanRequestsGridColumns"
+                        dataBound="dataBoundResponsive" commandClick="loanRequestsCommandClick" actionBegin="loanRequestsActionBegin"
                         allowExcelExport="true" height="100%" allowPdfExport="true"
                         hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                         allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                        toolbarClick="leaveRequestsToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
+                        toolbarClick="loanRequestsToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
                         allowPaging="true" allowResizing="true">
 
-                @*<e-data-manager url="/api/app/leaveRequestTemplates/getAllAsync" adaptor="WebApiAdaptor" ></e-data-manager>*@
+                @*<e-data-manager url="/api/app/loanRequestTemplates/getAllAsync" adaptor="WebApiAdaptor" ></e-data-manager>*@
 
                 <e-grid-filterSettings type="CheckBox">
                 </e-grid-filterSettings>
@@ -852,7 +790,7 @@
     </div>
 <script>
 
-    function leaveRequestsActionBegin(args) {
+    function loanRequestsActionBegin(args) {
         if (args.requestType == "save") {
 
         }
@@ -861,104 +799,101 @@
 
             console.log(args.data);
             let formData = new FormData();
-            formData.append("leaveRequests", JSON.stringify(args.data));
+            formData.append("loanRequests", JSON.stringify(args.data));
             var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
             formData.append("__RequestVerificationToken", xhrToken);
 
             $.ajax({
-                url: '?handler=LeaveRequest',
+                url: '?handler=LoanRequest',
                 async: true,
                 type: "DELETE",
                 data: formData,
                 contentType: false,
                 processData: false,
                 success: function (data) {
-                    swal.fire("Success", "Leave request(s) successfully deleted", "success");
+                    swal.fire("Success", "Loan request(s) successfully deleted", "success");
 
-                    if ($('#leaveRequestForm').css('display') !== 'none') {
-                        $('#addLeaveRequestBtnSection').slideUp(200);
-                        $('#leaveRequestForm').slideUp(200);
-                        setTimeout(function () { $('#addLeaveRequestBtn', '#addLeaveRequestBtnSection').html('<i class="fa fa-plus p-r-5"></i> Add Leave Request') }, 200)
-                        $('#addLeaveRequestBtnSection').slideDown(200);
+                    if ($('#loanRequestForm').css('display') !== 'none') {
+                        $('#addLoanRequestBtnSection').slideUp(200);
+                        $('#loanRequestForm').slideUp(200);
+                        setTimeout(function () { $('#addLoanRequestBtn', '#addLoanRequestBtnSection').html('<i class="fa fa-plus p-r-5"></i> Add Loan Request') }, 200)
+                        $('#addLoanRequestBtnSection').slideDown(200);
                     }
                 },
                 error: function (err) {
-                    swal.fire("Failed", "Leave request(s) couldn't be deleted, please fix all errors and try again.", "error");
+                    swal.fire("Failed", "Loan request(s) couldn't be deleted, please fix all errors and try again.", "error");
 
                     console.log(err);
                 }
             });
         }
     }
-    function leaveRequestsCommandClick(args) {
+    function loanRequestsCommandClick(args) {
         if (args.commandColumn.type == "Edit") {
             curLREditRow = args.rowData;
             isEditingLR = true;
             isEditingLRLoaded = false;
-            var isCollapsed = $('#leaveRequestForm').css('display') == 'none';
+            var isCollapsed = $('#loanRequestForm').css('display') == 'none';
 
-            $('#lrLoader').show();
+            $('#loansLoader').show();
 
             var timeout = 0;
             if (!isCollapsed) {
-                $('#addLeaveRequestBtnSection').slideUp(200);
-                $('#leaveRequestForm').slideUp(200);
+                $('#addLoanRequestBtnSection').slideUp(200);
+                $('#loanRequestForm').slideUp(200);
 
                 timeout = 200;
             }
             setTimeout(function () {
-                $('#addLeaveRequestBtnSection').slideUp(200);
-                $('#leaveRequestForm').slideDown(200);
-                $('#addLeaveRequestBtnSection').slideDown(200);
+                $('#addLoanRequestBtnSection').slideUp(200);
+                $('#loanRequestForm').slideDown(200);
+                $('#addLoanRequestBtnSection').slideDown(200);
 
                 setTimeout(function () {
-                    $('#addLeaveRequestBtn', '#addLeaveRequestBtnSection').html('<i class="fa fa-arrow-up p-r-5"></i> Cancel Update');
-                    $('#submitLeaveRequestBtn').val('Update Leave Request');
+                    $('#addLoanRequestBtn', '#addLoanRequestBtnSection').html('<i class="fa fa-arrow-up p-r-5"></i> Cancel Update');
+                    $('#submitLoanRequestBtn').val('Update Loan Request');
 
-                    console.log(curLREditRow);
-                    $('#lrTitle').val(curLREditRow.title);
-                    $('#lrTitleLocalized').val(curLREditRow.titleLocalized);
-                    $('#lrPrefix').val(curLREditRow.prefix);
-                    $('#lrStartingNo').val(curLREditRow.startingNo);
+                    $('#loansTitle').val(curLREditRow.title);
+                    $('#loansTitleLocalized').val(curLREditRow.titleLocalized);
+                    $('#loansPrefix').val(curLREditRow.prefix);
+                    $('#loansStartingNo').val(curLREditRow.startingNo);
 
-                    var apGrid = $("#LRApprovalRouteGrid")[0].ej2_instances[0];
+                    var apGrid = $("#LoansApprovalRouteGrid")[0].ej2_instances[0];
                     apGrid.showSpinner();
                     apGrid.dataSource = null;
-                    cERP.appServices.hR.leaveRequestService.leaveRequestTemplates.getCustom(curLREditRow.id).done(function (data) {
+                    cERP.appServices.hR.loanRequestService.loanRequestTemplates.getCustom(curLREditRow.id).done(function (data) {
                         curLREditRow = data;
-                        console.log(curLREditRow);
 
-                        $('#lrEntitlementDays').val(curLREditRow.entitlementDays);
-                        $("#lrLeaveTypeId").multiselect('select', curLREditRow.leaveTypeId);
-                        $('#lrLeaveTypeId').multiselect('refresh');
+                        $('#loansEntitlementDays').val(curLREditRow.entitlementDays);
+                        $("#loansLoanTypeId").multiselect('select', curLREditRow.loanTypeId);
+                        $('#loansLoanTypeId').multiselect('refresh');
 
-                        $('#lrDepartmentId').multiselect('deselectAll', false);
-                        $('#lrPositionId').multiselect('deselectAll', false);
-                        $('#lrEmploymentTypeId').multiselect('deselectAll', false);
-                        $('#lrEmployeeStatusId').multiselect('deselectAll', false);
-                        $('#lrHolidaysDeductionIds').multiselect('deselectAll', false);
+                        $('#loansDepartmentId').multiselect('deselectAll', false);
+                        $('#loansPositionId').multiselect('deselectAll', false);
+                        $('#loansEmploymentTypeId').multiselect('deselectAll', false);
+                        $('#loansEmployeeStatusId').multiselect('deselectAll', false);
+
+                        $("#loansMinEmployeeDependants").val(curLREditRow.minEmployeeDependants);
+                        $("#loansMaxIndemnityLimit").val(curLREditRow.maxIndemnityLimit);
+                        $("#loansMaxInstallmentsLimit").val(curLREditRow.maxInstallmentsLimit);
+                        $("#loansMaxInstallmentAmount").val(curLREditRow.maxInstallmentAmount);
 
                         var departs = [];
                         for (var i = 0; i < curLREditRow.departments.length; i++) {
                             departs.push(curLREditRow.departments[i].departmentId);
                         }
-                        $('#lrDepartmentId').multiselect('select', departs);
-                        $('#lrDepartmentId').change();
+                        $('#loansDepartmentId').multiselect('select', departs);
+                        $('#loansDepartmentId').change();
                         var empTypes = [];
                         for (var i = 0; i < curLREditRow.employmentTypes.length; i++) {
                             empTypes.push(curLREditRow.employmentTypes[i].employmentTypeId);
                         }
-                        $('#lrEmploymentTypeId').multiselect('select', empTypes);
+                        $('#loansEmploymentTypeId').multiselect('select', empTypes);
                         var empStatuses = [];
                         for (var i = 0; i < curLREditRow.employeeStatuses.length; i++) {
                             empStatuses.push(curLREditRow.employeeStatuses[i].employeeStatusId);
                         }
-                        $('#lrEmployeeStatusId').multiselect('select', empStatuses);
-                        var holidays = [];
-                        for (var i = 0; i < curLREditRow.holidays.length; i++) {
-                            holidays.push(curLREditRow.holidays[i].holidayId);
-                        }
-                        $('#lrHolidaysDeductionIds').multiselect('select', holidays);
+                        $('#loansEmployeeStatusId').multiselect('select', empStatuses);
 
                         //cERP.appServices.app.approvalRouteService.approvalRouteTemplates.getFull(curLREditRow.approvalRouteTemplateId).done(function (data) {
                         var data = curLREditRow.approvalRouteTemplate;
@@ -994,49 +929,8 @@
                         //    }
                         //}
 
-                        if (curLREditRow.hasAdvanceSalaryRequest)
-                            $('#LRAdvanceSalaryAD').parent().addClass('active');
-                        else
-                            $('#LRAdvanceSalaryAD').parent().removeClass('active');
 
-                        if (curLREditRow.hasExitReentryRequest)
-                            $('#LRExitReentryAD').parent().addClass('active');
-                        else
-                            $('#LRExitReentryAD').parent().removeClass('active');
-
-                        if (curLREditRow.hasAirTicketRequest)
-                            $('#LRAirTicketAD').parent().addClass('active');
-                        else
-                            $('#LRAirTicketAD').parent().removeClass('active');
-
-
-                        if (curLREditRow.hasNotesRequirement)
-                            $('#LRNotesRequired').parent().addClass('active');
-                        else
-                            $('#LRNotesRequired').parent().removeClass('active');
-
-                        if (curLREditRow.hasAttachmentRequirement)
-                            $('#LRAttachmentRequired').parent().addClass('active');
-                        else
-                            $('#LRAttachmentRequird').parent().removeClass('active');
-    
-                        if (curLREditRow.hasAirTicketRequirement)
-                            $('#LRAirTicketRequired').parent().addClass('active');
-                        else
-                            $('#LRAirTicketRequired').parent().removeClass('active');
-                        
-                        if (curLREditRow.hasAdvanceSalaryRequirement)
-                            $('#LRAdvanceSalaryRequired').parent().addClass('active');
-                        else
-                            $('#LRAdvanceSalaryRequired').parent().removeClass('active');
-                        
-                        if (curLREditRow.hasExitReentryRequirement)
-                            $('#LRExitReentryRequired').parent().addClass('active');
-                        else
-                            $('#LRExitReentryRequired').parent().removeClass('active');
-
-
-                        $('#lrLoader').hide();
+                        $('#loansLoader').hide();
                     });
                 }, 150);
             }, timeout);
@@ -1045,15 +939,15 @@
             this.copy(false);
         }
     }
-    function leaveRequestsToolbarClick(args) {
-        var gridObj = document.getElementById("AllLeaveRequestsGrid").ej2_instances[0];
-        if (args.item.id === 'AllLeaveRequestsGrid_pdfexport') {
+    function loanRequestsToolbarClick(args) {
+        var gridObj = document.getElementById("AllLoanRequestsGrid").ej2_instances[0];
+        if (args.item.id === 'AllLoanRequestsGrid_pdfexport') {
             gridObj.pdfExport();
         }
-        if (args.item.id === 'AllLeaveRequestsGrid_excelexport') {
+        if (args.item.id === 'AllLoanRequestsGrid_excelexport') {
             gridObj.excelExport();
         }
-        if (args.item.id === 'AllLeaveRequestsGrid_csvexport') {
+        if (args.item.id === 'AllLoanRequestsGrid_csvexport') {
             gridObj.csvExport();
         }
         if (this.getSelectedRecords().length > 0) {
@@ -1110,16 +1004,17 @@
         }
     }
 
-    function lrApprovalRouteActionBegin(args) {
+
+    function loansApprovalRouteActionBegin(args) {
         if (args.requestType == "save") {
 
         }
         else if (args.requestType == "delete") {
         }
     }
-    function lrApprovalRouteCommandClick(args) {
+    function loansApprovalRouteCommandClick(args) {
         if (args.commandColumn.type == "MoveUp") {
-            var grid = $('#LRApprovalRouteGrid')[0].ej2_instances[0];
+            var grid = $('#LoansApprovalRouteGrid')[0].ej2_instances[0];
             var rI = args.rowData.routeIndex - 1;
             if (rI < 1) return;
             array_move(grid.dataSource, rI, rI - 1);
@@ -1129,7 +1024,7 @@
             grid.refresh();
         }
         if (args.commandColumn.type == "MoveDown") {
-            var grid = $('#LRApprovalRouteGrid')[0].ej2_instances[0];
+            var grid = $('#LoansApprovalRouteGrid')[0].ej2_instances[0];
             var rI = args.rowData.routeIndex - 1;
             if (rI == grid.dataSource.length) return;
             array_move(grid.dataSource, rI, rI + 1);
@@ -1146,8 +1041,8 @@
             this.copy(false);
         }
     }
-    function lrApprovalRouteToolbarClick(args) {
-        var gridObj = document.getElementById("LRApprovalRouteGrid").ej2_instances[0];
+    function loansApprovalRouteToolbarClick(args) {
+        var gridObj = document.getElementById("LoansApprovalRouteGrid").ej2_instances[0];
         if (args.item.id === 'LRApprovalRouteGrid_pdfexport') {
             gridObj.pdfExport();
         }
@@ -1243,7 +1138,7 @@
             gridObj.refresh();
         }
         if (args.requestType == "beginEdit") {
-            var Obj = $("#LRApprovalRouteGrid")[0].ej2_instances[0];
+            var Obj = $("#LoansApprovalRouteGrid")[0].ej2_instances[0];
             var ajax = new ej.base.Ajax('?handler=LRApprovalRouteData', 'GET');
             ajax.send();
             ajax.onSuccess = function (data) {
@@ -1256,7 +1151,7 @@
             Obj.columns[4].allowEditing = false;
         }
     }
-    function lrApprovalRouteRowDataBound(args) {
+    function loansApprovalRouteRowDataBound(args) {
         if (args.data.isDepartmentHead || args.data.isReportingTo) {
             $(".e-" + "DeleteButton", args.row).addClass("e-hide");
         }
@@ -1266,16 +1161,16 @@
         }
     }
 
-    function lrTaskActionBegin(args) {
+    function loansTaskActionBegin(args) {
         if (args.requestType == "save") {
 
         }
         else if (args.requestType == "delete") {
         }
     }
-    function lrTaskCommandClick(args) {
+    function loansTaskCommandClick(args) {
         if (args.commandColumn.type == "MoveUp") {
-            var grid = $('#LRTasksGrid')[0].ej2_instances[0];
+            var grid = $('#LoansTasksGrid')[0].ej2_instances[0];
             var rI = args.rowData.routeIndex - 1;
             if (rI < 1) return;
             array_move(grid.dataSource, rI, rI - 1);
@@ -1285,7 +1180,7 @@
             grid.refresh();
         }
         if (args.commandColumn.type == "MoveDown") {
-            var grid = $('#LRTasksGrid')[0].ej2_instances[0];
+            var grid = $('#LoansTasksGrid')[0].ej2_instances[0];
             var rI = args.rowData.routeIndex - 1;
             if (rI == grid.dataSource.length) return;
             array_move(grid.dataSource, rI, rI + 1);
@@ -1302,15 +1197,15 @@
             this.copy(false);
         }
     }
-    function lrTaskToolbarClick(args) {
-        var gridObj = document.getElementById("LRTasksGrid").ej2_instances[0];
-        if (args.item.id === 'LRTasksGrid_pdfexport') {
+    function loansTaskToolbarClick(args) {
+        var gridObj = document.getElementById("LoansTasksGrid").ej2_instances[0];
+        if (args.item.id === 'LoansTasksGrid_pdfexport') {
             gridObj.pdfExport();
         }
-        if (args.item.id === 'LRTasksGrid_excelexport') {
+        if (args.item.id === 'LoansTasksGrid_excelexport') {
             gridObj.excelExport();
         }
-        if (args.item.id === 'LRTasksGrid_csvexport') {
+        if (args.item.id === 'LoansTasksGrid_csvexport') {
             gridObj.csvExport();
         }
         if (this.getSelectedRecords().length > 0) {
@@ -1398,7 +1293,7 @@
             gridObj.refresh();
         }
     }
-    function lrTaskRowDataBound(args) {
+    function loansTaskRowDataBound(args) {
         //if (args.data.isDepartmentHead || args.data.isReportingTo) {
         //    $(".e-" + "DeleteButton", args.row).addClass("e-hide");
         //}
@@ -1415,10 +1310,10 @@
         dialogObj1.hide();
     }
 
-    var curLRPositions = [];
-    function SelectDepartmentPositions() {
-        var departmentIds = $("#lrDepartmentId").val();
-        $("#lrPositionId").empty();
+    var curLoanPositions = [];
+    function SelectLoansDepartmentPositions() {
+        var departmentIds = $("#loansDepartmentId").val();
+        $("#loansPositionId").empty();
         if (departmentIds.length == 0) return;
         $.ajax({
             type: "GET",
@@ -1433,17 +1328,17 @@
                             positions.push({ label: position.title, value: position.id });
                     });
                     dataMS.push({
-                        label: $(`#lrDepartmentId option[value='${departmentId}']`).text(), children: positions
+                        label: $(`#loansDepartmentId option[value='${departmentId}']`).text(), children: positions
                     });
                 });
-                curLRPositions = dataMS;
-                $("#lrPositionId").multiselect('dataprovider', dataMS);
+                curLoanPositions = dataMS;
+                $("#loansPositionId").multiselect('dataprovider', dataMS);
                 if (isEditingLR && !isEditingLRLoaded) {
                     var posits = [];
                     for (var i = 0; i < curLREditRow.positions.length; i++) {
                         posits.push(curLREditRow.positions[i].positionId);
                     }
-                    $("#lrPositionId").multiselect('select', posits);
+                    $("#loansPositionId").multiselect('select', posits);
 
                     isEditingLRLoaded = true;
                 }
@@ -1452,12 +1347,12 @@
         });
     }
 
-    var curAPPositions = [];
-    function SelectAPDepartmentPositions() {
-        var departmentIds = $("#apDepartmentId").val();
-        $("#apPositionId").empty();
-        $("#apEmployeeId").empty();
-        curAPPositions = [];
+    var curLoansAPPositions = [];
+    function SelectLoansAPDepartmentPositions() {
+        var departmentIds = $("#loansAPDepartmentId").val();
+        $("#loansAPPositionId").empty();
+        $("#loansAPEmployeeId").empty();
+        curLoansAPPositions = [];
         if (departmentIds.length == 0) return;
         $.ajax({
             type: "GET",
@@ -1472,22 +1367,22 @@
                             positions.push({ label: position.title, value: position.id });
                     });
                     dataMS.push({
-                        label: $(`#lrDepartmentId option[value='${departmentId}']`).text(), children: positions
+                        label: $(`#loansDepartmentId option[value='${departmentId}']`).text(), children: positions
                     });
                 });
-                curAPPositions = data;
-                $("#apPositionId").multiselect('dataprovider', dataMS);
+                curLoansAPPositions = data;
+                $("#loansAPPositionId").multiselect('dataprovider', dataMS);
             }
         });
     }
 
-    var curAPEmployees = [];
-    function SelectAPPositionEmployees() {
-        var positionIds = $("#apPositionId").val();
-        var positions = curAPPositions;
-        //var departmentIds = $("#apDepartmentId").val();
-        $("#apEmployeeId").empty();
-        curAPEmployees = [];
+    var curLoansAPEmployees = [];
+    function SelectLoansAPPositionEmployees() {
+        var positionIds = $("#loansAPPositionId").val();
+        var positions = curLoansAPPositions;
+        //var departmentIds = $("#loansAPDepartmentId").val();
+        $("#loansAPEmployeeId").empty();
+        curLoansAPEmployees = [];
         if (positionIds.length == 0) return;
 
         $.ajax({
@@ -1504,22 +1399,22 @@
                         if (employee.posId == positionId) {
                             var emp = { id: employee.id, value: employee.id, name: employee.name, label: employee.name, departmentId: employee.depId, depName: employee.depName, positionId: employee.posId, posName: employee.posTitle };
                             employees.push(emp);
-                            curAPEmployees.push(emp);
+                            curLoansAPEmployees.push(emp);
                         }
                     });
                     positionEmployees.push({ label: position.title, children: employees })
                 });
-                $("#apEmployeeId").multiselect('dataprovider', positionEmployees);
+                $("#loansAPEmployeeId").multiselect('dataprovider', positionEmployees);
             }
         });
     }
 
-    var curTaskPositions = [];
-    function SelectTaskDepartmentPositions() {
-        var departmentIds = $("#taskDepartmentId").val();
-        $("#taskPositionId").empty();
-        $("#taskEmployeeId").empty();
-        curTaskPositions = [];
+    var curLoansTaskPositions = [];
+    function SelectLoansTaskDepartmentPositions() {
+        var departmentIds = $("#loansTaskDepartmentId").val();
+        $("#loansTaskPositionId").empty();
+        $("#loansTaskEmployeeId").empty();
+        curLoansTaskPositions = [];
         if (departmentIds.length == 0) return;
         $.ajax({
             type: "GET",
@@ -1534,21 +1429,21 @@
                             positions.push({ label: position.title, value: position.id });
                     });
                     dataMS.push({
-                        label: $(`#lrDepartmentId option[value='${departmentId}']`).text(), children: positions
+                        label: $(`#loansDepartmentId option[value='${departmentId}']`).text(), children: positions
                     });
                 });
-                curTaskPositions = data;
-                $("#taskPositionId").multiselect('dataprovider', dataMS);
+                curLoansTaskPositions = data;
+                $("#loansTaskPositionId").multiselect('dataprovider', dataMS);
             }
         });
     }
-    var curTaskEmployees = [];
-    function SelectTaskPositionEmployees() {
-        var positionIds = $("#taskPositionId").val();
-        var positions = curTaskPositions;
-        //var departmentIds = $("#apDepartmentId").val();
-        $("#taskEmployeeId").empty();
-        curTaskEmployees = [];
+    var curLoansTaskEmployees = [];
+    function SelectLoansTaskPositionEmployees() {
+        var positionIds = $("#loansTaskPositionId").val();
+        var positions = curLoansTaskPositions;
+        //var departmentIds = $("#loansAPDepartmentId").val();
+        $("#loansTaskEmployeeId").empty();
+        curLoansTaskEmployees = [];
         if (positionIds.length == 0) return;
 
         $.ajax({
@@ -1565,12 +1460,12 @@
                         if (employee.posId == positionId) {
                             var emp = { id: employee.id, value: employee.id, name: employee.name, label: employee.name, departmentId: employee.depId, depName: employee.depName, positionId: employee.posId, posName: employee.posTitle };
                             employees.push(emp);
-                            curTaskEmployees.push(emp);
+                            curLoansTaskEmployees.push(emp);
                         }
                     });
                     positionEmployees.push({ label: position.title, children: employees })
                 });
-                $("#taskEmployeeId").multiselect('dataprovider', positionEmployees);
+                $("#loansTaskEmployeeId").multiselect('dataprovider', positionEmployees);
             }
         });
     }

@@ -50,7 +50,6 @@
                 },
                 onSelectAll: SelectDepartmentPositions()
             });
-            $('#departmentId').multiselect(options);
             $('#apDepartmentId').multiselect({
                 buttonWidth: '100%',
                 includeSelectAllOption: true,
@@ -89,6 +88,56 @@
             $('#hTypeId').multiselect(options);
             $('#hReligiousDenominationId').multiselect(options);
 
+            $('#loansDepartmentId').multiselect({
+                buttonWidth: '100%',
+                includeSelectAllOption: true,
+                enableFiltering: false,
+                enableClickableOptGroups: true,
+                includeResetOption: true,
+                includeResetDivider: true,
+                enableCollapsibleOptGroups: true,
+                onDeselectAll: function (e) {
+                    $('#lrPositionId').empty();
+                },
+                onSelectAll: SelectDepartmentPositions()
+            });
+            $('#loansAPDepartmentId').multiselect({
+                buttonWidth: '100%',
+                includeSelectAllOption: true,
+                enableFiltering: false,
+                enableClickableOptGroups: true,
+                includeResetOption: true,
+                includeResetDivider: true,
+                enableCollapsibleOptGroups: true,
+                onDeselectAll: function (e) {
+                    $('#lrPositionId').empty();
+                },
+                onSelectAll: SelectAPDepartmentPositions()
+            });
+            $('#loansAPPositionId').multiselect(options);
+            $('#loansAPEmployeeId').multiselect(options);
+            $('#loansTaskDepartmentId').multiselect({
+                buttonWidth: '100%',
+                includeSelectAllOption: true,
+                enableFiltering: false,
+                enableClickableOptGroups: true,
+                includeResetOption: true,
+                includeResetDivider: true,
+                enableCollapsibleOptGroups: true,
+                onDeselectAll: function (e) {
+                    $('#lrPositionId').empty();
+                },
+                onSelectAll: SelectAPDepartmentPositions()
+            });
+            $('#loansTaskPositionId').multiselect(options);
+            $('#loansTaskEmployeeId').multiselect(options);
+            $('#loansPositionId').multiselect(options);
+            $('#loansLoanTypeId').multiselect(options);
+            $('#loansEmploymentTypeId').multiselect(options);
+            $('#loansEmployeeStatusId').multiselect(options);
+
+            $('#departmentId').multiselect(options);
+
             cERP.appServices.setup.departmentSetup.department.getDepartments().done(function (data) {
                 departments = [];
                 $.each(data, function (i, d) {
@@ -97,12 +146,20 @@
 
                 $("#departmentId").multiselect('dataprovider', departments);
                 $("#departmentId").change();
+
                 $("#lrDepartmentId").multiselect('dataprovider', departments);
                 $("#lrDepartmentId").change();
                 $("#apDepartmentId").multiselect('dataprovider', departments);
                 $("#apDepartmentId").change();
                 $("#taskDepartmentId").multiselect('dataprovider', departments);
                 $("#taskDepartmentId").change();
+
+                $("#loansDepartmentId").multiselect('dataprovider', departments);
+                $("#loansDepartmentId").change();
+                $("#loansAPDepartmentId").multiselect('dataprovider', departments);
+                $("#apDepartmentId").change();
+                $("#loansTaskDepartmentId").multiselect('dataprovider', departments);
+                $("#loansTaskDepartmentId").change();
             });
             toastr.options = {
 
@@ -161,6 +218,7 @@
             $("#smartwizard").on("leaveStep", function (e, anchorObject, stepNumber, stepDirection) {
                 let allow = true;
                 return allow;
+           
             });
             $("#smartwizard").on("endReset", function () {
                 $("#next-btn").removeClass('disabled');
@@ -174,9 +232,10 @@
         <div id="smartwizard">
             <ul>
                 <li><a href="#step-1">@TabPlaceholder 1<br /><p style="font-size: 15px">Workshifts</p></a></li>
-                <li><a href="#step-2">@TabPlaceholder 2<br /><p style="font-size: 15px">Attendance</p></a></li>
-                <li><a href="#step-3">@TabPlaceholder 3<br /><p style="font-size: 15px">Leaves</p></a></li>
-                <li><a href="#step-4">@TabPlaceholder 4<br /><p style="font-size: 15px">Holidays</p></a></li>
+                <li><a href="#step-2">@TabPlaceholder 2<br /><p style="font-size: 15px">Holidays</p></a></li>
+                <li><a href="#step-3">@TabPlaceholder 3<br /><p style="font-size: 15px">Attendance</p></a></li>
+                <li><a href="#step-4">@TabPlaceholder 4<br /><p style="font-size: 15px">Leaves</p></a></li>
+                <li><a href="#step-5">@TabPlaceholder 5<br /><p style="font-size: 15px">Loans</p></a></li>
             </ul>
             <div>
                 <div id="step-1">
@@ -186,17 +245,22 @@
                 </div>
                 <div id="step-2">
                     <div id="form-step-1" role="form" data-toggle="validator">
-                        <partial name="_Attendance" />
+                        <partial name="_Holidays" />
                     </div>
                 </div>
                 <div id="step-3">
                     <div id="form-step-2" role="form" data-toggle="validator">
-                        <partial name="_Leaves" />
+                        <partial name="_Attendance" />
                     </div>
                 </div>
                 <div id="step-4">
                     <div id="form-step-3" role="form" data-toggle="validator">
-                        <partial name="_Holidays" />
+                        <partial name="_Leaves" />
+                    </div>
+                </div>
+                <div id="step-5">
+                    <div id="form-step-4" role="form" data-toggle="validator">
+                        <partial name="_Loans" />
                     </div>
                 </div>
 

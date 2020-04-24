@@ -50,7 +50,8 @@ namespace CERP.AppServices.HR.LeaveRequestService
         }
         public async Task<LeaveRequestTemplate_Dto> GetCustomAsync(int id)
         {
-            return ObjectMapper.Map<LeaveRequestTemplate, LeaveRequestTemplate_Dto>(await Repository.GetAsync(id, true));
+            LeaveRequestTemplate source = await Repository.GetAsync(id, true);
+            return ObjectMapper.Map<LeaveRequestTemplate, LeaveRequestTemplate_Dto>(source);
         }
 
         public async Task<LeaveRequestTemplate_Dto> CreateCustomAsync(LeaveRequestTemplate_Dto leaveRequestTemplate)

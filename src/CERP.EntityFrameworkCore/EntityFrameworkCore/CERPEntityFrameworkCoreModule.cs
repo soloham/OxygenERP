@@ -5,6 +5,7 @@ using CERP.HR.Documents;
 using CERP.HR.Employees;
 using CERP.HR.Holidays;
 using CERP.HR.Leaves;
+using CERP.HR.Loans;
 using CERP.HR.Timesheets;
 using CERP.HR.Workshifts;
 using CERP.Payroll.Payrun;
@@ -276,6 +277,41 @@ namespace CERP.EntityFrameworkCore
                                                        .Include(p => p.EmploymentTypes)
                                                        .Include(p => p.Holidays)
                                                         .ThenInclude(p => p.Holiday);
+                });
+
+                options.Entity<LoanRequestTemplate>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.ApprovalRouteTemplate)
+                                                        .ThenInclude(p => p.ApprovalRouteTemplateItems)
+                                                        .ThenInclude(p => p.ApprovalRouteItemEmployees)
+                                                        .ThenInclude(p => p.Employee)
+                                                        .ThenInclude(p => p.Department)
+                                                       .Include(p => p.ApprovalRouteTemplate)
+                                                        .ThenInclude(p => p.ApprovalRouteTemplateItems)
+                                                        .ThenInclude(p => p.ApprovalRouteItemEmployees)
+                                                        .ThenInclude(p => p.Employee)
+                                                        .ThenInclude(p => p.Position)
+                                                       .Include(p => p.ApprovalRouteTemplate)
+                                                        .ThenInclude(p => p.ApprovalRouteTemplateItems)
+                                                        .ThenInclude(p => p.TaskTemplate)
+                                                        .ThenInclude(p => p.TaskTemplateItems)
+                                                        .ThenInclude(p => p.TaskEmployees)
+                                                        .ThenInclude(p => p.Employee)
+                                                        .ThenInclude(p => p.Department)
+                                                       .Include(p => p.ApprovalRouteTemplate)
+                                                        .ThenInclude(p => p.ApprovalRouteTemplateItems)
+                                                        .ThenInclude(p => p.TaskTemplate)
+                                                        .ThenInclude(p => p.TaskTemplateItems)
+                                                        .ThenInclude(p => p.TaskEmployees)
+                                                        .ThenInclude(p => p.Employee)
+                                                        .ThenInclude(p => p.Position)
+                                                       .Include(p => p.LoanType)
+                                                       .Include(p => p.Departments)
+                                                        .ThenInclude(p => p.Department)
+                                                       .Include(p => p.Positions)
+                                                        .ThenInclude(p => p.Position)
+                                                       .Include(p => p.EmployeeStatuses)
+                                                       .Include(p => p.EmploymentTypes);
                 });
 
                 options.Entity<Holiday>(opt =>

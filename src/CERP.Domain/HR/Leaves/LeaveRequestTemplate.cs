@@ -40,8 +40,15 @@ namespace CERP.HR.Leaves
         public bool HasExitReentryRequest { get; set; }
         public bool HasAirTicketRequest { get; set; }
 
+        public bool HasReplacementOption { get; set; }
+
         public bool HasNotesRequirement { get; set; }
         public bool HasAttachmentRequirement { get; set; }
+        public bool HasAirTicketRequirement { get; set; }
+        public bool HasExitReentryRequirement { get; set; }
+        public bool HasAdvanceSalaryRequirement { get; set; }
+
+        public bool HasReplacementRequirement { get; set; }
     }
     
 }

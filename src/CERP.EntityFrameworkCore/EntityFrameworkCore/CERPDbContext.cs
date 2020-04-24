@@ -17,6 +17,7 @@ using CERP.App.CustomEntityHistorySystem;
 using CERP.HR.Leaves;
 using CERP.HR.Holidays;
 using CERP.HR.Attendance;
+using CERP.HR.Loans;
 
 namespace CERP.EntityFrameworkCore
 {
@@ -89,6 +90,12 @@ namespace CERP.EntityFrameworkCore
         public DbSet<LeaveRequestTemplateEmployeeStatus> LeaveRequestTemplateEmployeeStatus { get; set; }
         public DbSet<LeaveRequestTemplateEmploymentType> LeaveRequestTemplateEmploymentType { get; set; }
         public DbSet<LeaveRequestTemplateHoliday> LeaveRequestTemplateHoliday { get; set; }
+
+        public DbSet<LoanRequestTemplate> LoanRequestTemplates { get; set; }
+        public DbSet<LoanRequestTemplateDepartment> LoanRequestTemplateDepartment { get; set; }
+        public DbSet<LoanRequestTemplatePosition> LoanRequestTemplatePosition { get; set; }
+        public DbSet<LoanRequestTemplateEmployeeStatus> LoanRequestTemplateEmployeeStatus { get; set; }
+        public DbSet<LoanRequestTemplateEmploymentType> LoanRequestTemplateEmploymentType { get; set; }
 
         public DbSet<Holiday> Holidays { get; set; }
         public DbSet<Attendance> Attendance { get; set; }

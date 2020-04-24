@@ -1,0 +1,30 @@
+{
+  "name": "@mountable/spinners",
+  "version": "0.0.26",
+  "description": "Loading spinners - Progress indicators expressing unspecified wait time.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mountable/spinners.git"
+  },
+  "author": "Kenneth Aamås",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mountable/spinners/issues"
+  },
+  "homepage": "https://github.com/mountable/spinners#readme",
+  "files": [
+    "dist/*.css",
+    "src"
+  ],
+  "main": "src/index.js",
+  "scripts": {
+    "build": "vue-cli-service build"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.11.0",
+    "@vue/cli-service": "^3.11.0",
+    "node-sass": "^4.11.0",
+    "sass-loader": "^7.3.1",
+    "vue-template-compiler": "^2.5.22"
+  }
+}

@@ -25,7 +25,6 @@ namespace CERP.App
 
         public int RouteIndex { get; set; }
 
-
         public virtual ICollection<TaskTemplateItemEmployee> TaskEmployees { get; set; }
 
         public bool IsAny { get; set; }

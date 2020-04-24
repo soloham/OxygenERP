@@ -15,6 +15,7 @@ using CERP.HR.Employees.DTOs;
 using CERP.HR.Employees.UV_DTOs;
 using CERP.HR.Holidays;
 using CERP.HR.Leaves;
+using CERP.HR.Loans;
 using CERP.HR.Timesheets;
 using CERP.HR.Workshift.DTOs;
 using CERP.HR.Workshifts;
@@ -176,6 +177,21 @@ namespace CERP
 
             CreateMap<LeaveRequestTemplateHoliday, LeaveRequestTemplateHoliday_Dto>().ForMember(d => d.LeaveRequestTemplate, opt => opt.Ignore());
             CreateMap<LeaveRequestTemplateHoliday_Dto, LeaveRequestTemplateHoliday>();
+
+            CreateMap<LoanRequestTemplate, LoanRequestTemplate_Dto>();
+            CreateMap<LoanRequestTemplate_Dto, LoanRequestTemplate>();
+
+            CreateMap<LoanRequestTemplateDepartment, LoanRequestTemplateDepartment_Dto>().ForMember(d => d.LoanRequestTemplate, opt => opt.Ignore());
+            CreateMap<LoanRequestTemplateDepartment_Dto, LoanRequestTemplateDepartment>();
+
+            CreateMap<LoanRequestTemplatePosition, LoanRequestTemplatePosition_Dto>().ForMember(d => d.LoanRequestTemplate, opt => opt.Ignore());
+            CreateMap<LoanRequestTemplatePosition_Dto, LoanRequestTemplatePosition>();
+
+            CreateMap<LoanRequestTemplateEmploymentType, LoanRequestTemplateEmploymentType_Dto>().ForMember(d => d.LoanRequestTemplate, opt => opt.Ignore());
+            CreateMap<LoanRequestTemplateEmploymentType_Dto, LoanRequestTemplateEmploymentType>();
+
+            CreateMap<LoanRequestTemplateEmployeeStatus, LoanRequestTemplateEmployeeStatus_Dto>().ForMember(d => d.LoanRequestTemplate, opt => opt.Ignore());
+            CreateMap<LoanRequestTemplateEmployeeStatus_Dto, LoanRequestTemplateEmployeeStatus>();
 
             CreateMap<Holiday, Holiday_Dto>();
             CreateMap<Holiday_Dto, Holiday>();

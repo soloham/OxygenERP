@@ -7,6 +7,7 @@ using CERP.HR.Documents;
 using CERP.HR.Employees;
 using CERP.HR.Holidays;
 using CERP.HR.Leaves;
+using CERP.HR.Loans;
 using CERP.HR.Timesheets;
 using CERP.HR.Workshifts;
 using CERP.Payroll.Payrun;
@@ -887,7 +888,67 @@ namespace CERP.EntityFrameworkCore
                 b.HasOne(x => x.LeaveRequestTemplate).WithMany(x => x.Holidays).OnDelete(DeleteBehavior.Cascade);
                 b.HasOne(x => x.Holiday).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
-            
+
+            builder.Entity<LoanRequestTemplate>(b =>
+            {
+                b.ToTable(CERPConsts.DbTablePrefix + "LoanRequestTemplates", CERPConsts.HRDbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureMultiTenant();
+
+                b.HasOne(x => x.LoanType).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.ApprovalRouteTemplate).WithOne().OnDelete(DeleteBehavior.Cascade);
+
+                b.HasMany(x => x.Departments).WithOne(x => x.LoanRequestTemplate).OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(x => x.Positions).WithOne(x => x.LoanRequestTemplate).OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(x => x.EmployeeStatuses).WithOne(x => x.LoanRequestTemplate).OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(x => x.EmploymentTypes).WithOne(x => x.LoanRequestTemplate).OnDelete(DeleteBehavior.Cascade);
+            });
+            builder.Entity<LoanRequestTemplateDepartment>(b =>
+            {
+                b.ToTable(CERPConsts.DbTablePrefix + "LoanRequestTemplateDepartments", CERPConsts.HRDbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureMultiTenant();
+
+                b.HasKey("LoanRequestTemplateId", "DepartmentId");
+                b.HasOne(x => x.LoanRequestTemplate).WithMany(x => x.Departments).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.Department).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<LoanRequestTemplatePosition>(b =>
+            {
+                b.ToTable(CERPConsts.DbTablePrefix + "LoanRequestTemplatePositions", CERPConsts.HRDbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureMultiTenant();
+
+                b.HasKey("LoanRequestTemplateId", "PositionId");
+                b.HasOne(x => x.LoanRequestTemplate).WithMany(x => x.Positions).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.Position).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<LoanRequestTemplateEmployeeStatus>(b =>
+            {
+                b.ToTable(CERPConsts.DbTablePrefix + "LoanRequestTemplateEmployeeStatuses", CERPConsts.HRDbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureMultiTenant();
+
+                b.HasKey("LoanRequestTemplateId", "EmployeeStatusId");
+                b.HasOne(x => x.LoanRequestTemplate).WithMany(x => x.EmployeeStatuses).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.EmployeeStatus).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<LoanRequestTemplateEmploymentType>(b =>
+            {
+                b.ToTable(CERPConsts.DbTablePrefix + "LoanRequestTemplateEmploymentTypes", CERPConsts.HRDbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureMultiTenant();
+
+                b.HasKey("LoanRequestTemplateId", "EmploymentTypeId");
+                b.HasOne(x => x.LoanRequestTemplate).WithMany(x => x.EmploymentTypes).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.EmploymentType).WithMany().OnDelete(DeleteBehavior.NoAction);
+            }); 
+
             builder.Entity<Attendance>(b =>
             {
                 b.ToTable(CERPConsts.DbTablePrefix + "Attendance", CERPConsts.HRDbSchema);

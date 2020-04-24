@@ -66,6 +66,8 @@ namespace CERP
         [Description("Leave Type")]
         LeaveType,
         [Description("Holiday Type")]
-        HolidayType
+        HolidayType,
+        [Description("Loan Type")]
+        LoanType
     }
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Autofac.Core;
+using CERP.Web.BusinessLogic.Core.Services.ApprovalRouteService;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -63,6 +65,8 @@ namespace CERP.Web
                 options.SlidingExpiration = true;
 
             });
+
+            services.AddSingleton<IApprovalRoutesManager, ApprovalRoutesManager>();
         }
 
         public void Configure(IApplicationBuilder app)
