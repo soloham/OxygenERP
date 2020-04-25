@@ -51,7 +51,7 @@
         new GridColumn { Field = "routeIndex", Visible = false, HeaderText = "Route Index", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "active", AllowSorting = false, AutoFit=true, HeaderText = "Active", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "notifyEmployee", AllowSorting = false, AutoFit=true, HeaderText = "Notify", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "isPoster", AllowSorting = false, AutoFit=true, HeaderText = "Poster", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "isPoster", AllowSorting = false, AutoFit=true, HeaderText = "Allow Posting", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "getAllDepartmentNames", AllowSorting = false, AutoFit=true, HeaderText = "Department", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "getAllPositionTitles", AllowSorting = false, AutoFit=true, HeaderText = "Position", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "getAllEmployeeNames", AllowSorting = false,AutoFit=true, HeaderText = "Employee", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
@@ -119,7 +119,7 @@
     <script>
         isEditingLR = false;
         isEditingLRLoaded = false;
-        var curLREditRow;
+        var curLoansEditRow;
 
         $(document).ready(function () {
             //createSpinner({
@@ -380,7 +380,7 @@
                     params.LRMaxInstallmentAmount = $("#loansMaxInstallmentAmount").val();
 
                     if (isEditingLR) {
-                        params.Id = curLREditRow.id;
+                        params.Id = curLoansEditRow.id;
 
                         //cERP.appServices.hR.loanRequestTemplates.update()
                     }
@@ -646,7 +646,7 @@
                                     <input type="checkbox" id="LoansAPNotify" autocomplete="off"> Notify Employee
                                 </label>
                                 <label class="btn btn-default">
-                                    <input type="checkbox" id="LoansAPIsPoster" autocomplete="off"> Poster
+                                    <input type="checkbox" id="LoansAPIsPoster" autocomplete="off"> Allow Posting
                                 </label>
                                 <label class="btn btn-default" id="APAllowAnySec" style="display:none">
                                     <input type="checkbox" id="LoansAPIsPoster" autocomplete="off"> Allow Any
@@ -830,7 +830,7 @@
     }
     function loanRequestsCommandClick(args) {
         if (args.commandColumn.type == "Edit") {
-            curLREditRow = args.rowData;
+            curLoansEditRow = args.rowData;
             isEditingLR = true;
             isEditingLRLoaded = false;
             var isCollapsed = $('#loanRequestForm').css('display') == 'none';
@@ -853,19 +853,19 @@
                     $('#addLoanRequestBtn', '#addLoanRequestBtnSection').html('<i class="fa fa-arrow-up p-r-5"></i> Cancel Update');
                     $('#submitLoanRequestBtn').val('Update Loan Request');
 
-                    $('#loansTitle').val(curLREditRow.title);
-                    $('#loansTitleLocalized').val(curLREditRow.titleLocalized);
-                    $('#loansPrefix').val(curLREditRow.prefix);
-                    $('#loansStartingNo').val(curLREditRow.startingNo);
+                    $('#loansTitle').val(curLoansEditRow.title);
+                    $('#loansTitleLocalized').val(curLoansEditRow.titleLocalized);
+                    $('#loansPrefix').val(curLoansEditRow.prefix);
+                    $('#loansStartingNo').val(curLoansEditRow.startingNo);
 
                     var apGrid = $("#LoansApprovalRouteGrid")[0].ej2_instances[0];
                     apGrid.showSpinner();
                     apGrid.dataSource = null;
-                    cERP.appServices.hR.loanRequestService.loanRequestTemplates.getCustom(curLREditRow.id).done(function (data) {
-                        curLREditRow = data;
+                    cERP.appServices.hR.loanRequestService.loanRequestTemplates.getCustom(curLoansEditRow.id).done(function (data) {
+                        curLoansEditRow = data;
 
-                        $('#loansEntitlementDays').val(curLREditRow.entitlementDays);
-                        $("#loansLoanTypeId").multiselect('select', curLREditRow.loanTypeId);
+                        $('#loansEntitlementDays').val(curLoansEditRow.entitlementDays);
+                        $("#loansLoanTypeId").multiselect('select', curLoansEditRow.loanTypeId);
                         $('#loansLoanTypeId').multiselect('refresh');
 
                         $('#loansDepartmentId').multiselect('deselectAll', false);
@@ -873,30 +873,30 @@
                         $('#loansEmploymentTypeId').multiselect('deselectAll', false);
                         $('#loansEmployeeStatusId').multiselect('deselectAll', false);
 
-                        $("#loansMinEmployeeDependants").val(curLREditRow.minEmployeeDependants);
-                        $("#loansMaxIndemnityLimit").val(curLREditRow.maxIndemnityLimit);
-                        $("#loansMaxInstallmentsLimit").val(curLREditRow.maxInstallmentsLimit);
-                        $("#loansMaxInstallmentAmount").val(curLREditRow.maxInstallmentAmount);
+                        $("#loansMinEmployeeDependants").val(curLoansEditRow.minEmployeeDependants);
+                        $("#loansMaxIndemnityLimit").val(curLoansEditRow.maxIndemnityLimit);
+                        $("#loansMaxInstallmentsLimit").val(curLoansEditRow.maxInstallmentsLimit);
+                        $("#loansMaxInstallmentAmount").val(curLoansEditRow.maxInstallmentAmount);
 
                         var departs = [];
-                        for (var i = 0; i < curLREditRow.departments.length; i++) {
-                            departs.push(curLREditRow.departments[i].departmentId);
+                        for (var i = 0; i < curLoansEditRow.departments.length; i++) {
+                            departs.push(curLoansEditRow.departments[i].departmentId);
                         }
                         $('#loansDepartmentId').multiselect('select', departs);
                         $('#loansDepartmentId').change();
                         var empTypes = [];
-                        for (var i = 0; i < curLREditRow.employmentTypes.length; i++) {
-                            empTypes.push(curLREditRow.employmentTypes[i].employmentTypeId);
+                        for (var i = 0; i < curLoansEditRow.employmentTypes.length; i++) {
+                            empTypes.push(curLoansEditRow.employmentTypes[i].employmentTypeId);
                         }
                         $('#loansEmploymentTypeId').multiselect('select', empTypes);
                         var empStatuses = [];
-                        for (var i = 0; i < curLREditRow.employeeStatuses.length; i++) {
-                            empStatuses.push(curLREditRow.employeeStatuses[i].employeeStatusId);
+                        for (var i = 0; i < curLoansEditRow.employeeStatuses.length; i++) {
+                            empStatuses.push(curLoansEditRow.employeeStatuses[i].employeeStatusId);
                         }
                         $('#loansEmployeeStatusId').multiselect('select', empStatuses);
 
-                        //cERP.appServices.app.approvalRouteService.approvalRouteTemplates.getFull(curLREditRow.approvalRouteTemplateId).done(function (data) {
-                        var data = curLREditRow.approvalRouteTemplate;
+                        //cERP.appServices.app.approvalRouteService.approvalRouteTemplates.getFull(curLoansEditRow.approvalRouteTemplateId).done(function (data) {
+                        var data = curLoansEditRow.approvalRouteTemplate;
                         apGrid.hideSpinner();
                         apGrid.dataSource = data.approvalRouteTemplateItems;
                         console.log(data);
@@ -1335,8 +1335,8 @@
                 $("#loansPositionId").multiselect('dataprovider', dataMS);
                 if (isEditingLR && !isEditingLRLoaded) {
                     var posits = [];
-                    for (var i = 0; i < curLREditRow.positions.length; i++) {
-                        posits.push(curLREditRow.positions[i].positionId);
+                    for (var i = 0; i < curLoansEditRow.positions.length; i++) {
+                        posits.push(curLoansEditRow.positions[i].positionId);
                     }
                     $("#loansPositionId").multiselect('select', posits);
 

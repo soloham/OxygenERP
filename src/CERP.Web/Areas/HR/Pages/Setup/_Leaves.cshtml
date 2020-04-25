@@ -56,7 +56,7 @@
         new GridColumn { Field = "routeIndex", Visible = false, HeaderText = "Route Index", TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "active", AllowSorting = false, AutoFit=true, HeaderText = "Active", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "notifyEmployee", AllowSorting = false, AutoFit=true, HeaderText = "Notify", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "isPoster", AllowSorting = false, AutoFit=true, HeaderText = "Poster", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+        new GridColumn { Field = "isPoster", AllowSorting = false, AutoFit=true, HeaderText = "Allow Posting", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "getAllDepartmentNames", AllowSorting = false, AutoFit=true, HeaderText = "Department", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "getAllPositionTitles", AllowSorting = false, AutoFit=true, HeaderText = "Position", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
         new GridColumn { Field = "getAllEmployeeNames", AllowSorting = false,AutoFit=true, HeaderText = "Employee", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
@@ -649,7 +649,7 @@
                                     <input type="checkbox" id="APNotify" autocomplete="off"> Notify Employee
                                 </label>
                                 <label class="btn btn-default">
-                                    <input type="checkbox" id="APIsPoster" autocomplete="off"> Poster
+                                    <input type="checkbox" id="APIsPoster" autocomplete="off"> Allow Posting
                                 </label>
                                 <label class="btn btn-default" id="APAllowAnySec" style="display:none">
                                     <input type="checkbox" id="APAllowAny" autocomplete="off"> Allow Any
