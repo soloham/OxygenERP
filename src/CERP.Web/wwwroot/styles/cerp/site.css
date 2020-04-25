@@ -563,10 +563,20 @@ p{
 .areaHeader {
     margin:0;
     width: 100%;
-    text-align: center;
+    /*text-align: center;*/
     background-color: #5BCFF3;
     color: white;
     display:flex;
+}
+.areaHeaderTitleNode {
+    background-color: #91dff7;
+    padding: 3px 10px 0px 10px;
+    /*margin-left: 4px;*/
+}
+.areaHeaderTitleInNode {
+    background-color: #79d8f5;
+    padding: 3px 10px 0px 10px;
+    /*margin-left: 4px;*/
 }
 .areaHeaderTitle {
     text-shadow: 0px 0px 30px #2c5173;
@@ -577,17 +587,18 @@ p{
     flex: auto;
     background-color: transparent;
     height: inherit;
-    padding: 5px 0 5px 15px;
+    padding: 0px 0 0px 0px;
+    display: inherit;
 }
 .areaHeader > h3 {
-    padding:10px;
+    padding:1px;
 }
 .areaHeaderBtnSec {
     align-self: center;
 }
 .areaHeaderBtn {
     padding: 10px 15px 5px 15px;
-    background-color: #53cef2;
+    background-color: #79d8f5;
     box-shadow: 0 20px 30px 0 rgba(0, 0, 0, 0.1), 0 0px 0px 0 rgba(0, 0, 0, 0.19);
     color: white;
     font-size: 15px;

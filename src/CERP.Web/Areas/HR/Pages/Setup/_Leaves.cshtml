@@ -510,9 +510,10 @@
         <div class="areaHeader" style="display:flex;">
             <div id="lrLoader" class="pull-left loader-inline" style="display:none"></div>        
             <div class="areaHeaderTitle">
-                <span id="areHeadertitle" class="menu-text">Current Leave Requests</span>
+                <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Current Leave Requests</span>
+                <span id="" class="areaHeaderTitleInNode menu-text"> > </span>
                 @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
-            </div>
+            </div>     
             @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
             <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
                 @*<div class="clearfix margin-15"></div>*@
@@ -585,8 +586,8 @@
                         <select id="lrEmploymentTypeId" name="EmployementTypeId" multiple="multiple" class="form-control" required>
                         </select>
                         @*<ejs-dropdownlist id="vegetables" placeholder="Select an employment type" popupHeight="200px" dataSource="@employementTypes">
-                            <e-dropdownlist-fields text="Value" value="Id"></e-dropdownlist-fields>
-                        </ejs-dropdownlist>*@
+                        <e-dropdownlist-fields text="Value" value="Id"></e-dropdownlist-fields>
+                    </ejs-dropdownlist>*@
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
@@ -598,9 +599,67 @@
                 </div>
             </div>
             <hr />
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-3">
+                        <label class="control-label m-b-5 ">Holidays for deduction:</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <select id="lrHolidaysDeductionIds" name="LRHolidaysDeductionIds" multiple="multiple" class="form-control">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row m-md-t-5">
+                <div class="form-group">
+                    <div class="col-sm-3">
+                        <label class="control-label m-b-5 ">Additional Requests:</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="btn-group" data-toggle="buttons">
+                            <label class="btn btn-default">
+                                <input type="checkbox" id="LRAdvanceSalaryAD" onchange="if ($('#LRAdvanceSalaryAD').parent().hasClass('active')) { $('#LRAdvanceSalaryRequired').parent().show(); } else { $('#LRAdvanceSalaryRequired').parent().hide(); }" autocomplete="off"> Advance Salary
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="checkbox" id="LRExitReentryAD" onchange="if ($('#LRExitReentryAD').parent().hasClass('active')) { $('#LRExitReentryRequired').parent().show(); } else { $('#LRExitReentryRequired').parent().hide(); }" autocomplete="off"> Exit Re-Entry
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="checkbox" id="LRAirTicketAD" onchange="if ($('#LRAirTicketAD').parent().hasClass('active')) { $('#LRAirTicketRequired').parent().show(); } else { $('#LRAirTicketRequired').parent().hide(); }" autocomplete="off"> Air Ticket
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row m-md-t-5">
+                <div class="form-group">
+                    <div class="col-sm-3">
+                        <label class="control-label m-b-5 ">Additional Requirements:</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="btn-group" data-toggle="buttons">
+                            <label class="btn btn-default">
+                                <input type="checkbox" id="LRNotesRequired" autocomplete="off"> Notes
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="checkbox" id="LRAttachmentRequired" autocomplete="off"> Attachment
+                            </label>
+                            <label class="btn btn-default" style="display: none;">
+                                <input type="checkbox" id="LRAdvanceSalaryRequired" autocomplete="off"> Advance Salary
+                            </label>
+                            <label class="btn btn-default" style="display: none;">
+                                <input type="checkbox" id="LRExitReentryRequired" autocomplete="off"> Exit Re-Entry
+                            </label>
+                            <label class="btn btn-default" style="display: none;">
+                                <input type="checkbox" id="LRAirTicketRequired" autocomplete="off"> Air Ticket
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
             <div class="areaHeader" style="display:flex;">
                 <div class="areaHeaderTitle">
-                    <span id="areHeadertitle" class="menu-text">Approval Route</span>
+                    <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Approval Route</span>
                     @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
                 </div>
                 @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
@@ -616,24 +675,21 @@
                             <div class="form-group">
                                 <label class="control-label m-b-5 ">Department:</label>
                                 <select id="apDepartmentId" name="DepartmentId" multiple="multiple" class="form-control" onchange="SelectAPDepartmentPositions();">
-
                                 </select>
                             </div>
                         </div>
                         <div class="col-sm-6" style="padding:0">
                             <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Position:</label>
-                            <select id="apPositionId" name="PositionId" class="form-control" multiple="multiple" onchange="SelectAPPositionEmployees()">
-
-                            </select>
-                        </div>
+                                <label class="margin-bottom-5 control-label">Position:</label>
+                                <select id="apPositionId" name="PositionId" class="form-control" multiple="multiple" onchange="SelectAPPositionEmployees()">
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5 control-label">Employee:</label>
                             <select id="apEmployeeId" onchange="if ($('#apEmployeeId').val().length > 1) $('#APAllowAnySec').show(); else $('#APAllowAnySec').hide();" name="Employee" multiple="multiple" class="form-control">
-
                             </select>
                         </div>
                     </div>
@@ -657,18 +713,19 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                         <label class="margin-bottom-5 control-label"></label>
                         <button id="addToApprovalRouteBtn" type="button" class="btn btn-success btn-block"><i class="fa fa-plus p-r-5"></i> Add To Approval Route</button>
                     </div>
                 </div>
                 <div class="row m-md-t-5 m-md-b-10">
-                    
+
                 </div>
                 @*<hr style="margin-top:6px">*@
                 <div class="areaHeader" style="display:flex;">
                     <div class="areaHeaderTitle">
-                        <span id="areHeadertitle" class="menu-text">Tasks</span>
+                        <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Tasks</span>
                         @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
                     </div>
                     @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
@@ -684,7 +741,6 @@
                                 <div class="form-group">
                                     <label class="control-label m-b-5 ">Department:</label>
                                     <select id="taskDepartmentId" name="DepartmentId" multiple="multiple" class="form-control" onchange="SelectTaskDepartmentPositions();">
-
                                     </select>
                                 </div>
                             </div>
@@ -752,76 +808,18 @@
                 </ejs-grid>
             </div>
             <ejs-grid id="LRApprovalRouteGrid" enableAutoFill="true" columns="@lrApprovalRouteGridColumns" childGrid="APSecondaryDetailsGrid" queryString="id"
-                        dataBound="dataBoundResponsive" commandClick="lrApprovalRouteCommandClick" actionBegin="lrApprovalRouteActionBegin"
-                        allowExcelExport="true" allowPdfExport="true"
-                        hierarchyPrintMode="Expanded" allowSelection="true" allowSorting="true"
-                        gridLines="Both" rowDataBound="lrApprovalRouteRowDataBound"
-                        toolbarClick="lrApprovalRouteToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
-                        allowResizing="true">
+                      dataBound="dataBoundResponsive" commandClick="lrApprovalRouteCommandClick" actionBegin="lrApprovalRouteActionBegin"
+                      allowExcelExport="true" allowPdfExport="true"
+                      hierarchyPrintMode="Expanded" allowSelection="true" allowSorting="true"
+                      gridLines="Both" rowDataBound="lrApprovalRouteRowDataBound"
+                      toolbarClick="lrApprovalRouteToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
+                      allowResizing="true">
 
                 <e-grid-sortsettings columns="@(new List<object>() { new { field = "routeIndex", direction = "Ascending" } })"></e-grid-sortsettings>
                 <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowEditing="true" allowDeleting="true"></e-grid-editSettings>
                 <e-grid-selectionsettings type="Multiple">
                 </e-grid-selectionsettings>
             </ejs-grid>
-            <hr />
-            <div class="row">
-                <div class="form-group">
-                    <div class="col-sm-3">
-                        <label class="control-label m-b-5 ">Holidays for deduction:</label>
-                    </div>
-                    <div class="col-sm-9">
-                        <select id="lrHolidaysDeductionIds" name="LRHolidaysDeductionIds" multiple="multiple" class="form-control">
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="row m-md-t-5">
-                <div class="form-group">
-                    <div class="col-sm-3">
-                        <label class="control-label m-b-5 ">Additional Requests:</label>
-                    </div>
-                    <div class="col-sm-9">
-                        <div class="btn-group" data-toggle="buttons">
-                            <label class="btn btn-default">
-                                <input type="checkbox" id="LRAdvanceSalaryAD" onchange="if ($('#LRAdvanceSalaryAD').parent().hasClass('active')) { $('#LRAdvanceSalaryRequired').parent().show(); } else { $('#LRAdvanceSalaryRequired').parent().hide(); }" autocomplete="off"> Advance Salary
-                            </label>
-                            <label class="btn btn-default">
-                                <input type="checkbox" id="LRExitReentryAD" onchange="if ($('#LRExitReentryAD').parent().hasClass('active')) { $('#LRExitReentryRequired').parent().show(); } else { $('#LRExitReentryRequired').parent().hide(); }" autocomplete="off"> Exit Re-Entry
-                            </label>
-                            <label class="btn btn-default">
-                                <input type="checkbox" id="LRAirTicketAD" onchange="if ($('#LRAirTicketAD').parent().hasClass('active')) { $('#LRAirTicketRequired').parent().show(); } else { $('#LRAirTicketRequired').parent().hide(); }" autocomplete="off"> Air Ticket
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row m-md-t-5">
-                <div class="form-group">
-                    <div class="col-sm-3">
-                        <label class="control-label m-b-5 ">Additional Requirements:</label>
-                    </div>
-                    <div class="col-sm-9">
-                        <div class="btn-group" data-toggle="buttons">
-                            <label class="btn btn-default">
-                                <input type="checkbox" id="LRNotesRequired" autocomplete="off"> Notes
-                            </label>
-                            <label class="btn btn-default">
-                                <input type="checkbox" id="LRAttachmentRequired" autocomplete="off"> Attachment
-                            </label>
-                            <label class="btn btn-default" style="display: none;">
-                                <input type="checkbox" id="LRAdvanceSalaryRequired" autocomplete="off"> Advance Salary
-                            </label>
-                            <label class="btn btn-default" style="display: none;">
-                                <input type="checkbox" id="LRExitReentryRequired" autocomplete="off"> Exit Re-Entry
-                            </label>
-                            <label class="btn btn-default" style="display: none;">
-                                <input type="checkbox" id="LRAirTicketRequired" autocomplete="off"> Air Ticket
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <hr />
             <div class="row">
                 <div class="col-lg-12">
@@ -1115,6 +1113,11 @@
 
         }
         else if (args.requestType == "delete") {
+            var data = args.data;
+            for (var i = 0; i < data.length; i++) {
+                var apId = data[i].apId;
+                this.childGrid.dataSource.removeIf(function (x) { return x.apId == apId; });
+            }
         }
     }
     function lrApprovalRouteCommandClick(args) {

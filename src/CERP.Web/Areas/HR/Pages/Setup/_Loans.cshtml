@@ -492,7 +492,7 @@
         <div class="areaHeader" style="display:flex;">
             <div id="loansLoader" class="pull-left loader-inline" style="display:none"></div>        
             <div class="areaHeaderTitle">
-                <span id="areHeadertitle" class="menu-text">Current Loan Requests</span>
+                <span id="areaHeaderTitleBC" class="areaHeaderTitleNode menu-text">Current Loan Requests</span>
                 @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
             </div>
             @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
@@ -600,7 +600,7 @@
             <hr />
             <div class="areaHeader" style="display:flex;">
                 <div class="areaHeaderTitle">
-                    <span id="areHeadertitle" class="menu-text">Approval Route</span>
+                    <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Approval Route</span>
                     @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
                 </div>
                 @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
@@ -665,7 +665,7 @@
                 @*<hr style="margin-top:6px">*@
                 <div class="areaHeader" style="display:flex;">
                     <div class="areaHeaderTitle">
-                        <span id="areHeadertitle" class="menu-text">Tasks</span>
+                        <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Tasks</span>
                         @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
                     </div>
                     @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
@@ -789,7 +789,6 @@
         </div>
     </div>
 <script>
-
     function loanRequestsActionBegin(args) {
         if (args.requestType == "save") {
 
@@ -797,7 +796,6 @@
         else if (args.requestType == "delete") {
             Swal.showLoading();
 
-            console.log(args.data);
             let formData = new FormData();
             formData.append("loanRequests", JSON.stringify(args.data));
             var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
@@ -1004,12 +1002,16 @@
         }
     }
 
-
     function loansApprovalRouteActionBegin(args) {
         if (args.requestType == "save") {
 
         }
         else if (args.requestType == "delete") {
+            var data = args.data;
+            for (var i = 0; i < data.length; i++) {
+                var apId = data[i].apId;
+                this.childGrid.dataSource.removeIf(function (x) { return x.apId == apId; });
+            }
         }
     }
     function loansApprovalRouteCommandClick(args) {

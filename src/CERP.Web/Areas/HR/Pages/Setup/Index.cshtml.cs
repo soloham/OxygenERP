@@ -360,7 +360,7 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                         workShift.isSAT = generalInfo.isSAT;
                         workShift.StartHour = generalInfo.StartHour;
                         workShift.EndHour = generalInfo.EndHour;
-
+                        
                         WorkShift_Dto workShiftAdded = await WorkShiftsAppService.CreateAsync(workShift);
                         WorkShift_Dto workShiftDto = ObjectMapper.Map<WorkShift, WorkShift_Dto>(WorkShiftsAppService.Repository.WithDetails(x => x.Department).First(x => x.Id == workShiftAdded.Id));
                         return new JsonResult(workShiftDto);
