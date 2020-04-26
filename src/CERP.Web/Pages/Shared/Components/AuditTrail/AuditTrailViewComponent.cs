@@ -11,32 +11,32 @@ using Volo.Abp.Domain.Entities;
 
 namespace CERP.Web.Pages.Shared.Components
 {
-    public enum DataAuditModule
+    public enum AuditTrailModule
     {
         Employee,
         Payroll
     }
-    public class DataAuditViewComponent : AbpViewComponent
+    public class AuditTrailViewComponent : AbpViewComponent
     {
         private readonly IAuditLogRepository auditLogsRepo;
 
-        public DataAuditViewComponent(IAuditLogRepository auditLogsRepo)
+        public AuditTrailViewComponent(IAuditLogRepository auditLogsRepo)
         {
             this.auditLogsRepo = auditLogsRepo;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(DataAuditModule dataAuditModule)
+        public async Task<IViewComponentResult> InvokeAsync(AuditTrailModule auditTrailModule)
         {
-            var auditData = await GetAuditsAsync(dataAuditModule);
+            var auditData = await GetAuditsAsync(auditTrailModule);
             return View(auditData);
         }
-        private async Task<List<DataAuditRowObject>> GetAuditsAsync(DataAuditModule dataAuditModule)
+        private async Task<List<DataAuditRowObject>> GetAuditsAsync(AuditTrailModule dataAuditModule)
         {
             List<DataAuditRowObject> result = new List<DataAuditRowObject>();
             
             switch (dataAuditModule)
             {
-                case DataAuditModule.Employee:
+                case AuditTrailModule.Employee:
                     var employeeLogs = await auditLogsRepo.GetListAsync(url: "/HR/Employee");
                     for (int i = 0; i < employeeLogs.Count; i++)
                     {
@@ -49,7 +49,7 @@ namespace CERP.Web.Pages.Shared.Components
                         }
                     }
                     break;
-                case DataAuditModule.Payroll:
+                case AuditTrailModule.Payroll:
                     break;
             }
 

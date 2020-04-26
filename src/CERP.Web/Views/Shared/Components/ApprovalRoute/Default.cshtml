@@ -1,1 +1,632 @@
-﻿
+﻿@model CERP.Web.Pages.Shared.Components.ApprovalRouteVCModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Syncfusion.EJ2
+@{
+    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+
+    var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
+}
+
+<script>
+    $(document).ready(function () {
+        $("#@(Model.Id)_addToApprovalRouteBtn").on('click', function (args) {
+            var apGrid = $("#@(Model.Id)_ApprovalRouteGrid")[0].ej2_instances[0];
+            var depIds = $("#@(Model.Id)_apDepartmentIds").val();
+            var posIds = $("#@(Model.Id)_apPositionIds").val();
+            var selectedEmpIds = $("#@(Model.Id)_apEmployeeIds").val();
+            var emps = curAPEmployees;
+
+            var employees = [];
+            for (var i = 0; i < selectedEmpIds.length; i++) {
+                var emp = emps.find(x => x.id == selectedEmpIds[i]);
+                employees.push(
+                    {
+                        employeeId: emp.id,
+                        name: emp.name,
+                        department: { id: emp.departmentId, name: emp.depName },
+                        position: { id: emp.positionId, title: emp.posName }
+                    }
+                );
+            }
+
+            var curEmps = apGrid.dataSource.filter(function (e) { return e.employees === employees; });
+
+            if (depIds.length == 0 || posIds.length == 0 || employees.length == 0 || curEmps.length > 0)
+                return;
+
+            var isActive = $("#@(Model.Id)_APIsActive").parent().hasClass('active');
+            var notifyEmployee = $("#@(Model.Id)_APNotify").parent().hasClass('active');
+            var isPoster = $("#@(Model.Id)_APIsPoster").parent().hasClass('active');
+            var isAny = $("#@(Model.Id)_APAllowAny").parent().hasClass('active');
+
+            var getAllEmployeeNames = '';
+            var getAllPositionTitles = '';
+            var getAllDepartmentNames = '';
+            for (var i = 0; i < employees.length; i++) {
+                getAllEmployeeNames += employees[i].name + ((i == employees.length-1)? '' : ', ');
+                getAllPositionTitles += employees[i].position.title + ((i == employees.length-1) ? '' : ', ');
+                getAllDepartmentNames += employees[i].department.name + ((i == employees.length-1) ? '' : ', ');
+            }
+
+            var tasks = $('#@(Model.Id)_LRTasksGrid')[0].ej2_instances[0].dataSource;
+
+            for (var i = 0; i < tasks.length; i++) {
+                tasks[i].apId = getAllEmployeeNames;
+                apGrid.childGrid.dataSource.push(tasks[i]);
+            }
+            var taskTemplate = { taskTemplateItems: tasks };
+            var apRoute =  {
+                id: '',
+                active: isActive,
+                isAny: isAny,
+                notifyEmployee: notifyEmployee,
+                isPoster: isPoster,
+                approvalRouteItemEmployees: employees,
+                taskTemplate: taskTemplate,
+                getAllEmployeeNames: getAllEmployeeNames,
+                getAllPositionTitles: getAllPositionTitles,
+                getAllDepartmentNames: getAllDepartmentNames
+            }
+
+            apRoute.id = apRoute.getAllEmployeeNames;
+            apRoute.apId = apRoute.getAllEmployeeNames;
+
+            apGrid.dataSource.push(apRoute);
+            apGrid.refresh();
+        })
+
+        $('#@(Model.Id)_addLRTaskBtn').on('click', function () {
+            var isCollapsed = $('#@(Model.Id)_addTaskForm').css('display') == 'none';
+
+            if (isCollapsed) {
+                $('#@(Model.Id)_addLRTaskBtnSection').slideUp(200);
+                $('#@(Model.Id)_addTaskForm').slideDown(200);
+                setTimeout(function () { $('#@(Model.Id)_addLRTaskBtn', '#@(Model.Id)_addLRTaskBtnSection').html('<i class="fa fa-arrow-up p-r-5"></i> Cancel Add') }, 200)
+                $('#@(Model.Id)_addLRTaskBtnSection').slideDown(200);
+
+            } else {
+                $('#@(Model.Id)_addLRTaskBtnSection').slideUp(200);
+                $('#@(Model.Id)_addTaskForm').slideUp(200);
+                setTimeout(function () { $('#@(Model.Id)_addLRTaskBtn', '#@(Model.Id)_addLRTaskBtnSection').html('<i class="fa fa-plus p-r-5"></i> Add Task') }, 200)
+                $('#@(Model.Id)_addLRTaskBtnSection').slideDown(200);
+            }
+        });
+        $("#@(Model.Id)_addTaskBtn").on('click', function (args) {
+            var taskGrid = $("#@(Model.Id)_LRTasksGrid")[0].ej2_instances[0];
+
+            var depIds = $("#@(Model.Id)_taskDepartmentIds").val();
+            var posIds = $("#@(Model.Id)_taskPositionIds").val();
+            var empIds = $("#@(Model.Id)_taskEmployeeIds").val();
+            var emps = curTaskEmployees;
+
+            var employees = [];
+            for (var i = 0; i < empIds.length; i++) {
+                var emp = emps.find(x => x.id == empIds[i]);
+                employees.push(
+                    {
+                        id: emp.id,
+                        name: emp.name,
+                        department: { id: emp.departmentId, name: emp.depName },
+                        position: { id: emp.positionId, title: emp.posName }
+                    }
+                );
+            }
+
+            var getAllEmployeeNames = '';
+            var getAllPositionTitles = '';
+            var getAllDepartmentNames = '';
+            for (var i = 0; i < employees.length; i++) {
+                getAllEmployeeNames += employees[i].name + ((i == employees.length - 1) ? '' : ', ');
+                getAllPositionTitles += employees[i].position.title + ((i == employees.length - 1) ? '' : ', ');
+                getAllDepartmentNames += employees[i].department.name + ((i == employees.length - 1) ? '' : ', ');
+            }
+
+            var curEmps = taskGrid.dataSource.filter(function (e) { return e.getAllEmployeeNames === getAllEmployeeNames && e.getAllPositionTitles === getAllPositionTitles && e.getAllDepartmentNames === getAllDepartmentNames; });
+
+            if (depIds.length == 0 || posIds.length == 0 || employees.length == 0 || curEmps.length > 0)
+                return;
+
+            var isActive = $("#@(Model.Id)_taskIsActive").parent().hasClass('active');
+            var notifyEmployee = $("#@(Model.Id)_taskNotify").parent().hasClass('active');
+            var isAny = $("#@(Model.Id)_taskAllowAny").parent().hasClass('active');
+            var taskDescription = $("#@(Model.Id)_lrTaskDescription").val();
+
+            var task = {
+                id: '',
+                active: isActive,
+                isAny: isAny,
+                taskDescription: taskDescription,
+                notifyEmployee: notifyEmployee,
+                employees: employees,
+                getAllEmployeeNames: getAllEmployeeNames,
+                getAllPositionTitles: getAllPositionTitles,
+                getAllDepartmentNames: getAllDepartmentNames
+            }
+            task.id = task.getAllEmployeeNames;
+            taskGrid.dataSource.push(task);
+            taskGrid.refresh();
+        })
+    });
+</script>
+
+<div class="areaHeader" style="display:flex;">
+    <div class="areaHeaderTitle">
+        @if (!string.IsNullOrEmpty(Model.ParentTitle))
+        {
+            <span id="@(Model.Id)_areHeadertitle" class="areaHeaderTitleNode menu-text">@Model.ParentTitle</span>
+            <span id="@(Model.Id)_areHeadertitle" class="areaHeaderTitleInNode menu-text"> > </span>
+        }
+        <span id="@(Model.Id)_areHeadertitle" class="areaHeaderTitleNode menu-text">Approval Route</span>
+        @*<span id="@(Model.Id)_subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
+    </div>
+    @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
+    <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+        @*<div class="clearfix margin-15"></div>*@
+        <a id="@(Model.Id)_addApprovalRouteBtn" onclick="areaHeaderBtnClick(event)" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+    </div>
+</div>
+<div id="@(Model.Id)_addApprovalRouteForm" class="areaForm" role="form" data-toggle="validator" style="display: none">
+    <div class="row">
+        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+            <div class="col-sm-6" style="padding:0">
+                <div class="form-group">
+                    <label class="control-label m-b-5 ">Department:</label>
+                    <select id="@(Model.Id)_apDepartmentIds" name="DepartmentIds" multiple="multiple" class="form-control" onchange="SelectAPDepartmentPositions();">
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-6" style="padding:0">
+                <div class="form-group">
+                    <label class="margin-bottom-5 control-label">Position:</label>
+                    <select id="@(Model.Id)_apPositionIds" name="PositionIds" class="form-control" multiple="multiple" onchange="SelectAPPositionEmployees()">
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+            <div class="form-group">
+                <label class="margin-bottom-5 control-label">Employee:</label>
+                <select id="@(Model.Id)_apEmployeeIds" onchange="if ($('#apEmployeeIds').val().length > 1) $('#APAllowAnySec').show(); else $('#APAllowAnySec').hide();" name="Employee" multiple="multiple" class="form-control">
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+            <div class="form-group">
+                <label class="control-label m-b-5 ">Additional Information:</label>
+
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-default active">
+                        <input type="checkbox" id="@(Model.Id)_APIsActive" autocomplete="off"> Active
+                    </label>
+                    <label class="btn btn-default active">
+                        <input type="checkbox" id="@(Model.Id)_APNotify" autocomplete="off"> Notify Employee
+                    </label>
+                    <label class="btn btn-default">
+                        <input type="checkbox" id="@(Model.Id)_APIsPoster" autocomplete="off"> Allow Posting
+                    </label>
+                    <label class="btn btn-default" id="@(Model.Id)_APAllowAnySec" style="display:none">
+                        <input type="checkbox" id="@(Model.Id)_APAllowAny" autocomplete="off"> Allow Any
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+            <label class="margin-bottom-5 control-label"></label>
+            <button id="@(Model.Id)_addToApprovalRouteBtn" type="button" class="btn btn-success btn-block"><i class="fa fa-plus p-r-5"></i> Add To Approval Route</button>
+        </div>
+    </div>
+    <div class="row m-md-t-5 m-md-b-10">
+
+    </div>
+    @*<hr style="margin-top:6px">*@
+    <div class="areaHeader" style="display:flex;">
+        <div class="areaHeaderTitle">
+            @if (!string.IsNullOrEmpty(Model.ParentTitle))
+            {
+                <span id="@(Model.Id)_areHeadertitle" class="areaHeaderTitleNode menu-text">@Model.ParentTitle</span>
+                <span id="@(Model.Id)_areHeadertitle" class="areaHeaderTitleInNode menu-text"> > </span>
+            }
+            <span id="@(Model.Id)_areHeadertitle" class="areaHeaderTitleNode menu-text">Approval Route</span>
+            <span id="@(Model.Id)_areHeadertitle" class="areaHeaderTitleInNode menu-text"> > </span>
+            <span id="@(Model.Id)_areHeadertitle" class="areaHeaderTitleNode menu-text">Tasks</span>
+            @*<span id="@(Model.Id)_subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
+        </div>
+        @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
+        <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+            @*<div class="clearfix margin-15"></div>*@
+            <a id="@(Model.Id)_" onclick="areaHeaderBtnClick(event)" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+        </div>
+    </div>
+    <div id="@(Model.Id)_addTaskForm" class="areaForm" role="form" data-toggle="validator" style="display: none">
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="control-label m-b-5 ">Department:</label>
+                        <select id="@(Model.Id)_taskDepartmentIds" name="DepartmentIds" multiple="multiple" class="form-control" onchange="SelectTaskDepartmentPositions();">
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-6" style="padding:0">
+                    <div class="form-group">
+                        <label class="margin-bottom-5 control-label">Position:</label>
+                        <select id="@(Model.Id)_taskPositionIds" name="PositionIds" multiple="multiple" class="form-control" onchange="SelectTaskPositionEmployees()">
+                            <option></option>
+
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="margin-bottom-5 control-label">Employee:</label>
+                    <select id="@(Model.Id)_taskEmployeeIds" name="Employee" onchange="if ($('#taskEmployeeIds').val().length > 1) $('#taskAllowAnySec').show(); else $('#taskAllowAnySec').hide();" multiple="multiple" class="form-control">
+                        <option></option>
+
+                    </select>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="margin-bottom-5 control-label">Task Description:</label>
+                    <input type="text" id="@(Model.Id)_TaskDescription" name="TaskDescription" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                <label class="margin-bottom-5 control-label"></label>
+                <button id="@(Model.Id)_addTaskBtn" type="button" class="btn btn-success btn-block"><i class="fa fa-plus p-r-5"></i> Add Task</button>
+            </div>
+        </div>
+        <div class="row m-md-t-5">
+            <div class="form-group">
+                <div class="col-sm-5">
+                    <label class="control-label m-b-5 ">Additional Information:</label>
+                    <div class="btn-group" data-toggle="buttons">
+                        <label class="btn btn-default active">
+                            <input type="checkbox" id="@(Model.Id)_taskIsActive" autocomplete="off"> Active
+                        </label>
+                        <label class="btn btn-default">
+                            <input type="checkbox" id="@(Model.Id)_taskNotify" autocomplete="off"> Notify Employee
+                        </label>
+                        <label class="btn btn-default" id="@(Model.Id)_taskAllowAnySec" style="display:none">
+                            <input type="checkbox" id="@(Model.Id)_taskAllowAny" autocomplete="off"> Allow Any
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <ejs-grid id="@(Model.Id)_TasksGrid" enableAutoFill="true" columns="@Model.TasksGridColumns"
+              dataBound="dataBoundResponsive" commandClick="@(Model.Id)_TaskCommandClick" actionBegin="@(Model.Id)_TaskActionBegin"
+              allowExcelExport="true" allowPdfExport="true"
+              hierarchyPrintMode="Expanded" allowSelection="true" allowSorting="true"
+              gridLines="Both" rowDataBound="@(Model.Id)_TaskRowDataBound"
+              toolbarClick="@(Model.Id)_TaskToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
+              allowResizing="true">
+
+        <e-grid-sortsettings columns="@(new List<object>() { new { field = "routeIndex", direction = "Ascending" } })"></e-grid-sortsettings>
+        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowEditing="true" allowDeleting="true"></e-grid-editSettings>
+        <e-grid-selectionsettings type="Multiple">
+        </e-grid-selectionsettings>
+    </ejs-grid>
+</div>
+<ejs-grid id="@(Model.Id)_ApprovalRouteGrid" enableAutoFill="true" columns="@Model.ApprovalRouteGridColumns" childGrid="@Model.APSecondaryDetailsGrid" queryString="id"
+          dataBound="dataBoundResponsive" commandClick="@(Model.Id)_ApprovalRouteCommandClick" actionBegin="@(Model.Id)_ApprovalRouteActionBegin"
+          allowExcelExport="true" allowPdfExport="true"
+          hierarchyPrintMode="Expanded" allowSelection="true" allowSorting="true"
+          gridLines="Both" rowDataBound="@(Model.Id)_ApprovalRouteRowDataBound"
+          toolbarClick="@(Model.Id)_ApprovalRouteToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
+          allowResizing="true">
+
+    <e-grid-sortsettings columns="@(new List<object>() { new { field = "routeIndex", direction = "Ascending" } })"></e-grid-sortsettings>
+    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowEditing="true" allowDeleting="true"></e-grid-editSettings>
+    <e-grid-selectionsettings type="Multiple">
+    </e-grid-selectionsettings>
+</ejs-grid>
+
+<script>
+    function @(Model.Id)_ApprovalRouteActionBegin(args) {
+        if (args.requestType == "save") {
+
+        }
+        else if (args.requestType == "delete") {
+            var data = args.data;
+            for (var i = 0; i < data.length; i++) {
+                var apId = data[i].apId;
+                this.childGrid.dataSource.removeIf(function (x) { return x.apId == apId; });
+            }
+        }
+    }
+    function @(Model.Id)_ApprovalRouteCommandClick(args) {
+        if (args.commandColumn.type == "MoveUp") {
+            var grid = $('#@(Model.Id)_ApprovalRoute')[0].ej2_instances[0];
+            var rI = args.rowData.routeIndex - 1;
+            if (rI < 1) return;
+            array_move(grid.dataSource, rI, rI - 1);
+            for (var i = 0; i < grid.dataSource.length; i++) {
+                grid.dataSource[i].routeIndex = i + 1;
+            }
+            grid.refresh();
+        }
+        if (args.commandColumn.type == "MoveDown") {
+            var grid = $('#@(Model.Id)_ApprovalRoute')[0].ej2_instances[0];
+            var rI = args.rowData.routeIndex - 1;
+            if (rI == grid.dataSource.length) return;
+            array_move(grid.dataSource, rI, rI + 1);
+            for (var i = 0; i < grid.dataSource.length; i++) {
+                grid.dataSource[i].routeIndex = i + 1;
+            }
+            grid.refresh();
+
+        }
+        if (args.commandColumn.type == "Edit") {
+
+        }
+        else if (args.commandColumn.type == "Copy") {
+            this.copy(false);
+        }
+    }
+    function @(Model.Id)_ApprovalRouteToolbarClick(args) {
+        var gridObj = document.getElementById("@(Model.Id)_ApprovalRouteGrid").ej2_instances[0];
+        if (args.item.id === '@(Model.Id)_ApprovalRouteGrid_pdfexport') {
+            gridObj.pdfExport();
+        }
+        if (args.item.id === '@(Model.Id)_ApprovalRouteGrid_excelexport') {
+            gridObj.excelExport();
+        }
+        if (args.item.id === '@(Model.Id)_ApprovalRouteGrid_csvexport') {
+            gridObj.csvExport();
+        }
+        if (this.getSelectedRecords().length > 0) {
+            var withHeader = false;
+            if (args.item.id === 'copyHeader') {
+                withHeader = true;
+            }
+            this.copy(withHeader);
+        }
+        else {
+            if (args.item.id === 'copyHeader') {
+                var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+                dialogObj.show();
+            }
+            else if (args.item.id === 'copy') {
+                var dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+                dialogObj.show();
+            }
+        }
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Move Up", tooltipText: "Move Up", prefixIcon: "e-c-moveup", id: "moveUp" }, { text: "Move Down", tooltipText: "Move Down", prefixIcon: "e-c-movedown", id: "moveDown" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", "Delete", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.showColumnChooser = true;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            var visCount = 0;
+            for (var i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+        }
+
+        if (args.item.id === 'moveUp') {
+            var selected = gridObj.getSelectedRecords();
+            for (var i = 0; i < selected.length; i++) {
+                var cur = selected[i];
+                let rI = cur.routeIndex - 1;
+                if (rI - 1 < 0)
+                    break;
+                array_move(gridObj.dataSource, rI, rI - 1);
+            }
+            for (var i = 0; i < gridObj.dataSource.length; i++) {
+                if (typeof (gridObj.dataSource[i]) !== 'undefined') {
+                    gridObj.dataSource[i].routeIndex = i + 1;
+                }
+            }
+            gridObj.refresh();
+        }
+        if (args.item.id === 'moveDown') {
+            var selected = gridObj.getSelectedRecords()
+            for (var i = selected.length - 1; i > -1; i--) {
+                var cur = selected[i];
+                let rI = cur.routeIndex - 1;
+                if (rI + 1 > gridObj.dataSource.length - 1)
+                    break;
+                array_move(gridObj.dataSource, rI, rI + 1);
+            }
+            for (var i = 0; i < gridObj.dataSource.length; i++) {
+                if (typeof (gridObj.dataSource[i]) !== 'undefined') {
+                    gridObj.dataSource[i].routeIndex = i + 1;
+                }
+            }
+            gridObj.refresh();
+        }
+        if (args.requestType == "beginEdit") {
+            var Obj = $("#@(Model.Id)_ApprovalRoute")[0].ej2_instances[0];
+            var ajax = new ej.base.Ajax('?handler=ApprovalRouteData', 'GET');
+            ajax.send();
+            ajax.onSuccess = function (data) {
+                var ds = JSON.parse(data);
+                ds.push(args.rowData.valueTypeForDescription);
+                Obj.columns[4].edit.params.dataSource = ds;
+                //ddldist.dataBind();
+            };
+
+            Obj.columns[4].allowEditing = false;
+        }
+    }
+    function @(Model.Id)_ApprovalRouteRowDataBound(args) {
+        if (args.data.isDepartmentHead || args.data.isReportingTo) {
+            $(".e-" + "DeleteButton", args.row).addClass("e-hide");
+        }
+        else {
+            $(".e-" + "DeleteButton", args.row).removeClass("e-hide");
+
+        }
+    }
+
+    function @(Model.Id)_TaskActionBegin(args) {
+        if (args.requestType == "save") {
+
+        }
+        else if (args.requestType == "delete") {
+        }
+    }
+    function @(Model.Id)_TaskCommandClick(args) {
+        if (args.commandColumn.type == "MoveUp") {
+            var grid = $('#@(Model.Id)_TasksGrid')[0].ej2_instances[0];
+            var rI = args.rowData.routeIndex - 1;
+            if (rI < 1) return;
+            array_move(grid.dataSource, rI, rI - 1);
+            for (var i = 0; i < grid.dataSource.length; i++) {
+                grid.dataSource[i].routeIndex = i + 1;
+            }
+            grid.refresh();
+        }
+        if (args.commandColumn.type == "MoveDown") {
+            var grid = $('#@(Model.Id)_TasksGrid')[0].ej2_instances[0];
+            var rI = args.rowData.routeIndex - 1;
+            if (rI == grid.dataSource.length) return;
+            array_move(grid.dataSource, rI, rI + 1);
+            for (var i = 0; i < grid.dataSource.length; i++) {
+                grid.dataSource[i].routeIndex = i + 1;
+            }
+            grid.refresh();
+
+        }
+        if (args.commandColumn.type == "Edit") {
+
+        }
+        else if (args.commandColumn.type == "Copy") {
+            this.copy(false);
+        }
+    }
+    function @(Model.Id)_TaskToolbarClick(args) {
+        var gridObj = document.getElementById("@(Model.Id)_TasksGrid").ej2_instances[0];
+        if (args.item.id === '@(Model.Id)_TasksGrid_pdfexport') {
+            gridObj.pdfExport();
+        }
+        if (args.item.id === '@(Model.Id)_TasksGrid_excelexport') {
+            gridObj.excelExport();
+        }
+        if (args.item.id === '@(Model.Id)_TasksGrid_csvexport') {
+            gridObj.csvExport();
+        }
+        if (this.getSelectedRecords().length > 0) {
+            var withHeader = false;
+            if (args.item.id === 'copyHeader') {
+                withHeader = true;
+            }
+            this.copy(withHeader);
+        }
+        else {
+            if (args.item.id === 'copyHeader') {
+                var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+                dialogObj.show();
+            }
+            else if (args.item.id === 'copy') {
+                var dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+                dialogObj.show();
+            }
+        }
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, { text: "Move Up", tooltipText: "Move Up", prefixIcon: "e-c-moveup", id: "moveUp" }, { text: "Move Down", tooltipText: "Move Down", prefixIcon: "e-c-movedown", id: "moveDown" }, "ExcelExport", "CsvExport", "Print", "Search", "Delete", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.showColumnChooser = true;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            var visCount = 0;
+            for (var i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+        }
+        if (args.item.id === 'moveUp') {
+            var selected = gridObj.getSelectedRecords();
+            for (var i = 0; i < selected.length; i++) {
+                var cur = selected[i];
+                let rI = cur.routeIndex - 1;
+                if (rI - 1 < 0)
+                    break;
+                array_move(gridObj.dataSource, rI, rI - 1);
+            }
+            for (var i = 0; i < gridObj.dataSource.length; i++) {
+                if (typeof (gridObj.dataSource[i]) !== 'undefined') {
+                    gridObj.dataSource[i].routeIndex = i + 1;
+                }
+            }
+            gridObj.refresh();
+        }
+        if (args.item.id === 'moveDown') {
+            var selected = gridObj.getSelectedRecords()
+            for (var i = selected.length - 1; i > -1; i--) {
+                var cur = selected[i];
+                let rI = cur.routeIndex - 1;
+                if (rI + 1 > gridObj.dataSource.length - 1)
+                    break;
+                array_move(gridObj.dataSource, rI, rI + 1);
+            }
+            for (var i = 0; i < gridObj.dataSource.length; i++) {
+                if (typeof (gridObj.dataSource[i]) !== 'undefined') {
+                    gridObj.dataSource[i].routeIndex = i + 1;
+                }
+            }
+            gridObj.refresh();
+        }
+    }
+    function @(Model.Id)_TaskRowDataBound(args) {
+        //if (args.data.isDepartmentHead || args.data.isReportingTo) {
+        //    $(".e-" + "DeleteButton", args.row).addClass("e-hide");
+        //}
+        //else {
+        //    $(".e-" + "DeleteButton", args.row).removeClass("e-hide");
+
+        //}
+    }
+</script>

@@ -26,31 +26,33 @@
 @section scripts {
     <script type="text/javascript">
         var departments = [];
+        var options = {
+            buttonWidth: '100%',
+            includeSelectAllOption: true,
+            enableFiltering: false,
+            enableClickableOptGroups: true,
+            includeResetOption: true,
+            includeResetDivider: true,
+            enableCollapsibleOptGroups: true
+        };
         $(document).ready(function () {
 
-            var options = {
-                buttonWidth: '100%',
-                includeSelectAllOption: true,
-                enableFiltering: false,
-                enableClickableOptGroups: true,
-                includeResetOption: true,
-                includeResetDivider: true,
-                enableCollapsibleOptGroups: true
-            };
-            $('#lrDepartmentId').multiselect({
-                buttonWidth: '100%',
-                includeSelectAllOption: true,
-                enableFiltering: false,
-                enableClickableOptGroups: true,
-                includeResetOption: true,
-                includeResetDivider: true,
-                enableCollapsibleOptGroups: true,
-                onDeselectAll: function (e) {
-                    $('#lrPositionId').empty();
-                },
-                onSelectAll: SelectDepartmentPositions()
-            });
-            $('#apDepartmentId').multiselect({
+            //$.each($('select[id*="DepartmentIds"]'), function (i, elm) {
+            //    elm.multiselect({
+            //        buttonWidth: '100%',
+            //        includeSelectAllOption: true,
+            //        enableFiltering: false,
+            //        enableClickableOptGroups: true,
+            //        includeResetOption: true,
+            //        includeResetDivider: true,
+            //        enableCollapsibleOptGroups: true,
+            //        onDeselectAll: function (e) {
+            //            $('#lrPositionIds').empty();
+            //        },
+            //        onSelectAll: SelectDepartmentPositions()
+            //    });
+            //});
+            $('#apDepartmentIds').multiselect({
                 buttonWidth: '100%',
                 includeSelectAllOption: true,
                 enableFiltering: false,
@@ -59,13 +61,13 @@
                 includeResetDivider: true,
                 enableCollapsibleOptGroups: true,
                 onDeselectAll: function (e) {
-                    $('#lrPositionId').empty();
+                    $('#lrPositionIds').empty();
                 },
                 onSelectAll: SelectAPDepartmentPositions()
             });
-            $('#apPositionId').multiselect(options);
-            $('#apEmployeeId').multiselect(options);
-            $('#taskDepartmentId').multiselect({
+            $('#apPositionIds').multiselect(options);
+            $('#apEmployeeIds').multiselect(options);
+            $('#taskDepartmentIds').multiselect({
                 buttonWidth: '100%',
                 includeSelectAllOption: true,
                 enableFiltering: false,
@@ -74,21 +76,14 @@
                 includeResetDivider: true,
                 enableCollapsibleOptGroups: true,
                 onDeselectAll: function (e) {
-                    $('#lrPositionId').empty();
+                    $('#lrPositionIds').empty();
                 },
                 onSelectAll: SelectAPDepartmentPositions()
             });
-            $('#taskPositionId').multiselect(options);
-            $('#taskEmployeeId').multiselect(options);
-            $('#lrPositionId').multiselect(options);
-            $('#lrLeaveTypeId').multiselect(options);
-            $('#lrEmploymentTypeId').multiselect(options);
-            $('#lrEmployeeStatusId').multiselect(options);
-            $('#lrHolidaysDeductionIds').multiselect(options);
-            $('#hTypeId').multiselect(options);
-            $('#hReligiousDenominationId').multiselect(options);
-
-            $('#loansDepartmentId').multiselect({
+            $('#taskPositionIds').multiselect(options);
+            $('#taskEmployeeIds').multiselect(options);
+            
+            $('#loansAPDepartmentIds').multiselect({
                 buttonWidth: '100%',
                 includeSelectAllOption: true,
                 enableFiltering: false,
@@ -97,26 +92,13 @@
                 includeResetDivider: true,
                 enableCollapsibleOptGroups: true,
                 onDeselectAll: function (e) {
-                    $('#lrPositionId').empty();
-                },
-                onSelectAll: SelectDepartmentPositions()
-            });
-            $('#loansAPDepartmentId').multiselect({
-                buttonWidth: '100%',
-                includeSelectAllOption: true,
-                enableFiltering: false,
-                enableClickableOptGroups: true,
-                includeResetOption: true,
-                includeResetDivider: true,
-                enableCollapsibleOptGroups: true,
-                onDeselectAll: function (e) {
-                    $('#lrPositionId').empty();
+                    $('#lrPositionIds').empty();
                 },
                 onSelectAll: SelectAPDepartmentPositions()
             });
-            $('#loansAPPositionId').multiselect(options);
-            $('#loansAPEmployeeId').multiselect(options);
-            $('#loansTaskDepartmentId').multiselect({
+            $('#loansAPPositionIds').multiselect(options);
+            $('#loansAPEmployeeIds').multiselect(options);
+            $('#loansTaskDepartmentIds').multiselect({
                 buttonWidth: '100%',
                 includeSelectAllOption: true,
                 enableFiltering: false,
@@ -125,13 +107,13 @@
                 includeResetDivider: true,
                 enableCollapsibleOptGroups: true,
                 onDeselectAll: function (e) {
-                    $('#lrPositionId').empty();
+                    $('#lrPositionIds').empty();
                 },
                 onSelectAll: SelectAPDepartmentPositions()
             });
-            $('#loansTaskPositionId').multiselect(options);
-            $('#loansTaskEmployeeId').multiselect(options);
-            $('#loansPositionId').multiselect(options);
+            $('#loansTaskPositionIds').multiselect(options);
+            $('#loansTaskEmployeeIds').multiselect(options);
+            $('#loansPositionIds').multiselect(options);
             $('#loansLoanTypeId').multiselect(options);
             $('#loansEmploymentTypeId').multiselect(options);
             $('#loansEmployeeStatusId').multiselect(options);
@@ -147,19 +129,19 @@
                 $("#departmentId").multiselect('dataprovider', departments);
                 $("#departmentId").change();
 
-                $("#lrDepartmentId").multiselect('dataprovider', departments);
-                $("#lrDepartmentId").change();
-                $("#apDepartmentId").multiselect('dataprovider', departments);
-                $("#apDepartmentId").change();
-                $("#taskDepartmentId").multiselect('dataprovider', departments);
-                $("#taskDepartmentId").change();
+                $("#lrDepartmentIds").multiselect('dataprovider', departments);
+                $("#lrDepartmentIds").change();
+                $("#apDepartmentIds").multiselect('dataprovider', departments);
+                $("#apDepartmentIds").change();
+                $("#taskDepartmentIds").multiselect('dataprovider', departments);
+                $("#taskDepartmentIds").change();
 
-                $("#loansDepartmentId").multiselect('dataprovider', departments);
-                $("#loansDepartmentId").change();
-                $("#loansAPDepartmentId").multiselect('dataprovider', departments);
-                $("#apDepartmentId").change();
-                $("#loansTaskDepartmentId").multiselect('dataprovider', departments);
-                $("#loansTaskDepartmentId").change();
+                $("#loansDepartmentIds").multiselect('dataprovider', departments);
+                $("#loansDepartmentIds").change();
+                $("#loansAPDepartmentIds").multiselect('dataprovider', departments);
+                $("#apDepartmentIds").change();
+                $("#loansTaskDepartmentIds").multiselect('dataprovider', departments);
+                $("#loansTaskDepartmentIds").change();
             });
             toastr.options = {
 

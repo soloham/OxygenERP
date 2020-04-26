@@ -128,6 +128,20 @@
             var loansGrid = $("#AllLoanRequestsGrid")[0].ej2_instances[0];
             loansGrid.showSpinner();
 
+            $('#loansDepartmentIds').multiselect({
+                buttonWidth: '100%',
+                includeSelectAllOption: true,
+                enableFiltering: false,
+                enableClickableOptGroups: true,
+                includeResetOption: true,
+                includeResetDivider: true,
+                enableCollapsibleOptGroups: true,
+                onDeselectAll: function (e) {
+                    $('#loansPositionIds').empty();
+                },
+                onSelectAll: SelectDepartmentPositions('loansDepartmentIds')
+            });
+
             cERP.appServices.hR.loanRequestService.loanRequestTemplates.getAll(false).done(function (data) {
                 loansGrid.hideSpinner();
                 loansGrid.dataSource = data;

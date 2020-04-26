@@ -310,3 +310,40 @@ const ValueTypeModules = {
     HolidayType: 26,
     LoanType: 27
 }
+
+function SelectDepartmentPositions(departmentsElmId) {
+    var departmentIds = $('#' + departmentsElmId).val();
+    if (departmentIds.length == 0) return;
+
+    $.ajax({
+        type: "GET",
+        url: '?handler=DepartmentsPositions',
+        data: { departmentIds: JSON.stringify(departmentIds) },
+        success: function (data) {
+            var dataMS = [];
+            $.each(departmentIds, function (i, departmentId) {
+                var positions = [];
+                $.each(data, function (j, position) {
+                    if (position.departmentId == departmentId)
+                        positions.push({ label: position.title, value: position.id });
+                });
+                dataMS.push({
+                    label: $(`#lrDepartmentId option[value='${departmentId}']`).text(), children: positions
+                });
+            });
+            curLRPositions = dataMS;
+            $("#lrPositionId").multiselect('dataprovider', dataMS);
+            if (isEditingLR && !isEditingLRLoaded) {
+                var posits = [];
+                for (var i = 0; i < curLREditRow.positions.length; i++) {
+                    posits.push(curLREditRow.positions[i].positionId);
+                }
+                $("#lrPositionId").multiselect('select', posits);
+
+                isEditingLRLoaded = true;
+            }
+
+        }
+    });
+}
+
