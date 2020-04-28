@@ -13,6 +13,8 @@
     <link rel="icon" type="image/png" href="/img/logos/OxygenERPLogo.png" sizes="16x16">
 
 
+    <link href="~/libs/smartwizard/dist/css/smart_wizard.min.css" rel="stylesheet" />
+    <link href="~/libs/smartwizard/dist/css/smart_wizard_theme_arrows.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500,700" rel="stylesheet">
 
     <link href="~/styles/cerp/cosmos.min.css" rel="stylesheet" />
@@ -21,22 +23,23 @@
     <link href="~/libs/@@fortawesome/fontawesome-free/css/all.css" rel="stylesheet" />
 
     @*<link href="~/libs/fabricUI/fabric.min.css" rel="stylesheet" />
-    <link href="~/libs/fabricUI/fabric-11.0.0.scoped.min.css" rel="stylesheet" />
-    <link href="~/libs/fabricUI/fabric-11.0.0.scoped.min.css" rel="stylesheet" />*@
+        <link href="~/libs/fabricUI/fabric-11.0.0.scoped.min.css" rel="stylesheet" />
+        <link href="~/libs/fabricUI/fabric-11.0.0.scoped.min.css" rel="stylesheet" />*@
 
     @*<link href="~/libs/JqueryDatepicker/css/jquery.calendars.picker.css" />*@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link href="~/libs/sweetalert2/dist/sweetalert2.css" rel="stylesheet" />
     <link href="~/libs/toastr/toastr.min.css" rel="stylesheet" />
 
+
     <script src="~/scripts/cerp/vendor.min.js"></script>
     <link href="~/libs/bootstrap-multiselect-0.9.15/css/bootstrap-multiselect.css" rel="stylesheet" />
 
-    <link href="~/libs/smartwizard/dist/css/smart_wizard.min.css" rel="stylesheet" />
-    <link href="~/libs/smartwizard/dist/css/smart_wizard_theme_arrows.min.css" rel="stylesheet" />
-    <link href="~/libs/syncfusion/ej2-grid/styles/fabric.css" rel="stylesheet" />
+    <link href="~/libs/syncfusion/ej2-bundle/styles/fabric.css" rel="stylesheet" />
 
     <link href="~/styles/cerp/site.css" rel="stylesheet" asp-append-version="true" />
+    
+
     <style>
         .calendars-popup {
             z-index: 10000 !important;
@@ -623,6 +626,24 @@
                                 </a>
                             </li>
                             <li class="">
+                                <a asp-area="Payroll" asp-page="/PaymentSheet/List">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Payment Sheets</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a asp-area="Payroll" asp-page="/Indemnity/List">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Indemnities</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a asp-area="Payroll" asp-page="/SocialInsurance/List">
+                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                    <span class="menu-text">Social Insurances</span>
+                                </a>
+                            </li>
+                            <li class="">
                                 <a asp-area="Payroll" asp-page="/Setup/Index">
                                     <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
                                     <span class="menu-text">Setup</span>
@@ -845,6 +866,9 @@
             </div>
         </div>
 
+        <div id="main-loader" class="mainLoader">
+            <div class="loader"></div>
+        </div>
         @RenderBody()
 
         <div class="site-footer position-sticky customPageFooter">
@@ -853,6 +877,31 @@
             </div>
         </div>
     </div>
+
+    <script src="~/libs/smartwizard/dist/js/jquery.smartWizard.min.js"></script>
+    <script>
+        $('#smartwizard').smartWizard({
+            selected: 0,
+            theme: 'arrows',
+            transitionEffect: 'slide',
+            showStepURLhash: false,
+            keyNavigation: true,
+            //errorSteps: [1],
+            toolbarSettings: {
+                showNextButton: false, // show/hide a Next button
+                showPreviousButton: false, // show/hide a Previous button
+            },
+            anchorSettings: {
+                anchorClickable: true, // Enable/Disable anchor navigation
+                enableAllAnchors: true, // add done css
+                markDoneStep: false, // add done css
+                markAllPreviousStepsAsDone: false, // When a step selected by url hash, all previous steps are marked done
+                removeDoneStepOnNavigateBack: true, // While navigate back done step after active step will be cleared
+                enableAnchorOnDoneStep: true, // Enable/Disable the done steps navigation
+            }
+        });
+        $('#smartwizard').show();
+    </script>
     <script src="~/libs/sweetalert2/dist/sweetalert2.min.js"></script>
     <script src="~/libs/bootstrap-multiselect-0.9.15/js/bootstrap-multiselect.js"></script>
 
@@ -879,7 +928,52 @@
     <script src="~/scripts/cerp/cosmos.min.js"></script>
     <script src="~/scripts/cerp/application.min.js"></script>
     <script src="~/scripts/cerp/index.min.js"></script>
+    <script>
+        var curNode;
+        var curState = window.localStorage.getItem('menu-state');
+        if (curState.length > 0) {
+            $.each($('.with-sub'), function (i, item) {
+                if (curState.includes($(item).children().first().find('.menu-text').text())) {
+                    $(item).find('.sidebar-submenu').collapse('show');
+                    $(item).addClass('open');
+                }
+            });
+            var curItem = window.localStorage.getItem('active-item');
+            if (curItem != '') {
+                $(`.with-sub.open > .sidebar-submenu > li > a > .menu-text:contains(${curItem})`).parent().addClass('sidebar-active');
+            }
+        }
+        $('.with-sub').on('click', function (event) {
+            event.stopPropagation();
+            curNode = this;
+            setTimeout(function () {
+                var rawCurState = '';
+                if ($(curNode).closest('.with-sub').length > 1)
+                    rawCurState = window.localStorage.getItem('menu-state');
 
+                var curState = rawCurState != "" ? JSON.parse(rawCurState) : [];
+                var curValue = $(curNode).children().first().find('.menu-text').text();
+                if ($(curNode).hasClass('open')) {
+                    curState.push(curValue);
+                }
+                else {
+                    curState = curState.filter(function (val, ind, arr) { return val != curValue });
+                }
+                window.localStorage.setItem('menu-state', JSON.stringify(curState));
+                return false;
+            }, 100);
+        })
+        $('.sidebar-submenu > li > a').on('click', function (event) {
+            event.stopPropagation();
+            var curUrl = $(this).closest('a').attr('href');
+            if (typeof (curUrl) !== 'undefined' && curUrl != '#') {
+                $('.sidebar-submenu > li > a').removeClass('sidebar-active');
+                $(this).addClass('sidebar-active');
+                window.localStorage.setItem('active-item', $(this).find('.menu-text').text());
+                $('#main-loader').show();
+            }
+        })
+    </script>
     @*<link href="~/libs/JqueryDatepicker/css/jquery.calendars.picker.css" />
         <script src="~/libs/JqueryDatepicker/js/jquery.calendars.js"></script>
         <script src="~/libs/JqueryDatepicker/js/jquery.calendars.plus.js"></script>
@@ -887,10 +981,7 @@
         <script src="~/libs/JqueryDatepicker/js/jquery.calendars.picker.js"></script>
         <script src="~/libs/JqueryDatepicker/js/jquery.calendars.islamic.js"></script>*@
 
-    <script src="~/libs/smartwizard/dist/js/jquery.smartWizard.min.js"></script>
-    <script src="~/libs/syncfusion/ej2-grid/scripts/ej2.min.js"></script>
-
-
+    <script src="~/libs/syncfusion/ej2-bundle/scripts/ej2-bundle.min.js"></script>
     @*<script src="~/libsfont-awesome/js/fontawesome.min.js"></script>*@
 
 
@@ -901,10 +992,10 @@
 
     <script src="~/scripts/cerp/site.js" asp-append-version="true"></script>
 
-    <ejs-scripts></ejs-scripts>
-
     @RenderSection("Scripts", required: false)
-
-
+    <ejs-scripts></ejs-scripts>
+    <script>
+        $('#main-loader').hide();
+    </script>
 </body>
 </html>

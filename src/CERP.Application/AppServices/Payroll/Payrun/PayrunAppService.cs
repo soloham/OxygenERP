@@ -9,6 +9,9 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using CERP.Payroll.DTOs;
 using CERP.Payroll.Payrun;
+using System.Dynamic;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace CERP.AppServices.Payroll.PayrunService
 {
@@ -29,5 +32,13 @@ namespace CERP.AppServices.Payroll.PayrunService
         {
             return ObjectMapper.Map<Payrun, Payrun_Dto>(Repository.SingleOrDefault(x => x.Month == month && x.Year == year && x.CompanyId == CompanyId));
         }
+
+
+        public async Task<List<PayrunDetail_Dto>> GetAllDetails()
+        {
+            List<PayrunDetail> list = (await PayrunDetailsRepo.GetListAsync(false));
+            return ObjectMapper.Map<List<PayrunDetail>, List<PayrunDetail_Dto>>(list);
+        }
+
     }
 }

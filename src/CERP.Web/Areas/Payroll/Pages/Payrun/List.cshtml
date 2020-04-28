@@ -113,46 +113,7 @@
                 </ejs-grid>
             </div>
         </div>
-        @*<div id="paymentsSheetSection" class="col-md-6 h-fill-available p-r-0" style="padding-top:0; background-color: rgb(253,253,253); display:none">
-            <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
-                <div class="areaLeft">
-                    <h4 id="psHeaderDate" class="control-label" style="margin:0; margin-top:2px;"></h4>
-                </div>
-                <h3 class="control-label" style="flex-grow: 1; margin:0">Payment Sheet</h3>
-                <div class="areaRight" style="padding: 0!important">
-                    <h4 id="psHeaderPosted" class="control-label" style="padding: 0 20px 0 20px; margin:0; margin-top:2px; display: none">POSTED</h4>
-                    <button id="psHeaderPostBtn" onclick="return postPS()" class="btn btn-outline-default" style="margin:0; color: white; height: 100%; width: 100%;">POST</button>
-                </div>
-            </div>
-            <partial name="_PaymentSheet" model="null" />
-        </div>*@
     </div>
-    @*<div id="indemnitySheetSection" class="col-md-12 m-t-20" style="padding-top:0; background-color: rgb(253,253,253); display:none">
-        <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
-            <div class="areaLeft">   
-                <h4 id="eosbHeaderDate" class="control-label" style="margin:0; margin-top:2px;"></h4>
-            </div>
-            <h3 class="control-label" style="flex-grow: 1; margin:0">Indemnity Report</h3>
-            <div class="areaRight" style="padding: 0!important">
-                <h4 id="eosbHeaderPosted" class="control-label" style="padding: 0 20px 0 20px; margin:0; margin-top:2px; display: none">POSTED</h4>
-                <button id="eosbHeaderPostBtn" onclick="return postIndemnity()" class="btn btn-outline-default" style="margin:0; color: white; height: 100%; width: 100%;">POST</button>
-            </div>
-        </div>
-        <partial name="_PayrunIndemnity" model="@Model.GetIndemnityModel()" />
-    </div>
-    <div id="siReportSection" class="col-md-12 m-t-20" style="padding-top:0; background-color: rgb(253,253,253); display:none">
-        <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
-            <div class="areaLeft">
-                <h4 id="siHeaderDate" class="control-label" style="margin:0; margin-top:2px;"></h4>
-            </div>
-            <h3 class="control-label" style="flex-grow: 1; margin:0">Social Insurance Report</h3>
-            <div class="areaRight" style="padding: 0!important">
-                <h4 id="siHeaderPosted" class="control-label" style="padding: 0 20px 0 20px; margin:0; margin-top:2px; display: none">POSTED</h4>
-                <button id="siHeaderPostBtn" onclick="return postSI()" class="btn btn-outline-default" style="margin:0; color: white; height: 100%; width: 100%;">POST</button>
-            </div>
-        </div>
-        <partial name="_PayrunSIReport" model="@Model.GetSIReportModel()" />
-    </div>*@
 </div>
 
 <ejs-dialog id="alert_dialog" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy with Header" content="Atleast one row should be selected to copy with header">

@@ -1,0 +1,81 @@
+{
+    "components": [
+        "query-builder",
+        "diagram",
+        "grid",
+        "schedule",
+        "symbol-palette"
+    ],
+    "minified": "true",
+    "injectables": {
+        "diagram": [
+            "HierarchicalTree",
+            "MindMap",
+            "RadialTree",
+            "ComplexHierarchicalTree",
+            "DataBinding",
+            "Snapping",
+            "PrintAndExport",
+            "BpmnDiagrams",
+            "SymmetricLayout",
+            "ConnectorBridging",
+            "UndoRedo",
+            "LayoutAnimation",
+            "DiagramContextMenu",
+            "LineRouting",
+            "ConnectorEditing"
+        ],
+        "grid": [
+            "Filter",
+            "Page",
+            "Selection",
+            "Sort",
+            "Group",
+            "Reorder",
+            "RowDD",
+            "DetailRow",
+            "Toolbar",
+            "Aggregate",
+            "Search",
+            "VirtualScroll",
+            "Edit",
+            "Resize",
+            "ExcelExport",
+            "PdfExport",
+            "CommandColumn",
+            "ContextMenu",
+            "Freeze",
+            "ColumnMenu",
+            "ColumnChooser",
+            "ForeignKey",
+            "BlazorAction",
+            "InfiniteScroll"
+        ],
+        "schedule": [
+            "Day",
+            "Week",
+            "WorkWeek",
+            "Month",
+            "Agenda",
+            "MonthAgenda",
+            "TimelineViews",
+            "TimelineMonth",
+            "TimelineYear",
+            "Resize",
+            "DragAndDrop",
+            "ExcelExport",
+            "ICalendarExport",
+            "ICalendarImport",
+            "Print"
+        ],
+        "symbol-palette": [
+            "BpmnDiagrams"
+        ]
+    },
+    "themes": [
+        "fabric"
+    ],
+    "version": "18.1.42",
+    "name": "ej2-bundle",
+    "isMinified": true
+}

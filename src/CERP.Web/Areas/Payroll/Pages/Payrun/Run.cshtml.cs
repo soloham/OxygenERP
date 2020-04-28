@@ -322,6 +322,8 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
 
                     empPayrunDetail.DifferAmount = empPayrunDetail.NetAmount;
 
+                    empPayrunDetail.Indemnity = empPayrunDetail.GetIndemnity();
+
                     payrunDetails.Add(empPayrunDetail);
                 }
 

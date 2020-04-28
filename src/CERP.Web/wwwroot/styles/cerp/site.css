@@ -128,7 +128,14 @@ i.fab {
     transition: color .3s;
     width: 18px
 }
-
+.sidebar-submenu > li:hover > a {
+    background-color: #f2f2f2;
+    color: #333;
+}
+.sidebar-active {
+    background-color: #f2f2f2 !important;
+    color: #333 !important;
+}
 /*.sidebar-submenu > li.with-sub > ul > li:not(.with-sub) > a:before {
     color: #666;
     content: "\f273";
@@ -144,7 +151,6 @@ i.fab {
     transition: color .3s;
     width: 10px
 }*/
-
 .sidebar-submenu > li.with-sub.open > a:before {
     -webkit-transform: rotate(90deg);
     transform: rotate(90deg)
@@ -161,7 +167,7 @@ i.fab {
         width: fill-available;
         background-color: #35c6f5;
         color: white;
-        z-index: 100;
+        z-index: 3;
         height: 70px !important;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.15), 0 6px 20px 0 rgba(0, 0, 0, 0.15);
     }
@@ -177,7 +183,7 @@ i.fab {
         width: fill-available;
         background-color: #35c6f5;
         color: white;
-        z-index: 100;
+        z-index: 3;
         height: 70px !important;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.15), 0 6px 20px 0 rgba(0, 0, 0, 0.15);
     }
@@ -193,7 +199,7 @@ i.fab {
     width: fill-available;
     background-color: #35c6f5;
     color: white;
-    z-index: 100;
+    z-index: 3;
     height: 70px !important;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.15), 0 6px 20px 0 rgba(0, 0, 0, 0.15);
 }
@@ -664,6 +670,19 @@ p{
     -webkit-animation: spin 2s linear infinite;
     animation: spin 2s linear infinite;
 }
+.loader {
+    left: 50%;
+    top: 50%;
+    z-index: 1;
+    margin: 5px 10px 5px 5px;
+    border: 10px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 10px solid #3498db;
+    width: 60px;
+    height: 60px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+}
 @-webkit-keyframes spin {
     0% {
         -webkit-transform: rotate(0deg);
@@ -715,4 +734,24 @@ p{
         bottom: 0;
         opacity: 1
     }
+}
+
+.mainLoader {
+    height: 100%;
+    width: 100%;
+
+    position: fixed; /* Stay in place */
+    z-index: 10; /* Sit on top */
+    left: 0;
+    top: 0;
+    background-color: rgba(0,0,0, 0.5); /* Black w/opacity */
+    overflow-x: hidden; /* Disable horizontal scroll */
+    transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+#smartwizard{
+    display:none;
 }

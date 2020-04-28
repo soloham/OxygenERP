@@ -11,9 +11,9 @@ using Volo.Abp.Domain.Repositories;
 
 namespace CERP.AppServices.Payroll.PayrunService
 {
-    public class SocialInsuranceAppService : CrudAppService<SISetup, SISetup_Dto, int, PagedAndSortedResultRequestDto, SISetup_Dto, SISetup_Dto>
+    public class SocialInsuranceSetupAppService : CrudAppService<SISetup, SISetup_Dto, int, PagedAndSortedResultRequestDto, SISetup_Dto, SISetup_Dto>
     {
-        public SocialInsuranceAppService(IRepository<SISetup, int> repository) : base(repository)
+        public SocialInsuranceSetupAppService(IRepository<SISetup, int> repository) : base(repository)
         {
             Repository = repository;
         }

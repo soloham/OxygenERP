@@ -35,11 +35,11 @@ namespace CERP.Web.Areas.Payroll.Pages.Setup
         private IRepository<DictionaryValue, Guid> DictionaryValuesRepo;
         private IRepository<SIContributionCategory> ContribCatRepo;
         private IRepository<SIContribution> ContribsRepo;
-        private SocialInsuranceAppService SIAppService;
+        private SocialInsuranceSetupAppService SIAppService;
 
         public List<DictionaryValue_Dto> AllowancesDS = new List<DictionaryValue_Dto>();
         public SISetup SISetup;
-        public IndexModel(IRepository<DictionaryValue, Guid> dictionaryValuesRepo, SocialInsuranceAppService sIAppService, IRepository<SIContribution> sIContributionRepo, IRepository<SIContributionCategory> sIContributionCatRepo)
+        public IndexModel(IRepository<DictionaryValue, Guid> dictionaryValuesRepo, SocialInsuranceSetupAppService sIAppService, IRepository<SIContribution> sIContributionRepo, IRepository<SIContributionCategory> sIContributionCatRepo)
         {
             DictionaryValuesRepo = dictionaryValuesRepo;
             SIAppService = sIAppService;

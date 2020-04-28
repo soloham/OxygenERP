@@ -21,14 +21,14 @@ namespace CERP.Web.Areas.Payroll.Pages.PayrunPage
     {
         public IJsonSerializer JsonSerializer { get; set; }
         public PayrunAppService PayrunAppService { get; set; }
-        public SocialInsuranceAppService SocialInsuranceAppService { get; set; }
+        public SocialInsuranceSetupAppService SocialInsuranceAppService { get; set; }
 
         public IRepository<DictionaryValue, Guid> DicValuesRepo { get; set; }
         public List<DictionaryValue> Allowances { get; set; }
 
         public Grid SecondaryDetailsGrid { get; set; }
 
-        public ListModel(IJsonSerializer jsonSerializer, PayrunAppService payrunAppService, IRepository<DictionaryValue, Guid> dicValuesRepo, SocialInsuranceAppService socialInsuranceAppService)
+        public ListModel(IJsonSerializer jsonSerializer, PayrunAppService payrunAppService, IRepository<DictionaryValue, Guid> dicValuesRepo, SocialInsuranceSetupAppService socialInsuranceAppService)
         {
             JsonSerializer = jsonSerializer;
             PayrunAppService = payrunAppService;

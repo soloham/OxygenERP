@@ -7,26 +7,26 @@ using Volo.Abp.AspNetCore.Mvc;
 
 namespace CERP.Web.Pages.Shared.Components
 {
-    public class ApprovalRouteViewComponent : AbpViewComponent
+    public class WorkFlowViewComponent : AbpViewComponent
     {
-        public ApprovalRouteViewComponent()
+        public WorkFlowViewComponent()
         {
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(ApprovalRouteModule ApprovalRouteModule, string Id, string ParentTitle)
+        public async Task<IViewComponentResult> InvokeAsync(WorkflowModule WorkflowModule, string Id, string ParentTitle)
         {
-            ApprovalRouteVCModel model = new ApprovalRouteVCModel(Id, ApprovalRouteModule, ParentTitle);
+            WorkFlowVCModel model = new WorkFlowVCModel(Id, WorkflowModule, ParentTitle);
 
             return View(model);
         }
     }
 
-    public class ApprovalRouteVCModel
+    public class WorkFlowVCModel
     {
-        public ApprovalRouteVCModel(string id, ApprovalRouteModule approvalRouteModule, string parentTitle)
+        public WorkFlowVCModel(string id, WorkflowModule workflowModule, string parentTitle)
         {
             Id = id;
-            ApprovalRouteModule = approvalRouteModule;
+            WorkflowModule = workflowModule;
 
             List<object> ApprovalRouteCommands = new List<object>();
             ApprovalRouteCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat e-DeleteButton" } });
@@ -37,18 +37,18 @@ namespace CERP.Web.Pages.Shared.Components
             ApprovalRouteCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
 
             ApprovalRouteGridColumns = new List<GridColumn>()
-    {
-        new GridColumn { Field = "id", Visible=false, ShowInColumnChooser=false, IsPrimaryKey=true  },
-        new GridColumn { Field = "apId", Visible=false, ShowInColumnChooser=false },
-        new GridColumn { Field = "routeIndex", Visible = false, HeaderText = "Route Index", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "active", AllowSorting = false, AutoFit=true, HeaderText = "Active", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "notifyEmployee", AllowSorting = false, AutoFit=true, HeaderText = "Notify", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "isPoster", AllowSorting = false, AutoFit=true, HeaderText = "Allow Posting", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "getAllDepartmentNames", AllowSorting = false, AutoFit=true, HeaderText = "Department", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "getAllPositionTitles", AllowSorting = false, AutoFit=true, HeaderText = "Position", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "getAllEmployeeNames", AllowSorting = false,AutoFit=true, HeaderText = "Employee", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Width = "50", HeaderText = "Actions", TextAlign=TextAlign.Center, MinWidth="10", Commands = ApprovalRouteCommands }
-    };
+            {
+                new GridColumn { Field = "id", Visible=false, ShowInColumnChooser=false, IsPrimaryKey=true  },
+                new GridColumn { Field = "apId", Visible=false, ShowInColumnChooser=false },
+                new GridColumn { Field = "routeIndex", Visible = false, HeaderText = "Route Index", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "active", AllowSorting = false, AutoFit=true, HeaderText = "Active", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "notifyEmployee", AllowSorting = false, AutoFit=true, HeaderText = "Notify", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "isPoster", AllowSorting = false, AutoFit=true, HeaderText = "Allow Posting", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "getAllDepartmentNames", AllowSorting = false, AutoFit=true, HeaderText = "Department", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "getAllPositionTitles", AllowSorting = false, AutoFit=true, HeaderText = "Position", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "getAllEmployeeNames", AllowSorting = false,AutoFit=true, HeaderText = "Employee", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Width = "50", HeaderText = "Actions", TextAlign=TextAlign.Center, MinWidth="10", Commands = ApprovalRouteCommands }
+            };
 
             List<object> TasksCommands = new List<object>();
             TasksCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat e-DeleteButton" } });
@@ -72,17 +72,17 @@ namespace CERP.Web.Pages.Shared.Components
             };
 
             APTasksGridColumns = new List<GridColumn>()
-    {
-        new GridColumn { Field = "id", Visible=false, ShowInColumnChooser=false, IsPrimaryKey=true  },
-        new GridColumn { Field = "apId", Visible=false, ShowInColumnChooser=false },
-        new GridColumn { Field = "routeIndex", Visible = false, HeaderText = "Route Index", TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "active", AllowSorting = false, AutoFit=true, HeaderText = "Active", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "notifyEmployee", AllowSorting = false, AutoFit=true, HeaderText = "Notify", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "getAllDepartmentNames", AllowSorting = false, AutoFit=true, HeaderText = "Department", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "getAllPositionTitles", AllowSorting = false, AutoFit=true, HeaderText = "Position", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "getAllEmployeeNames", AllowSorting = false,AutoFit=true, HeaderText = "Employee", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
-        new GridColumn { Field = "taskDescription", AllowSorting = false, AutoFit=true, HeaderText = "Description", TextAlign=TextAlign.Center,  MinWidth="10"  },
-    };
+            {
+                new GridColumn { Field = "id", Visible=false, ShowInColumnChooser=false, IsPrimaryKey=true  },
+                new GridColumn { Field = "apId", Visible=false, ShowInColumnChooser=false },
+                new GridColumn { Field = "routeIndex", Visible = false, HeaderText = "Route Index", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "active", AllowSorting = false, AutoFit=true, HeaderText = "Active", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "notifyEmployee", AllowSorting = false, AutoFit=true, HeaderText = "Notify", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "getAllDepartmentNames", AllowSorting = false, AutoFit=true, HeaderText = "Department", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "getAllPositionTitles", AllowSorting = false, AutoFit=true, HeaderText = "Position", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "getAllEmployeeNames", AllowSorting = false,AutoFit=true, HeaderText = "Employee", AllowEditing=false, TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "taskDescription", AllowSorting = false, AutoFit=true, HeaderText = "Description", TextAlign=TextAlign.Center,  MinWidth="10"  },
+            };
 
             APSecondaryDetailsGrid = new Grid()
             {
@@ -106,7 +106,7 @@ namespace CERP.Web.Pages.Shared.Components
         }
 
         public string Id { get; set; }
-        public ApprovalRouteModule ApprovalRouteModule { get; set; }
+        public WorkflowModule WorkflowModule { get; set; }
         public string ParentTitle { get; set; }
 
         public List<GridColumn> ApprovalRouteGridColumns { get; set; } = new List<GridColumn>();
