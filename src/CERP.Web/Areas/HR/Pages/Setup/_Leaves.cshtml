@@ -63,12 +63,12 @@
             onDeselectAll: function (e) {
                 $('#lrPositionIds').empty();
             },
-            onSelectAll: SelectDepartmentPositions("lrDepartmentIds")
+            onSelectAll: SelectDepartmentPositions("lrDepartmentIds", "lrPositionIds", curLRDepartments, curLRPositions)
         });
         $('#lrPositionIds').multiselect(options);
         $('#lrLeaveTypeId').multiselect(options);
-        $('#lrEmploymentTypeId').multiselect(options);
-        $('#lrEmployeeStatusId').multiselect(options);
+        $('#lrEmploymentTypeIds').multiselect(options);
+        $('#lrEmployeeStatusIds').multiselect(options);
         $('#lrHolidaysDeductionIds').multiselect(options);
         $('#hTypeId').multiselect(options);
         $('#hReligiousDenominationId').multiselect(options);
@@ -93,14 +93,14 @@
         //    $.each(data, function (i, d) {
         //        employmentTypes.push({ label: d.value, value: d.id });
         //    });
-        //    $("#lrEmploymentTypeId").multiselect('dataprovider', employmentTypes);
+        //    $("#lrEmploymentTypeIds").multiselect('dataprovider', employmentTypes);
         //});
         //cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.EmployeeStatus).done(function (data) {
         //    var employmeeStatuses = [];
         //    $.each(data, function (i, d) {
         //        employmeeStatuses.push({ label: d.value, value: d.id });
         //    });
-        //    $("#lrEmployeeStatusId").multiselect('dataprovider', employmeeStatuses);
+        //    $("#lrEmployeeStatusIds").multiselect('dataprovider', employmeeStatuses);
         //});
         //cERP.appServices.hR.holidayService.holidays.getAll().done(function (data) {
         //    var holidays = [];
@@ -124,12 +124,12 @@
 
             $('#lrDepartmentId').multiselect('deselectAll', false);
             $('#lrDepartmentId').multiselect('updateButtonText');
-            $('#lrPositionId').multiselect('deselectAll', false);
-            $('#lrPositionId').multiselect('updateButtonText');
-            $('#lrEmploymentTypeId').multiselect('deselectAll', false);
-            $('#lrEmploymentTypeId').multiselect('updateButtonText');
-            $('#lrEmployeeStatusId').multiselect('deselectAll', false);
-            $('#lrEmployeeStatusId').multiselect('updateButtonText');
+            $('#lrPositionIds').multiselect('deselectAll', false);
+            $('#lrPositionIds').multiselect('updateButtonText');
+            $('#lrEmploymentTypeIds').multiselect('deselectAll', false);
+            $('#lrEmploymentTypeIds').multiselect('updateButtonText');
+            $('#lrEmployeeStatusIds').multiselect('deselectAll', false);
+            $('#lrEmployeeStatusIds').multiselect('updateButtonText');
 
             $('#lrHolidaysDeductionIds').multiselect('deselectAll', false);
             $('#lrHolidaysDeductionIds').multiselect('updateButtonText');
@@ -142,14 +142,14 @@
                 $("#lrHolidaysDeductionIds").multiselect('dataprovider', holidays);
             });
 
-            var apGrid = $("#LRApprovalRouteGrid")[0].ej2_instances[0];
+            var apGrid = $("#LeaveRequest_ApprovalRouteGrid")[0].ej2_instances[0];
             apGrid.dataSource = [];
             apGrid.childGrid.dataSource = [];
             apGrid.dataSource.push({ id: 0, active: true, notifyEmployee: false, isPoster: false, isDepartmentHead: true, getAllDepartmentNames: "Selected", getAllPositionTitles: "Head", getAllEmployeeNames: "Auto", employees: [{ id: "@Guid.Empty", name: "Auto", position: { id: "@Guid.Empty", title: "Head" }, department: { id: "@Guid.Empty", name: "Selected" } }] })
             apGrid.dataSource.push({ id: 1, active: true, notifyEmployee: false, isPoster: false, isReportingTo: true, getAllDepartmentNames: "Selected", getAllPositionTitles: "Auto", getAllEmployeeNames: "Auto", employees: [{ id: "@Guid.Empty", name: "Auto [Reporting To]", position: { id: "@Guid.Empty", title: "Head" }, department: { id: "@Guid.Empty", name: "Selected" } }] })
             apGrid.refresh();
 
-            var tasksGrid = $("#LRTasksGrid")[0].ej2_instances[0];
+            var tasksGrid = $("#LeaveRequest_TasksGrid")[0].ej2_instances[0];
             tasksGrid.dataSource = [];
         });
 
@@ -167,9 +167,9 @@
                 params.isEditing = isEditingLR;
                 params.LRLeaveTypeId = $("#lrLeaveTypeId").val();
                 params.LRDepartmentIds = $("#lrDepartmentIds").val();
-                params.LRPositionsIds = $("#lrPositionId").val();
-                params.LREmploymentTypeIds = $("#lrEmploymentTypeId").val();
-                params.LREmployeeStatusIds = $("#lrEmployeeStatusId").val();
+                params.LRPositionsIds = $("#lrPositionIds").val();
+                params.LREmploymentTypeIds = $("#lrEmploymentTypeIds").val();
+                params.LREmployeeStatusIds = $("#lrEmployeeStatusIds").val();
                 params.LRDeductionHolidaysIds = $("#lrHolidaysDeductionIds").val();
 
                 params.ApprovalRoute = $("#LeaveRequest_ApprovalRouteGrid")[0].ej2_instances[0].dataSource;
@@ -355,21 +355,21 @@
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label class="control-label m-b-5 ">Department:</label>
-                        <select id="lrDepartmentIds" name="LRDepartmentIds" multiple="multiple" class="form-control" onchange="SelectDepartmentPositions('lrDepartmentIds');" required>
+                        <select id="lrDepartmentIds" name="LRDepartmentIds" multiple="multiple" class="form-control" onchange="SelectDepartmentPositions('lrDepartmentIds', 'lrPositionIds', curLRDepartments, curLRPositions);" required>
                         </select>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
-                        <label class="margin-bottom-5 control-label">Position:</label>
-                        <select id="lrPositionId" name="LRPositionId" multiple="multiple" class="form-control" required>
+                        <label class="control-label m-b-5 ">Position:</label>
+                        <select id="lrPositionIds" name="LRPositionIds" multiple="multiple" class="form-control" required>
                         </select>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label class="margin-bottom-5 control-label">Employment Type:</label>
-                        <select id="lrEmploymentTypeId" name="EmployementTypeId" multiple="multiple" class="form-control" required>
+                        <select id="lrEmploymentTypeIds" name="EmployementTypeIds" multiple="multiple" class="form-control" required>
                         </select>
                         @*<ejs-dropdownlist id="vegetables" placeholder="Select an employment type" popupHeight="200px" dataSource="@employementTypes">
                         <e-dropdownlist-fields text="Value" value="Id"></e-dropdownlist-fields>
@@ -379,7 +379,7 @@
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label class="margin-bottom-5 control-label">Employmee Status:</label>
-                        <select id="lrEmployeeStatusId" name="EmployementStatusId" multiple="multiple" class="form-control" required>
+                        <select id="lrEmployeeStatusIds" name="EmployementStatusIds" multiple="multiple" class="form-control" required>
                         </select>
                     </div>
                 </div>
@@ -555,9 +555,9 @@
                         $('#lrLeaveTypeId').multiselect('refresh');
 
                         $('#lrDepartmentId').multiselect('deselectAll', false);
-                        $('#lrPositionId').multiselect('deselectAll', false);
-                        $('#lrEmploymentTypeId').multiselect('deselectAll', false);
-                        $('#lrEmployeeStatusId').multiselect('deselectAll', false);
+                        $('#lrPositionIds').multiselect('deselectAll', false);
+                        $('#lrEmploymentTypeIds').multiselect('deselectAll', false);
+                        $('#lrEmployeeStatusIds').multiselect('deselectAll', false);
                         $('#lrHolidaysDeductionIds').multiselect('deselectAll', false);
 
                         var departs = [];
@@ -570,12 +570,12 @@
                         for (var i = 0; i < curLREditRow.employmentTypes.length; i++) {
                             empTypes.push(curLREditRow.employmentTypes[i].employmentTypeId);
                         }
-                        $('#lrEmploymentTypeId').multiselect('select', empTypes);
+                        $('#lrEmploymentTypeIds').multiselect('select', empTypes);
                         var empStatuses = [];
                         for (var i = 0; i < curLREditRow.employeeStatuses.length; i++) {
                             empStatuses.push(curLREditRow.employeeStatuses[i].employeeStatusId);
                         }
-                        $('#lrEmployeeStatusId').multiselect('select', empStatuses);
+                        $('#lrEmployeeStatusIds').multiselect('select', empStatuses);
                         var holidays = [];
                         for (var i = 0; i < curLREditRow.holidays.length; i++) {
                             holidays.push(curLREditRow.holidays[i].holidayId);
@@ -739,137 +739,8 @@
         dialogObj1.hide();
     }
 
+    var curLRDepartments = [];
     var curLRPositions = [];
-    function SelectDepartmentPositions() {
-        var departmentIds = $("#lrDepartmentIds").val();
-        $("#lrPositionId").empty();
-        if (departmentIds.length == 0) return;
-        $.ajax({
-            type: "GET",
-            url: '?handler=DepartmentsPositions',
-            data: { departmentIds: JSON.stringify(departmentIds) },
-            success: function (data) {
-                var dataMS = [];
-                $.each(departmentIds, function (i, departmentId) {
-                    var positions = [];
-                    $.each(data, function (j, position) {
-                        if (position.departmentId == departmentId)
-                            positions.push({ label: position.title, value: position.id });
-                    });
-                    dataMS.push({
-                        label: $(`#${lrDepartmentIds} option[value='${departmentId}']`).text(), children: positions
-                    });
-                });
-                curLRPositions = dataMS;
-                $("#lrPositionId").multiselect('dataprovider', dataMS);
-                if (isEditingLR && !isEditingLRLoaded) {
-                    var posits = [];
-                    for (var i = 0; i < curLREditRow.positions.length; i++) {
-                        posits.push(curLREditRow.positions[i].positionId);
-                    }
-                    $("#lrPositionId").multiselect('select', posits);
-
-                    isEditingLRLoaded = true;
-                }
-
-            }
-        });
-    }
-
-    var curAPPositions = [];
-
-    var curAPEmployees = [];
-    function SelectAPPositionEmployees() {
-        var positionIds = $("#apPositionId").val();
-        var positions = curAPPositions;
-        //var departmentIds = $("#apDepartmentIds").val();
-        $("#apEmployeeId").empty();
-        curAPEmployees = [];
-        if (positionIds.length == 0) return;
-
-        $.ajax({
-            type: "GET",
-            url: '?handler=Employees',
-            data: { positionIds: JSON.stringify(positionIds) },
-            success: function (data) {
-                var positionEmployees = [];
-
-                $.each(positionIds, function (i, positionId) {
-                    var position = positions.find(function (x) { return x.id == positionId });
-                    var employees = [];
-                    $.each(data, function (j, employee) {
-                        if (employee.posId == positionId) {
-                            var emp = { id: employee.id, value: employee.id, name: employee.name, label: employee.name, departmentId: employee.depId, depName: employee.depName, positionId: employee.posId, posName: employee.posTitle };
-                            employees.push(emp);
-                            curAPEmployees.push(emp);
-                        }
-                    });
-                    positionEmployees.push({ label: position.title, children: employees })
-                });
-                $("#apEmployeeId").multiselect('dataprovider', positionEmployees);
-            }
-        });
-    }
-
     var curTaskPositions = [];
-    function SelectTaskDepartmentPositions() {
-        var departmentIds = $("#taskDepartmentIds").val();
-        $("#taskPositionId").empty();
-        $("#taskEmployeeId").empty();
-        curTaskPositions = [];
-        if (departmentIds.length == 0) return;
-        $.ajax({
-            type: "GET",
-            url: '?handler=DepartmentsPositions',
-            data: { departmentIds: JSON.stringify(departmentIds) },
-            success: function (data) {
-                var dataMS = [];
-                $.each(departmentIds, function (i, departmentId) {
-                    var positions = [];
-                    $.each(data, function (j, position) {
-                        if (position.departmentId == departmentId)
-                            positions.push({ label: position.title, value: position.id });
-                    });
-                    dataMS.push({
-                        label: $(`#lrDepartmentId option[value='${departmentId}']`).text(), children: positions
-                    });
-                });
-                curTaskPositions = data;
-                $("#taskPositionId").multiselect('dataprovider', dataMS);
-            }
-        });
-    }
-    var curTaskEmployees = [];
-    function SelectTaskPositionEmployees() {
-        var positionIds = $("#taskPositionId").val();
-        var positions = curTaskPositions;
-        //var departmentIds = $("#apDepartmentIds").val();
-        $("#taskEmployeeId").empty();
-        curTaskEmployees = [];
-        if (positionIds.length == 0) return;
-
-        $.ajax({
-            type: "GET",
-            url: '?handler=Employees',
-            data: { positionIds: JSON.stringify(positionIds) },
-            success: function (data) {
-                var positionEmployees = [];
-
-                $.each(positionIds, function (i, positionId) {
-                    var position = positions.find(function (x) { return x.id == positionId });
-                    var employees = [];
-                    $.each(data, function (j, employee) {
-                        if (employee.posId == positionId) {
-                            var emp = { id: employee.id, value: employee.id, name: employee.name, label: employee.name, departmentId: employee.depId, depName: employee.depName, positionId: employee.posId, posName: employee.posTitle };
-                            employees.push(emp);
-                            curTaskEmployees.push(emp);
-                        }
-                    });
-                    positionEmployees.push({ label: position.title, children: employees })
-                });
-                $("#taskEmployeeId").multiselect('dataprovider', positionEmployees);
-            }
-        });
-    }
-
+    var curTaskDepartments = [];
 </script>

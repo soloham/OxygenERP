@@ -221,6 +221,13 @@ i.fab {
     font-family: Roboto;
     font-weight: 300;   
 }
+
+.mainTitle {
+    text-shadow: 0px 0px 25px #ababab;
+    font-size: 32px;
+    font-family: Roboto;
+    font-weight: 300;
+}
 .font-roboto {
     font-family: Roboto;
     font-weight: 300;

@@ -311,39 +311,105 @@ const ValueTypeModules = {
     LoanType: 27
 }
 
-function SelectDepartmentPositions(departmentsElmId) {
+function SelectDepartmentPositions(departmentsElmId, positionsElmId, departmentsArr, positionsArr, isEditing, isEditingLoaded, toSelectPositions) {
+    $(`#${positionsElmId}`).multiselect('dataprovider', null);
+    $(`#${positionsElmId}`).change();
     var departmentIds = $('#' + departmentsElmId).val();
-    if (departmentIds.length == 0) return;
-
+    if (departmentIds.length == 0) return; 
     $.ajax({
         type: "GET",
         url: '?handler=DepartmentsPositions',
         data: { departmentIds: JSON.stringify(departmentIds) },
         success: function (data) {
             var dataMS = [];
+            var positions = []; 
             $.each(departmentIds, function (i, departmentId) {
-                var positions = [];
                 $.each(data, function (j, position) {
                     if (position.departmentId == departmentId)
                         positions.push({ label: position.title, value: position.id });
                 });
                 dataMS.push({
-                    label: $(`#lrDepartmentId option[value='${departmentId}']`).text(), children: positions
+                    label: $(`#${departmentsElmId} option[value='${departmentId}']`).text(), children: positions
                 });
             });
-            curLRPositions = dataMS;
-            $("#lrPositionId").multiselect('dataprovider', dataMS);
-            if (isEditingLR && !isEditingLRLoaded) {
-                var posits = [];
-                for (var i = 0; i < curLREditRow.positions.length; i++) {
-                    posits.push(curLREditRow.positions[i].positionId);
-                }
-                $("#lrPositionId").multiselect('select', posits);
 
-                isEditingLRLoaded = true;
+            Object.assign(positionsArr, positions);
+            Object.assign(departmentsArr, dataMS);
+
+            $(`#${positionsElmId}`).multiselect('dataprovider', dataMS);
+
+            console.log(isEditing);
+            console.log(isEditingLoaded);
+            console.log(toSelectPositions);
+            if (isEditing && !isEditingLoaded) {
+                $(`#${positionsElmId}`).multiselect('select', toSelectPositions);
+                $(`#${positionsElmId}`).change();
+
+                Object.assign(isEditingLoaded, true);
             }
 
         }
     });
 }
 
+function SelectPositionEmployees(positionsElmId, employeesElmId, positionsArr, employeesArr, isEditing, isEditingLoaded, toSelectEmployees) {
+    var positionIds = $(`#${positionsElmId}`).val();
+    var positions = positionsArr;
+    $(`#${employeesElmId}`).multiselect('dataprovider', null);
+    Object.assign(employeesArr, []);
+    if (positionIds.length == 0) return;
+
+    $.ajax({
+        type: "GET",
+        url: '?handler=Employees',
+        data: { positionIds: JSON.stringify(positionIds) },
+        success: function (data) {
+            var positionEmployees = [];
+
+            $.each(positionIds, function (i, positionId) {
+                var position = positions.find(function (x) { return x.value == positionId });
+                var employees = [];
+                $.each(data, function (j, employee) {
+                    if (employee.posId == positionId) {
+                        var emp = { id: employee.id, value: employee.id, name: employee.name, label: employee.name, departmentId: employee.depId, depName: employee.depName, positionId: employee.posId, posName: employee.posTitle };
+                        employees.push(emp);
+                        employeesArr.push(emp);
+                    }
+                });
+                positionEmployees.push({ label: position.label, children: employees })
+            });
+            $(`#${employeesElmId}`).multiselect('dataprovider', positionEmployees);
+
+            console.log(isEditing);
+            console.log(isEditingLoaded);
+            console.log(toSelectEmployees);
+            if (isEditing && !isEditingLoaded) {
+                $(`#${employeesElmId}`).multiselect('select', toSelectEmployees);
+                $(`#${employeesElmId}`).change();
+
+                Object.assign(isEditingLoaded, true);
+            }
+        }
+    });
+}
+
+function ValidateForm(formId) {
+    var elmForm = $(`#${formId}`);
+    // stepDirection === 'forward' :- this condition allows to do the form validation
+    // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
+    var valid = false;
+    elmForm.validator('validate');
+    if (elmForm) {
+        var elmErr = elmForm.find('.has-error');
+        if (elmErr) {
+            if (elmErr.length > 0) {
+                // Form validation failed
+                valid = false;
+            }
+            else {
+                valid = true;
+            }
+        }
+    }
+    return valid;
+}

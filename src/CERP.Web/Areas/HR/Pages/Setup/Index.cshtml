@@ -52,21 +52,6 @@
             //        onSelectAll: SelectDepartmentPositions()
             //    });
             //});
-            $('#apDepartmentIds').multiselect({
-                buttonWidth: '100%',
-                includeSelectAllOption: true,
-                enableFiltering: false,
-                enableClickableOptGroups: true,
-                includeResetOption: true,
-                includeResetDivider: true,
-                enableCollapsibleOptGroups: true,
-                onDeselectAll: function (e) {
-                    $('#lrPositionIds').empty();
-                },
-                //onSelectAll: SelectAPDepartmentPositions()
-            });
-            $('#apPositionIds').multiselect(options);
-            $('#apEmployeeIds').multiselect(options);
             $('#taskDepartmentIds').multiselect({
                 buttonWidth: '100%',
                 includeSelectAllOption: true,
@@ -131,17 +116,17 @@
 
                 $("#lrDepartmentIds").multiselect('dataprovider', departments);
                 $("#lrDepartmentIds").change();
-                $("#apDepartmentIds").multiselect('dataprovider', departments);
-                $("#apDepartmentIds").change();
-                $("#taskDepartmentIds").multiselect('dataprovider', departments);
-                $("#taskDepartmentIds").change();
+                $("input[id*='apDepartmentIds']").multiselect('dataprovider', departments);
+                $("input[id*='apDepartmentIds']").change();
+                $("input[id*='taskDepartmentIds']").multiselect('dataprovider', departments);
+                $("input[id*='taskDepartmentIds']").change();
 
-                $("#loansDepartmentIds").multiselect('dataprovider', departments);
-                $("#loansDepartmentIds").change();
+                $("#input[id*='loansDepartmentIds']").multiselect('dataprovider', departments);
+                $("#input[id*='loansDepartmentIds']").change();
                 $("#loansAPDepartmentIds").multiselect('dataprovider', departments);
-                $("#apDepartmentIds").change();
-                $("#loansTaskDepartmentIds").multiselect('dataprovider', departments);
-                $("#loansTaskDepartmentIds").change();
+                $("input[id*='#apDepartmentIds']").change();
+                $("#input[id*='loansTaskDepartmentIds']").multiselect('dataprovider', departments);
+                $("#input[id*='loansTaskDepartmentIds']").change();
             });
             toastr.options = {
 
