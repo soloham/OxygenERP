@@ -92,7 +92,7 @@
             <div id="palette-icon" style="float: right;" role="button" class="e-ddb-icons1 e-toggle-palette"></div>
         </div>
         <div id="palette-space" class="sb-mobile-palette">
-            <ejs-symbolpalette id="symbolPalette" getNodeDefaults="getSymbolNode" symbolHeight="60" symbolWidth="60" expandMode="Multiple" width="100%" height="450px" palettes="Palette" symbolMargin="new SymbolPaletteMargin() { Left=15,Right=15,Top=15,Bottom=15}" getSymbolInfo="getSymbolInfo">
+            <ejs-symbolpalette id="symbolPalette" getNodeDefaults="getSymbolNode" symbolHeight="60" symbolWidth="60" expandMode="Multiple" width="100%" height="450px" palettes="Palette" symbolMargin="new SymbolPaletteMargin() { Left = 15, Right = 15, Top = 15, Bottom = 15 }" getSymbolInfo="getSymbolInfo">
             </ejs-symbolpalette>
         </div>
         <div id="diagram-space" class="sb-mobile-diagram">
@@ -101,7 +101,7 @@
                     <e-diagram-snapsettings horizontalGridlines="gridLines" verticalGridlines="gridLines"></e-diagram-snapsettings>
                 </ejs-diagram>
             </div>
-            <div id="@(Model.Id)_propertySection" class="col-lg-4" style="display:none">
+            <div id="@(Model.Id)_propertySection" class="col-lg-6" style="display:none">
                 <div class="property-section">
                     <div class="property-panel-header">
                         <span class="mainTitle">Properties</span>
@@ -112,9 +112,9 @@
                             <ejs-accordion id="@(Model.Id)_approval-route-panel-accordion">
                                 <e-accordion-accordionitems>
                                     <e-accordion-accordionitem expanded="true" header="General Properties" content="#@(Model.Id)_generalInfo"></e-accordion-accordionitem>
-                                    <e-accordion-accordionitem header="View" content=""></e-accordion-accordionitem>
-                                    <e-accordion-accordionitem header="Action" content=""></e-accordion-accordionitem>
-                                    <e-accordion-accordionitem header="Reporting" content=""></e-accordion-accordionitem>
+                                    <e-accordion-accordionitem expanded="true" header="View" content="#@(Model.Id)_viewInfo"></e-accordion-accordionitem>
+                                    <e-accordion-accordionitem expanded="true" header="Action" content=""></e-accordion-accordionitem>
+                                    <e-accordion-accordionitem expanded="true" header="Reporting" content=""></e-accordion-accordionitem>
                                 </e-accordion-accordionitems>
                             </ejs-accordion>
 
@@ -166,6 +166,186 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div id="@(Model.Id)_viewInfo">
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            <label class="control-label m-b-5 ">Form Fields:</label>
+                                            <select id="@(Model.Id)_viewFormFieldsList" name="ViewFormFields" multiple="multiple" class="form-control">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                                        <label class="control-label m-b-5 "></label>
+                                        <button type="button" id="@(Model.Id)_savePropertiesBtn" onclick="@(Model.Id)_addViewFormField()" class="btn btn-success btn-block">
+                                            ADD FIELD(S)
+                                        </button>
+                                    </div>
+                                </div>
+                                <ejs-grid id="@(Model.Id)_viewFormFieldsGrid" dataSource="@Model.GetFormFieldsAsDS()" enableAutoFill="true" columns="@Model.GetFormFieldsGridColumns()"
+                                          dataBound="dataBoundResponsive" commandClick="@(Model.Id)_approvalRoute_viewInfo_commandClick" actionBegin="@(Model.Id)_approvalRoute_viewInfo_actionBegin"
+                                          allowExcelExport="true" height="60%" allowPdfExport="true" actionComplete="@(Model.Id)_approvalRoute_viewInfo_actionComplete"
+                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" showColumnChooser="false"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                                          toolbarClick="@(Model.Id)_approvalRoute_viewInfo_toolbarClick" toolbar='new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" } }'
+                                          allowPaging="true" allowResizing="true">
+
+                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowEditing="true" allowDeleting="true" newRowPosition="Bottom"></e-grid-editSettings>
+                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10", "20", "All" })"></e-grid-pagesettings>
+                                </ejs-grid>
+
+                                <script>
+                                    let viewFormFields = @(Json.Serialize(Model.Form.FormFields.Where(x => x.IsVisible).ToList()))
+
+                                    function @(Model.Id)_addViewFormField()
+                                    {
+                                        var formFieldsGroups = [];
+                                        var formFields = [];
+                                        for (var i = 0; i < viewFormFields.length; i++) {
+                                            if (!viewFormFields[i].isVisible) return;
+                                            if (!formFieldsGroups.includes(viewFormFields[i].fieldTypeDescription)) {
+                                                formFieldsGroups.push(viewFormFields[i].fieldTypeDescription);
+
+                                                viewFormFields[i].id = i;
+                                                formFields.push({ label: viewFormFields[i].name, value: viewFormFields[i].id, fieldType: viewFormFields[i].fieldTypeDescription, isExternal: viewFormFields[i].isExternal });
+                                            }
+                                        }
+                                        //var selectedFieldsIds = $('#@(Model.Id)_viewFormFieldsList').mul;//START HERE!
+
+                                        console.log(selectedFieldsIds);
+                                        if (selectedFieldsIds.length <= 0) return;
+
+                                        let selectedFields = formFields.filter(function (x) { return selectedFieldsIds.includes(x.value); });
+                                        let nonSelectedFields = formFields.filter(function (x) { return !selectedFieldsIds.includes(x.value); });
+                                        console.log(selectedFields);
+                                        console.log(nonSelectedFields);
+
+                                        let grid = $('#@(Model.Id)_viewFormFieldsGrid')[0].ej2_instances[0];
+                                        for (var i = 0; i < selectedFields.length; i++) {
+                                            console.log(selectedFields[i]);
+                                            let row = { name: selectedFields[i].label, fieldTypeDescription: selectedFields[i].fieldType, isExternal: selectedFields[i].isExternal };
+                                            console.log(row);
+                                            grid.dataSource.push(row);
+                                        }
+                                        grid.refresh();
+
+                                        $('#@(Model.Id)_viewFormFieldsList').multiselect('dataprovider', nonSelectedFields);
+
+                                        formFieldsGroups = [];
+                                        for (var i = 0; i < nonSelectedFields.length; i++) {
+                                            if (!formFieldsGroups.includes(nonSelectedFields[i].fieldType))
+                                                formFieldsGroups.push(viewFormFields[i].fieldType);
+
+                                            formFields.push({ label: nonSelectedFields[i].name, value: nonSelectedFields[i].id, fieldType: nonSelectedFields[i].fieldType, isExternal: nonSelectedFields[i].isExternal });
+                                        }
+
+                                        let dataMS = [];
+                                        for (var i = 0; i < formFieldsGroups.length; i++) {
+                                            let children = formFields.filter(x => x.fieldType == formFieldsGroups[i].label)
+                                            dataMS.push({ label: formFieldsGroups[i], value: '', children: children });
+                                        }
+                                        $('#@(Model.Id)_viewFormFieldsList').multiselect('dataprovider', dataMS);
+                                    }
+                                    function @(Model.Id)_approvalRoute_viewInfo_commandClick(args)
+                                    {
+                                        if (args.commandColumn.type == "MoveUp") {
+                                            var grid = $('#@(Model.Id)_viewFormFieldsGrid')[0].ej2_instances[0];
+                                            var vI = args.rowData.viewIndex - 1;
+                                            if (vI < 1) return;
+                                            array_move(grid.dataSource, vI, vI - 1);
+                                            for (var i = 0; i < grid.dataSource.length; i++) {
+                                                grid.dataSource[i].routeIndex = i + 1;
+                                            }
+                                            grid.refresh();
+                                        }
+                                        if (args.commandColumn.type == "MoveDown") {
+                                            var grid = $('#@(Model.Id)_viewFormFieldsGrid')[0].ej2_instances[0];
+                                            var vI = args.rowData.viewIndex - 1;
+                                            if (vI == grid.dataSource.length) return;
+                                            array_move(grid.dataSource, vI, vI + 1);
+                                            for (var i = 0; i < grid.dataSource.length; i++) {
+                                                grid.dataSource[i].viewIndex = i + 1;
+                                            }
+                                            grid.refresh();
+                                        }
+                                    }
+                                    function @(Model.Id)_approvalRoute_viewInfo_actionBegin(args)
+                                    {
+                                        if (args.requestType == "save") {
+
+                                        }
+                                        else if (args.requestType == "delete") {
+                                            var data = args.data;
+                                        }
+                                    }
+                                    function @(Model.Id)_approvalRoute_viewInfo_actionComplete(args)
+                                    {
+                                    }
+                                    function @(Model.Id)_approvalRoute_viewInfo_toolbarClick(args)
+                                    {
+                                        var gridObj = document.getElementById("@(Model.Id)_viewFormFieldsGrid").ej2_instances[0];
+
+                                        if (args.item.id === 'showActions') {
+                                            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Move Up", tooltipText: "Move Up", prefixIcon: "e-c-moveup", id: "moveUp" }, { text: "Move Down", tooltipText: "Move Down", prefixIcon: "e-c-movedown", id: "moveDown" }, "Add", "Cancel", "Delete" ];
+                                            gridObj.refresh();
+                                        }
+                                        if (args.item.id === 'hideActions') {
+                                            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+                                            gridObj.showColumnChooser = true;
+                                            gridObj.refresh();
+                                        }
+
+                                        if (args.item.id === 'toggleGrouping') {
+                                            gridObj.allowGrouping = !gridObj.allowGrouping;
+                                            gridObj.refresh();
+                                        }
+
+                                        if (args.item.id === 'moveUp')
+                                        {
+                                            var selectedIndexes = [];
+                                            var selected = gridObj.getSelectedRecords();
+                                            for (var i = 0; i < selected.length; i++) {
+                                                var cur = selected[i];
+                                                let vI = cur.viewIndex - 1;
+                                                if (vI - 1 < 0)
+                                                    break;
+                                                selectedIndexes.push(vI - 1);
+                                                array_move(gridObj.dataSource, vI, vI - 1);
+                                            }
+                                            for (var i = 0; i < gridObj.dataSource.length; i++) {
+                                                if (typeof (gridObj.dataSource[i]) !== 'undefined') {
+                                                    gridObj.dataSource[i].viewIndex = i + 1;
+                                                }
+                                            }
+                                            gridObj.refresh();
+                                            setTimeout(function () { gridObj.selectionModule.selectRows(selectedIndexes) }, 100);
+                                        }
+                                        if (args.item.id === 'moveDown')
+                                        {
+                                            var selectedIndexes = [];
+                                            var selected = gridObj.getSelectedRecords()
+                                            for (var i = selected.length - 1; i > -1; i--) {
+                                                var cur = selected[i];
+                                                let vI = cur.viewIndex - 1;
+                                                if (vI + 1 > gridObj.dataSource.length - 1)
+                                                    break;
+                                                selectedIndexes.push(vI + 1);
+                                                array_move(gridObj.dataSource, vI, vI + 1);
+                                            }
+                                            for (var i = 0; i < gridObj.dataSource.length; i++) {
+                                                if (typeof (gridObj.dataSource[i]) !== 'undefined') {
+                                                    gridObj.dataSource[i].viewIndex = i + 1;
+                                                }
+                                            }
+                                            gridObj.refresh();
+                                            setTimeout(function () { gridObj.selectionModule.selectRows(selectedIndexes) }, 100);
+                                        }
+                                    }
+                                </script>
                             </div>
                         </div>
                         <div id="@(Model.Id)_task-property-panel" style="height: 100%; display:none">
@@ -403,10 +583,7 @@
     var @(Model.Id)_curPositions = [];
     var @(Model.Id)_curEmployees = [];
 
-    let externalFormFields = @(Model.ExternalFormFields != null? Json.Serialize(Model.ExternalFormFields) : Json.Serialize(new List<object>()));
-
     $(document).ready(function () {
-        console.log(externalFormFields);
         var options = {
             buttonWidth: '100%',
             includeSelectAllOption: true,
@@ -432,6 +609,7 @@
             //onSelectAll: SelectAPDepartmentPositions()
         });
         $('#@(Model.Id)_apPositionIds').multiselect(options);
+        $('#@(Model.Id)_viewFormFieldsList').multiselect(options);
         $('#@(Model.Id)_apPositionIds').multiselect({
             onChange: function (option, checked, select) {
                 @*SelectPositionEmployees('@(Model.Id)_apPositionIds', '@(Model.Id)_apEmployeeIds',@(Model.Id)_curPositions, @(Model.Id)_curEmployees);*@
@@ -576,6 +754,28 @@
             taskGrid.dataSource.push(task);
             taskGrid.refresh();
         })
+
+        var formFieldsGroups = [];
+        var formFields = [];
+        for (var i = 0; i < viewFormFields.length; i++) {
+            if (!viewFormFields[i].isVisible) return;
+            if (!formFieldsGroups.includes(viewFormFields[i].fieldTypeDescription)) {
+                console.log(viewFormFields[i]);
+                console.log({ value: i, label: viewFormFields[i].fieldTypeDescription });
+                formFieldsGroups.push(viewFormFields[i].fieldTypeDescription);
+
+                viewFormFields[i].id = i;
+                formFields.push({ label: viewFormFields[i].name, value: viewFormFields[i].id, fieldType: viewFormFields[i].fieldTypeDescription, isExternal: viewFormFields[i].isExternal });
+            }
+        }
+
+        let dataMS = [];
+        for (var i = 0; i < formFieldsGroups.length; i++) {
+            let children = formFields.filter(x => x.fieldType == formFieldsGroups[i])
+            dataMS.push({ label: formFieldsGroups[i], value: '', children: children });
+        }
+        $('#@(Model.Id)_viewFormFieldsList').multiselect('dataprovider', dataMS);
+        console.log(dataMS);
     });
 </script>
 
@@ -657,7 +857,7 @@
                     }
                 });
                 $(`#@(Model.Id)_diagramArea`).removeClass('col-lg-12');
-                $(`#@(Model.Id)_diagramArea`).addClass('col-lg-8');
+                $(`#@(Model.Id)_diagramArea`).addClass('col-lg-6');
                 setTimeout(function () {
                     $(`#@(Model.Id)_propertySection`).show();
                     $(`#@(Model.Id)_container`)[0].ej2_instances[0].refresh();
@@ -681,7 +881,7 @@
                 });
 
                 $(`#@(Model.Id)_diagramArea`).removeClass('col-lg-12');
-                $(`#@(Model.Id)_diagramArea`).addClass('col-lg-8');
+                $(`#@(Model.Id)_diagramArea`).addClass('col-lg-6');
                 setTimeout(function () {
                     $(`#@(Model.Id)_propertySection`).show();
                     $(`#@(Model.Id)_container`)[0].ej2_instances[0].refresh();
@@ -692,8 +892,8 @@
             }
             else {
                 curNodeType = '';
-                if ($(`#@(Model.Id)_diagramArea`).hasClass('col-lg-8')) {
-                    $(`#@(Model.Id)_diagramArea`).removeClass('col-lg-8');
+                if ($(`#@(Model.Id)_diagramArea`).hasClass('col-lg-6')) {
+                    $(`#@(Model.Id)_diagramArea`).removeClass('col-lg-6');
                     $(`#@(Model.Id)_diagramArea`).addClass('col-lg-12');
 
                     $(`#@(Model.Id)_propertySection`).hide();
@@ -704,7 +904,7 @@
             }
         }
         else {
-            $(`#@(Model.Id)_diagramArea`).removeClass('col-lg-8');
+            $(`#@(Model.Id)_diagramArea`).removeClass('col-lg-6');
             $(`#@(Model.Id)_diagramArea`).addClass('col-lg-12');
 
             $(`#@(Model.Id)_propertySection`).hide();
@@ -927,12 +1127,14 @@
         }
 
         if (args.item.id === 'moveUp') {
+            var selectedIndexes = gridObj.selectionModule.selectedRowIndexes;
             var selected = gridObj.getSelectedRecords();
             for (var i = 0; i < selected.length; i++) {
                 var cur = selected[i];
                 let rI = cur.routeIndex - 1;
                 if (rI - 1 < 0)
                     break;
+                selectedIndexes.push(rI - 1);
                 array_move(gridObj.dataSource, rI, rI - 1);
             }
             for (var i = 0; i < gridObj.dataSource.length; i++) {
@@ -941,14 +1143,17 @@
                 }
             }
             gridObj.refresh();
+            setTimeout(function () { gridObj.selectionModule.selectRows(selectedIndexes) }, 100);
         }
         if (args.item.id === 'moveDown') {
+            var selectedIndexes;
             var selected = gridObj.getSelectedRecords()
             for (var i = selected.length - 1; i > -1; i--) {
                 var cur = selected[i];
                 let rI = cur.routeIndex - 1;
                 if (rI + 1 > gridObj.dataSource.length - 1)
                     break;
+                selectedIndexes.push(rI + 1);
                 array_move(gridObj.dataSource, rI, rI + 1);
             }
             for (var i = 0; i < gridObj.dataSource.length; i++) {
@@ -957,6 +1162,7 @@
                 }
             }
             gridObj.refresh();
+            setTimeout(function () { gridObj.selectionModule.selectRows(selectedIndexes) }, 100);
         }
         if (args.requestType == "beginEdit") {
             var Obj = $("#@(Model.Id)_ApprovalRoute")[0].ej2_instances[0];
@@ -1082,12 +1288,15 @@
             }
         }
         if (args.item.id === 'moveUp') {
+            var selectedIndexes = [];
             var selected = gridObj.getSelectedRecords();
             for (var i = 0; i < selected.length; i++) {
                 var cur = selected[i];
                 let rI = cur.routeIndex - 1;
                 if (rI - 1 < 0)
                     break;
+
+                selectedIndexes.push(rI - 1);
                 array_move(gridObj.dataSource, rI, rI - 1);
             }
             for (var i = 0; i < gridObj.dataSource.length; i++) {
@@ -1096,14 +1305,17 @@
                 }
             }
             gridObj.refresh();
+            setTimeout(function () { gridObj.selectionModule.selectRows(selectedIndexes) }, 100);
         }
         if (args.item.id === 'moveDown') {
+            var selectedIndexes = [];
             var selected = gridObj.getSelectedRecords()
             for (var i = selected.length - 1; i > -1; i--) {
                 var cur = selected[i];
                 let rI = cur.routeIndex - 1;
                 if (rI + 1 > gridObj.dataSource.length - 1)
                     break;
+                selectedIndexes.push(rI + 1);
                 array_move(gridObj.dataSource, rI, rI + 1);
             }
             for (var i = 0; i < gridObj.dataSource.length; i++) {
@@ -1112,6 +1324,7 @@
                 }
             }
             gridObj.refresh();
+            setTimeout(function () { gridObj.selectionModule.selectRows(selectedIndexes) }, 100);
         }
     }
     function @(Model.Id)_TaskRowDataBound(args) {
@@ -1124,3 +1337,5 @@
         //}
     }
 </script>
+
+@*@RenderSection("InterenalScripts", false)*@
