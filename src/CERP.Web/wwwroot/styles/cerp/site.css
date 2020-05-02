@@ -2,69 +2,73 @@
 for details on configuring this project to bundle and minify static web assets. */
 
 a.navbar-brand {
-  white-space: normal;
-  text-align: center;
-  word-break: break-all;
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
 }
 
 /* Provide sufficient contrast against white background */
 a {
-  color: #0366d6;
+    color: #0366d6;
 }
 
 .btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
 }
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
 }
 
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
+
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .border-top {
-  border-top: 1px solid #e5e5e5;
+    border-top: 1px solid #e5e5e5;
 }
+
 .border-bottom {
-  border-bottom: 1px solid #e5e5e5;
+    border-bottom: 1px solid #e5e5e5;
 }
 
 .box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
 }
 
 button.accept-policy {
-  font-size: 1rem;
-  line-height: inherit;
+    font-size: 1rem;
+    line-height: inherit;
 }
 
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  /* Margin bottom by footer height */
-  /*margin-bottom: 60px;*/
+    /* Margin bottom by footer height */
+    /*margin-bottom: 60px;*/
 }
-.site-main{
+
+.site-main {
     background-color: white;
 }
+
 .footer {
     position: absolute;
     bottom: 0;
@@ -92,24 +96,26 @@ i.fab {
 }*/
 .layout-left-sidebar-collapsed .site-left-sidebar {
     margin-top: 50px !important;
-    position: fixed!important; 
+    position: fixed !important;
     width: 60px;
 }
+
 .layout-left-sidebar-collapsed .with-sub:hover > .sidebar-submenu {
     display: block !important;
     padding-left: 0px !important;
 }
 
-.layout-left-sidebar-collapsed .with-sub:hover > .sidebar-submenu > li > a > span.menu-icon {
-    display: none !important
-}
-.layout-left-sidebar-collapsed .with-sub:hover > .sidebar-submenu > li > a > span.menu-text {
-    display: block !important
-}
+    .layout-left-sidebar-collapsed .with-sub:hover > .sidebar-submenu > li > a > span.menu-icon {
+        display: none !important
+    }
 
-.layout-left-sidebar-collapsed .with-sub:hover > .sidebar-submenu > li {
-    display: block !important
-}
+    .layout-left-sidebar-collapsed .with-sub:hover > .sidebar-submenu > li > a > span.menu-text {
+        display: block !important
+    }
+
+    .layout-left-sidebar-collapsed .with-sub:hover > .sidebar-submenu > li {
+        display: block !important
+    }
 
 .sidebar-submenu > li.with-sub > a:before {
     color: #666;
@@ -128,10 +134,12 @@ i.fab {
     transition: color .3s;
     width: 18px
 }
+
 .sidebar-submenu > li:hover > a {
     background-color: #f2f2f2;
     color: #333;
 }
+
 .sidebar-active {
     background-color: #f2f2f2 !important;
     color: #333 !important;
@@ -172,6 +180,7 @@ i.fab {
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.15), 0 6px 20px 0 rgba(0, 0, 0, 0.15);
     }
 }
+
 @media screen and (max-height:600px) {
     .customPageHeader {
         position: unset !important; /*margin: 0;*/
@@ -188,6 +197,7 @@ i.fab {
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.15), 0 6px 20px 0 rgba(0, 0, 0, 0.15);
     }
 }
+
 .customPageHeader {
     position: fixed;
     /*margin: 0;*/
@@ -203,35 +213,39 @@ i.fab {
     height: 70px !important;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.15), 0 6px 20px 0 rgba(0, 0, 0, 0.15);
 }
-.customPageHeader > #subTitle {
-    font-size: 15px;
-    font-weight: 300
-}
 
-/*.customPageHeader > div, .customPageHeader > div > div {
+    .customPageHeader > #subTitle {
+        font-size: 15px;
+        font-weight: 300
+    }
+
+    /*.customPageHeader > div, .customPageHeader > div > div {
     height:inherit!important;
 }*/
-.customPageHeader > div > div {
-    /*padding-top:0px!important;
+    .customPageHeader > div > div {
+        /*padding-top:0px!important;
     padding-top:0px!important;*/
-}
+    }
+
 #title {
     text-shadow: 0px 0px 30px #2c5173;
     font-size: 32px;
     font-family: Roboto;
-    font-weight: 300;   
+    font-weight: 300;
 }
 
 .mainTitle {
-    text-shadow: 0px 0px 25px #ababab;
+    text-shadow: 0px 0px 30px #ababab;
     font-size: 32px;
     font-family: Roboto;
     font-weight: 300;
 }
+
 .font-roboto {
     font-family: Roboto;
     font-weight: 300;
 }
+
 .addBtn {
     padding: 11.5px;
     background-color: #53cef2;
@@ -242,33 +256,37 @@ i.fab {
     font-weight: 300;
     margin-top: 0px
 }
-.addBtn:hover {
-    background-color: #53cef2;
-    box-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.1), 0 0px 20px 0 rgba(0, 0, 0, 0.19);
-    color: white;
-    font-size: 15.1px;
-    font-family: Roboto;
-    font-weight: 300;
-    margin-top: 0px
-}
-.addBtn:active {
-    background-color: #53cef2;
-    box-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.1), 0 0px 10px 0 rgba(0, 0, 0, 0.19);
-    color: white;
-    font-size: 15px;
-    font-family: Roboto;
-    font-weight: 300;
-    margin-top: 0px
-}
-.addBtn:visited {
-    background-color: #53cef2;
-    box-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.1), 0 0px 10px 0 rgba(0, 0, 0, 0.19);
-    color: white;
-    font-size: 15px;
-    font-family: Roboto;
-    font-weight: 300;
-    margin-top: 0px
-}
+
+    .addBtn:hover {
+        background-color: #53cef2;
+        box-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.1), 0 0px 20px 0 rgba(0, 0, 0, 0.19);
+        color: white;
+        font-size: 15.1px;
+        font-family: Roboto;
+        font-weight: 300;
+        margin-top: 0px
+    }
+
+    .addBtn:active {
+        background-color: #53cef2;
+        box-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.1), 0 0px 10px 0 rgba(0, 0, 0, 0.19);
+        color: white;
+        font-size: 15px;
+        font-family: Roboto;
+        font-weight: 300;
+        margin-top: 0px
+    }
+
+    .addBtn:visited {
+        background-color: #53cef2;
+        box-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.1), 0 0px 10px 0 rgba(0, 0, 0, 0.19);
+        color: white;
+        font-size: 15px;
+        font-family: Roboto;
+        font-weight: 300;
+        margin-top: 0px
+    }
+
 .customContentArea {
     padding-top: 95px !important;
     position: absolute;
@@ -286,6 +304,7 @@ i.fab {
     background-color: rgb(253,253,253);
     padding-bottom: 70px
 }
+
 @media screen and (max-width:780px) {
     .customContentArea {
         padding-top: 20px !important;
@@ -305,6 +324,7 @@ i.fab {
         padding-bottom: 70px
     }
 }
+
 @media screen and (max-height:600px) {
     .customContentArea {
         padding-top: 20px !important;
@@ -324,25 +344,26 @@ i.fab {
         padding-bottom: 70px
     }
 }
+
 .well {
     background-color: rgb(253,253,253);
 }
+
 .customPageFooter {
     position: fixed;
     /*margin: 0;*/
     padding: 0;
-
     width: 100%;
     width: -webkit-fill-available;
     width: -moz-fill-available;
     width: -moz-available;
     width: fill-available;
-
     z-index: 100;
 }
-.customPageFooter > .container {
-    margin: 0;
-}
+
+    .customPageFooter > .container {
+        margin: 0;
+    }
 
 .control-section {
     height: 100%;
@@ -361,6 +382,7 @@ i.fab {
     /*height: -moz-available;*/
     height: fill-available;
 }
+
 .w-fill-available {
     width: 100%;
     width: -webkit-fill-available;
@@ -388,18 +410,22 @@ vhr {
     background-color: #35c6f5;
     border-color: #00b2f0
 }
-.btn-primary:hover {
-    background-color: #00b2f0;
-    border-color: #00b2f0
-}
-.btn-primary:active:hover {
-    background-color: #00abe6;
-    border-color: #00abe6
-}
-.btn-primary:active {
-    background-color: #00b2f0;
-    border-color: #00b2f0
-}
+
+    .btn-primary:hover {
+        background-color: #00b2f0;
+        border-color: #00b2f0
+    }
+
+    .btn-primary:active:hover {
+        background-color: #00abe6;
+        border-color: #00abe6
+    }
+
+    .btn-primary:active {
+        background-color: #00b2f0;
+        border-color: #00b2f0
+    }
+
 .customContentArea {
     position: unset !important;
 }
@@ -409,44 +435,54 @@ vhr {
     font-weight: 600 !important
     /*font-size: 18px;*/
 }
+
 .e-grid .e-headercelldiv {
     font-weight: 500 !important
     /*font-size: 18px;*/
 }
+
 .e-grid .e-tbar-btn-text {
     display: none !important;
 }
+
 .e-toolbar .e-toolbar-items .e-toolbar-item .e-tbar-btn.e-btn.e-tbtn-txt .e-icons.e-icon-right.e-btn-icon {
     padding: 0 1px 0 0;
 }
+
 .e-toolbar .e-toolbar-items .e-toolbar-item .e-tbar-btn.e-btn.e-tbtn-txt .e-icons.e-btn-icon {
     padding: 0;
     font-size: large !important;
 }
+
 .e-detailcell .e-headercell {
     background-color: #dbdbdb !important;
     color: rgb(253,253,253) !important;
     font-weight: 600 !important
     /*font-size: 18px;*/
 }
+
 .e-grid .e-groupheadercell {
     background-color: #cfcfcf !important;
     border-color: #c3c3c3 !important;
 }
-.e-grid .e-groupheadercell:hover {
-    background-color: #d8d8d8 !important;
-    border-color: #cecece !important;
-}
+
+    .e-grid .e-groupheadercell:hover {
+        background-color: #d8d8d8 !important;
+        border-color: #cecece !important;
+    }
+
 .e-grid .e-groupdroparea {
     background-color: #dedede !important;
     color: #646464 !important;
     flex: 0 1 auto;
 }
+
 .e-grid .e-gridheader {
     flex: 0 0 auto;
 }
-.e-grid .e-gridheader > div{
-}
+
+    .e-grid .e-gridheader > div {
+    }
 
 .e-hscroll-bar {
     overflow-y: hidden;
@@ -456,42 +492,54 @@ vhr {
     flex: 1 1 auto;
     height: 100% !important;
 }
+
 .e-grid .e-gridpager {
     flex: 1 1 auto;
 }
+
 .e-hscroll .e-scroll-nav {
     background-color: #d4d4d4 !important;
 }
-.e-hscroll .e-scroll-nav:hover {
-    background-color: #bebebe !important;
-}
+
+    .e-hscroll .e-scroll-nav:hover {
+        background-color: #bebebe !important;
+    }
+
 .e-toolbar .e-tbar-btn:hover {
     background-color: #dbdbdb !important;
 }
+
 .e-toolbar .e-tbar-btn {
     background-color: #eaeaea !important;
     color: #2e2e2e !important;
 }
+
 .e-toolbar .e-toolbar-items .e-toolbar-item .e-tbar-btn-text {
     color: #2e2e2e !important;
 }
+
 .e-toolbar .e-icons {
     color: #2e2e2e !important;
 }
+
 .e-grid .e-ccdlg .e-checkbox-wrapper .e-frame {
     /*background-color: #0078d6;
     border-color: #0078d6;*/
     color: #fff !important;
 }
+
 .e-toolbar, .e-toolbar .e-toolbar-items {
     background-color: #eaeaea !important;
 }
+
 .e-toggledetailed:before {
     content: '\eb04';
 }
+
 .e-custom-hide-actions:before {
     content: '\e60a';
 }
+
 .e-custom-show-actions:before {
     content: '\e679';
 }
@@ -510,9 +558,11 @@ vhr {
 .e-custom-group-toggle:before {
     content: '\e926';
 }
+
 .e-custom-audit-trail:before {
     content: '\ea8f';
 }
+
 .e-gosi-report:before {
     content: '\e310';
 }
@@ -526,71 +576,88 @@ vhr {
 .custom-control-indicator {
     background-color: #35c6f5 !important;
 }
+
 h1 {
     font-weight: 600;
 }
-h2{
+
+h2 {
     font-weight: 400;
 }
-h3{
+
+h3 {
     font-weight: 400;
 }
+
 .control-label {
     font-weight: 400;
 }
+
 ul.step-anchor > li.active > a {
     border-color: #35c6f5 !important;
     color: #fff !important;
     background: #35c6f5 !important;
 }
-ul.step-anchor > li.active > a:after {
-    border-left: 30px solid #35c6f5 !important;
-}
+
+    ul.step-anchor > li.active > a:after {
+        border-left: 30px solid #35c6f5 !important;
+    }
+
 ul.step-anchor > li.danger > a {
     border-color: #ee504c !important;
     color: #fff !important;
     background: #ee504c !important;
 }
-ul.step-anchor > li.danger > a:after {
-    border-left: 30px solid #ee504c !important;
-}
-ul.step-anchor > li.danger > a:after {
-    border-left: 30px solid #ee504c !important;
-}
+
+    ul.step-anchor > li.danger > a:after {
+        border-left: 30px solid #ee504c !important;
+    }
+
+    ul.step-anchor > li.danger > a:after {
+        border-left: 30px solid #ee504c !important;
+    }
+
 ul.step-anchor > li.clickable > a:hover {
     color: #e8e8e8 !important;
     background-color: #70ceec !important;
 }
-ul.step-anchor > li.clickable > a:hover:after {
-    border-left: 30px solid #70ceec !important;
-}
-p{
-    font-size:15px;
+
+    ul.step-anchor > li.clickable > a:hover:after {
+        border-left: 30px solid #70ceec !important;
+    }
+
+p {
+    font-size: 15px;
     font-weight: 400
 }
+
 .areaForm {
     padding: 20px;
     padding-bottom: 15px;
     box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.05), 0 0px 10px 0 rgba(0, 0, 0, 0.05);
 }
+
 .areaHeader {
-    margin:0;
+    margin: 0;
     width: 100%;
     /*text-align: center;*/
     background-color: #5BCFF3;
     color: white;
-    display:flex;
+    display: flex;
 }
+
 .areaHeaderTitleNode {
     background-color: #91dff7;
     padding: 3px 10px 0px 10px;
     /*margin-left: 4px;*/
 }
+
 .areaHeaderTitleInNode {
     background-color: #79d8f5;
     padding: 3px 10px 0px 10px;
     /*margin-left: 4px;*/
 }
+
 .areaHeaderTitle {
     text-shadow: 0px 0px 30px #2c5173;
     font-size: 22px;
@@ -603,12 +670,15 @@ p{
     padding: 0px 0 0px 0px;
     display: inherit;
 }
+
 .areaHeader > h3 {
-    padding:1px;
+    padding: 1px;
 }
+
 .areaHeaderBtnSec {
     align-self: center;
 }
+
 .areaHeaderBtn {
     padding: 10px 15px 5px 15px;
     background-color: #79d8f5;
@@ -620,35 +690,35 @@ p{
     margin-top: 0px
 }
 
-.areaHeaderBtn:hover {
-    background-color: #53cef2;
-    box-shadow: 0 20px 30px 0 rgba(0, 0, 0, 0.1), 0 0px 20px 0 rgba(0, 0, 0, 0.19);
-    color: white;
-    font-size: 15.1px;
-    font-family: Roboto;
-    font-weight: 300;
-    margin-top: 0px
-}
+    .areaHeaderBtn:hover {
+        background-color: #53cef2;
+        box-shadow: 0 20px 30px 0 rgba(0, 0, 0, 0.1), 0 0px 20px 0 rgba(0, 0, 0, 0.19);
+        color: white;
+        font-size: 15.1px;
+        font-family: Roboto;
+        font-weight: 300;
+        margin-top: 0px
+    }
 
-.areaHeaderBtn:active {
-    background-color: #53cef2;
-    box-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.1), 0 0px 10px 0 rgba(0, 0, 0, 0.19);
-    color: white;
-    font-size: 15px;
-    font-family: Roboto;
-    font-weight: 300;
-    margin-top: 0px
-}
+    .areaHeaderBtn:active {
+        background-color: #53cef2;
+        box-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.1), 0 0px 10px 0 rgba(0, 0, 0, 0.19);
+        color: white;
+        font-size: 15px;
+        font-family: Roboto;
+        font-weight: 300;
+        margin-top: 0px
+    }
 
-.areaHeaderBtn:visited {
-    background-color: #53cef2;
-    box-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.1), 0 0px 10px 0 rgba(0, 0, 0, 0.19);
-    color: white;
-    font-size: 15px;
-    font-family: Roboto;
-    font-weight: 300;
-    margin-top: 0px
-}
+    .areaHeaderBtn:visited {
+        background-color: #53cef2;
+        box-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.1), 0 0px 10px 0 rgba(0, 0, 0, 0.19);
+        color: white;
+        font-size: 15px;
+        font-family: Roboto;
+        font-weight: 300;
+        margin-top: 0px
+    }
 
 #loader {
     position: absolute;
@@ -664,6 +734,7 @@ p{
     -webkit-animation: spin 2s linear infinite;
     animation: spin 2s linear infinite;
 }
+
 .loader-inline {
     left: 50%;
     top: 50%;
@@ -677,6 +748,7 @@ p{
     -webkit-animation: spin 2s linear infinite;
     animation: spin 2s linear infinite;
 }
+
 .loader {
     left: 50%;
     top: 50%;
@@ -690,6 +762,7 @@ p{
     -webkit-animation: spin 2s linear infinite;
     animation: spin 2s linear infinite;
 }
+
 @-webkit-keyframes spin {
     0% {
         -webkit-transform: rotate(0deg);
@@ -746,7 +819,6 @@ p{
 .mainLoader {
     height: 100%;
     width: 100%;
-
     position: fixed; /* Stay in place */
     z-index: 10; /* Sit on top */
     left: 0;
@@ -754,11 +826,34 @@ p{
     background-color: rgba(0,0,0, 0.5); /* Black w/opacity */
     overflow-x: hidden; /* Disable horizontal scroll */
     transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-#smartwizard{
-    display:none;
+
+#smartwizard {
+    display: none;
+}
+
+.property-section {
+    display: flex;
+    height: 450px;
+    flex-direction: column;
+}
+
+.property-panel-header {
+    align-self: flex-start;
+    width: 100%;
+}
+
+.property-panel-footer {
+    margin-top: 15px;
+    align-self: flex-end;
+    width: 100%;
+}
+
+.property-panel-content {
+    overflow: auto;
+    flex-grow: 1;
+    width: 100%;
 }

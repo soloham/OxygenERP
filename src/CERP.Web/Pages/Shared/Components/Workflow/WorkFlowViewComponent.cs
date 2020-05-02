@@ -4,6 +4,7 @@ using Syncfusion.EJ2.Grids;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.AspNetCore.Mvc;
+using static CERP.Web.Pages.Shared.Components.WorkFlowVCModel;
 
 namespace CERP.Web.Pages.Shared.Components
 {
@@ -13,9 +14,9 @@ namespace CERP.Web.Pages.Shared.Components
         {
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(WorkflowModule WorkflowModule, string Id, string ParentTitle)
+        public async Task<IViewComponentResult> InvokeAsync(WorkflowModule WorkflowModule, string Id, string ParentTitle, List<WorkflowFormField> externalFormFields)
         {
-            WorkFlowVCModel model = new WorkFlowVCModel(Id, WorkflowModule, ParentTitle);
+            WorkFlowVCModel model = new WorkFlowVCModel(Id, WorkflowModule, ParentTitle, externalFormFields);
 
             return View(model);
         }
@@ -23,10 +24,12 @@ namespace CERP.Web.Pages.Shared.Components
 
     public class WorkFlowVCModel
     {
-        public WorkFlowVCModel(string id, WorkflowModule workflowModule, string parentTitle)
+        public WorkFlowVCModel(string id, WorkflowModule workflowModule, string parentTitle, List<WorkflowFormField> externalFormFields)
         {
             Id = id;
+            ParentTitle = parentTitle;
             WorkflowModule = workflowModule;
+            ExternalFormFields = externalFormFields;
 
             List<object> ApprovalRouteCommands = new List<object>();
             ApprovalRouteCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat e-DeleteButton" } });
@@ -102,16 +105,37 @@ namespace CERP.Web.Pages.Shared.Components
                 SearchSettings = new GridSearchSettings() { },
                 Columns = APTasksGridColumns
             };
-            ParentTitle = parentTitle;
         }
 
         public string Id { get; set; }
         public WorkflowModule WorkflowModule { get; set; }
         public string ParentTitle { get; set; }
 
+        public WorkflowForm Form { get; }
+        public List<WorkflowFormField> ExternalFormFields { get; set; } = new List<WorkflowFormField>();
+
         public List<GridColumn> ApprovalRouteGridColumns { get; set; } = new List<GridColumn>();
         public List<GridColumn> TasksGridColumns { get; set; } = new List<GridColumn>();
         public List<GridColumn> APTasksGridColumns { get; set; } = new List<GridColumn>();
         public Grid APSecondaryDetailsGrid { get; set; } = new Grid();
+
+        public class WorkflowForm
+        {
+            public List<WorkflowFormField> FormFields { get; set; } = new List<WorkflowFormField>();
+
+        }
+        public class WorkflowFormField
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string MappingName { get; set; }
+
+            public WorkflowFormFieldType FieldType { get; set; }
+        }
+        public enum WorkflowFormFieldType
+        {
+            System,
+            Custom
+        }
     }
 }

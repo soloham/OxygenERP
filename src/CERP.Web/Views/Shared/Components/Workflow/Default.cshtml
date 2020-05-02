@@ -101,124 +101,138 @@
                     <e-diagram-snapsettings horizontalGridlines="gridLines" verticalGridlines="gridLines"></e-diagram-snapsettings>
                 </ejs-diagram>
             </div>
-            <div id="@(Model.Id)_propertySection" class="col-lg-4 property-section" style="padding:15px; display:none; height:450px">
-                <div class="property-panel-header mainTitle">
-                    Properties
-                    <hr style="margin: 10px 0 10px 0;" />
-                </div>
-                <div id="propertyPanel" class="e-remove-selection">
-                    <div id="approval-route-property-panel-content" role="form" data-toggle="validator" style="height: 100%;">
-                        <div class="row">
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                                <div class="form-group">
-                                    <label class="control-label m-b-5 ">Department:</label>
-                                    <select id="@(Model.Id)_apDepartmentIds" name="DepartmentIds" multiple="multiple" class="form-control" onchange="SelectDepartmentPositions('@(Model.Id)_apDepartmentIds', '@(Model.Id)_apPositionIds', @(Model.Id)_curDepartments, @(Model.Id)_curPositions, @(Model.Id)_isEditingAP, @(Model.Id)_isEditingPosLoadedAP, @(Model.Id)_apSelectPositions);" required>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                                <div class="form-group">
-                                    <label class="margin-bottom-5 control-label">Position:</label>
-                                    <select id="@(Model.Id)_apPositionIds" name="PositionIds" class="form-control" multiple="multiple" onchange="SelectPositionEmployees('@(Model.Id)_apPositionIds', '@(Model.Id)_apEmployeeIds',@(Model.Id)_curPositions, @(Model.Id)_curEmployees, @(Model.Id)_isEditingAP, @(Model.Id)_isEditingEmpLoadedAP, @(Model.Id)_apSelectEmployees);" required>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row m-md-t-5 m-md-b-10">
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                                <div class="form-group">
-                                    <label class="margin-bottom-5 control-label">Employee:</label>
-                                    <select id="@(Model.Id)_apEmployeeIds" onchange="if ($('#@(Model.Id)_apEmployeeIds').val().length > 1) $('#@(Model.Id)_APAllowAnySec').show(); else $('#@(Model.Id)_APAllowAnySec').hide();" name="Employee" multiple="multiple" class="form-control" required>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row m-md-t-5 m-md-b-10">
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                                <div class="form-group">
-                                    <label class="control-label m-b-5 ">Additional Information:</label>
+            <div id="@(Model.Id)_propertySection" class="col-lg-4" style="display:none">
+                <div class="property-section">
+                    <div class="property-panel-header">
+                        <span class="mainTitle">Properties</span>
+                        <hr style="margin: 10px 0 10px 0;" />
+                    </div>
+                    <div id="@(Model.Id)_propertyPanel" class="e-remove-selection property-panel-content">
+                        <div id="@(Model.Id)_approval-route-panel" role="form" data-toggle="validator">
+                            <ejs-accordion id="@(Model.Id)_approval-route-panel-accordion">
+                                <e-accordion-accordionitems>
+                                    <e-accordion-accordionitem expanded="true" header="General Properties" content="#@(Model.Id)_generalInfo"></e-accordion-accordionitem>
+                                    <e-accordion-accordionitem header="View" content=""></e-accordion-accordionitem>
+                                    <e-accordion-accordionitem header="Action" content=""></e-accordion-accordionitem>
+                                    <e-accordion-accordionitem header="Reporting" content=""></e-accordion-accordionitem>
+                                </e-accordion-accordionitems>
+                            </ejs-accordion>
 
-                                    <div class="btn-group" data-toggle="buttons">
-                                        <label class="btn btn-default active">
-                                            <input type="checkbox" id="@(Model.Id)_APIsActive" autocomplete="off"> Active
-                                        </label>
-                                        <label class="btn btn-default active">
-                                            <input type="checkbox" id="@(Model.Id)_APNotify" autocomplete="off"> Notify Employee
-                                        </label>
-                                        <label class="btn btn-default">
-                                            <input type="checkbox" id="@(Model.Id)_APIsPoster" autocomplete="off"> Allow Posting
-                                        </label>
-                                        <label class="btn btn-default" id="@(Model.Id)_APAllowAnySec" style="display:none">
-                                            <input type="checkbox" id="@(Model.Id)_APAllowAny" autocomplete="off"> Allow Any
-                                        </label>
+                            <div id="@(Model.Id)_generalInfo">
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            <label class="control-label m-b-5 ">Department:</label>
+                                            <select id="@(Model.Id)_apDepartmentIds" name="DepartmentIds" multiple="multiple" class="form-control" onchange="SelectDepartmentPositions('@(Model.Id)_apDepartmentIds', '@(Model.Id)_apPositionIds', @(Model.Id)_curDepartments, @(Model.Id)_curPositions, @(Model.Id)_isEditingAP, @(Model.Id)_isEditingPosLoadedAP, @(Model.Id)_apSelectPositions);" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            <label class="margin-bottom-5 control-label">Position:</label>
+                                            <select id="@(Model.Id)_apPositionIds" name="PositionIds" class="form-control" multiple="multiple" onchange="SelectPositionEmployees('@(Model.Id)_apPositionIds', '@(Model.Id)_apEmployeeIds',@(Model.Id)_curPositions, @(Model.Id)_curEmployees, @(Model.Id)_isEditingAP, @(Model.Id)_isEditingEmpLoadedAP, @(Model.Id)_apSelectEmployees);" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row m-md-t-5 m-md-b-10">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group">
+                                            <label class="margin-bottom-5 control-label">Employee:</label>
+                                            <select id="@(Model.Id)_apEmployeeIds" onchange="if ($('#@(Model.Id)_apEmployeeIds').val().length > 1) $('#@(Model.Id)_APAllowAnySec').show(); else $('#@(Model.Id)_APAllowAnySec').hide();" name="Employee" multiple="multiple" class="form-control" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row m-md-t-5 m-md-b-10">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group">
+                                            <label class="control-label m-b-5 ">Additional Information:</label>
+
+                                            <div class="btn-group" data-toggle="buttons">
+                                                <label class="btn btn-default active">
+                                                    <input type="checkbox" id="@(Model.Id)_APIsActive" autocomplete="off"> Active
+                                                </label>
+                                                <label class="btn btn-default active">
+                                                    <input type="checkbox" id="@(Model.Id)_APNotify" autocomplete="off"> Notify Employee
+                                                </label>
+                                                <label class="btn btn-default">
+                                                    <input type="checkbox" id="@(Model.Id)_APIsPoster" autocomplete="off"> Allow Posting
+                                                </label>
+                                                <label class="btn btn-default" id="@(Model.Id)_APAllowAnySec" style="display:none">
+                                                    <input type="checkbox" id="@(Model.Id)_APAllowAny" autocomplete="off"> Allow Any
+                                                </label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <div id="@(Model.Id)_task-property-panel" style="height: 100%; display:none">
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label class="control-label m-b-5 ">Department:</label>
+                                        <select id="@(Model.Id)_taskDepartmentIds" name="DepartmentIds" multiple="multiple" class="form-control" onchange="SelectDepartmentPositions('@(Model.Id)_taskDepartmentIds', '@(Model.Id)_taskPositionIds', @(Model.Id)_curDepartments, @(Model.Id)_curPositions);">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label class="margin-bottom-5 control-label">Position:</label>
+                                        <select id="@(Model.Id)_taskPositionIds" name="PositionIds" class="form-control" multiple="multiple" onchange="SelectPositionEmployees('@(Model.Id)_taskPositionIds', '@(Model.Id)_taskEmployeeIds',@(Model.Id)_curPositions, @(Model.Id)_curEmployees);">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row m-md-t-5 m-md-b-10">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <label class="margin-bottom-5 control-label">Employee:</label>
+                                        <select id="@(Model.Id)_taskEmployeeIds" onchange="if ($('#@(Model.Id)_taskEmployeeIds').val().length > 1) $('#@(Model.Id)_taskAllowAnySec').show(); else $('#@(Model.Id)_taskAllowAnySec').hide();" name="Employee" multiple="multiple" class="form-control">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row m-md-t-5 m-md-b-10">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <label class="control-label m-b-5 ">Additional Information:</label>
 
-                        <div class="row"> 
-                            <div class="col-md-12">
-                                <button type="button" id="@(Model.Id)_approvalRoute_savePropertiesBtn" onclick="@(Model.Id)_approvalRoute_saveProperties()" class="btn btn-success btn-block">
-                                    SAVE PROPERTIES
-                                </button>
-                            </div> 
+                                        <div class="btn-group" data-toggle="buttons">
+                                            <label class="btn btn-default active">
+                                                <input type="checkbox" id="@(Model.Id)_taskIsActive" autocomplete="off"> Active
+                                            </label>
+                                            <label class="btn btn-default active">
+                                                <input type="checkbox" id="@(Model.Id)_taskNotify" autocomplete="off"> Notify Employee
+                                            </label>
+                                            <label class="btn btn-default">
+                                                <input type="checkbox" id="@(Model.Id)_taskIsPoster" autocomplete="off"> Allow Posting
+                                            </label>
+                                            <label class="btn btn-default" id="@(Model.Id)_taskAllowAnySec" style="display:none">
+                                                <input type="checkbox" id="@(Model.Id)_taskAllowAny" autocomplete="off"> Allow Any
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button type="button" id="@(Model.Id)_task_savePropertiesBtn" onclick="@(Model.Id)_task_saveProperties()" class="btn btn-success btn-block">
+                                        SAVE PROPERTIES
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div id="task-property-panel-content" style="height: 100%; display:none">
+                    <div class="property-panel-footer">
                         <div class="row">
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                                <div class="form-group">
-                                    <label class="control-label m-b-5 ">Department:</label>
-                                    <select id="@(Model.Id)_taskDepartmentIds" name="DepartmentIds" multiple="multiple" class="form-control" onchange="SelectDepartmentPositions('@(Model.Id)_taskDepartmentIds', '@(Model.Id)_taskPositionIds', @(Model.Id)_curDepartments, @(Model.Id)_curPositions);">
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                                <div class="form-group">
-                                    <label class="margin-bottom-5 control-label">Position:</label>
-                                    <select id="@(Model.Id)_taskPositionIds" name="PositionIds" class="form-control" multiple="multiple" onchange="SelectPositionEmployees('@(Model.Id)_taskPositionIds', '@(Model.Id)_taskEmployeeIds',@(Model.Id)_curPositions, @(Model.Id)_curEmployees);">
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row m-md-t-5 m-md-b-10">
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                                <div class="form-group">
-                                    <label class="margin-bottom-5 control-label">Employee:</label>
-                                    <select id="@(Model.Id)_taskEmployeeIds" onchange="if ($('#@(Model.Id)_taskEmployeeIds').val().length > 1) $('#@(Model.Id)_taskAllowAnySec').show(); else $('#@(Model.Id)_taskAllowAnySec').hide();" name="Employee" multiple="multiple" class="form-control">
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row m-md-t-5 m-md-b-10">
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                                <div class="form-group">
-                                    <label class="control-label m-b-5 ">Additional Information:</label>
-
-                                    <div class="btn-group" data-toggle="buttons">
-                                        <label class="btn btn-default active">
-                                            <input type="checkbox" id="@(Model.Id)_taskIsActive" autocomplete="off"> Active
-                                        </label>
-                                        <label class="btn btn-default active">
-                                            <input type="checkbox" id="@(Model.Id)_taskNotify" autocomplete="off"> Notify Employee
-                                        </label>
-                                        <label class="btn btn-default">
-                                            <input type="checkbox" id="@(Model.Id)_taskIsPoster" autocomplete="off"> Allow Posting
-                                        </label>
-                                        <label class="btn btn-default" id="@(Model.Id)_taskAllowAnySec" style="display:none">
-                                            <input type="checkbox" id="@(Model.Id)_taskAllowAny" autocomplete="off"> Allow Any
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row"> 
                             <div class="col-md-12">
-                                <button type="button" id="@(Model.Id)_task_savePropertiesBtn" onclick="@(Model.Id)_task_saveProperties()" class="btn btn-success btn-block">
+                                <button type="button" id="@(Model.Id)_savePropertiesBtn" onclick="@(Model.Id)_saveProperties()" class="btn btn-success btn-block">
                                     SAVE PROPERTIES
                                 </button>
-                            </div> 
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -388,7 +402,11 @@
     var @(Model.Id)_curDepartments = [];
     var @(Model.Id)_curPositions = [];
     var @(Model.Id)_curEmployees = [];
+
+    let externalFormFields = @(Model.ExternalFormFields != null? Json.Serialize(Model.ExternalFormFields) : Json.Serialize(new List<object>()));
+
     $(document).ready(function () {
+        console.log(externalFormFields);
         var options = {
             buttonWidth: '100%',
             includeSelectAllOption: true,
@@ -398,7 +416,6 @@
             includeResetDivider: true,
             enableCollapsibleOptGroups: true
         };
-        console.log("SfdS");
         $('#@(Model.Id)_apDepartmentIds').multiselect({
             buttonWidth: '100%',
             includeSelectAllOption: true,
@@ -563,6 +580,7 @@
 </script>
 
 <script>
+    let curNodeType = '';
     let @(Model.Id)_isEditingAP = false;
     let @(Model.Id)_isEditingPosLoadedAP = false;
     let @(Model.Id)_isEditingEmpLoadedAP = false;
@@ -572,8 +590,10 @@
         //console.log(args);
         if (typeof (args.newValue) !== 'undefined' && args.newValue.length > 0) {
             if (args.newValue[0].properties.id.includes("Approval Route")) {
-                $('#task-property-panel-content').hide();
-                $('#approval-route-property-panel-content').show();
+                curNodeType = 'approval-route';
+
+                $('#@(Model.Id)_task-property-panel').hide();
+                $('#@(Model.Id)_approval-route-panel').show();
                 cERP.appServices.setup.departmentSetup.department.getDepartments().done(function (data) {
                     departments = [];
                     $.each(data, function (i, d) {
@@ -646,8 +666,10 @@
             }
             else if (args.newValue[0].properties.id.includes("Task"))
             {
-                $('#approval-route-property-panel-content').hide();
-                $('#task-property-panel-content').show();
+                curNodeType = 'task';
+
+                $('#@(Model.Id)_approval-route-panel').hide();
+                $('#@(Model.Id)_task-property-panel').show();
                 cERP.appServices.setup.departmentSetup.department.getDepartments().done(function (data) {
                     departments = [];
                     $.each(data, function (i, d) {
@@ -669,6 +691,7 @@
                 }, 500);
             }
             else {
+                curNodeType = '';
                 if ($(`#@(Model.Id)_diagramArea`).hasClass('col-lg-8')) {
                     $(`#@(Model.Id)_diagramArea`).removeClass('col-lg-8');
                     $(`#@(Model.Id)_diagramArea`).addClass('col-lg-12');
@@ -690,26 +713,32 @@
             }, 500);
         }
     }
-    function @(Model.Id)_approvalRoute_saveProperties() {
-        //var state = objectifyForm($('#approval-route-property-panel-content').find("select, textarea, input").serializeArray());
-        if (ValidateForm('approval-route-property-panel-content')) {
-            console.log('true');
-            var state = {
-                employeeIds: $('#@(Model.Id)_apEmployeeIds').val(),
-                positionIds: $('#@(Model.Id)_apPositionIds').val(),
-                departmentIds: $('#@(Model.Id)_apDepartmentIds').val(),
+    function @(Model.Id)_saveProperties() {
+        //var state = objectifyForm($('#@(Model.Id)_approval-route-panel').find("select, textarea, input").serializeArray());
+        switch (curNodeType) {
+            case 'approval-route':
+                if (ValidateForm('@(Model.Id)_approval-route-panel')) {
+                    console.log('true');
+                    var state = {
+                        employeeIds: $('#@(Model.Id)_apEmployeeIds').val(),
+                        positionIds: $('#@(Model.Id)_apPositionIds').val(),
+                        departmentIds: $('#@(Model.Id)_apDepartmentIds').val(),
 
-                isActive: $('#@(Model.Id)_APIsActive').parent().hasClass('active'),
-                notifyEmployee: $('#@(Model.Id)_APNotify').parent().hasClass('active'),
-                isPoster: $('#@(Model.Id)_APIsPoster').parent().hasClass('active'),
-                allowAny: $('#@(Model.Id)_APAllowAny').parent().hasClass('active')
-            };
+                        isActive: $('#@(Model.Id)_APIsActive').parent().hasClass('active'),
+                        notifyEmployee: $('#@(Model.Id)_APNotify').parent().hasClass('active'),
+                        isPoster: $('#@(Model.Id)_APIsPoster').parent().hasClass('active'),
+                        allowAny: $('#@(Model.Id)_APAllowAny').parent().hasClass('active')
+                    };
 
-            if (state.employeeIds.length == 0 || state.positionIds.length == 0 || state.departmentIds.length == 0)
-                return;
+                    if (state.employeeIds.length == 0 || state.positionIds.length == 0 || state.departmentIds.length == 0)
+                        return;
 
-            var curItem = $(`#@(Model.Id)_container`)[0].ej2_instances[0].selectedItems.properties.nodes[0].addInfo = state;
-            console.log(curItem);
+                    var curItem = $(`#@(Model.Id)_container`)[0].ej2_instances[0].selectedItems.properties.nodes[0].addInfo = state;
+                    console.log(curItem);
+                }
+                break;
+            case 'task':
+                break;
         }
     }
     function @(Model.Id)_getNodeDefaults(obj, diagram) {

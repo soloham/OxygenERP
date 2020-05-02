@@ -41,6 +41,67 @@
         new GridColumn { Width = "150", HeaderText = "Actions", TextAlign=TextAlign.Center, MinWidth="10", Commands = leaveRequestsCommands }
     };
 
+    List<CERP.Web.Pages.Shared.Components.WorkFlowVCModel.WorkflowFormField> WorkflowFormFields = new List<CERP.Web.Pages.Shared.Components.WorkFlowVCModel.WorkflowFormField>();
+    WorkflowFormFields.Add(new CERP.Web.Pages.Shared.Components.WorkFlowVCModel.WorkflowFormField()
+    {
+        FieldType = CERP.Web.Pages.Shared.Components.WorkFlowVCModel.WorkflowFormFieldType.System,
+        Name = "LR Title",
+        MappingName = "LRTitle"
+    });
+    WorkflowFormFields.Add(new CERP.Web.Pages.Shared.Components.WorkFlowVCModel.WorkflowFormField()
+    {
+        FieldType = CERP.Web.Pages.Shared.Components.WorkFlowVCModel.WorkflowFormFieldType.System,
+        Name = "LR Title Arabic",
+        MappingName = "LRTitleLocalized"
+    });
+    WorkflowFormFields.Add(new CERP.Web.Pages.Shared.Components.WorkFlowVCModel.WorkflowFormField()
+    {
+        FieldType = CERP.Web.Pages.Shared.Components.WorkFlowVCModel.WorkflowFormFieldType.System,
+        Name = "LR Prefix",
+        MappingName = "LRPrefix"
+    });
+    WorkflowFormFields.Add(new CERP.Web.Pages.Shared.Components.WorkFlowVCModel.WorkflowFormField()
+    {
+        FieldType = CERP.Web.Pages.Shared.Components.WorkFlowVCModel.WorkflowFormFieldType.System,
+        Name = "LR Starting No",
+        MappingName = "LRStartingNo"
+    });
+    WorkflowFormFields.Add(new CERP.Web.Pages.Shared.Components.WorkFlowVCModel.WorkflowFormField()
+    {
+        FieldType = CERP.Web.Pages.Shared.Components.WorkFlowVCModel.WorkflowFormFieldType.System,
+        Name = "LR Leave Type",
+        MappingName = "LRLeaveTypeId"
+    });
+    WorkflowFormFields.Add(new CERP.Web.Pages.Shared.Components.WorkFlowVCModel.WorkflowFormField()
+    {
+        FieldType = CERP.Web.Pages.Shared.Components.WorkFlowVCModel.WorkflowFormFieldType.System,
+        Name = "LR Entitlement Days",
+        MappingName = "LREntitlementDays"
+    });
+    //WorkflowFormFields.Add(new CERP.Web.Pages.Shared.Components.WorkFlowVCModel.WorkflowFormField()
+    //{
+    //    FieldType = CERP.Web.Pages.Shared.Components.WorkFlowVCModel.WorkflowFormFieldType.System,
+    //    Name = "Has Exit Re-Entry Request",
+    //    MappingName = "LRExitReentryAD"
+    //});
+    //WorkflowFormFields.Add(new CERP.Web.Pages.Shared.Components.WorkFlowVCModel.WorkflowFormField()
+    //{
+    //    FieldType = CERP.Web.Pages.Shared.Components.WorkFlowVCModel.WorkflowFormFieldType.System,
+    //    Name = "Has Air Ticket Request",
+    //    MappingName = "LRAirTicketAD"
+    //});
+    //WorkflowFormFields.Add(new CERP.Web.Pages.Shared.Components.WorkFlowVCModel.WorkflowFormField()
+    //{
+    //    FieldType = CERP.Web.Pages.Shared.Components.WorkFlowVCModel.WorkflowFormFieldType.System,
+    //    Name = "Has Notes Requirement",
+    //    MappingName = "LRAirTicketAD"
+    //});
+    //WorkflowFormFields.Add(new CERP.Web.Pages.Shared.Components.WorkFlowVCModel.WorkflowFormField()
+    //{
+    //    FieldType = CERP.Web.Pages.Shared.Components.WorkFlowVCModel.WorkflowFormFieldType.System,
+    //    Name = "LR Entitlement Days",
+    //    MappingName = "LREntitlementDays"
+    //});
 }
 <script>
     isEditingLR = false;
@@ -294,12 +355,12 @@
 <div class="panel-body p-t-0" style="padding-bottom:0;">
     <div class="col-lg-12 padding-right-0">
         <div class="areaHeader" style="display:flex;">
-            <div id="lrLoader" class="pull-left loader-inline" style="display:none"></div>        
+            <div id="lrLoader" class="pull-left loader-inline" style="display:none"></div>
             <div class="areaHeaderTitle">
                 <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Current Leave Requests</span>
                 @*<span id="" class="areaHeaderTitleInNode menu-text"> > </span>*@
                 @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
-            </div>     
+            </div>
             @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
             <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
                 @*<div class="clearfix margin-15"></div>*@
@@ -354,31 +415,31 @@
 
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
-                        <label class="control-label m-b-5 ">Department:</label>
+                        <label class="control-label m-b-5 ">Departments:</label>
                         <select id="lrDepartmentIds" name="LRDepartmentIds" multiple="multiple" class="form-control" onchange="SelectDepartmentPositions('lrDepartmentIds', 'lrPositionIds', curLRDepartments, curLRPositions);" required>
                         </select>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
-                        <label class="control-label m-b-5 ">Position:</label>
+                        <label class="control-label m-b-5 ">Positions:</label>
                         <select id="lrPositionIds" name="LRPositionIds" multiple="multiple" class="form-control" required>
                         </select>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
-                        <label class="margin-bottom-5 control-label">Employment Type:</label>
+                        <label class="margin-bottom-5 control-label">Employment Types:</label>
                         <select id="lrEmploymentTypeIds" name="EmployementTypeIds" multiple="multiple" class="form-control" required>
                         </select>
                         @*<ejs-dropdownlist id="vegetables" placeholder="Select an employment type" popupHeight="200px" dataSource="@employementTypes">
-                        <e-dropdownlist-fields text="Value" value="Id"></e-dropdownlist-fields>
-                    </ejs-dropdownlist>*@
+                                <e-dropdownlist-fields text="Value" value="Id"></e-dropdownlist-fields>
+                            </ejs-dropdownlist>*@
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
-                        <label class="margin-bottom-5 control-label">Employmee Status:</label>
+                        <label class="margin-bottom-5 control-label">Employmee Statuses:</label>
                         <select id="lrEmployeeStatusIds" name="EmployementStatusIds" multiple="multiple" class="form-control" required>
                         </select>
                     </div>
@@ -404,13 +465,13 @@
                     <div class="col-sm-9">
                         <div class="btn-group" data-toggle="buttons">
                             <label class="btn btn-default">
-                                <input type="checkbox" id="LRAdvanceSalaryAD" onchange="if ($('#LRAdvanceSalaryAD').parent().hasClass('active')) { $('#LRAdvanceSalaryRequired').parent().show(); } else { $('#LRAdvanceSalaryRequired').parent().hide(); }" autocomplete="off"> Advance Salary
+                                <input type="checkbox" id="LRAdvanceSalaryAD" name="LRAdvanceSalaryAD" onchange="if ($('#LRAdvanceSalaryAD').parent().hasClass('active')) { $('#LRAdvanceSalaryRequired').parent().show(); } else { $('#LRAdvanceSalaryRequired').parent().hide(); }" autocomplete="off"> Advance Salary
                             </label>
                             <label class="btn btn-default">
-                                <input type="checkbox" id="LRExitReentryAD" onchange="if ($('#LRExitReentryAD').parent().hasClass('active')) { $('#LRExitReentryRequired').parent().show(); } else { $('#LRExitReentryRequired').parent().hide(); }" autocomplete="off"> Exit Re-Entry
+                                <input type="checkbox" id="LRExitReentryAD" name="LRExitReentryAD" onchange="if ($('#LRExitReentryAD').parent().hasClass('active')) { $('#LRExitReentryRequired').parent().show(); } else { $('#LRExitReentryRequired').parent().hide(); }" autocomplete="off"> Exit Re-Entry
                             </label>
                             <label class="btn btn-default">
-                                <input type="checkbox" id="LRAirTicketAD" onchange="if ($('#LRAirTicketAD').parent().hasClass('active')) { $('#LRAirTicketRequired').parent().show(); } else { $('#LRAirTicketRequired').parent().hide(); }" autocomplete="off"> Air Ticket
+                                <input type="checkbox" id="LRAirTicketAD" name="LRAirTicketAD" onchange="if ($('#LRAirTicketAD').parent().hasClass('active')) { $('#LRAirTicketRequired').parent().show(); } else { $('#LRAirTicketRequired').parent().hide(); }" autocomplete="off"> Air Ticket
                             </label>
                         </div>
                     </div>
@@ -424,26 +485,31 @@
                     <div class="col-sm-9">
                         <div class="btn-group" data-toggle="buttons">
                             <label class="btn btn-default">
-                                <input type="checkbox" id="LRNotesRequired" autocomplete="off"> Notes
+                                <input type="checkbox" id="LRNotesRequired" name="LRNotesRequired" autocomplete="off"> Notes
                             </label>
                             <label class="btn btn-default">
-                                <input type="checkbox" id="LRAttachmentRequired" autocomplete="off"> Attachment
+                                <input type="checkbox" id="LRAttachmentRequired" name="LRAttachmentRequired" autocomplete="off"> Attachment
                             </label>
                             <label class="btn btn-default" style="display: none;">
-                                <input type="checkbox" id="LRAdvanceSalaryRequired" autocomplete="off"> Advance Salary
+                                <input type="checkbox" id="LRAdvanceSalaryRequired" name="LRAdvanceSalaryRequired" autocomplete="off"> Advance Salary
                             </label>
                             <label class="btn btn-default" style="display: none;">
-                                <input type="checkbox" id="LRExitReentryRequired" autocomplete="off"> Exit Re-Entry
+                                <input type="checkbox" id="LRExitReentryRequired" name="LRExitReentryRequired" autocomplete="off"> Exit Re-Entry
                             </label>
                             <label class="btn btn-default" style="display: none;">
-                                <input type="checkbox" id="LRAirTicketRequired" autocomplete="off"> Air Ticket
+                                <input type="checkbox" id="LRAirTicketRequired" name="LRAirTicketRequired" autocomplete="off"> Air Ticket
                             </label>
                         </div>
                     </div>
                 </div>
             </div>
             <hr />
-            <vc:work-flow id="LeaveRequest" workflow-module="@CERP.App.WorkflowModule.LeaveRequest" parent-title="Current Leave Requests"></vc:work-flow>
+            <vc:work-flow id="LeaveRequest"
+                          workflow-module="@CERP.App.WorkflowModule.LeaveRequest"
+                          parent-title="Current Leave Requests" 
+                          external-form-fields="@WorkflowFormFields">
+
+            </vc:work-flow>
             <hr />
             <div class="row m-t-20">
                 <div class="col-lg-12">
@@ -453,12 +519,12 @@
         </form>
         <div id="leaveRequestsCS" class="control-section">
             <ejs-grid id="AllLeaveRequestsGrid" enableAutoFill="true" columns="@leaveRequestsGridColumns"
-                        dataBound="dataBoundResponsive" commandClick="leaveRequestsCommandClick" actionBegin="leaveRequestsActionBegin"
-                        allowExcelExport="true" height="100%" allowPdfExport="true"
-                        hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
-                        allowSorting="true" allowMultiSorting="true" gridLines="Both"
-                        toolbarClick="leaveRequestsToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
-                        allowPaging="true" allowResizing="true">
+                      dataBound="dataBoundResponsive" commandClick="leaveRequestsCommandClick" actionBegin="leaveRequestsActionBegin"
+                      allowExcelExport="true" height="100%" allowPdfExport="true"
+                      hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                      allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                      toolbarClick="leaveRequestsToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
+                      allowPaging="true" allowResizing="true">
 
                 @*<e-data-manager url="/api/app/leaveRequestTemplates/getAllAsync" adaptor="WebApiAdaptor" ></e-data-manager>*@
 
@@ -641,17 +707,17 @@
                             $('#LRAttachmentRequired').parent().addClass('active');
                         else
                             $('#LRAttachmentRequird').parent().removeClass('active');
-    
+
                         if (curLREditRow.hasAirTicketRequirement)
                             $('#LRAirTicketRequired').parent().addClass('active');
                         else
                             $('#LRAirTicketRequired').parent().removeClass('active');
-                        
+
                         if (curLREditRow.hasAdvanceSalaryRequirement)
                             $('#LRAdvanceSalaryRequired').parent().addClass('active');
                         else
                             $('#LRAdvanceSalaryRequired').parent().removeClass('active');
-                        
+
                         if (curLREditRow.hasExitReentryRequirement)
                             $('#LRExitReentryRequired').parent().addClass('active');
                         else
