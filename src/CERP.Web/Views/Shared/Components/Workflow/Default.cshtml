@@ -86,6 +86,81 @@
         <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Define Workflow</span>
     </div>
 </div>
+<div>
+    <ejs-accordion id="@(Model.Id)_workflow-properties-accordion">
+        <e-accordion-accordionitems>
+            <e-accordion-accordionitem expanded="true" header="Custom Fields" content="#@(Model.Id)_customFieldsInfo"></e-accordion-accordionitem>
+        </e-accordion-accordionitems>
+    </ejs-accordion>
+
+
+    <div id="@(Model.Id)_customFieldsInfo">
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="control-label m-b-5 ">Field Type:</label>
+                    <select id="@(Model.Id)_viewCustomFormFieldTypesList" name="CustomViewFormFields" class="form-control">
+                        <option>Text Box</option>
+                        <option>Dropdown</option>
+                        <option>Checkbox</option>
+                        <option>Date</option>
+                        <option>Date Range</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label class="control-label m-b-5 ">Name:</label>
+                    <input type="text" id="@(Model.Id)_customFieldName" name="CFFName" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                </div>
+            </div>
+        </div>
+        <div id="@(Model.Id)_customTextBoxFieldSec" class="row">
+            <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                <div class="form-group">
+                    <label class="control-label m-b-5 ">Type:</label>
+                    <select id="@(Model.Id)_viewCustomTBFormFieldTypesList" name="CustomViewFormFields" class="form-control">
+                        <option>Text</option>
+                        <option>Integer</option>
+                        <option>Decimal</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                <div class="form-group">
+                    <label class="control-label m-b-5 ">Min Length:</label>
+                    <input type="number" id="@(Model.Id)_customTBFieldMinLenght" name="C_TB_FF_MinLength" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                <div class="form-group">
+                    <label class="control-label m-b-5 ">Max Length:</label>
+                    <input type="number" id="@(Model.Id)_customTBFieldMaxLenght" name="C_TB_FF_MaxLength" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <button type="button" id="@(Model.Id)_addCustomFieldBtn" onclick="@(Model.Id)_addNewCustomFormField()" class="btn btn-success btn-block">
+                ADD CUSTOM FIELD
+            </button>
+        </div>
+        <br />
+        <ejs-grid id="@(Model.Id)_workshiftsCustomFormFieldsGrid" enableAutoFill="true" columns="@Model.GetCustomFormFieldsGridColumns()"
+                  dataBound="dataBoundResponsive"
+                  allowExcelExport="true" height="60%" allowPdfExport="true"
+                  hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" showColumnChooser="false"
+                  allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                  toolbar='new List<object>() { "Delete", "Search" }'
+                  allowPaging="true" allowResizing="true">
+
+            <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+            <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowEditing="true" allowDeleting="true" newRowPosition="Bottom"></e-grid-editSettings>
+            <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+            <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10", "20", "All" })"></e-grid-pagesettings>
+        </ejs-grid>
+
+    </div>
+</div>
 <div class="control-section">
     <div style="width:100%; display:inline-block;">
         <div class="sb-mobile-palette-bar">
@@ -199,56 +274,66 @@
                                 </ejs-grid>
 
                                 <script>
-                                    let viewFormFields = @(Json.Serialize(Model.Form.FormFields.Where(x => x.IsVisible).ToList()))
+                                    let viewFormFields = @(Json.Serialize(Model.Form.FormFields.Where(x => x.IsVisible).ToList()));
+                                    console.log(viewFormFields);
+
+                                    var formFieldsGroups = ["System", "Custom"];
+                                    var formFields = [];
+                                    for (var i = 0; i < viewFormFields.length; i++) {
+                                        if (!viewFormFields[i].isVisible) continue;
+                                        if (!formFieldsGroups.includes(viewFormFields[i].fieldTypeDescription)) {
+                                            console.log({ value: i, label: viewFormFields[i].fieldTypeDescription });
+                                            formFieldsGroups.push(viewFormFields[i].fieldTypeDescription);
+                                        }
+
+                                        viewFormFields[i].id = i;
+                                        formFields.push({ label: viewFormFields[i].name, value: viewFormFields[i].id, fieldType: viewFormFields[i].fieldTypeDescription, isExternal: viewFormFields[i].isExternal });
+                                    }
+
+                                    function @(Model.Id)_populateFormFieldsSelection() {
+                                        let viewFormFieldsGrid = $('#@(Model.Id)_viewFormFieldsGrid')[0].ej2_instances[0];
+                                        let dataMS = [];
+                                        console.log(viewFormFields);
+                                        console.log(formFields);
+                                        console.log(viewFormFieldsGrid.dataSource);
+                                        for (var i = 0; i < formFieldsGroups.length; i++) {
+                                            let children = formFields.filter(x => x.fieldType == formFieldsGroups[i] && viewFormFieldsGrid.dataSource.filter(function (y) { let state = y.id == x.value; return state; }).length == 0)
+                                            dataMS.push({ label: formFieldsGroups[i], value: '', children: children });
+                                        }
+                                        $('#@(Model.Id)_viewFormFieldsList').multiselect('dataprovider', dataMS);
+                                        console.log(dataMS);
+                                    }
 
                                     function @(Model.Id)_addViewFormField()
                                     {
-                                        var formFieldsGroups = [];
-                                        var formFields = [];
-                                        for (var i = 0; i < viewFormFields.length; i++) {
-                                            if (!viewFormFields[i].isVisible) return;
-                                            if (!formFieldsGroups.includes(viewFormFields[i].fieldTypeDescription)) {
-                                                formFieldsGroups.push(viewFormFields[i].fieldTypeDescription);
+                                        var selectedFieldsIds = $('#@(Model.Id)_viewFormFieldsList').val();
 
-                                                viewFormFields[i].id = i;
-                                                formFields.push({ label: viewFormFields[i].name, value: viewFormFields[i].id, fieldType: viewFormFields[i].fieldTypeDescription, isExternal: viewFormFields[i].isExternal });
-                                            }
-                                        }
-                                        //var selectedFieldsIds = $('#@(Model.Id)_viewFormFieldsList').mul;//START HERE!
-
+                                        console.log(formFields);
                                         console.log(selectedFieldsIds);
                                         if (selectedFieldsIds.length <= 0) return;
 
-                                        let selectedFields = formFields.filter(function (x) { return selectedFieldsIds.includes(x.value); });
-                                        let nonSelectedFields = formFields.filter(function (x) { return !selectedFieldsIds.includes(x.value); });
+                                        let selectedFields = formFields.filter(function (x) { let val = x.value.toString(); console.log(x); return selectedFieldsIds.includes(val); });
+                                        //let nonSelectedFields = formFields.filter(function (x) { return !selectedFieldsIds.includes(x.value.toString()); });
                                         console.log(selectedFields);
-                                        console.log(nonSelectedFields);
+                                        //console.log(nonSelectedFields);
 
                                         let grid = $('#@(Model.Id)_viewFormFieldsGrid')[0].ej2_instances[0];
                                         for (var i = 0; i < selectedFields.length; i++) {
                                             console.log(selectedFields[i]);
-                                            let row = { name: selectedFields[i].label, fieldTypeDescription: selectedFields[i].fieldType, isExternal: selectedFields[i].isExternal };
+                                            let row = { id: selectedFields[i].value, name: selectedFields[i].label, fieldTypeDescription: selectedFields[i].fieldType, isExternal: selectedFields[i].isExternal };
                                             console.log(row);
-                                            grid.dataSource.push(row);
+                                            grid.dataSource.push(rfdc()(row));
                                         }
                                         grid.refresh();
 
-                                        $('#@(Model.Id)_viewFormFieldsList').multiselect('dataprovider', nonSelectedFields);
+                                        //for (var i = 0; i < nonSelectedFields.length; i++) {
+                                        //    //if (nonSelectedFields[i].fieldTypeDescription != null && !formFieldsGroups.includes(nonSelectedFields[i].fieldTypeDescription)) {
+                                        //    //    formFieldsGroups.push(nonSelectedFields[i].fieldTypeDescription);
+                                        //    //}
+                                        //    formFields.push(rfdc()(nonSelectedFields[i]));
+                                        //}
 
-                                        formFieldsGroups = [];
-                                        for (var i = 0; i < nonSelectedFields.length; i++) {
-                                            if (!formFieldsGroups.includes(nonSelectedFields[i].fieldType))
-                                                formFieldsGroups.push(viewFormFields[i].fieldType);
-
-                                            formFields.push({ label: nonSelectedFields[i].name, value: nonSelectedFields[i].id, fieldType: nonSelectedFields[i].fieldType, isExternal: nonSelectedFields[i].isExternal });
-                                        }
-
-                                        let dataMS = [];
-                                        for (var i = 0; i < formFieldsGroups.length; i++) {
-                                            let children = formFields.filter(x => x.fieldType == formFieldsGroups[i].label)
-                                            dataMS.push({ label: formFieldsGroups[i], value: '', children: children });
-                                        }
-                                        $('#@(Model.Id)_viewFormFieldsList').multiselect('dataprovider', dataMS);
+                                        @(Model.Id)_populateFormFieldsSelection();
                                     }
                                     function @(Model.Id)_approvalRoute_viewInfo_commandClick(args)
                                     {
@@ -284,6 +369,10 @@
                                     }
                                     function @(Model.Id)_approvalRoute_viewInfo_actionComplete(args)
                                     {
+                                        if (args.requestType == "delete")
+                                        {
+                                            @(Model.Id)_populateFormFieldsSelection();
+                                        }
                                     }
                                     function @(Model.Id)_approvalRoute_viewInfo_toolbarClick(args)
                                     {
@@ -617,6 +706,9 @@
         });
         $('#@(Model.Id)_apEmployeeIds').multiselect(options);
 
+        $('#@(Model.Id)_viewCustomFormFieldTypesList').multiselect(options);
+        $('#@(Model.Id)_viewCustomTBFormFieldTypesList').multiselect(options);
+
         $("#@(Model.Id)_addToApprovalRouteBtn").on('click', function (args) {
             var apGrid = $("#@(Model.Id)_ApprovalRouteGrid")[0].ej2_instances[0];
             var depIds = $("#@(Model.Id)_apDepartmentIds").val();
@@ -753,29 +845,41 @@
             task.id = task.getAllEmployeeNames;
             taskGrid.dataSource.push(task);
             taskGrid.refresh();
-        })
+        });
 
-        var formFieldsGroups = [];
-        var formFields = [];
-        for (var i = 0; i < viewFormFields.length; i++) {
-            if (!viewFormFields[i].isVisible) return;
-            if (!formFieldsGroups.includes(viewFormFields[i].fieldTypeDescription)) {
-                console.log(viewFormFields[i]);
-                console.log({ value: i, label: viewFormFields[i].fieldTypeDescription });
-                formFieldsGroups.push(viewFormFields[i].fieldTypeDescription);
-
-                viewFormFields[i].id = i;
-                formFields.push({ label: viewFormFields[i].name, value: viewFormFields[i].id, fieldType: viewFormFields[i].fieldTypeDescription, isExternal: viewFormFields[i].isExternal });
+        $('#@(Model.Id)_viewCustomFormFieldTypesList').on('change', function (e)
+        {
+            let type = $(this).val();
+            switch (type) {
+                case "Text Box":
+                    $('#@(Model.Id)_customTextBoxFieldSec').show();
+                    $('#@(Model.Id)_customDateFieldSec').hide();
+                    $('#@(Model.Id)_customDateRangeFieldSec').hide();
+                    $('#@(Model.Id)_customDropDownFieldSec').hide();
+                    break;
+                case "Dropdown":
+                    $('#@(Model.Id)_customDropDownFieldSec').show();
+                    $('#@(Model.Id)_customTextBoxFieldSec').hide();
+                    $('#@(Model.Id)_customDateFieldSec').hide();
+                    $('#@(Model.Id)_customDateRangeFieldSec').hide();
+                    break;
+                case "Checkbox":
+                    //$('@(Model.Id)_customCheckboxFieldSec').show();
+                    break;
+                case "Date":
+                    $('#@(Model.Id)_customDateFieldSec').show();
+                    $('#@(Model.Id)_customTextBoxFieldSec').hide();
+                    $('#@(Model.Id)_customDropDownFieldSec').hide();
+                    $('#@(Model.Id)_customDateRangeFieldSec').hide();
+                    break;
+                case "Date Range":
+                    $('#@(Model.Id)_customDateRangeFieldSec').show();
+                    $('#@(Model.Id)_customDateFieldSec').show();
+                    $('#@(Model.Id)_customTextBoxFieldSec').hide();
+                    $('#@(Model.Id)_customDropDownFieldSec').hide();
+                    break;
             }
-        }
-
-        let dataMS = [];
-        for (var i = 0; i < formFieldsGroups.length; i++) {
-            let children = formFields.filter(x => x.fieldType == formFieldsGroups[i])
-            dataMS.push({ label: formFieldsGroups[i], value: '', children: children });
-        }
-        $('#@(Model.Id)_viewFormFieldsList').multiselect('dataprovider', dataMS);
-        console.log(dataMS);
+        });
     });
 </script>
 
@@ -802,6 +906,7 @@
 
                     $("#@(Model.Id)_apDepartmentIds").multiselect('dataprovider', departments);
                     $("#@(Model.Id)_apDepartmentIds").change();
+                    var viewFormFieldsGrid = $('#@(Model.Id)_viewFormFieldsGrid')[0].ej2_instances[0];
 
                     if (typeof args.newValue[0].addInfo !== 'undefined')
                     {
@@ -820,6 +925,7 @@
                         var isPoster = args.newValue[0].addInfo.isPoster;
                         var allowAny = args.newValue[0].addInfo.allowAny;
 
+                        var formFields = args.newValue[0].addInfo.formFields;
                         @(Model.Id)_apSelectPositions = positionIds;
                         @(Model.Id)_apSelectEmployees = employeeIds;
                         $('#@(Model.Id)_apDepartmentIds').multiselect('select', departmentIds);
@@ -844,6 +950,11 @@
                             $('#@(Model.Id)_APAllowAny').parent().addClass('active');
                         else
                             $('#@(Model.Id)_APAllowAny').parent().removeClass('active');
+
+                        viewFormFieldsGrid.dataSource = formFields;
+                        viewFormFieldsGrid.refresh();
+
+                        @(Model.Id)_populateFormFieldsSelection();
                     }
                     else {
                         $('#@(Model.Id)_apDepartmentIds').multiselect('deselectAll', true);
@@ -854,6 +965,9 @@
                         $('#@(Model.Id)_APNotify').parent().removeClass('active');
                         $('#@(Model.Id)_APIsPoster').parent().removeClass('active');
                         $('#@(Model.Id)_APAllowAny').parent().removeClass('active');
+
+                        viewFormFieldsGrid.dataSource = rfdc()(viewFormFields);
+                        viewFormFieldsGrid.refresh();
                     }
                 });
                 $(`#@(Model.Id)_diagramArea`).removeClass('col-lg-12');
@@ -918,7 +1032,6 @@
         switch (curNodeType) {
             case 'approval-route':
                 if (ValidateForm('@(Model.Id)_approval-route-panel')) {
-                    console.log('true');
                     var state = {
                         employeeIds: $('#@(Model.Id)_apEmployeeIds').val(),
                         positionIds: $('#@(Model.Id)_apPositionIds').val(),
@@ -927,7 +1040,9 @@
                         isActive: $('#@(Model.Id)_APIsActive').parent().hasClass('active'),
                         notifyEmployee: $('#@(Model.Id)_APNotify').parent().hasClass('active'),
                         isPoster: $('#@(Model.Id)_APIsPoster').parent().hasClass('active'),
-                        allowAny: $('#@(Model.Id)_APAllowAny').parent().hasClass('active')
+                        allowAny: $('#@(Model.Id)_APAllowAny').parent().hasClass('active'),
+
+                        formFields: rfdc()($('#@(Model.Id)_viewFormFieldsGrid')[0].ej2_instances[0].dataSource)
                     };
 
                     if (state.employeeIds.length == 0 || state.positionIds.length == 0 || state.departmentIds.length == 0)
@@ -941,6 +1056,38 @@
                 break;
         }
     }
+
+    function @(Model.Id)_addNewCustomFormField()
+    {
+        let grid = $('#@(Model.Id)_workshiftsCustomFormFieldsGrid')[0].ej2_instances[0];
+
+        let type = $('#@(Model.Id)_viewCustomTBFormFieldTypesList').val();
+        let fieldName = $('#@(Model.Id)_customFieldName').val();
+
+        let customField = { type: type, fieldName: fieldName };
+        if (grid.dataSource.filter(function (x) { x.fieldName == customField.fieldName }).length > 0)
+            return;
+
+        switch (type) {
+            case "Text Box":
+                customField.tbType = $('#@(Model.Id)_viewCustomTBFormFieldTypesList').val();
+                customField.minLength = $('#@(Model.Id)_customTBFieldMinLenght').val();
+                customField.maxLength = $('#@(Model.Id)_customTBFieldMaxLenght').val();
+                break;
+            case "Dropdown":
+                break;
+            case "Checkbox":
+                break;
+            case "Date":
+                break;
+            case "Date Range":
+                break;
+        }
+
+        grid.dataSource.push(customField);
+        grid.refresh();
+    }
+
     function @(Model.Id)_getNodeDefaults(obj, diagram) {
         if (obj.width === undefined) {
             obj.width = 145;

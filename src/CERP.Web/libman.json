@@ -36,6 +36,14 @@
       ]
     },
     {
+      "library": "rfdc@1.1.4",
+      "destination": "wwwroot/libs/rfdc/",
+      "files": [
+        "index.js",
+        "readme.md"
+      ]
+    }, 
+    {
       "library": "validator@12.2.0",
       "destination": "wwwroot/libs/validator/",
       "files": [
@@ -56,5 +64,16 @@
         "dist/sweetalert2.min.js"
       ]
     }
+  ,
+{
+  "provider": "jsdelivr",
+  "library": "browserify@16.5.1",
+  "destination": "wwwroot/libs/browserify/",
+  "files": [
+    "package.json",
+    "index.js",
+    "index.min.js"
   ]
+}
+]
 }

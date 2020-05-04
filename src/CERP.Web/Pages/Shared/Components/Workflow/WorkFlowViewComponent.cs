@@ -149,6 +149,22 @@ namespace CERP.Web.Pages.Shared.Components
 
             return FFGridColumns;
         }
+        public List<GridColumn> GetCustomFormFieldsGridColumns()
+        {
+            List<object> FFCommands = new List<object>();
+            FFCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat e-DeleteButton" } });
+
+            List<GridColumn> FFGridColumns = new List<GridColumn>()
+            {
+                new GridColumn { Field = "id", Visible=false, ShowInColumnChooser=false, IsPrimaryKey=true  },
+                new GridColumn { Field = "type", AllowEditing=false, AllowSorting = false, HeaderText = "Type", TextAlign=TextAlign.Center,  MinWidth="10" },
+                new GridColumn { Field = "fieldName", AllowEditing=true, AllowSorting = true, HeaderText = "Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
+
+                new GridColumn { Width = "50", HeaderText = "", TextAlign=TextAlign.Center, MinWidth="10", Commands = FFCommands }
+            };
+
+            return FFGridColumns;
+        }
         public string GetFormFieldsAsDS()
         {
             List<WorkflowFormField> formFieldsDS = new List<WorkflowFormField>();

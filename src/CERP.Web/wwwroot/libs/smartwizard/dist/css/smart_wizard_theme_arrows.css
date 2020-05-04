@@ -125,13 +125,13 @@
 }
 
 .sw-theme-arrows > ul.step-anchor > li.active > a {
-    border-color: #1D87E4 !important;
+    border-color: #5cb85c !important;
     color: #fff !important;
-    background: #1D87E4 !important;
+    background: #5cb85c !important;
 }
 
 .sw-theme-arrows > ul.step-anchor > li.active > a:after {
-    border-left: 30px solid #1D87E4 !important;
+    border-left: 30px solid #5cb85c !important;
 }
 
 .sw-theme-arrows > ul.step-anchor > li.done > a {
@@ -143,17 +143,17 @@
 
 .sw-theme-arrows > ul.step-anchor > li.done > a:after {
     border-left: 30px solid #b1dfbb;
- /* c3e6cb */
+ /* c3e6cb */;
 }
 
 .sw-theme-arrows > ul.step-anchor > li.danger > a {
-    border-color: #d9534f;
-    color: #fff;
-    background: #d9534f;
+    border-color: #d9534f !important;
+    color: #fff !important;
+    background: #d9534f !important;
 }
 
 .sw-theme-arrows > ul.step-anchor > li.danger > a:after {
-    border-left: 30px solid #d9534f;
+    border-left: 30px solid #d9534f !important;
 }
 
 .sw-theme-arrows > ul.step-anchor > li.disabled > a, .sw-theme-arrows > ul.step-anchor > li.disabled > a:hover {

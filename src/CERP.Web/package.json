@@ -1,6 +1,12 @@
 {
   "version": "1.0.0",
   "name": "my-app",
+  "scripts": {
+    "build-debug": "browserify site.js -d --s bundle > dist/bundle.js",
+    "build-min": "browserify site.js --s bundle | uglifyjs -c > dist/bundle.min.js",
+    "build": "npm run build-debug && npm run build-min",
+    "watch": "watchify site.js -d --s bundle -o dist/bundle.js -v"
+  },
   "private": true,
   "dependencies": {
     "@abp/aspnetcore.mvc.ui.theme.basic": "~2.4.0"
