@@ -146,7 +146,7 @@
         </div>
         <br />
         <ejs-grid id="@(Model.Id)_workshiftsCustomFormFieldsGrid" enableAutoFill="true" columns="@Model.GetCustomFormFieldsGridColumns()"
-                  dataBound="dataBoundResponsive"
+                  dataBound="dataBoundResponsive" actionComplete="@(Model.Id)_customFormFields_actionComplete"
                   allowExcelExport="true" height="60%" allowPdfExport="true"
                   hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" showColumnChooser="false"
                   allowSorting="true" allowMultiSorting="true" gridLines="Both"
@@ -158,7 +158,7 @@
             <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
             <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10", "20", "All" })"></e-grid-pagesettings>
         </ejs-grid>
-
+       
     </div>
 </div>
 <div class="control-section">
@@ -304,6 +304,16 @@
                                         console.log(dataMS);
                                     }
 
+
+                                    function @(Model.Id)_customFormFields_actionComplete(args)
+                                    {
+                                        if (args.requestType == "delete")
+                                        {
+                                            console.log(args);
+                                            viewFormFields = viewFormFields.filter(function (x) { return args.data.filter(function (y) { return y.fieldName == x.filedName }).length == 0 });
+                                            @(Model.Id)_populateFormFieldsSelection(); //START HERE
+                                        }
+                                    }
                                     function @(Model.Id)_addViewFormField()
                                     {
                                         var selectedFieldsIds = $('#@(Model.Id)_viewFormFieldsList').val();
@@ -434,6 +444,8 @@
                                             setTimeout(function () { gridObj.selectionModule.selectRows(selectedIndexes) }, 100);
                                         }
                                     }
+
+
                                 </script>
                             </div>
                         </div>
@@ -890,6 +902,7 @@
     let @(Model.Id)_isEditingEmpLoadedAP = false;
     let @(Model.Id)_apSelectPositions;
     let @(Model.Id)_apSelectEmployees;
+
     function @(Model.Id)_workflowSelectionChanged(args) {
         //console.log(args);
         if (typeof (args.newValue) !== 'undefined' && args.newValue.length > 0) {
@@ -1083,6 +1096,12 @@
             case "Date Range":
                 break;
         }
+
+        let field = { id: viewFormFields.length, viewIndex: viewFormFields.length, name: customField.fieldName, mappingName: customField.fieldName, fieldTypeDescription: "Custom", fieldType: 1, isReadonly: true, isExternal: false };
+        viewFormFields.push(field);
+        formFields.push({ label: field.name, value: field.id, fieldType: field.fieldTypeDescription, isExternal: field.isExternal });
+
+        @(Model.Id)_populateFormFieldsSelection();
 
         grid.dataSource.push(customField);
         grid.refresh();
