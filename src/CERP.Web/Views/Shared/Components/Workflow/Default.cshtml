@@ -89,17 +89,17 @@
 <div>
     <ejs-accordion id="@(Model.Id)_workflow-properties-accordion">
         <e-accordion-accordionitems>
-            <e-accordion-accordionitem expanded="true" header="Custom Fields" content="#@(Model.Id)_customFieldsInfo"></e-accordion-accordionitem>
+            <e-accordion-accordionitem header="Custom Fields" content="#@(Model.Id)_customFieldsInfo"></e-accordion-accordionitem>
         </e-accordion-accordionitems>
     </ejs-accordion>
 
+    <div id="@(Model.Id)_customFieldsInfo" role="form" data-toggle="validator" style="display:none">
 
-    <div id="@(Model.Id)_customFieldsInfo">
         <div class="row">
             <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                 <div class="form-group">
                     <label class="control-label m-b-5 ">Field Type:</label>
-                    <select id="@(Model.Id)_viewCustomFormFieldTypesList" name="CustomViewFormFields" class="form-control">
+                    <select id="@(Model.Id)_viewCustomFormFieldTypesList" name="CustomViewFormFields" class="form-control" required>
                         <option>Text Box</option>
                         <option>Dropdown</option>
                         <option>Checkbox</option>
@@ -129,19 +129,19 @@
             <div class="col-lg-4 col-md-4 col-sm-4 col-12">
                 <div class="form-group">
                     <label class="control-label m-b-5 ">Min Length:</label>
-                    <input type="number" id="@(Model.Id)_customTBFieldMinLenght" name="C_TB_FF_MinLength" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                    <input type="number" value="1" id="@(Model.Id)_customTBFieldMinLenght" name="C_TB_FF_MinLength" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                 </div>
             </div>
             <div class="col-lg-4 col-md-4 col-sm-4 col-12">
                 <div class="form-group">
                     <label class="control-label m-b-5 ">Max Length:</label>
-                    <input type="number" id="@(Model.Id)_customTBFieldMaxLenght" name="C_TB_FF_MaxLength" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                    <input type="number" value="5" id="@(Model.Id)_customTBFieldMaxLenght" name="C_TB_FF_MaxLength" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                 </div>
             </div>
         </div>
         <div class="row">
             <button type="button" id="@(Model.Id)_addCustomFieldBtn" onclick="@(Model.Id)_addNewCustomFormField()" class="btn btn-success btn-block">
-                ADD CUSTOM FIELD
+                CREATE CUSTOM FIELD
             </button>
         </div>
         <br />
@@ -186,8 +186,11 @@
                         <div id="@(Model.Id)_approval-route-panel" role="form" data-toggle="validator">
                             <ejs-accordion id="@(Model.Id)_approval-route-panel-accordion">
                                 <e-accordion-accordionitems>
-                                    <e-accordion-accordionitem expanded="true" header="General Properties" content="#@(Model.Id)_generalInfo"></e-accordion-accordionitem>
+                                    <e-accordion-accordionitem expanded="true" header="Priority" content="#@(Model.Id)_priorityInfo"></e-accordion-accordionitem>
+                                    <e-accordion-accordionitem expanded="true" header="Start" content="#@(Model.Id)_startInfo"></e-accordion-accordionitem>
+                                    <e-accordion-accordionitem expanded="true" header="Selection" content="#@(Model.Id)_generalInfo"></e-accordion-accordionitem>
                                     <e-accordion-accordionitem expanded="true" header="View" content="#@(Model.Id)_viewInfo"></e-accordion-accordionitem>
+                                    <e-accordion-accordionitem expanded="true" header="Notifications" content="#@(Model.Id)_notificationsInfo"></e-accordion-accordionitem>
                                     <e-accordion-accordionitem expanded="true" header="Action" content=""></e-accordion-accordionitem>
                                     <e-accordion-accordionitem expanded="true" header="Reporting" content=""></e-accordion-accordionitem>
                                 </e-accordion-accordionitems>
@@ -242,7 +245,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div id="@(Model.Id)_viewInfo">
                                 <div class="row">
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-12">
@@ -276,13 +278,14 @@
                                 <script>
                                     let viewFormFields = @(Json.Serialize(Model.Form.FormFields.Where(x => x.IsVisible).ToList()));
                                     console.log(viewFormFields);
+                                    let notificationsSettings = @(Json.Serialize(Model.Notifications.ActionNotificationSettings));
+                                    console.log(notificationsSettings);
 
                                     var formFieldsGroups = ["System", "Custom"];
                                     var formFields = [];
                                     for (var i = 0; i < viewFormFields.length; i++) {
                                         if (!viewFormFields[i].isVisible) continue;
                                         if (!formFieldsGroups.includes(viewFormFields[i].fieldTypeDescription)) {
-                                            console.log({ value: i, label: viewFormFields[i].fieldTypeDescription });
                                             formFieldsGroups.push(viewFormFields[i].fieldTypeDescription);
                                         }
 
@@ -293,9 +296,9 @@
                                     function @(Model.Id)_populateFormFieldsSelection() {
                                         let viewFormFieldsGrid = $('#@(Model.Id)_viewFormFieldsGrid')[0].ej2_instances[0];
                                         let dataMS = [];
-                                        console.log(viewFormFields);
-                                        console.log(formFields);
-                                        console.log(viewFormFieldsGrid.dataSource);
+                                        //console.log(viewFormFields);
+                                        //console.log(formFields);
+                                        //console.log(viewFormFieldsGrid.dataSource);
                                         for (var i = 0; i < formFieldsGroups.length; i++) {
                                             let children = formFields.filter(x => x.fieldType == formFieldsGroups[i] && viewFormFieldsGrid.dataSource.filter(function (y) { let state = y.id == x.value; return state; }).length == 0)
                                             dataMS.push({ label: formFieldsGroups[i], value: '', children: children });
@@ -304,16 +307,46 @@
                                         console.log(dataMS);
                                     }
 
-
                                     function @(Model.Id)_customFormFields_actionComplete(args)
                                     {
                                         if (args.requestType == "delete")
                                         {
                                             console.log(args);
-                                            viewFormFields = viewFormFields.filter(function (x) { return args.data.filter(function (y) { return y.fieldName == x.filedName }).length == 0 });
-                                            @(Model.Id)_populateFormFieldsSelection(); //START HERE
+                                            viewFormFields = viewFormFields.filter(function (x) { return args.data.filter(function (y) { return y.fieldName == x.name }).length == 0 });
+
+                                            formFields = [];
+                                            for (var i = 0; i < viewFormFields.length; i++) {
+                                                if (!viewFormFields[i].isVisible) continue;
+                                                if (!formFieldsGroups.includes(viewFormFields[i].fieldTypeDescription)) {
+                                                    formFieldsGroups.push(viewFormFields[i].fieldTypeDescription);
+                                                }
+
+                                                viewFormFields[i].id = i;
+                                                formFields.push({ label: viewFormFields[i].name, value: viewFormFields[i].id, fieldType: viewFormFields[i].fieldTypeDescription, isExternal: viewFormFields[i].isExternal });
+                                            }
+
+                                            var diagram = $('#@(Model.Id)_container')[0].ej2_instances[0];
+                                            for (var i = 0; i < diagram.nodes.length; i++) {
+                                                let node = diagram.nodes[i];
+                                                if (node.addInfo != null && typeof node.addInfo !== 'undefined') {
+                                                    let info = node.addInfo;
+                                                    if (info.formFields != null && typeof info.formFields !== 'undefined') {
+                                                        node.addInfo.formFields = info.formFields.filter(function (x) { return args.data.filter(function (y) { return y.fieldName == x.name }).length == 0 });
+                                                    }
+                                                }
+                                            }
+
+                                            if (diagram.selectedItems.properties.nodes.length > 0) {
+                                                if (typeof diagram.selectedItems.properties.nodes[0].addInfo !== 'undefined') {
+                                                    $('#@(Model.Id)_viewFormFieldsGrid')[0].ej2_instances[0].dataSource = diagram.selectedItems.properties.nodes[0].addInfo.formFields;
+                                                    $('#@(Model.Id)_viewFormFieldsGrid')[0].ej2_instances[0].refresh();
+                                                }
+                                            }
+
+                                            @(Model.Id)_populateFormFieldsSelection();
                                         }
                                     }
+
                                     function @(Model.Id)_addViewFormField()
                                     {
                                         var selectedFieldsIds = $('#@(Model.Id)_viewFormFieldsList').val();
@@ -447,6 +480,109 @@
 
 
                                 </script>
+                            </div>
+                            <div id="@(Model.Id)_priorityInfo">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group">
+                                            <label class="control-label m-b-5 ">Type:</label>
+                                            <select id="@(Model.Id)_priorityTypesList" onchange="@(Model.Id)_apPriorityChanged()" name="PriorityType" class="form-control">
+                                                <option selected="selected">Default</option>
+                                                <option>Conditional</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div id="@(Model.Id)_priorityType_default">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                            <div class="form-group">
+                                                <label class="control-label m-b-5 ">Level:</label>
+                                                <select id="@(Model.Id)_defaultPriorityLevelsList" name="DefaultPriorityLevels" class="form-control">
+                                                    <option>High</option>
+                                                    <option>Medium</option>
+                                                    <option>Low</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="@(Model.Id)_priorityType_conditional" style="display:none">
+                                        @*<div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 ">Level:</label>
+                            <select id="@(Model.Id)_defaultPriorityLevelsList" name="DefaultPriorityLevels" class="form-control">
+                                <option>High</option>
+                                <option>Medium</option>
+                                <option>Low</option>
+                            </select>
+                        </div>
+                    </div>*@
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="@(Model.Id)_startInfo">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group">
+                                            <label class="control-label m-b-5 ">Type:</label>
+                                            <select id="@(Model.Id)_startTypesList" onchange="@(Model.Id)_apStartScheduledChanged()" name="StartType" class="form-control">
+                                                <option selected="selected">Imediate Initiation</option>
+                                                <option>Scheduled</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div id="@(Model.Id)_startType_default">
+
+                                    </div>
+                                    <div id="@(Model.Id)_startType_scheduled" style="display:none">
+                                        <div id="@(Model.Id)_startType_scheduled_typeSec" class="col-lg-6 col-md-6 col-sm-6 col-12">
+                                            <div class="form-group">
+                                                <label class="control-label m-b-5 ">Type:</label>
+                                                <select id="@(Model.Id)_scheduledStartTypesList" onchange="@(Model.Id)_apScheduledStartTypeChanged()" name="ScheduledStartType" class="form-control">
+                                                    <option>Hours</option>
+                                                    <option>Days</option>
+                                                    <option>Fixed</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div id="@(Model.Id)_defaultStartTypeSec" class="col-lg-6 col-md-6 col-sm-6 col-12">
+                                            <div class="form-group">
+                                                <label class="control-label m-b-5 ">Value:</label>
+                                                <input type="number" value="1" min="0" id="@(Model.Id)_scheduledStartValue" name="ScheduledStartValue" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                            </div>
+                                        </div>
+                                        <div id="@(Model.Id)_fixedStartTypeSec" class="" style="display:none">
+                                            <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                                                <div class="form-group">
+                                                    <label class="control-label m-b-5 ">Period:</label>
+                                                    <select id="@(Model.Id)_scheduledStartPeriod" name="ScheduledStartType" class="form-control">
+                                                        <option>None</option>
+                                                        <option>Weekly</option>
+                                                        <option>Monthly</option>
+                                                        <option>Yearly</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                                                <div class="form-group">
+                                                    <label class="control-label m-b-5 ">Date:</label>
+                                                    <input type="text" id="@(Model.Id)_scheduledStartDate" name="ScheduledStartDate" style="width: 100% !important; cursor: default;" class="text-left form-control inline pull-left DatePicker is-calendarsPicker" autocomplete="off" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="@(Model.Id)_notificationsInfo">
+                                <ejs-grid id="@(Model.Id)_notificationsGrid" dataSource="@Model.GetNotificationsAsDS()" enableAutoFill="true" columns="@Model.GetNotificationsGridColumns()"
+                                          dataBound="dataBoundResponsive" allowExcelExport="true" height="60%" allowPdfExport="true"
+                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" showColumnChooser="false"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                                          allowPaging="true" allowResizing="true">
+
+                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="false" allowEditing="true" allowDeleting="false"></e-grid-editSettings>
+                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10", "20", "All" })"></e-grid-pagesettings>
+                                </ejs-grid>
                             </div>
                         </div>
                         <div id="@(Model.Id)_task-property-panel" style="height: 100%; display:none">
@@ -906,7 +1042,8 @@
     function @(Model.Id)_workflowSelectionChanged(args) {
         //console.log(args);
         if (typeof (args.newValue) !== 'undefined' && args.newValue.length > 0) {
-            if (args.newValue[0].properties.id.includes("Approval Route")) {
+            let selectedNode = args.newValue[0];
+            if (selectedNode.properties.id.includes("Approval Route")) {
                 curNodeType = 'approval-route';
 
                 $('#@(Model.Id)_task-property-panel').hide();
@@ -920,29 +1057,44 @@
                     $("#@(Model.Id)_apDepartmentIds").multiselect('dataprovider', departments);
                     $("#@(Model.Id)_apDepartmentIds").change();
                     var viewFormFieldsGrid = $('#@(Model.Id)_viewFormFieldsGrid')[0].ej2_instances[0];
+                    var notificationsGrid = $('#@(Model.Id)_notificationsGrid')[0].ej2_instances[0];
 
-                    if (typeof args.newValue[0].addInfo !== 'undefined')
+                    if (typeof selectedNode.addInfo !== 'undefined')
                     {
                         @(Model.Id)_isEditingAP = true;
                         @(Model.Id)_isEditingPosLoadedAP = false;
                         @(Model.Id)_isEditingEmpLoadedAP = false;
 
-                        console.log(args.newValue[0].addInfo);
-                        var departmentIds = args.newValue[0].addInfo.departmentIds;
-                        var employeeIds = args.newValue[0].addInfo.employeeIds;
-                        var positionIds = args.newValue[0].addInfo.positionIds;
+                        console.log(selectedNode.addInfo);
 
-                        var isActive = args.newValue[0].addInfo.isActive;
+                        let priorityType = selectedNode.addInfo.priority.type;
+                        let defaultLevel = selectedNode.addInfo.priority.default.level;
 
-                        var notifyEmployee = args.newValue[0].addInfo.notifyEmployee;
-                        var isPoster = args.newValue[0].addInfo.isPoster;
-                        var allowAny = args.newValue[0].addInfo.allowAny;
+                        $('#@(Model.Id)_priorityTypesList').val(priorityType);
+                        $('#@(Model.Id)_priorityTypesList').change();
+                        $('#@(Model.Id)_defaultPriorityLevelsList').val(defaultLevel);
 
-                        var formFields = args.newValue[0].addInfo.formFields;
-                        @(Model.Id)_apSelectPositions = positionIds;
-                        @(Model.Id)_apSelectEmployees = employeeIds;
-                        $('#@(Model.Id)_apDepartmentIds').multiselect('select', departmentIds);
-                        $("#@(Model.Id)_apDepartmentIds").change();
+                        let startType = selectedNode.addInfo.start.type;
+                        let defaultStartValue = selectedNode.addInfo.start.default.value;
+                        let scheduledStartType = selectedNode.addInfo.start.scheduled.type;
+                        let scheduledStartDate = selectedNode.addInfo.start.scheduled.date;
+
+                        $('#@(Model.Id)_startTypesList').val(startType);
+                        $('#@(Model.Id)_startTypesList').change();
+                        $('#@(Model.Id)_scheduledStartValue').val(defaultStartValue);
+                        $('#@(Model.Id)_scheduledStartTypesList').val(scheduledStartType);
+                        $('#@(Model.Id)_scheduledStartTypesList').change();
+                        $('#@(Model.Id)_scheduledStartDate').val(scheduledStartDate);
+
+                        var departmentIds = selectedNode.addInfo.selection.departmentIds;
+                        var employeeIds = selectedNode.addInfo.selection.employeeIds;
+                        var positionIds = selectedNode.addInfo.selection.positionIds;
+
+                        var isActive = selectedNode.addInfo.selection.isActive;
+
+                        var notifyEmployee = selectedNode.addInfo.selection.notifyEmployee;
+                        var isPoster = selectedNode.addInfo.selection.isPoster;
+                        var allowAny = selectedNode.addInfo.selection.allowAny;
 
                         if (isActive)
                             $('#@(Model.Id)_APIsActive').parent().addClass('active');
@@ -964,10 +1116,21 @@
                         else
                             $('#@(Model.Id)_APAllowAny').parent().removeClass('active');
 
+                        var formFields = args.newValue[0].addInfo.view.formFields;
+                        @(Model.Id)_apSelectPositions = positionIds;
+                        @(Model.Id)_apSelectEmployees = employeeIds;
+                        $('#@(Model.Id)_apDepartmentIds').multiselect('select', departmentIds);
+                        $("#@(Model.Id)_apDepartmentIds").change();
+
                         viewFormFieldsGrid.dataSource = formFields;
                         viewFormFieldsGrid.refresh();
 
                         @(Model.Id)_populateFormFieldsSelection();
+
+                        var notificationSettings = args.newValue[0].addInfo.notifications.dataSource;
+
+                        notificationsGrid.dataSource = notificationSettings;
+                        notificationsGrid.refresh();
                     }
                     else {
                         $('#@(Model.Id)_apDepartmentIds').multiselect('deselectAll', true);
@@ -981,6 +1144,9 @@
 
                         viewFormFieldsGrid.dataSource = rfdc()(viewFormFields);
                         viewFormFieldsGrid.refresh();
+
+                        notificationsGrid.dataSource = rfdc()(notificationsSettings);
+                        notificationsGrid.refresh();
                     }
                 });
                 $(`#@(Model.Id)_diagramArea`).removeClass('col-lg-12');
@@ -1040,25 +1206,56 @@
             }, 500);
         }
     }
+    function @(Model.Id)_apPriorityChanged() {
+        let priority = $('#@(Model.Id)_priorityTypesList').val();
+        if (priority == 'Default') {
+            $('#@(Model.Id)_priorityType_default').show();
+            $('#@(Model.Id)_priorityType_conditional').hide();
+        }
+        else if (priority == 'Conditional') {
+            $('#@(Model.Id)_priorityType_conditional').show();
+            $('#@(Model.Id)_priorityType_default').hide();
+        }
+    }
     function @(Model.Id)_saveProperties() {
         //var state = objectifyForm($('#@(Model.Id)_approval-route-panel').find("select, textarea, input").serializeArray());
+        console.log($('#@(Model.Id)_notificationsGrid')[0].ej2_instances[0].dataSource);
         switch (curNodeType) {
             case 'approval-route':
                 if (ValidateForm('@(Model.Id)_approval-route-panel')) {
                     var state = {
-                        employeeIds: $('#@(Model.Id)_apEmployeeIds').val(),
-                        positionIds: $('#@(Model.Id)_apPositionIds').val(),
-                        departmentIds: $('#@(Model.Id)_apDepartmentIds').val(),
+                        priority: {
+                            type: $('#@(Model.Id)_priorityTypesList').val(),
+                            default: { level: $('#@(Model.Id)_defaultPriorityLevelsList').val() },
+                            conditional: {  },
+                        },
+                        start: {
+                            type: $('#@(Model.Id)_startTypesList').val(),
+                            default: { value: $('#@(Model.Id)_scheduledStartValue').val() },
+                            scheduled: {
+                                type: $('#@(Model.Id)_scheduledStartTypesList').val(),
+                                date: $('#@(Model.Id)_scheduledStartDate').val(),
+                            }
+                        },
+                        selection: {
+                            employeeIds: $('#@(Model.Id)_apEmployeeIds').val(),
+                            positionIds: $('#@(Model.Id)_apPositionIds').val(),
+                            departmentIds: $('#@(Model.Id)_apDepartmentIds').val(),
 
-                        isActive: $('#@(Model.Id)_APIsActive').parent().hasClass('active'),
-                        notifyEmployee: $('#@(Model.Id)_APNotify').parent().hasClass('active'),
-                        isPoster: $('#@(Model.Id)_APIsPoster').parent().hasClass('active'),
-                        allowAny: $('#@(Model.Id)_APAllowAny').parent().hasClass('active'),
-
-                        formFields: rfdc()($('#@(Model.Id)_viewFormFieldsGrid')[0].ej2_instances[0].dataSource)
+                            isActive: $('#@(Model.Id)_APIsActive').parent().hasClass('active'),
+                            notifyEmployee: $('#@(Model.Id)_APNotify').parent().hasClass('active'),
+                            isPoster: $('#@(Model.Id)_APIsPoster').parent().hasClass('active'),
+                            allowAny: $('#@(Model.Id)_APAllowAny').parent().hasClass('active'),
+                        },
+                        view: {
+                            formFields: rfdc()($('#@(Model.Id)_viewFormFieldsGrid')[0].ej2_instances[0].dataSource)
+                        },
+                        notifications: {
+                            dataSource: rfdc()($('#@(Model.Id)_notificationsGrid')[0].ej2_instances[0].dataSource)
+                        }
                     };
 
-                    if (state.employeeIds.length == 0 || state.positionIds.length == 0 || state.departmentIds.length == 0)
+                    if (state.selection.employeeIds.length == 0 || state.selection.positionIds.length == 0 || state.selection.departmentIds.length == 0)
                         return;
 
                     var curItem = $(`#@(Model.Id)_container`)[0].ej2_instances[0].selectedItems.properties.nodes[0].addInfo = state;
@@ -1070,41 +1267,72 @@
         }
     }
 
+    function @(Model.Id)_apStartScheduledChanged() {
+        let type = $('#@(Model.Id)_startTypesList').val();
+        if (type == 'Imediate Initiation') {
+            $('#@(Model.Id)_startType_default').show();
+            $('#@(Model.Id)_startType_scheduled').hide();
+        }
+        else if (type == 'Scheduled') {
+            $('#@(Model.Id)_startType_scheduled').show();
+            $('#@(Model.Id)_startType_default').hide();
+        }
+    }
+    function @(Model.Id)_apScheduledStartTypeChanged() {
+        let type = $('#@(Model.Id)_scheduledStartTypesList').val();
+        if (type == 'Hours' || type == 'Days') {
+            $('#@(Model.Id)_startType_scheduled_typeSec').addClass('col-lg-6 col-md-6 col-sm-6 col-12');
+            $('#@(Model.Id)_startType_scheduled_typeSec').removeClass('col-lg-12 col-md-12 col-sm-12 col-12');
+
+            $('#@(Model.Id)_defaultStartTypeSec').show();
+            $('#@(Model.Id)_fixedStartTypeSec').hide();
+        }
+        else if (type == 'Fixed') {
+            $('#@(Model.Id)_startType_scheduled_typeSec').addClass('col-lg-12 col-md-12 col-sm-12 col-12');
+            $('#@(Model.Id)_startType_scheduled_typeSec').removeClass('col-lg-6 col-md-6 col-sm-6 col-12');
+
+            $('#@(Model.Id)_fixedStartTypeSec').show();
+            $('#@(Model.Id)_defaultStartTypeSec').hide();
+        }
+    }
+
     function @(Model.Id)_addNewCustomFormField()
     {
-        let grid = $('#@(Model.Id)_workshiftsCustomFormFieldsGrid')[0].ej2_instances[0];
+        if (ValidateForm('@(Model.Id)_customFieldsInfo')) {
+            let grid = $('#@(Model.Id)_workshiftsCustomFormFieldsGrid')[0].ej2_instances[0];
 
-        let type = $('#@(Model.Id)_viewCustomTBFormFieldTypesList').val();
-        let fieldName = $('#@(Model.Id)_customFieldName').val();
+            let type = $('#@(Model.Id)_viewCustomTBFormFieldTypesList').val();
+            let fieldName = $('#@(Model.Id)_customFieldName').val();
 
-        let customField = { type: type, fieldName: fieldName };
-        if (grid.dataSource.filter(function (x) { x.fieldName == customField.fieldName }).length > 0)
-            return;
+            let customField = { type: type, fieldName: fieldName };
+            if (grid.dataSource.filter(function (x) { return x.fieldName == customField.fieldName }).length > 0)
+                return;
 
-        switch (type) {
-            case "Text Box":
-                customField.tbType = $('#@(Model.Id)_viewCustomTBFormFieldTypesList').val();
-                customField.minLength = $('#@(Model.Id)_customTBFieldMinLenght').val();
-                customField.maxLength = $('#@(Model.Id)_customTBFieldMaxLenght').val();
-                break;
-            case "Dropdown":
-                break;
-            case "Checkbox":
-                break;
-            case "Date":
-                break;
-            case "Date Range":
-                break;
+            switch (type) {
+                case "Text Box":
+                    customField.tbType = $('#@(Model.Id)_viewCustomTBFormFieldTypesList').val();
+                    customField.minLength = $('#@(Model.Id)_customTBFieldMinLenght').val();
+                    customField.maxLength = $('#@(Model.Id)_customTBFieldMaxLenght').val();
+                    break;
+                case "Dropdown":
+                    break;
+                case "Checkbox":
+                    break;
+                case "Date":
+                    break;
+                case "Date Range":
+                    break;
+            }
+
+            let field = { id: viewFormFields.length, viewIndex: viewFormFields.length, name: customField.fieldName, mappingName: customField.fieldName, fieldTypeDescription: "Custom", fieldType: 1, isReadonly: true, isExternal: false };
+            viewFormFields.push(field);
+            formFields.push({ label: field.name, value: field.id, fieldType: field.fieldTypeDescription, isExternal: field.isExternal });
+
+            grid.dataSource.push(customField);
+            grid.refresh();
+
+            @(Model.Id)_populateFormFieldsSelection();
         }
-
-        let field = { id: viewFormFields.length, viewIndex: viewFormFields.length, name: customField.fieldName, mappingName: customField.fieldName, fieldTypeDescription: "Custom", fieldType: 1, isReadonly: true, isExternal: false };
-        viewFormFields.push(field);
-        formFields.push({ label: field.name, value: field.id, fieldType: field.fieldTypeDescription, isExternal: field.isExternal });
-
-        @(Model.Id)_populateFormFieldsSelection();
-
-        grid.dataSource.push(customField);
-        grid.refresh();
     }
 
     function @(Model.Id)_getNodeDefaults(obj, diagram) {

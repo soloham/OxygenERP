@@ -39,6 +39,15 @@ namespace CERP.Web.Pages.Shared.Components
             WorkflowModule = workflowModule;
             Form.FormFields.AddRange(externalFormFields);
 
+            List<ActionNotificationSetting> actionNotificationSettings = new List<ActionNotificationSetting>();
+            actionNotificationSettings.Add(new ActionNotificationSetting() { Action = ActionType.Start });
+            actionNotificationSettings.Add(new ActionNotificationSetting() { Action = ActionType.Successful });
+            actionNotificationSettings.Add(new ActionNotificationSetting() { Action = ActionType.Failed });
+            actionNotificationSettings.Add(new ActionNotificationSetting() { Action = ActionType.Deligated });
+            actionNotificationSettings.Add(new ActionNotificationSetting() { Action = ActionType.Edit });
+
+            Notifications.ActionNotificationSettings = actionNotificationSettings;
+
             #region GridsConfigs
             List<object> ApprovalRouteCommands = new List<object>();
             ApprovalRouteCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat e-DeleteButton" } });
@@ -123,6 +132,7 @@ namespace CERP.Web.Pages.Shared.Components
         public string ParentTitle { get; set; }
 
         public WorkflowForm Form { get; } = new WorkflowForm();
+        public ActionNotifications Notifications { get; } = new ActionNotifications();
 
         public List<GridColumn> ApprovalRouteGridColumns { get; set; } = new List<GridColumn>();
         public List<GridColumn> TasksGridColumns { get; set; } = new List<GridColumn>();
@@ -138,11 +148,14 @@ namespace CERP.Web.Pages.Shared.Components
 
             List<GridColumn> FFGridColumns = new List<GridColumn>()
             {
-                new GridColumn { Field = "id", Visible=false, ShowInColumnChooser=false, IsPrimaryKey=true  },
-                new GridColumn { Field = "name", AllowEditing=false, AllowSorting = false, HeaderText = "Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "viewIndex", Visible=false, AllowSorting = false, AutoFit=true, HeaderText = "", TextAlign=TextAlign.Center,  MinWidth="10" },
-                new GridColumn { Field = "isReadonly", AllowSorting = false, AutoFit=true, HeaderText = "Readonly", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "id", AutoFit=true, Visible=false, ShowInColumnChooser=false, IsPrimaryKey=true  },
+                new GridColumn { Field = "name", AutoFit=true, AllowEditing=false, AllowSorting = false, HeaderText = "Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "viewIndex", AutoFit=true, Visible=false, AllowSorting = false, HeaderText = "", TextAlign=TextAlign.Center,  MinWidth="10" },
+                new GridColumn { Field = "isView", AllowSorting = false, AutoFit=true, HeaderText = "View", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "isEdit", AutoFit=true, AllowSorting = false, HeaderText = "Edit", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "fieldTypeDescription", AllowSorting = false, AllowEditing=false, HeaderText = "Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "isEditNotification", AllowSorting = false, AutoFit=true, HeaderText = "Show Notifications", EditType="booleanEdit", DisplayAsCheckBox=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "editNotification", AllowSorting = false, AutoFit=true, HeaderText = "Edit Notification", TextAlign=TextAlign.Center,  MinWidth="10"  },
 
                 new GridColumn { Width = "50", HeaderText = "", TextAlign=TextAlign.Center, MinWidth="10", Commands = FFCommands }
             };
@@ -178,6 +191,25 @@ namespace CERP.Web.Pages.Shared.Components
 
             return JsonSerializer.Serialize(formFieldsDS);
         }
+        public List<GridColumn> GetNotificationsGridColumns()
+        {
+            List<GridColumn> FFGridColumns = new List<GridColumn>()
+            {
+                new GridColumn { Field = "action", Visible=false, IsPrimaryKey=true },
+                new GridColumn { Field = "actionDescription", AutoFit=true, HeaderText = "Action", AllowEditing=false, TextAlign=TextAlign.Center, MinWidth="10" },
+                new GridColumn { Field = "requester", AutoFit=true, HeaderText = "Requester", EditType="booleanedit", DisplayAsCheckBox=true, AllowEditing=true, TextAlign=TextAlign.Center,  MinWidth="10" },
+                new GridColumn { Field = "head", AutoFit=true, HeaderText = "Department Head", EditType="booleanedit", DisplayAsCheckBox=true, AllowEditing=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "preceding", AutoFit=true, HeaderText = "Preceding", EditType="booleanedit", DisplayAsCheckBox=true, AllowEditing=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "workflowManager", AutoFit=true, HeaderText = "Workflow Manager", EditType="booleanedit", DisplayAsCheckBox=true, AllowEditing=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+                new GridColumn { Field = "customMessage", AutoFit=true, HeaderText = "Custom Message", AllowEditing=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+            };
+
+            return FFGridColumns;
+        }
+        public string GetNotificationsAsDS()
+        {
+            return JsonSerializer.Serialize(Notifications.ActionNotificationSettings);
+        }
 
         public class WorkflowForm
         {
@@ -189,7 +221,10 @@ namespace CERP.Web.Pages.Shared.Components
             public int ViewIndex { get; set; }
             public string Name { get; set; }
             public string MappingName { get; set; }
-            public bool IsReadonly { get; set; }
+            public bool IsView { get; set; }
+            public bool IsEdit { get; set; }
+            public bool IsEditNotification { get; set; }
+            public string EditNotification { get; set; }
             public bool IsExternal { get; set; }
             public bool IsVisible { get; set; }
 
@@ -202,6 +237,35 @@ namespace CERP.Web.Pages.Shared.Components
             System,
             [Description("Custom")]
             Custom
+        }
+
+        public class ActionNotifications
+        {
+            public List<ActionNotificationSetting> ActionNotificationSettings { get; set; } = new List<ActionNotificationSetting>();
+        }
+        public class ActionNotificationSetting
+        {
+            public ActionType Action { get; set; }
+            public string ActionDescription { get => EnumExtensions.GetDescription(Action); set => Action = EnumExtensions.GetValueFromDescription<ActionType>(value); }
+
+            public bool Requester { get; set; } = true;
+            public bool Head { get; set; } = true;
+            public bool Preceding { get; set; } = true;
+            public bool WorkflowManager { get; set; } = true;
+            public string CustomMessage { get; set; } = "";
+        }
+        public enum ActionType
+        {
+            [Description("Start")]
+            Start,
+            [Description("Successful")]
+            Successful,
+            [Description("Failed")]
+            Failed,
+            [Description("Deligated")]
+            Deligated,
+            [Description("Edit")]
+            Edit
         }
     }
 }
