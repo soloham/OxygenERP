@@ -1,7 +1,7 @@
 {
   "culture": "en",
   "texts": {
-    "Permission:ESS_Timesheet": "ESS Timesheet", 
+    "Permission:ESS_Timesheet": "ESS Timesheet",
     "ps:main": "Main",
     "ps:dashboard": "Dashboard",
     "ps:FinancialManagement": "Financial Management",
@@ -131,7 +131,7 @@
     "ps:HR:E:EmployeeList": "Employee List",
     "ps:HR:E:Documents": "Documents",
     "ps:HR:E:WorkShifts": "Work Shifts",
-    "ps:HR:E:TimesheetAdmin": "Timesheet (Admint)",
+    "ps:HR:E:TimesheetAdmin": "Timesheet (Admin)",
     "ps:HR:E:MappingAccounts": "Mapping Accounts",
     "ps:HR:Payroll": "Payroll",
     "ps:HR:P:Leaves": "Leaves",
@@ -162,17 +162,18 @@
     "ps:ProductsAndServices": "Products / Services",
     "ps:PAS:ItemList": "Item List",
     "ps:Reports": "Reports",
-    "ps:GLSetup": "GL Setup",
-    "ps:GLS:Company": "Company",
-    "ps:GLS:AddressBook": "Address Book",
-    "ps:GLS:ContactTypes": "Contact Types",
-    "ps:GLS:Currency": "Currency",
-    "ps:GLS:FiscalPeriod": "Fiscal Period",
-    "ps:GLS:Parameters": "Parameters",
-    "ps:GLS:LookupSetup": "Lookup Setup",
-    "ps:ApprovalRoutes": "Approval Routes",
-    "ps:VATSetup": "VAT Setup",
+
+    "Step": "Step",
+    "Area": "Area",
+    "Edit": "Edit",
+    "Create": "Create",
+    "Add": "Add",
+    "Company": "Company",
+    "Companies": "Companies",
+    "Setup": "Setup",
+    "ListOf": "List of",
+
     "Welcome": "Welcome",
-    "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information, visit abp.io."
+    "LongWelcomeMessage": "Welcome to the application."
   }
 }

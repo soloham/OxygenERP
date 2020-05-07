@@ -122,6 +122,8 @@
     <Compile Remove="Migrations\20200420122447_HolidayInLR.Designer.cs" />
     <Compile Remove="Migrations\20200420123035_HolidayInLR.cs" />
     <Compile Remove="Migrations\20200420123035_HolidayInLR.Designer.cs" />
+    <Compile Remove="Migrations\20200507040404_LocationTemplateCreated.cs" />
+    <Compile Remove="Migrations\20200507040404_LocationTemplateCreated.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

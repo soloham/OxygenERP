@@ -68,6 +68,8 @@ namespace CERP
         [Description("Holiday Type")]
         HolidayType,
         [Description("Loan Type")]
-        LoanType
+        LoanType,
+        [Description("Company Document Type")]
+        CompanyDocumentType
     }
 }

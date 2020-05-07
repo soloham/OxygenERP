@@ -9,7 +9,36 @@ namespace CERP.App
     {
         [Description("Leave Request")]
         LeaveRequest,
-        [Description("Leave Request")]
+        [Description("Loans Request")]
         LoansRequest
+    }
+    public enum WorkflowNode
+    {
+        [Description("Approval")]
+        Approval,
+        [Description("Task")]
+        Task,
+        [Description("Delay")]
+        Delay,
+        [Description("Conditional")]
+        Conditional
+    }
+    public enum ApprovalActions
+    {
+        [Description("Approved")]
+        Approved,
+        [Description("Rejected")]
+        Rejected,
+        [Description("Deligated")]
+        Deligated
+    }
+    public enum TaskActions
+    {
+        [Description("Completed")]
+        Completed,
+        [Description("Failed")]
+        Failed,
+        [Description("Deligated")]
+        Deligated
     }
 }

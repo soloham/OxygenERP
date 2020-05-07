@@ -383,6 +383,15 @@ namespace CERP.EntityFrameworkCore
 
                 b.HasMany(p => p.Positions).WithOne(d => d.Department).OnDelete(DeleteBehavior.ClientCascade);
             });
+            
+            builder.Entity<LocationTemplate>(b =>
+            {
+                b.ToTable(CERPConsts.SetupDbTablePrefix + "LocationTemplates", CERPConsts.SetupDbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+            });
 
             builder.Entity<Position>(b =>
             {

@@ -69,6 +69,9 @@ namespace CERP
             CreateMap<Company, Company_Dto>();
             CreateMap<Company_Dto, Company>();
             CreateMap<Company_UV_Dto, Company>();
+            
+            CreateMap<LocationTemplate, LocationTemplate_Dto>();
+            CreateMap<LocationTemplate_Dto, LocationTemplate>();
 
             CreateMap<Document, Document_Dto>();
             CreateMap<Document_Dto, Document>();

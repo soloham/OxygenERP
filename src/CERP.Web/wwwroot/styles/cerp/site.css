@@ -567,6 +567,13 @@ vhr {
     content: '\e310';
 }
 
+e-expand::before {
+    content: '\e302'
+}
+e-collapse::before {
+    content: '\e300'
+}
+
 .e-grid {
     display: flex !important;
     flex-flow: column !important;
@@ -843,6 +850,8 @@ p {
 
 .property-panel-header {
     align-self: flex-start;
+    display: contents;
+    flex-direction: row;
     width: 100%;
 }
 

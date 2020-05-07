@@ -179,9 +179,10 @@
             <div id="@(Model.Id)_propertySection" class="col-lg-6" style="display:none">
                 <div class="property-section">
                     <div class="property-panel-header">
-                        <span class="mainTitle">Properties</span>
-                        <hr style="margin: 10px 0 10px 0;" />
+                        <span class="mainTitle" style="align-self:flex-start">Properties</span>
+                        <span class="e-ddb-icons e-expand e-icons" style="align-self:flex-end; font-size: large; margin-top: -40px; margin-bottom: 10px"></span>
                     </div>
+                    <hr style="margin: 10px 0 10px 0;" />
                     <div id="@(Model.Id)_propertyPanel" class="e-remove-selection property-panel-content">
                         <div id="@(Model.Id)_approval-route-panel" role="form" data-toggle="validator">
                             <ejs-accordion id="@(Model.Id)_approval-route-panel-accordion">
@@ -191,7 +192,7 @@
                                     <e-accordion-accordionitem expanded="true" header="Selection" content="#@(Model.Id)_generalInfo"></e-accordion-accordionitem>
                                     <e-accordion-accordionitem expanded="true" header="View" content="#@(Model.Id)_viewInfo"></e-accordion-accordionitem>
                                     <e-accordion-accordionitem expanded="true" header="Notifications" content="#@(Model.Id)_notificationsInfo"></e-accordion-accordionitem>
-                                    <e-accordion-accordionitem expanded="true" header="Action" content=""></e-accordion-accordionitem>
+                                    <e-accordion-accordionitem expanded="true" header="Action" content="#@(Model.Id)_apActionsInfo"></e-accordion-accordionitem>
                                     <e-accordion-accordionitem expanded="true" header="Reporting" content=""></e-accordion-accordionitem>
                                 </e-accordion-accordionitems>
                             </ejs-accordion>
@@ -263,7 +264,7 @@
                                 </div>
                                 <ejs-grid id="@(Model.Id)_viewFormFieldsGrid" dataSource="@Model.GetFormFieldsAsDS()" enableAutoFill="true" columns="@Model.GetFormFieldsGridColumns()"
                                           dataBound="dataBoundResponsive" commandClick="@(Model.Id)_approvalRoute_viewInfo_commandClick" actionBegin="@(Model.Id)_approvalRoute_viewInfo_actionBegin"
-                                          allowExcelExport="true" height="60%" allowPdfExport="true" actionComplete="@(Model.Id)_approvalRoute_viewInfo_actionComplete"
+                                          allowExcelExport="true" height="100%" allowPdfExport="true" actionComplete="@(Model.Id)_approvalRoute_viewInfo_actionComplete"
                                           hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" showColumnChooser="false"
                                           allowSorting="true" allowMultiSorting="true" gridLines="Both"
                                           toolbarClick="@(Model.Id)_approvalRoute_viewInfo_toolbarClick" toolbar='new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" } }'
@@ -280,6 +281,8 @@
                                     console.log(viewFormFields);
                                     let notificationsSettings = @(Json.Serialize(Model.Notifications.ActionNotificationSettings));
                                     console.log(notificationsSettings);
+                                    let _apActions = @(Json.Serialize(Model.GetAPActions()));
+                                    console.log(_apActions);
 
                                     var formFieldsGroups = ["System", "Custom"];
                                     var formFields = [];
@@ -564,7 +567,7 @@
                                             <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                                                 <div class="form-group">
                                                     <label class="control-label m-b-5 ">Date:</label>
-                                                    <input type="text" id="@(Model.Id)_scheduledStartDate" name="ScheduledStartDate" style="width: 100% !important; cursor: default;" class="text-left form-control inline pull-left DatePicker is-calendarsPicker" autocomplete="off" required>
+                                                    <input type="text" id="@(Model.Id)_scheduledStartDate" name="ScheduledStartDate" style="width: 100% !important; cursor: default;" class="text-left form-control inline pull-left DatePicker is-calendarsPicker" autocomplete="off">
                                                 </div>
                                             </div>
                                         </div>
@@ -573,7 +576,20 @@
                             </div>
                             <div id="@(Model.Id)_notificationsInfo">
                                 <ejs-grid id="@(Model.Id)_notificationsGrid" dataSource="@Model.GetNotificationsAsDS()" enableAutoFill="true" columns="@Model.GetNotificationsGridColumns()"
-                                          dataBound="dataBoundResponsive" allowExcelExport="true" height="60%" allowPdfExport="true"
+                                          dataBound="dataBoundResponsive" allowExcelExport="true" height="100%" allowPdfExport="true"
+                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" showColumnChooser="false"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                                          allowPaging="true" allowResizing="true">
+
+                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="false" allowEditing="true" allowDeleting="false"></e-grid-editSettings>
+                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10", "20", "All" })"></e-grid-pagesettings>
+                                </ejs-grid>
+                            </div>
+                            <div id="@(Model.Id)_apActionsInfo">
+                                <ejs-grid id="@(Model.Id)_apActionsGrid" dataSource="@Model.GetAPActionsAsDS()" enableAutoFill="true" columns="@Model.GetAPActionsGridColumns()"
+                                          dataBound="dataBoundResponsive" allowExcelExport="true" height="100%" allowPdfExport="true"
                                           hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" showColumnChooser="false"
                                           allowSorting="true" allowMultiSorting="true" gridLines="Both"
                                           allowPaging="true" allowResizing="true">
@@ -1058,6 +1074,7 @@
                     $("#@(Model.Id)_apDepartmentIds").change();
                     var viewFormFieldsGrid = $('#@(Model.Id)_viewFormFieldsGrid')[0].ej2_instances[0];
                     var notificationsGrid = $('#@(Model.Id)_notificationsGrid')[0].ej2_instances[0];
+                    var actionsGrid = $('#@(Model.Id)_apActionsGrid')[0].ej2_instances[0];
 
                     if (typeof selectedNode.addInfo !== 'undefined')
                     {
@@ -1131,6 +1148,11 @@
 
                         notificationsGrid.dataSource = notificationSettings;
                         notificationsGrid.refresh();
+
+                        var apActions = args.newValue[0].addInfo.actions.dataSource;
+
+                        actionsGrid.dataSource = apActions;
+                        actionsGrid.refresh();
                     }
                     else {
                         $('#@(Model.Id)_apDepartmentIds').multiselect('deselectAll', true);
@@ -1147,6 +1169,9 @@
 
                         notificationsGrid.dataSource = rfdc()(notificationsSettings);
                         notificationsGrid.refresh();
+
+                        actionsGrid.dataSource = rfdc()(_apActions);
+                        actionsGrid.refresh();
                     }
                 });
                 $(`#@(Model.Id)_diagramArea`).removeClass('col-lg-12');
@@ -1252,6 +1277,9 @@
                         },
                         notifications: {
                             dataSource: rfdc()($('#@(Model.Id)_notificationsGrid')[0].ej2_instances[0].dataSource)
+                        },
+                        actions: {
+                            dataSource: rfdc()($('#@(Model.Id)_apActionsGrid')[0].ej2_instances[0].dataSource)
                         }
                     };
 

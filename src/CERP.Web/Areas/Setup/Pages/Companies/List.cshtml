@@ -1,0 +1,806 @@
+﻿@page "/Setup/Companies"
+@using CERP.Localization;
+@using Microsoft.AspNetCore.Mvc.Localization;
+@using CERP.App;
+@using CERP;
+@inject IHtmlLocalizer<CERPResource> L
+@using CERP.App.Helpers;
+
+@model CERP.Web.Areas.Setup.Pages.Companies.ListModel
+@{
+    ViewData["IsEditing"] = false;
+    bool IsEditing = (bool)ViewData["IsEditing"];
+
+    List<DictionaryValue> countries = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Country).OrderBy(x => x.Key).ToList(); ;
+    List<DictionaryValue> documentTypes = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.CompanyDocumentType).OrderBy(x => x.Key).ToList(); ;
+
+    ViewData["Title"] = L["Company"].Name;
+    ViewData["IconClass"] = "fa fa-building";
+    ViewData["HeaderTitle"] = L["Companies"].Name.ToUpper();
+    ViewData["SubTitle"] = $"{L["ListOf"]} {L["Companies"]}";
+    ViewData["Area"] = "Setup";
+
+    ViewData["IsList"] = false;
+    ViewData["IsCreate"] = false;
+    string cNT = $"{L["Add"].Name} {L["Company"].Name}";
+    ViewData["CreateNewText"] = cNT;
+    ViewData["CreateNewLink"] = "/Companies/Company";
+
+    string TabPlaceholder = (bool)ViewData["IsEditing"] ? L["Area"].Name : L["Step"].Name;
+
+    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+
+    var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Audit Trail", tooltipText = "View Audit Trail", prefixIcon = "e-toggleaudittrail", id = "toggleaudittrail" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
+
+    List<object> companiesCommands = new List<object>();
+    companiesCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
+    companiesCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+    companiesCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
+
+    List<object> companyDocsCommands = new List<object>();
+    //companyDocsCommands.Add(new { type = "View", buttonOption = new { iconCss = "e-icons e-search", cssClass = "e-flat" } });
+    companyDocsCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+
+    List<object> companyCurrencyCommands = new List<object>();
+    //companyDocsCommands.Add(new { type = "View", buttonOption = new { iconCss = "e-icons e-search", cssClass = "e-flat" } });
+    companyCurrencyCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+
+    List<CERP.Setup.CompanyStatus> companyStatuses = Enum.GetValues(typeof(CERP.Setup.CompanyStatus)).Cast<CERP.Setup.CompanyStatus>().ToList();
+    List<CERP.Setup.CurrencyType> currencyTypes = Enum.GetValues(typeof(CERP.Setup.CurrencyType)).Cast<CERP.Setup.CurrencyType>().ToList();
+
+}
+@section styles {
+    @if ((bool)ViewData["IsEditing"])
+    {
+        <link href="~/libs/smartwizard/dist/css/smart_wizard_theme_circles.min.css" rel="stylesheet" />
+    }
+
+    <style>
+        .customContentArea {
+            position: unset !important;
+        }
+    </style>
+}
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $("#submitDocumentBtn").on("click", function (e) {
+                // Navigate previous
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                if (ValidateForm('documentsForm')) {
+                    var grid = $("#CompanyDocumentsGrid")[0].ej2_instances[0];
+                    var id = 0;
+                    if (grid.dataSource.length > 0)
+                        id = grid.dataSource[grid.dataSource.length - 1].id;
+
+                    var documentTitle = $("#documentTitle").val();
+                    var documentTitleLocalized = $("#documentTitleLocalized").val();
+
+                    var documentTypeValue = $("option:selected", "#documentType").attr("data-value");
+                    var documentTypeId = $("#documentType").val();
+
+                    var issueDate = $("#documentIssueDate").val();
+                    var endDate = $("#documentEndDate").val();
+                    var documentCopy = $("#document")[0];
+                    var documentCopyFile = documentCopy.files[0];
+
+                    grid.dataSource.push({
+                        id: id + 1,
+                        documentTitle,
+                        documentTitleLocalized,
+                        documentType: { id: documentTypeId, value: documentTypeValue },
+                        issuedDate: issueDate,
+                        endDate: endDate,
+                        getDocument: { name: documentCopyFile.name }
+                    }); // refresh the Grid.
+                    grid.refresh(); // refresh the Grid.
+                    toastr.info(`${documentTypeValue} Added for the company`);
+                    grid.hideSpinner();
+                }
+            });
+            $("#submitCurrencyBtn").on("click", function (e) {
+                // Navigate previous
+                e.preventDefault();
+                e.stopImmediatePropagation();
+
+                if (ValidateForm('currenciesForm')) {
+                    var grid = $("#CompanyCurrenciesGrid")[0].ej2_instances[0];
+                    var id = 0;
+                    if (grid.dataSource.length > 0)
+                        id = grid.dataSource[grid.dataSource.length - 1].id;
+
+                    var shortName = $("#currencyNameShort").val();
+                    var longName = $("#currencyNameLong").val();
+
+                    var currencyType = $("#currencyType").val();
+
+                    var conversionRate = $("#conversionRate").val();
+                    conversionRate = conversionRate <= 0 ? 1 : conversionRate;
+
+                    if (currencyType.includes('Base') && grid.dataSource.filter(function (x) { return x.currencyType.includes('Base') }).length > 0) {
+                        toastr.error(`A base currency already exists`);
+
+                        return;
+                    }
+                    grid.dataSource.push({
+                        id: id + 1,
+                        shortName,
+                        longName,
+                        currencyType,
+                        conversionRate
+                    }); // refresh the Grid.
+                    grid.refresh(); // refresh the Grid.
+                    toastr.info(`${longName} Added for the company`);
+                    grid.hideSpinner();
+                }
+            });
+        });
+    </script>
+}
+<partial name="_DefaultPageHeader" />
+<div class="site-content customContentArea">
+    <div class="control-section">
+        <div class="areaHeader" style="display:flex;">
+            <div id="companiesLoader" class="pull-left loader-inline" style="display:none"></div>
+            <div class="areaHeaderTitle">
+                <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Current Companies</span>
+                @*<span id="" class="areaHeaderTitleInNode menu-text"> > </span>*@
+                @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
+            </div>
+            @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
+            <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                @*<div class="clearfix margin-15"></div>*@
+                <a id="addCompaniesBtn" onclick="areaHeaderBtnClick(event); isEditingCompanies = false;" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+            </div>
+        </div>
+        <form id="companiesForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+            <div id="smartwizard">
+                <ul>
+                    <li><a href="#step-1">@TabPlaceholder 1<br /><p style="font-size: 15px">General Information</p></a></li>
+                    <li><a href="#step-2">@TabPlaceholder 2<br /><p style="font-size: 15px">Address</p></a></li>
+                    <li><a href="#step-3">@TabPlaceholder 3<br /><p style="font-size: 15px">Currencies</p></a></li>
+                </ul>
+                <div>
+                    <div id="step-1">
+                        <div id="form-step-0" role="form" data-toggle="validator">
+                            <div class="m-l-20 m-t-0">
+                                <h2>General Information</h2>
+                                <p>
+                                    Provide general details of the company
+                                </p>
+                            </div>
+                            <hr />
+                            <div class="row" style="margin: 0">
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                    <div class="form-group">
+                                        <label class="control-label m-b-5 ">Legal Name:</label>
+                                        <input type="text" id="companyTitle" name="CompanyName" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                    <div class="form-group">
+                                        <label class="control-label m-b-5 ">Legal Name (In Arabic):</label>
+                                        <input type="text" id="companyTitleLocalized" name="CompanyNameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                    <div class="form-group">
+                                        <label class="margin-bottom-5 control-label">Company Status:</label>
+                                        <select id="companyStatus" name="Status" class="form-control" required>
+                                            @for (int i = 0; i < companyStatuses.Count; i++)
+                                            {
+                                                <option value="@companyStatuses[i]">@EnumExtensions.GetDescription(companyStatuses[i])</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="m-l-20 m-t-0">
+                                <h2>Company Registration</h2>
+                                <p>
+                                    Provide registration details of the company
+                                </p>
+                            </div>
+                            <hr />
+                            <div class="row" style="margin: 0">
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label class="control-label m-b-5 ">Company Registration Number:</label>
+                                        <input type="number" min="0" id="companyRegistration" name="CompanyRegistration" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label class="control-label m-b-5 ">CR Expiry Date:</label>
+                                        <input type="text" id="crExpiryDate" name="CRExpiryDate" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="text-left form-control inline pull-left DatePicker is-calendarsPicker" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="m-l-20 m-t-0">
+                                <h2>Tax Registration</h2>
+                                <p>
+                                    Provide tax registration details of the company
+                                </p>
+                            </div>
+                            <hr />
+                            <div class="row" style="margin: 0">
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                    <div class="form-group">
+                                        <label class="control-label m-b-5 ">Social Insurance ID:</label>
+                                        <input type="number" min="0" id="siId" name="SocialInsuranceID" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                    <div class="form-group">
+                                        <label class="control-label m-b-5 ">Tax ID:</label>
+                                        <input type="number" min="0" id="taxId" name="TaxID" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                    <div class="form-group">
+                                        <label class="control-label m-b-5 ">VAT ID:</label>
+                                        <input type="number" min="0" id="vatID" name="VATID" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="m-l-20 m-t-0">
+                                <h2>Company Documents</h2>
+                                <p>
+                                    Provide various documents of the company
+                                </p>
+                            </div>
+                            <hr />
+                            <div class="panel-body p-t-0" style="padding-bottom:0;">
+                                <div class="areaHeader" style="display:flex;">
+                                    <div id="locationsLoader" class="pull-left loader-inline" style="display:none"></div>
+                                    <div class="areaHeaderTitle">
+                                        <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Documents</span>
+                                        @*<span id="" class="areaHeaderTitleInNode menu-text"> > </span>*@
+                                        @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
+                                    </div>
+                                    @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
+                                    <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                        @*<div class="clearfix margin-15"></div>*@
+                                        <a id="addDocumentBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                                    </div>
+                                </div>
+                                <div role="form" id="documentsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                            <div class="col-sm-6" style="padding-right:0">
+                                                <div class="form-group">
+                                                    <label class="control-label m-b-5 ">Title:</label>
+                                                    <input type="text" id="documentTitle" name="DocumentTitle" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6" style="padding-left:0">
+                                                <div class="form-group">
+                                                    <label class="control-label m-b-5 ">Title (In Arabic):</label>
+                                                    <input type="text" id="documentTitleLocalized" name="DocumentTitleLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                            <div class="col-sm-6" style="padding-right:0">
+                                                <div class="form-group">
+                                                    <label class="control-label m-b-5 ">Start Date:</label>
+                                                    <input type="text" id="documentIssueDate" name="DocumentIssueDate" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="text-left form-control inline pull-left DatePicker is-calendarsPicker" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6" style="padding-left:0">
+                                                <div class="form-group">
+                                                    <label class="control-label m-b-5 ">End Date:</label>
+                                                    <input type="text" id="documentEndDate" name="DocumentEndDate" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="text-left form-control inline pull-left DatePicker is-calendarsPicker" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                            <div class="form-group">
+                                                <label class="control-label m-b-5 ">Document:</label>
+                                                <input type="file" id="document" name="Document" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                            <div class="form-group">
+                                                <label class="margin-bottom-5 control-label">Document Type:</label>
+                                                <select id="documentType" name="DocumentType" class="form-control" required>
+                                                    @for (int i = 0; i < documentTypes.Count; i++)
+                                                    {
+                                                        <option value="@documentTypes[i].Id" data-value="@documentTypes[i].Value">@documentTypes[i].Value</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="row m-t-20">
+                                        <div class="col-lg-12">
+                                            <button id="submitDocumentBtn" type="button" class="btn btn-success btn-block">Add Document</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="companyDocumentsCS" class="control-section">
+                                    <ejs-grid id="CompanyDocumentsGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                              allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                              allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                                              toolbar="@initialToolBar" commandClick="companyDocsCommandClick" actionBegin="companyDocsActionBegin"
+                                              allowPaging="true" allowResizing="true">
+
+                                        <e-grid-columns>
+                                            <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                            <e-grid-column field="documentTitle" headerText="Title" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="documentTitleLocalized" headerText="Local Title" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="issuedDate" headerText="Issue Date" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="endDate" headerText="End Date" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="documentType.value" headerText="Type" textAlign="Center"></e-grid-column>
+
+                                            <e-grid-column headerText="Actions" textAlign="Center" autoFit="true" commands="companyDocsCommands"></e-grid-column>
+                                        </e-grid-columns>
+
+                                        <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
+                                        <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                        <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                    </ejs-grid>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="step-2">
+                        <div id="form-step-1" role="form" data-toggle="validator">
+                            <div class="m-l-20 m-t-0">
+                                <h2>Primary Address</h2>
+                                <p>
+                                    Provide primary address of the company
+                                </p>
+                            </div>
+                            <hr class="margin-top-5 margin-bottom-10">
+                            <div id="primaryContactForm">
+                                <div class="row" style="margin:0">
+                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                        <div class="col-sm-12" style="padding:0">
+                                            <div class="form-group">
+                                                <label class="control-label m-b-5 ">Phone:</label>
+                                                <input type="number" id="phoneNo" name="PhoneNumber" @*value="@(empInfo!=null? empInfo.PHONE_NO : "")"*@ style="width:100% !important" class="form-control inline">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                        <div class="col-sm-12" style="padding:0">
+                                            <div class="form-group">
+                                                <label class="control-label m-b-5 ">Mobile:</label>
+                                                <input type="number" id="mobileNo" name="MobileNumber" @*value="@(empInfo!=null? empInfo.PHONE_NO : "")"*@ style="width:100% !important" class="form-control inline">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                        <div class="col-sm-12" style="padding:0">
+                                            <div class="form-group">
+                                                <label class="control-label m-b-5 ">Fax:</label>
+                                                <input type="number" id="faxNo" name="FaxNumber" @*value="@(empInfo!=null? empInfo.PHONE_NO : "")"*@ style="width:100% !important" class="form-control inline">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            <label class="margin-bottom-5  control-label">Email:</label>
+                                            <input type="email" id="email" name="Email" @*value="@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="clearfix margin-5"></div>
+                                <div class="row" style="margin:0">
+                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                        <label class="margin-bottom-5  control-label">Country:</label>
+                                        <div>
+                                            <select id="countryId" name="CountryId" class="form-control">
+                                                <option></option>
+                                                @for (int i = 0; i < countries.Count; i++)
+                                                {
+                                                    <option value="@countries[i].Id" data-value="@countries[i].Value">@countries[i].Value</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                        <div>
+                                            <label class="margin-bottom-5  control-label">City:</label>
+                                        </div>
+                                        <div>
+                                            <input type="text" id="cityId" name="PCity" min="0" @*value="@(empInfo!=null? empInfo.ZIP_CODE : "")"*@ class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+
+                                        <div class="form-group">
+                                            <label class="margin-bottom-5  control-label">Zip Code:</label>
+                                            <input type="number" id="zipCode" name="ZipCode" min="0" @*value="@(empInfo!=null? empInfo.ZIP_CODE : "")"*@ class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+
+                                        <div class="form-group">
+                                            <label class="margin-bottom-5  control-label">P.O Box:</label>
+                                            <input type="number" id="poBox" name="POBox" min="0" @*value="@(empInfo!=null? empInfo.PO_BOX : "")"*@ class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="margin-top-5 margin-bottom-10">
+                            <div id="nationalAddressInfo">
+                                <div class="m-l-20 m-t-0">
+                                    <h2>National Address</h2>
+                                    <p>
+                                        Provide national address of the company
+                                    </p>
+                                </div>
+                                <div>
+                                    <hr class="margin-top-5 margin-bottom-10">
+                                    <div class="row" style="margin:0">
+                                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                            <div class="form-group">
+                                                <label class="margin-bottom-5  control-label">Building No:</label>
+                                                <input type="text" id="buildingNumber" name="BuildingNumber" class="form-control" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                            <div class="form-group">
+                                                <label class="margin-bottom-5  control-label">Street Name:</label>
+                                                <input type="text" id="streetName" name="StreetName" class="form-control" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                            <div class="form-group">
+                                                <label class="margin-bottom-5  control-label">District:</label>
+                                                <input type="text" id="addDistrict" name="NADistrict" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                            <div class="form-group">
+                                                <label class="margin-bottom-5  control-label">City:</label>
+                                                <input type="text" id="addCity" name="NACity" class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix margin-5"></div>
+                                    <div class="row" style="margin:0">
+                                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                            <div class="form-group">
+                                                <label class="margin-bottom-5  control-label">Postal Code:</label>
+                                                <input type="text" id="addPostalCode" name="NAPostalCode" @*value="@(empInfo!=null? empInfo.ADD_POSTAL_CODE : "")"*@ class="form-control">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                            <div class="form-group">
+                                                <label class="margin-bottom-5  control-label">Additional Number:</label>
+                                                <input type="text" id="addAdditionalNumber" name="NAAdditionalNumber" @*value="@(empInfo!=null? empInfo.ADD_ADDITIONAL_NO : "")"*@ class="form-control">
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="step-3">
+                        <div id="form-step-2" role="form" data-toggle="validator">
+                            <div class="m-l-20 m-t-0">
+                                <h2>Currency Information</h2>
+                                <p>
+                                    Provide currency details of the company
+                                </p>
+                            </div>
+                            <hr />
+                            <div class="panel-body p-t-0" style="padding-bottom:0;">
+                                <div class="areaHeader" style="display:flex;">
+                                    <div id="currenciesLoader" class="pull-left loader-inline" style="display:none"></div>
+                                    <div class="areaHeaderTitle">
+                                        <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Currencies</span>
+                                        @*<span id="" class="areaHeaderTitleInNode menu-text"> > </span>*@
+                                        @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
+                                    </div>
+                                    @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
+                                    <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                        @*<div class="clearfix margin-15"></div>*@
+                                        <a id="addCurrencyBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                                    </div>
+                                </div>
+                                <div role="form" id="currenciesForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                                    <div class="row">
+                                        <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                            <div class="form-group">
+                                                <label class="control-label m-b-5 ">Short Name:</label>
+                                                <input type="text" id="currencyNameShort" name="CurrencyNameShort" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                            <div class="form-group">
+                                                <label class="control-label m-b-5 ">Long Name:</label>
+                                                <input type="text" id="currencyNameLong" name="CurrencyNameLong" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                            <div id="currencyTypeField" class="col-sm-12">
+                                                <div class="form-group">
+                                                    <label class="margin-bottom-5 control-label">Currency Type:</label>
+                                                    <select id="currencyType" onchange="
+                                                            if (!$('#currencyType').val().includes('Base')) {
+                                                                $('#currencyTypeField').removeClass('col-sm-12');
+                                                                $('#currencyTypeField').addClass('col-sm-6');
+                                                                setTimeout(function () {
+                                                                    $('#currencyConvRateField').slideDown(0);
+                                                                }, 520);
+                                                            } else {
+                                                                $('#currencyConvRateField').slideUp(0);
+                                                                $('#currencyTypeField').removeClass('col-sm-6');
+                                                                $('#currencyTypeField').addClass('col-sm-12');
+                                                            }
+                                                        " name="Type" class="form-control" required>
+                                                        @for (int i = 0; i < currencyTypes.Count; i++)
+                                                        {
+                                                            <option value="@currencyTypes[i]" data-value="@currencyTypes[i]">@EnumExtensions.GetDescription(currencyTypes[i])</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div id="currencyConvRateField" class="col-sm-6" style="display:none">
+                                                <div class="form-group">
+                                                    <label class="margin-bottom-5 control-label">Conversion Rate:</label>
+                                                    <input type="number" min="0" id="conversionRate" name="ConversionRate" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="row m-t-20">
+                                        <div class="col-lg-12">
+                                            <button id="submitCurrencyBtn" type="button" class="btn btn-success btn-block">Add Currency</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="companyCurrenciesCS" class="control-section">
+                                    <ejs-grid id="CompanyCurrenciesGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                              allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                              allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                                              toolbar="@initialToolBar" commandClick="companyCurrenciesCommandClick" actionBegin="companyCurrenciesActionBegin" actionComplete="companyCurrenciesActionComplete"
+                                              allowPaging="true" allowResizing="true">
+
+                                        <e-grid-columns>
+                                            <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                            <e-grid-column field="shortName" headerText="Short Name" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="longName" headerText="Long Name" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="currencyType" headerText="Type" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="conversionRate" headerText="Exchange Rate" textAlign="Center"></e-grid-column>
+
+                                            <e-grid-column headerText="Actions" textAlign="Center" autoFit="true" commands="companyCurrencyCommands"></e-grid-column>
+                                        </e-grid-columns>
+
+                                        <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
+                                        <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                        <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                    </ejs-grid>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="row m-t-20">
+                <div class="col-lg-12">
+                    <input id="submitCompanyBtn" type="submit" class="btn btn-success btn-block" value="Create Company" required />
+                </div>
+            </div>
+        </form>
+        <div id="companiesCS" class="control-section">
+            <ejs-grid id="CompaniesGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="commandClick"
+                      showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                      hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                      allowSorting="true" allowMultiSorting="true" gridLines="Both" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                      toolbarClick="toolbarClick" toolbar="@initialToolBar"
+                      allowPaging="true" allowResizing="true">
+
+                <e-grid-columns>
+                    <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                    <e-grid-column field="companyCode" headerText="Code" textAlign="Center" autoFit="true"></e-grid-column>
+                    <e-grid-column field="companyName" headerText="Name" textAlign="Center" autoFit="true"></e-grid-column>
+                    <e-grid-column field="companyAddress" headerText="Address" textAlign="Center" autoFit="true"></e-grid-column>
+                    <e-grid-column field="companyStatus" headerText="Status" textAlign="Center" autoFit="true"></e-grid-column>
+
+                    <e-grid-column headerText="Actions" textAlign="Center" autoFit="true" commands="companiesCommands"></e-grid-column>
+                </e-grid-columns>
+
+                <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
+                <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+            </ejs-grid>
+        </div>
+    </div>
+</div>
+<ejs-dialog id="alert_dialog" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy with Header" content="Atleast one row should be selected to copy with header">
+    <e-dialog-buttons>
+        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+    </e-dialog-buttons>
+</ejs-dialog>
+<ejs-dialog id="alert_dialog_1" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy" content="Atleast one row should be selected to copy">
+    <e-dialog-buttons>
+        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+    </e-dialog-buttons>
+</ejs-dialog>
+
+<script>
+    function toolbarClick(args) {
+        var gridObj = document.getElementById("CompaniesGrid").ej2_instances[0];
+
+        if (args.item.id === 'CompaniesGrid_pdfexport') {
+            gridObj.pdfExport();
+        }
+        if (args.item.id === 'CompaniesGrid_excelexport') {
+            gridObj.excelExport();
+        }
+        if (args.item.id === 'CompaniesGrid_csvexport') {
+            gridObj.csvExport();
+        }
+        if (this.getSelectedRecords().length > 0) {
+            var withHeader = false;
+            if (args.item.id === 'copyHeader') {
+                withHeader = true;
+            }
+            this.copy(withHeader);
+        }
+        else {
+            if (args.item.id === 'copyHeader') {
+                var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+                dialogObj.show();
+            }
+            else if (args.item.id === 'copy') {
+                var dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+                dialogObj.show();
+            }
+        }
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "PdfExport", "CsvExport", "Print", "Search",{ text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.showColumnChooser = true;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            var visCount = 0;
+            for (var i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else if(col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+        if(col.showInColumnChooser)
+                         gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+        }
+        if (args.item.id === 'toggleaudittrail') {
+
+        }
+    }
+    function alertBtnClick() {
+        var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+        var dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
+        dialogObj.hide();
+        dialogObj1.hide();
+    }
+    function commandClick(args) {
+        if (args.commandColumn.type == "Edit") {
+            var params_ = JSON.stringify(args.rowData);  // display row data
+            window.open("@Url.Content("~")/Setup/Company/" + args.rowData.id, "_blank");
+        }
+        else if (args.commandColumn.type == "Copy") {
+            this.copy(false);
+        }
+    }
+
+    function companyDocsActionBegin(args) {
+        var docsGrid = $('#CompanyDocumentsGrid')[0].ej2_instances[0];
+        //if (args.requestType == "delete") {
+
+        //}
+        setTimeout(function () { docsGrid.hideSpinner() }, 100)
+    }
+    function companyDocsCommandClick(args) {
+        var docsGrid = $('#CompanyDocumentsGrid')[0].ej2_instances[0];
+        if (args.commandColumn.type == "View") {
+            console.log(args);
+            var data = args.rowData;
+            var re = /(?:\.([^.]+))?$/;
+            var ext = re.exec(data.fileName)[1];   // "txt"
+            var html = ``;
+            html += `<hr class='m-t-0 p-t-0'/>`
+            if (ext == "jpg" || ext == "jpeg" || ext == "png" || ext == "ico") {
+                html += `<div style="margin: 0px; padding: 0px;height:auto;width:100%;">
+                           <img src="/Uploads/${data.fileName}" style="height: 100%; width: 100%;" />
+                        </div>`
+            }
+            else {
+                html += `<div style="margin: 0px; padding: 0px;height:auto;width:100%;">
+                           <p>The selected document isn't supported for preview. <br/> You may download it and view it locally</p>
+                        </div>`
+            }
+            html += `<hr class='m-b-0 p-b-0'/>`
+            Swal.fire({
+                title: `<strong>${data.name}</strong>`,
+                html: html,
+                showCloseButton: true,
+                showCancelButton: true,
+                focusConfirm: false,
+                confirmButtonText:
+                    `<a style="text-decoration: none; color: white;" id="downlod" download="${data.owner.name}_Document.${ext}" href='/Uploads/${data.fileName}' ><i class="zmdi zmdi-download m-r-5"></i> Download</a>`,
+                confirmButtonAriaLabel: 'Download Document',
+                cancelButtonText:
+                    'Close',
+                cancelButtonAriaLabel: 'Close'
+            }).then((result) => {
+                if (result.value) {
+                    //e.preventDefault();  //stop the browser from following
+                    //top.location.href = `/Uploads/${data.fileName}`;
+                    Swal.fire(
+                        'Downloaded',
+                        'Your file has been downloaded.',
+                        'success'
+                    )
+                }
+            });
+        }
+        else if (args.commandColumn.type == "Copy") {
+            this.copy(false);
+        }
+        setTimeout(function () { docsGrid.hideSpinner() }, 100)
+    }
+    function companyCurrenciesActionBegin(args) {
+        var grid = $('#CompanyCurrenciesGrid')[0].ej2_instances[0];
+        //if (args.requestType == "delete") {
+
+        //}
+        setTimeout(function () { grid.hideSpinner() }, 100)
+    }
+    function companyCurrenciesActionComplete(args) {
+        var grid = $('#CompanyCurrenciesGrid')[0].ej2_instances[0];
+        //if (args.requestType == "delete") {
+
+        //}
+        setTimeout(function () { grid.hideSpinner() }, 100)
+    }
+    function companyCurrenciesCommandClick(args) {
+        var grid = $('#CompanyCurrenciesGrid')[0].ej2_instances[0];
+        if (args.commandColumn.type == "Copy") {
+            this.copy(false);
+        }
+        grid.hideSpinner();
+    }
+</script>
+

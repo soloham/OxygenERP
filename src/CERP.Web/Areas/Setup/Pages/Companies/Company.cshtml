@@ -1,0 +1,161 @@
+﻿@page "/Setup/Company/{CompanyId?}"
+@using CERP.Localization;
+@using Microsoft.AspNetCore.Mvc.Localization;
+@inject IHtmlLocalizer<CERPResource> L
+@model CERP.Web.Areas.Setup.Pages.Company.CompanyModel
+@{
+    ViewData["IsEditing"] = false;
+    bool IsEditing = (bool)ViewData["IsEditing"];
+
+    ViewData["Title"] = IsEditing ? $"{L["Edit"].Name} {L["Company"].Name}" : $"{L["Create"].Name} {L["Company"].Name}";
+    ViewData["IconClass"] = "fa fa-user-tie";
+    ViewData["HeaderTitle"] = L["Company"].Name.ToUpper();
+
+    ViewData["IsList"] = false;
+    ViewData["IsCreate"] = false;
+    string TabPlaceholder = (bool)ViewData["IsEditing"] ? L["Area"].Name : L["Step"].Name;
+
+    var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
+
+    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+}
+@section styles{
+    @if ((bool)ViewData["IsEditing"])
+    {
+        <link href="~/libs/smartwizard/dist/css/smart_wizard_theme_circles.min.css" rel="stylesheet" />
+    }
+
+    <style>
+        .customContentArea {
+            position: unset !important;
+        }
+    </style>
+}
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            toastr.options = {
+                "positionClass": "toast-bottom-right",
+            }
+            //toastr.options.positionClass = 'toast-bottom-right';
+            toastr.options.closeButton = true;
+
+            //toastr.options.newOnTop = false;
+            toastr.options.showEasing = 'swing';
+            toastr.options.hideEasing = 'linear';
+            toastr.options.closeEasing = 'linear';
+
+            toastr.options.showMethod = 'slideDown';
+            toastr.options.hideMethod = 'slideUp';
+            toastr.options.closeMethod = 'slideUp';
+
+            toastr.options.progressBar = true;
+            let curWizardTheme = isEditing ? 'dots' : 'arrows';
+            $('#smartwizard').smartWizard({
+                selected: 0,
+                theme: curWizardTheme,
+                transitionEffect: 'slide',
+                showStepURLhash: false,
+                keyNavigation: true,
+                //errorSteps: [1],
+                toolbarSettings: {
+                    showNextButton: false, // show/hide a Next button
+                    showPreviousButton: false, // show/hide a Previous button
+                },
+                anchorSettings: {
+                    anchorClickable: true, // Enable/Disable anchor navigation
+                    enableAllAnchors: true, // add done css
+                    markDoneStep: !isEditing, // add done css
+                    markAllPreviousStepsAsDone: false, // When a step selected by url hash, all previous steps are marked done
+                    removeDoneStepOnNavigateBack: true, // While navigate back done step after active step will be cleared
+                    enableAnchorOnDoneStep: true, // Enable/Disable the done steps navigation
+                }
+            });
+            $("#smartwizard").on("showStep", function (e, anchorObject, stepNumber, stepDirection, stepPosition) {
+                //alert("You are on step "+stepNumber+" now");
+                if (stepPosition === 'first') {
+                    $("#prev-btn").addClass('disabled');
+                } else if (stepPosition === 'final') {
+                    $("#next-btn").addClass('disabled');
+                } else {
+                    $("#prev-btn").removeClass('disabled');
+                    $("#next-btn").removeClass('disabled');
+                }
+
+                let li = $(`#smartwizard>ul>li>a[href="#step-${stepNumber + 1}"]`).parent();
+                if ($(li).hasClass('danger')) {
+                    $(li).removeClass('danger');
+                }
+            });
+            $("#smartwizard").on("leaveStep", function (e, anchorObject, stepNumber, stepDirection) {
+                let allow = true;
+                console.log(stepNumber);
+                let isValid = ValidateStep(stepNumber, false);
+                if (stepDirection === 'forward' && !isEditing)
+                    allow = isValid;
+                return true;//allow;
+            });
+            $("#smartwizard").on("endReset", function () {
+                $("#next-btn").removeClass('disabled');
+            });
+            //$('#smartwizard').smartWizard('showError',1)
+        }
+    </script>
+}
+
+<partial name="_DefaultPageHeader" />
+<div class="site-content customContentArea" style="background-color: rgb(253,253,253);">
+    <form id="employeeForm" role="form" method="post" accept-charset="utf-8" novalidate>
+        <div id="smartwizard">
+            <ul>
+                <li><a href="#step-1">@TabPlaceholder 1<br /><p style="font-size: 15px">General Information</p></a></li>
+                <li><a href="#step-2">@TabPlaceholder 2<br /><p style="font-size: 15px">Currencies</p></a></li>
+            </ul>
+            <div>
+                <div id="step-1">
+                    <div id="form-step-0" role="form" data-toggle="validator">
+                        <partial name="_CompanyGeneralInfoPartial" />
+                    </div>
+                </div>
+                <div id="step-2">
+                    <div id="form-step-1" role="form" data-toggle="validator">
+                        <partial name="_CompanyCurrenciesPartial" />
+                    </div>
+                </div>
+
+                <div id="customToolbar">
+                    @if (IsEditing)
+                    {
+                        <div class="col-sm-12 m-t-20">
+                            <div class="form-group">
+                                <button id="submitCompany" type="submit" class="btn btn-outline-success btn-block">Update Company</button>
+                            </div>
+                        </div>
+                    }
+                    <hr />
+                    <div class="col-sm-6">
+                        <button class="btn btn-outline-light btn-block disabled" id="prev-btn">Previous</button>
+                    </div>
+                    <div class="col-sm-6">
+                        <button class="btn btn-primary btn-block" id="next-btn">Next</button>
+                    </div>
+                </div>
+                <ejs-dialog id="alert_dialog" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy with Header" content="Atleast one row should be selected to copy with header">
+                    <e-dialog-buttons>
+                        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+                    </e-dialog-buttons>
+                </ejs-dialog>
+                <ejs-dialog id="alert_dialog_1" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy" content="Atleast one row should be selected to copy">
+                    <e-dialog-buttons>
+                        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+                    </e-dialog-buttons>
+                </ejs-dialog>
+            </div>
+
+        </div>
+
+
+
+    </form>
+</div>

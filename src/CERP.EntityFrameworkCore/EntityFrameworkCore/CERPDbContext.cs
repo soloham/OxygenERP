@@ -52,6 +52,7 @@ namespace CERP.EntityFrameworkCore
 
         public DbSet<COA_Account> COAs { get; set; }
         public DbSet<Company> Companies { get; set; }
+        public DbSet<LocationTemplate> LocationTemplates { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Position> Positions { get; set; }
         public DbSet<Branch> Branches { get; set; }

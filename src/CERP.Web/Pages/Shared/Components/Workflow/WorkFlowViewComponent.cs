@@ -9,6 +9,9 @@ using static CERP.Web.Pages.Shared.Components.WorkFlowVCModel;
 using Volo.Abp.Json;
 using System.ComponentModel;
 using CERP.App.Helpers;
+using System;
+using System.Linq;
+using System.Dynamic;
 
 namespace CERP.Web.Pages.Shared.Components
 {
@@ -132,6 +135,7 @@ namespace CERP.Web.Pages.Shared.Components
         public string ParentTitle { get; set; }
 
         public WorkflowForm Form { get; } = new WorkflowForm();
+
         public ActionNotifications Notifications { get; } = new ActionNotifications();
 
         public List<GridColumn> ApprovalRouteGridColumns { get; set; } = new List<GridColumn>();
@@ -209,6 +213,61 @@ namespace CERP.Web.Pages.Shared.Components
         public string GetNotificationsAsDS()
         {
             return JsonSerializer.Serialize(Notifications.ActionNotificationSettings);
+        }
+        public List<GridColumn> GetAPActionsGridColumns()
+        {
+            List<GridColumn> FFGridColumns = new List<GridColumn>()
+            {
+                new GridColumn { Field = "action", Visible=false, IsPrimaryKey=true },
+                new GridColumn { Field = "actionDescription", AutoFit=true, HeaderText = "Action", AllowEditing=false, TextAlign=TextAlign.Center, MinWidth="10" },
+                new GridColumn { Field = "allow", AutoFit=true, HeaderText = "Allow", EditType="booleanedit", DisplayAsCheckBox=true, AllowEditing=true, TextAlign=TextAlign.Center,  MinWidth="10" },
+                new GridColumn { Field = "", AutoFit=true, HeaderText = "Notes",TextAlign=TextAlign.Center,  MinWidth="10", 
+                    Columns = new List<GridColumn>()
+                    { 
+                        new GridColumn { Field = "notes.field", AutoFit=true, HeaderText = "Field", EditType="booleanedit", DisplayAsCheckBox=true, AllowEditing=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+                        new GridColumn { Field = "notes.isRequired", AutoFit=true, HeaderText = "Required", EditType="booleanedit", DisplayAsCheckBox=true, AllowEditing=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+                    }  
+                },
+                new GridColumn { Field = "", AutoFit=true, HeaderText = "Attachments",TextAlign=TextAlign.Center,  MinWidth="10", 
+                    Columns = new List<GridColumn>()
+                    { 
+                        new GridColumn { Field = "attachments.field", AutoFit=true, HeaderText = "Field", EditType="booleanedit", DisplayAsCheckBox=true, AllowEditing=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+                        new GridColumn { Field = "attachments.isRequired", AutoFit=true, HeaderText = "Required", EditType="booleanedit", DisplayAsCheckBox=true, AllowEditing=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+                    }  
+                },
+                new GridColumn { Field = "saveToAttachment", AutoFit=true, HeaderText = "Save To Attachments", EditType="booleanedit", DisplayAsCheckBox=true, AllowEditing=true, TextAlign=TextAlign.Center,  MinWidth="10"  },
+            };
+
+            return FFGridColumns;
+        }
+        public List<dynamic> GetAPActions()
+        {
+            var values = Enum.GetValues(typeof(ApprovalActions)).Cast<ApprovalActions>().ToList();
+
+            List<dynamic> approvalActions = new List<dynamic>();
+            for (int i = 0; i < values.Count; i++)
+            {
+                dynamic action = new ExpandoObject();
+
+                action.action = values[i];
+                action.actionDescription = EnumExtensions.GetDescription(values[i]);
+                action.allow = true;
+                action.notes = new { field = true, isRequired = false };
+                action.attachments = new { field = true, isRequired = false };
+                action.saveToAttachment = false;
+
+                approvalActions.Add(action);
+            }
+
+            return approvalActions;
+        }
+        public string GetAPActionsAsDS()
+        {
+            var values = Enum.GetValues(typeof(ApprovalActions)).Cast<ApprovalActions>().ToList();
+
+            List<dynamic> approvalActions = GetAPActions();
+
+            return JsonSerializer.Serialize(approvalActions);
         }
 
         public class WorkflowForm

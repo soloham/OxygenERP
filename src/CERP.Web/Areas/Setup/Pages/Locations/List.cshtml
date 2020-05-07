@@ -1,0 +1,360 @@
+﻿@page "/Setup/Locations"
+@using CERP.Localization;
+@using Microsoft.AspNetCore.Mvc.Localization;
+@inject IHtmlLocalizer<CERPResource> L
+@model CERP.Web.Areas.Setup.Pages.Locations.ListModel;
+@using CERP.App.Helpers;
+@{
+    ViewData["Title"] = L["Location"].Name;
+    ViewData["IconClass"] = "fa fa-map-marked-alt";
+    ViewData["HeaderTitle"] = L["Locations"].Name.ToUpper();
+    ViewData["SubTitle"] = $"{L["ListOf"]} {L["Locations"]}";
+    ViewData["Area"] = "Setup";
+
+    ViewData["IsList"] = false;
+    ViewData["IsCreate"] = false;
+    string cNT = $"{L["Add"].Name} {L["Location"].Name}";
+
+    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+
+    var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Audit Trail", tooltipText = "View Audit Trail", prefixIcon = "e-toggleaudittrail", id = "toggleaudittrail" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
+
+    List<object> locationsCommands = new List<object>();
+    locationsCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
+    locationsCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+    locationsCommands.Add(new
+    {
+        type = "Cancel",
+        buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" }
+    });
+
+    List<CERP.Setup.LocationStatus> locationStatuses = Enum.GetValues(typeof(CERP.Setup.LocationStatus)).Cast<CERP.Setup.LocationStatus>().ToList();
+}
+@section styles {
+
+}
+@section scripts {
+    <script>
+        isEditingLocations = false;
+        isEditingLocationsLoaded = false;
+        var curLocationsEditRow;
+
+        $(document).ready(function () {
+            var grid = $("#AllLocationsGrid")[0].ej2_instances[0];
+            grid.showSpinner();
+            cERP.appServices.setup.locationSetup.locationTemplate.getList({}).done(function (data) {
+                grid.dataSource = data.items;
+                grid.refresh();
+                grid.hideSpinner();
+            });
+
+            $('#addLocationsBtn').on('click', function () {
+                isEditingLocations = false;
+
+                $('#submitLocationBtn').val('Add Location');
+
+                $('#locationTitle').val('');
+                $('#locationTitleLocalized').val('');
+                $('#locationAbbr').val('');
+            });
+            $('#locationsForm').on('submit', function (e) {
+                e.preventDefault();
+                if (ValidateForm('locationsForm')) {
+                    grid.showSpinner();
+                    Swal.showLoading();
+
+                    let form = [];
+                    let locationDetails = $('#locationsForm').find("textarea, input, select").serializeArray();
+                    form = form.concat(locationDetails);
+                    var params = objectifyForm(form);
+
+                    params.isEditing = isEditingLocations;
+
+                    if (isEditingLocations) {
+                        params.Id = curLocationsEditRow.id;
+
+                        //cERP.appServices.hR.leaveRequestTemplates.update()
+                    }
+                    else {
+
+                        //cERP.appServices.hR.leaveRequestTemplates.update()
+                    }
+
+                    let formData = new FormData();
+                    formData.append("info", JSON.stringify(params));
+                    var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+                    formData.append("__RequestVerificationToken", xhrToken);
+
+                    $.ajax({
+                        url: "?handler=LocationTemplate",
+                        async: true,
+                        type: "POST",
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (data) {
+                            Swal.hideLoading();
+                            if (isEditingLocations) {
+                                grid.refresh(); // refresh the Grid.
+
+                                swal.fire("Success", "Location has successfully been updated", "success");
+
+                                for (var i = 0; i < grid.dataSource.length; i++) {
+                                    if (grid.dataSource[i].id == data.id) {
+                                        grid.dataSource[i] = data;
+                                    }
+                                }
+                                grid.refresh();
+                            }
+                            else {
+                                grid.dataSource.push(data);
+                                grid.refresh(); // refresh the Grid.
+
+                                swal.fire("Success", "Location has successfully been added", "success");
+                            }
+                            grid.hideSpinner();
+                        },
+                        error: function (err) {
+                            Swal.hideLoading();
+                            if (isEditingLocations)
+                                swal.fire("Failed", "Location couldn't be updated, please fix all errors and try again.", "error");
+                            else
+                                swal.fire("Failed", "Location couldn't be added, please fix all errors and try again.", "error");
+
+                            console.log(err);
+                            grid.hideSpinner();
+                        }
+                    });
+                }
+                else {
+                    Swal.close();
+                    Swal.hideLoading();
+                }
+            });
+        });
+    </script>
+}
+<partial name="_DefaultPageHeader" />
+<div class="site-content customContentArea">
+    <div class="panel-body p-t-0" style="padding-bottom:0;">
+        <div class="areaHeader" style="display:flex;">
+            <div id="locationsLoader" class="pull-left loader-inline" style="display:none"></div>
+            <div class="areaHeaderTitle">
+                <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Current Locations</span>
+                @*<span id="" class="areaHeaderTitleInNode menu-text"> > </span>*@
+                @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
+            </div>
+            @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
+            <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                @*<div class="clearfix margin-15"></div>*@
+                <a id="addLocationsBtn" onclick="areaHeaderBtnClick(event); isEditingLocations = false;" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+            </div>
+        </div>
+        <form id="locationsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+            <div class="row">
+                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 ">Title:</label>
+                            <input type="text" id="locationTitle" name="LocationName" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                        </div>
+                    </div>
+                    <div class="col-sm-6" style="padding:0">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 ">Title (In Arabic):</label>
+                            <input type="text" id="locationTitleLocalized" name="LocationNameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5 control-label">Location Abbreviation:</label>
+                        <input type="text" id="locationAbbr" name="LocationAbbreviation" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                    <div class="form-group">
+                        <label class="margin-bottom-5 control-label">Location Status:</label>
+                        <select id="locationStatus" name="Status" class="form-control" required>
+                            @for (int i = 0; i < locationStatuses.Count; i++)
+                            {
+                                <option value="@locationStatuses[i]">@EnumExtensions.GetDescription(locationStatuses[i])</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="row m-t-20">
+                <div class="col-lg-12">
+                    <input id="submitLocationBtn" type="submit" class="btn btn-success btn-block" value="Create Location" required />
+                </div>
+            </div>
+        </form>
+        <div id="locationsCS" class="control-section">
+            <ejs-grid id="AllLocationsGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="locationsCommandClick" actionBegin="locationsActionBegin"
+                      allowExcelExport="true" height="100%" allowPdfExport="true"
+                      hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                      allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                      toolbarClick="locationsToolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
+                      allowPaging="true" allowResizing="true">
+
+                <e-grid-columns>
+                    <e-grid-column field="id" headerText="Id" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                    <e-grid-column field="locationName" headerText="Name" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="locationNameLocalized" headerText="Local Name" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="locationAbbreviation" headerText="Abbreviation" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="statusDescription" headerText="Status" textAlign="Center"></e-grid-column>
+
+                    <e-grid-column headerText="Actions" textAlign="Center" autoFit="true" commands="locationsCommands"></e-grid-column>
+                </e-grid-columns>
+
+                <e-grid-filterSettings type="CheckBox">
+                </e-grid-filterSettings>
+                <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
+                <e-grid-selectionsettings type="Multiple">
+                </e-grid-selectionsettings>
+                <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+            </ejs-grid>
+        </div>
+    </div>
+</div>
+<script>
+    function locationsToolbarClick(args) {
+        var gridObj = document.getElementById("AllLocationsGrid").ej2_instances[0];
+
+        if (args.item.id === 'AllLocationsGrid_pdfexport') {
+            gridObj.pdfExport();
+        }
+        if (args.item.id === 'AllLocationsGrid_excelexport') {
+            gridObj.excelExport();
+        }
+        if (args.item.id === 'AllLocationsGrid_csvexport') {
+            gridObj.csvExport();
+        }
+        if (this.getSelectedRecords().length > 0) {
+            var withHeader = false;
+            if (args.item.id === 'copyHeader') {
+                withHeader = true;
+            }
+            this.copy(withHeader);
+        }
+        else {
+            if (args.item.id === 'copyHeader') {
+                var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+                dialogObj.show();
+            }
+            else if (args.item.id === 'copy') {
+                var dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+                dialogObj.show();
+            }
+        }
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.showColumnChooser = true;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            var visCount = 0;
+            for (var i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (var i = 0; i < gridObj.columns.length; i++) {
+                    var col = gridObj.columns[i];
+                    if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+        }
+        if (args.item.id === 'toggleaudittrail') {
+
+        }
+
+        gridObj.hideSpinner();
+    }
+    function alertBtnClick() {
+        var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+        var dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
+        dialogObj.hide();
+        dialogObj1.hide();
+    }
+    function locationsActionBegin(args) {
+        if (args.requestType == "delete") {
+            Swal.showLoading();
+
+            let formData = new FormData();
+            formData.append("locations", JSON.stringify(args.data));
+            var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+            formData.append("__RequestVerificationToken", xhrToken);
+
+            $.ajax({
+                url: '?handler=Location',
+                async: true,
+                type: "DELETE",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    $('#AllLocationsGrid')[0].ej2_instances[0].hideSpinner();
+                    swal.fire("Success", "Location has successfully been deleted", "success");
+
+                    if ($('#locationsForm').css('display') !== 'none') {
+                        $('#locationsForm').slideUp();
+                    }
+                },
+                error: function (err) {
+                    $('#AllLocationsGrid')[0].ej2_instances[0].hideSpinner();
+                    swal.fire("Failed", "Location couldn't be deleted, please fix all errors and try again.", "error");
+
+                    console.log(err);
+                }
+            });
+        }
+
+    }
+    function locationsCommandClick(args) {
+        if (args.commandColumn == null) return;
+
+        if (args.commandColumn.type == "Edit") {
+            isEditingLocations = true;
+            var params = args.rowData;
+            curLocationsEditRow = params;
+
+            $('#locationsForm').slideUp(100);
+            setTimeout(function () {
+                $('#locationsForm').slideDown(150);
+                $('#submitLocationBtn').val('Update Location');
+                toggleAreaHeaderBtn($('.areaHeaderBtn'));
+            }, 100);
+
+            $('#locationTitle').val(params.locationName);
+            $('#locationTitleLocalized').val(params.locationNameLocalized);
+            $('#locationAbbr').val(params.locationAbbreviation);
+            $('#locationStatus').val(params.statusDescription);
+
+        }
+        else if (args.commandColumn.type == "Copy") {
+            this.copy(false);
+        }
+    }
+</script>
+

@@ -19,6 +19,24 @@ Array.prototype.removeIf = function (callback) {
         }
     }
 };
+function toggleAreaHeaderBtn(button)
+{
+    var btn = button.closest('.areaHeaderBtn');
+    var btnSec = button.closest('.areaHeaderBtnSec');
+    const areaHeader = button.closest('.areaHeader');
+    var form = $(areaHeader).next('.areaForm');
+    var isCollapsed = form.css('display') == 'none';
+
+    if (!isCollapsed) {
+        $(btnSec).slideUp(200);
+        setTimeout(function () { $(btn).html('<i class="fa fa-arrow-up p-r-5"></i> Cancel') }, 200)
+        $(btnSec).slideDown(200);
+    } else {
+        $(btnSec).slideUp(200);
+        setTimeout(function () { $(btn).html('<i class="fa fa-plus p-r-5"></i> Add New') }, 200)
+        $(btnSec).slideDown(200);
+    }
+}
 function areaHeaderBtnClick(e) {
     var btn = e.target.closest('.areaHeaderBtn');
     var btnSec = e.target.closest('.areaHeaderBtnSec');
@@ -310,7 +328,8 @@ const ValueTypeModules = {
     SocialInsuranceType: 24,
     LeaveType: 25,
     HolidayType: 26,
-    LoanType: 27
+    LoanType: 27,
+    CompanyDocumentType: 28
 }
 
 function SelectDepartmentPositions(departmentsElmId, positionsElmId, departmentsArr, positionsArr, isEditing, isEditingLoaded, toSelectPositions) {

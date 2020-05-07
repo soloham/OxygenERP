@@ -1,0 +1,82 @@
+﻿@using CERP.App;
+@using CERP.HR.Employees.DTOs;
+@{
+    bool isEditing = (bool)ViewData["IsEditing"];
+    //Company_Dto company = isEditing ? Model.CompanyToEdit : null;
+    Employee_Dto employee = isEditing? Model.EmployeeToEdit : null;
+}
+<div class="m-l-20 m-t-0">
+    <h2>General Information</h2>
+    <p>
+        Provide general details of the company
+    </p>
+</div>
+<hr />
+<div class="panel-body" style="padding-bottom: 0">
+    <div class="col-lg-2 padding-left-0 m-t-15">
+        <div class="avatar-upload">
+            <div class="avatar-edit">
+                <input type='' style="@((!isEditing || employee.ProfilePic == "noimage.jpg")? "display:none" : "")" id="imageCancel" accept=".png, .jpg, .jpeg" onclick="removeImage(this);" />
+                <label id="remove" style="@((!isEditing || employee.ProfilePic == "noimage.jpg")? "display:none" : "")" for="imageCancel"></label>
+                <input type='file' id="imageUpload" value="@(isEditing && employee.ProfilePic != null? employee.ProfilePic : "noimage.jpg")" accept=".png, .jpg, .jpeg" onchange="showpreview(this);" />
+                <label id="upload" for="imageUpload"></label>
+            </div>
+            <div class="avatar-preview">
+                <img id="CompnayLogo" src="/Uploads/@(isEditing && employee.ProfilePic != null && employee.ProfilePic != ""? employee.ProfilePic : "noimage.jpg")" class="img-responsive padding-5" style="cursor:pointer" />
+            </div>
+        </div>
+    </div>
+    <div id="generalInfo" role="form" class="col-lg-10 padding-right-0">
+        <div class="row m-b-15 m-t-15">
+            <div class="col-sm-6" style="padding:0">
+                <div class="form-group">
+                    <label class="control-label m-b-5">Legal Name:</label>
+                    <input type="text" id="legalName" @((isEditing && employee.FirstName != null)? $"value={(employee.FirstName)}" : "") name="FirstName" style="width:100% !important" class="text-left form-control inline pull-left" required="">
+                </div>
+            </div>
+            <div class="col-sm-6" style="padding:0">
+                <div class="form-group">
+                    <label class="control-label m-b-5 pull-right ">(Arabic)</label>
+                    <input type="text" id="legalNameLocalized" value='@(isEditing && employee != null? $"{employee.FirstNameLocalized}" : "")' name="FirstNameLocalized" style="width:100% !important" class="text-right  form-control inline rtl text-right">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    //Swal.fire("success", "hello", "success");
+
+    function removeImage(e) {
+        $('#imageUpload').val('');
+        $('#imageCancel').hide();
+        $('#remove').hide();
+
+        $('#CompnayLogo').attr('src', '/images/noimage.jpg');
+        $('#CompnayLogo').hide();
+        $('#CompnayLogo').fadeIn(650);
+
+    }
+
+    function showpreview(input) {
+        if (input.files && input.files[0]) {
+
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#imageCancel').show();
+                $('#imageCancel').css('display', '');
+                $('#remove').show();
+
+                $('#CompnayLogo').attr('src', e.target.result);
+                $('#CompnayLogo').hide();
+                $('#CompnayLogo').fadeIn(650);
+            }
+            //reader.onload = function (e) {
+            //    $('#EmpPhoto').css('visibility', 'visible');
+            //    $('#EmpPhoto').attr('src', e.target.result);
+            //}
+            reader.readAsDataURL(input.files[0]);
+        }
+
+    }
+</script>

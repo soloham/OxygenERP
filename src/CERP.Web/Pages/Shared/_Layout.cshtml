@@ -802,65 +802,29 @@
                             <span class="menu-icon">
                                 <i class="fas fa-cogs"></i>
                             </span>
-                            <span class="menu-text">GL Setup</span>
+                            <span class="menu-text">Setup</span>
                         </a>
                         <ul class="sidebar-submenu collapse">
-                            <li class="menu-subtitle">GL Setup</li>
+                            <li class="menu-subtitle">Setup</li>
                             <li class="">
-                                <a href="index-2.html">
+                                <a asp-area="Setup" asp-page="/Companies/List">
                                     <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
-                                    <span class="menu-text">Company</span>
+                                    <span class="menu-text">Companies</span>
                                 </a>
                             </li>
                             <li class="">
-                                <a href="index-2.html">
+                                <a  asp-area="Setup" asp-page="/Locations/List">
                                     <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
-                                    <span class="menu-text">Address Book</span>
+                                    <span class="menu-text">Locations / Branches</span>
                                 </a>
                             </li>
                             <li class="">
-                                <a href="index-2.html">
+                                <a  asp-area="Setup" asp-page="/Codes/List">
                                     <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
-                                    <span class="menu-text">Contact Types</span>
-                                </a>
-                            </li>
-                            <li class="">
-                                <a href="index-2.html">
-                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
-                                    <span class="menu-text">Currency</span>
-                                </a>
-                            </li>
-                            <li class="">
-                                <a href="index-2.html">
-                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
-                                    <span class="menu-text">Fiscal Period</span>
-                                </a>
-                            </li>
-                            <li class="">
-                                <a href="index-2.html">
-                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
-                                    <span class="menu-text">Parameters</span>
-                                </a>
-                            </li>
-                            <li class="">
-                                <a asp-area="Setup" asp-page="/Codes/List">
-                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
-                                    <span class="menu-text">Lookup Setup</span>
+                                    <span class="menu-text">Lookup</span>
                                 </a>
                             </li>
                         </ul>
-                    </li>
-                    <li class="">
-                        <a href="index-2.html">
-                            <span class="menu-icon"><i class="fas fa-certificate"></i></span>
-                            <span class="menu-text">Approval Routes</span>
-                        </a>
-                    </li>
-                    <li class="">
-                        <a href="index-2.html">
-                            <span class="menu-icon"><i class="fas fa-coins"></i></span>
-                            <span class="menu-text">VAT Setup</span>
-                        </a>
                     </li>
                 </ul>
             </div>
@@ -931,7 +895,7 @@
     <script>
         var curNode;
         var curState = window.localStorage.getItem('menu-state');
-        if (curState.length > 0) {
+        if (curState != null && curState.length > 0) {
             $.each($('.with-sub'), function (i, item) {
                 if (curState.includes($(item).children().first().find('.menu-text').text())) {
                     $(item).find('.sidebar-submenu').collapse('show');
