@@ -100,7 +100,7 @@
             });
             $('#locationsForm').on('submit', function (e) {
                 e.preventDefault();
-                if (ValidateForm('locationsForm')) {
+                if (ValidateForm('locationSpecificForm')) {
                     grid.showSpinner();
                     Swal.showLoading();
 
@@ -246,36 +246,38 @@
             </div>
         </div>
         <form id="locationsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
-            <div class="row">
-                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                    <div class="col-sm-6" style="padding:0">
-                        <div class="form-group">
-                            <label class="control-label m-b-5 ">Title:</label>
-                            <input type="text" id="locationTitle" name="LocationName" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+            <div id="locationSpecificForm">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                        <div class="col-sm-6" style="padding:0">
+                            <div class="form-group">
+                                <label class="control-label m-b-5 ">Title:</label>
+                                <input type="text" id="locationTitle" name="LocationName" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                            </div>
+                        </div>
+                        <div class="col-sm-6" style="padding:0">
+                            <div class="form-group">
+                                <label class="control-label m-b-5 ">Title (In Arabic):</label>
+                                <input type="text" id="locationTitleLocalized" name="LocationNameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                            </div>
                         </div>
                     </div>
-                    <div class="col-sm-6" style="padding:0">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
                         <div class="form-group">
-                            <label class="control-label m-b-5 ">Title (In Arabic):</label>
-                            <input type="text" id="locationTitleLocalized" name="LocationNameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                            <label class="margin-bottom-5 control-label">Location Code:</label>
+                            <input type="text" id="locationCode" name="LocationCode" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                    <div class="form-group">
-                        <label class="margin-bottom-5 control-label">Location Code:</label>
-                        <input type="text" id="locationCode" name="LocationCode" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                    <div class="form-group">
-                        <label class="margin-bottom-5 control-label">Location Status:</label>
-                        <select id="locationStatus" name="Status" class="form-control" required>
-                            @for (int i = 0; i < locationStatuses.Count; i++)
-                            {
-                                <option value="@locationStatuses[i]">@EnumExtensions.GetDescription(locationStatuses[i])</option>
-                            }
-                        </select>
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                        <div class="form-group">
+                            <label class="margin-bottom-5 control-label">Location Status:</label>
+                            <select id="locationStatus" name="Status" class="form-control" required>
+                                @for (int i = 0; i < locationStatuses.Count; i++)
+                                {
+                                    <option value="@locationStatuses[i]">@EnumExtensions.GetDescription(locationStatuses[i])</option>
+                                }
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -289,7 +291,7 @@
                     <a id="addAddressBtn" onclick="areaHeaderBtnClick(event); isEditingAddresses = false;" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
                 </div>
             </div>
-            <div id="addressesForm" role="form" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding-top: 0; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+            <div id="addressesForm" role="form" class="row areaForm" style="display: none; margin:0; padding-top: 0; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
                 <div class="m-l-20 m-t-0">
                     <h2>Geographical Address</h2>
                     <p>
@@ -643,12 +645,12 @@
             let params = args.rowData;
             curLocationsEditRow = params;
 
-            $('#locationsForm').slideUp(100);
+            toggleAreaFormBtn('locationsForm', false);
+
             setTimeout(function () {
-                $('#locationsForm').slideDown(150);
                 $('#submitLocationBtn').val('Update Location');
-                toggleAreaHeaderBtn($('.areaHeaderBtn'));
-            }, 100);
+                toggleAreaFormBtn('locationsForm', true);
+            }, 200);
 
             $('#locationTitle').val(params.locationName);
             $('#locationTitleLocalized').val(params.locationNameLocalized);

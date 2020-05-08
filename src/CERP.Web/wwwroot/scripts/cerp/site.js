@@ -19,24 +19,31 @@ Array.prototype.removeIf = function (callback) {
         }
     }
 };
-function toggleAreaHeaderBtn(button)
+function toggleAreaFormBtn(formId, state)
 {
-    var btn = button.closest('.areaHeaderBtn');
-    var btnSec = button.closest('.areaHeaderBtnSec');
-    const areaHeader = button.closest('.areaHeader');
+    var btn = $($('#' + formId).prev().find('.areaHeaderBtn'));
+    var btnSec = btn.closest('.areaHeaderBtnSec');
+    const areaHeader = btn.closest('.areaHeader');
     var form = $(areaHeader).next('.areaForm');
-    var isCollapsed = form.css('display') == 'none';
 
-    if (!isCollapsed) {
-        $(btnSec).slideUp(200);
-        setTimeout(function () { $(btn).html('<i class="fa fa-arrow-up p-r-5"></i> Cancel') }, 200)
-        $(btnSec).slideDown(200);
+    let btnTxt = $(btn).text();
+    if (state) {
+        $(form).slideDown(150);
+        if (btnTxt != 'Cancel') {
+            $(btnSec).slideUp(150);
+            setTimeout(function () { $(btn).html('<i class="fa fa-arrow-up p-r-5"></i> Cancel') }, 200)
+            $(btnSec).slideDown(150);
+        }
     } else {
-        $(btnSec).slideUp(200);
-        setTimeout(function () { $(btn).html('<i class="fa fa-plus p-r-5"></i> Add New') }, 200)
-        $(btnSec).slideDown(200);
+        $(form).slideUp(150);
+        if (btnTxt == 'Add New') {
+            $(btnSec).slideUp(150);
+            setTimeout(function () { $(btn).html('<i class="fa fa-plus p-r-5"></i> Add New') }, 200)
+            $(btnSec).slideDown(150);
+        }
     }
 }
+
 function areaHeaderBtnClick(e) {
     var btn = e.target.closest('.areaHeaderBtn');
     var btnSec = e.target.closest('.areaHeaderBtnSec');
