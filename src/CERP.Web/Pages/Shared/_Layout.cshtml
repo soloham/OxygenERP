@@ -22,9 +22,9 @@
 
     <link href="~/libs/@@fortawesome/fontawesome-free/css/all.css" rel="stylesheet" />
 
-    @*<link href="~/libs/fabricUI/fabric.min.css" rel="stylesheet" />
+    <link href="~/libs/fabricUI/fabric.min.css" rel="stylesheet" />
         <link href="~/libs/fabricUI/fabric-11.0.0.scoped.min.css" rel="stylesheet" />
-        <link href="~/libs/fabricUI/fabric-11.0.0.scoped.min.css" rel="stylesheet" />*@
+        <link href="~/libs/fabricUI/fabric-11.0.0.scoped.min.css" rel="stylesheet" />
 
     @*<link href="~/libs/JqueryDatepicker/css/jquery.calendars.picker.css" />*@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -813,13 +813,13 @@
                                 </a>
                             </li>
                             <li class="">
-                                <a  asp-area="Setup" asp-page="/Locations/List">
+                                <a asp-area="Setup" asp-page="/Locations/List">
                                     <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
                                     <span class="menu-text">Locations / Branches</span>
                                 </a>
                             </li>
                             <li class="">
-                                <a  asp-area="Setup" asp-page="/Codes/List">
+                                <a asp-area="Setup" asp-page="/Codes/List">
                                     <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
                                     <span class="menu-text">Lookup</span>
                                 </a>
@@ -892,6 +892,7 @@
     <script src="~/scripts/cerp/cosmos.min.js"></script>
     <script src="~/scripts/cerp/application.min.js"></script>
     <script src="~/scripts/cerp/index.min.js"></script>
+
     <script>
         var curNode;
         var curState = window.localStorage.getItem('menu-state');
@@ -938,6 +939,8 @@
             }
         })
     </script>
+    @*<script type="text/javascript" src="https://apina.address.gov.sa/NationalAddress/v3.1/maps/map-engine?api_key=13af4fc1ca1846a7864ccec09975f1df"></script>*@
+
     @*<link href="~/libs/JqueryDatepicker/css/jquery.calendars.picker.css" />
         <script src="~/libs/JqueryDatepicker/js/jquery.calendars.js"></script>
         <script src="~/libs/JqueryDatepicker/js/jquery.calendars.plus.js"></script>

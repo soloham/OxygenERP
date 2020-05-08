@@ -422,6 +422,7 @@ function ValidateForm(formId) {
     elmForm.validator('validate');
     if (elmForm) {
         var elmErr = elmForm.find('.has-error');
+        console.log(elmErr);
         if (elmErr) {
             if (elmErr.length > 0) {
                 // Form validation failed

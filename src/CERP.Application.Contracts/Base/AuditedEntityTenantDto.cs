@@ -8,8 +8,9 @@ using Volo.Abp.TenantManagement;
 
 namespace CERP.Base
 {
-    public class AuditedEntityTenantDto<TKey> : AuditedEntityDto<TKey>, IMultiTenant
+    public class AuditedEntityTenantDto<TKey> : ExtensibleAuditedEntityDto<TKey>, IMultiTenant
     {
         public Guid? TenantId { get; set; }
     }
 }
+    

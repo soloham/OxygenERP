@@ -70,7 +70,7 @@ namespace CERP
             CreateMap<Company_Dto, Company>();
             CreateMap<Company_UV_Dto, Company>();
             
-            CreateMap<LocationTemplate, LocationTemplate_Dto>();
+            CreateMap<LocationTemplate, LocationTemplate_Dto>().AfterMap((x, y) => y.Initialize());
             CreateMap<LocationTemplate_Dto, LocationTemplate>();
 
             CreateMap<Document, Document_Dto>();

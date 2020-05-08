@@ -11,7 +11,6 @@
     ViewData["IsEditing"] = false;
     bool IsEditing = (bool)ViewData["IsEditing"];
 
-    List<DictionaryValue> countries = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Country).OrderBy(x => x.Key).ToList(); ;
     List<DictionaryValue> documentTypes = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.CompanyDocumentType).OrderBy(x => x.Key).ToList(); ;
 
     ViewData["Title"] = L["Company"].Name;
@@ -63,7 +62,66 @@
     </style>
 }
 @section scripts {
+
     <script>
+        //--- Load SP Maps
+        function initMapApi() {
+            var mapDiv = 'map'; //id of the div where the map should appear
+            var mapType = '21';
+            var mapLanguage = 'E';
+            var proxyUrl = '';
+            var apiClientKey = '13af4fc1ca1846a7864ccec09975f1df';
+            SANGC_LoadMapViewer(mapDiv, mapType, mapLanguage, proxyUrl, apiClientKey);
+            AssignUserEvents();
+        };
+
+        //======= Assign User Events so that to be trigered 
+        function AssignUserEvents() {
+            //------- Map Events.
+            SANGC_OnMapLoaded = ClientOnMapLoaded;
+            SANGC_OnMouseClick = ClientOnMouseClick;
+            SANGC_OnIdentify = ClientOnIdentify;
+        };
+
+        //--- Callback function for Map Loaded Event
+        function ClientOnMapLoaded() {
+            return;
+        };
+
+        //--- Callback function for Identify Click event
+        function ClientOnIdentify(aResult) {
+            document.getElementById("locationInformationTable").innerHTML = '';
+            document.getElementById("noresultsdiv").innerHTML = '';
+            if ((aResult == null) || (aResult.length == 0)) {
+                document.getElementById("noresultsdiv").innerHTML = "No Result";
+            } else {
+                for (var i = 0; i <= aResult.length - 1; i++) {
+                    alert(aResult[i].BuildingNumber +
+                        aResult[i].ZipCode +
+                        aResult[i].AdditionalNumber +
+                        aResult[i].StreetAr +
+                        aResult[i].StreetEn +
+                        aResult[i].DistrictAr +
+                        aResult[i].DistrictEn +
+                        aResult[i].CityAr +
+                        aResult[i].CityEn +
+                        aResult[i].ServiceNameAr +
+                        aResult[i].ServiceNameEn +
+                        aResult[i].HasParcel +
+                        aResult[i].RegionAr +
+                        aResult[i].RegionEn +
+                        aResult[i].Latitude +
+                        aResult[i].Longitude);
+                }
+            }
+        };
+
+        function ClientOnMouseClick(px, py, sx, sy) {
+            var locationObj = document.getElementById('locationStatus');
+            locationObj.innerHTML = `
+            Longitude: ` + px.toString() + ", Latitude: " + py.toString();
+        };
+
         $(document).ready(function () {
             $("#submitDocumentBtn").on("click", function (e) {
                 // Navigate previous
@@ -136,6 +194,9 @@
                     grid.hideSpinner();
                 }
             });
+
+            initMapApi();
+
         });
     </script>
 }
@@ -160,7 +221,7 @@
                 <ul>
                     <li><a href="#step-1">@TabPlaceholder 1<br /><p style="font-size: 15px">General Information</p></a></li>
                     <li><a href="#step-2">@TabPlaceholder 2<br /><p style="font-size: 15px">Address</p></a></li>
-                    <li><a href="#step-3">@TabPlaceholder 3<br /><p style="font-size: 15px">Currencies</p></a></li>
+                    <li><a href="#step-3">@TabPlaceholder 3<br /><p style="font-size: 15px">Default</p></a></li>
                 </ul>
                 <div>
                     <div id="step-1">
@@ -208,14 +269,14 @@
                             <div class="row" style="margin: 0">
                                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                                     <div class="form-group">
-                                        <label class="control-label m-b-5 ">Company Registration Number:</label>
+                                        <label class="control-label m-b-5 ">Company Registration ID:</label>
                                         <input type="number" min="0" id="companyRegistration" name="CompanyRegistration" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                                     <div class="form-group">
-                                        <label class="control-label m-b-5 ">CR Expiry Date:</label>
-                                        <input type="text" id="crExpiryDate" name="CRExpiryDate" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="text-left form-control inline pull-left DatePicker is-calendarsPicker" required>
+                                        <label class="control-label m-b-5 ">Labour Office ID:</label>
+                                        <input type="number" min="0" id="companyRegistration" name="CompanyRegistration" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                                     </div>
                                 </div>
                             </div>
@@ -230,12 +291,6 @@
                             <div class="row" style="margin: 0">
                                 <div class="col-lg-4 col-md-4 col-sm-4 col-12">
                                     <div class="form-group">
-                                        <label class="control-label m-b-5 ">Social Insurance ID:</label>
-                                        <input type="number" min="0" id="siId" name="SocialInsuranceID" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                                    <div class="form-group">
                                         <label class="control-label m-b-5 ">Tax ID:</label>
                                         <input type="number" min="0" id="taxId" name="TaxID" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
                                     </div>
@@ -244,6 +299,12 @@
                                     <div class="form-group">
                                         <label class="control-label m-b-5 ">VAT ID:</label>
                                         <input type="number" min="0" id="vatID" name="VATID" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                    <div class="form-group">
+                                        <label class="control-label m-b-5 ">Social Insurance ID:</label>
+                                        <input type="number" min="0" id="siId" name="SocialInsuranceID" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
                                     </div>
                                 </div>
                             </div>
@@ -354,141 +415,7 @@
                     </div>
                     <div id="step-2">
                         <div id="form-step-1" role="form" data-toggle="validator">
-                            <div class="m-l-20 m-t-0">
-                                <h2>Primary Address</h2>
-                                <p>
-                                    Provide primary address of the company
-                                </p>
-                            </div>
-                            <hr class="margin-top-5 margin-bottom-10">
-                            <div id="primaryContactForm">
-                                <div class="row" style="margin:0">
-                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                        <div class="col-sm-12" style="padding:0">
-                                            <div class="form-group">
-                                                <label class="control-label m-b-5 ">Phone:</label>
-                                                <input type="number" id="phoneNo" name="PhoneNumber" @*value="@(empInfo!=null? empInfo.PHONE_NO : "")"*@ style="width:100% !important" class="form-control inline">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                        <div class="col-sm-12" style="padding:0">
-                                            <div class="form-group">
-                                                <label class="control-label m-b-5 ">Mobile:</label>
-                                                <input type="number" id="mobileNo" name="MobileNumber" @*value="@(empInfo!=null? empInfo.PHONE_NO : "")"*@ style="width:100% !important" class="form-control inline">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                        <div class="col-sm-12" style="padding:0">
-                                            <div class="form-group">
-                                                <label class="control-label m-b-5 ">Fax:</label>
-                                                <input type="number" id="faxNo" name="FaxNumber" @*value="@(empInfo!=null? empInfo.PHONE_NO : "")"*@ style="width:100% !important" class="form-control inline">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                        <div class="form-group">
-                                            <label class="margin-bottom-5  control-label">Email:</label>
-                                            <input type="email" id="email" name="Email" @*value="@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="clearfix margin-5"></div>
-                                <div class="row" style="margin:0">
-                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                        <label class="margin-bottom-5  control-label">Country:</label>
-                                        <div>
-                                            <select id="countryId" name="CountryId" class="form-control">
-                                                <option></option>
-                                                @for (int i = 0; i < countries.Count; i++)
-                                                {
-                                                    <option value="@countries[i].Id" data-value="@countries[i].Value">@countries[i].Value</option>
-                                                }
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                        <div>
-                                            <label class="margin-bottom-5  control-label">City:</label>
-                                        </div>
-                                        <div>
-                                            <input type="text" id="cityId" name="PCity" min="0" @*value="@(empInfo!=null? empInfo.ZIP_CODE : "")"*@ class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-
-                                        <div class="form-group">
-                                            <label class="margin-bottom-5  control-label">Zip Code:</label>
-                                            <input type="number" id="zipCode" name="ZipCode" min="0" @*value="@(empInfo!=null? empInfo.ZIP_CODE : "")"*@ class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-
-                                        <div class="form-group">
-                                            <label class="margin-bottom-5  control-label">P.O Box:</label>
-                                            <input type="number" id="poBox" name="POBox" min="0" @*value="@(empInfo!=null? empInfo.PO_BOX : "")"*@ class="form-control">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <hr class="margin-top-5 margin-bottom-10">
-                            <div id="nationalAddressInfo">
-                                <div class="m-l-20 m-t-0">
-                                    <h2>National Address</h2>
-                                    <p>
-                                        Provide national address of the company
-                                    </p>
-                                </div>
-                                <div>
-                                    <hr class="margin-top-5 margin-bottom-10">
-                                    <div class="row" style="margin:0">
-                                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                            <div class="form-group">
-                                                <label class="margin-bottom-5  control-label">Building No:</label>
-                                                <input type="text" id="buildingNumber" name="BuildingNumber" class="form-control" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                            <div class="form-group">
-                                                <label class="margin-bottom-5  control-label">Street Name:</label>
-                                                <input type="text" id="streetName" name="StreetName" class="form-control" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                            <div class="form-group">
-                                                <label class="margin-bottom-5  control-label">District:</label>
-                                                <input type="text" id="addDistrict" name="NADistrict" class="form-control">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                            <div class="form-group">
-                                                <label class="margin-bottom-5  control-label">City:</label>
-                                                <input type="text" id="addCity" name="NACity" class="form-control" required>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="clearfix margin-5"></div>
-                                    <div class="row" style="margin:0">
-                                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                            <div class="form-group">
-                                                <label class="margin-bottom-5  control-label">Postal Code:</label>
-                                                <input type="text" id="addPostalCode" name="NAPostalCode" @*value="@(empInfo!=null? empInfo.ADD_POSTAL_CODE : "")"*@ class="form-control">
-                                            </div>
-                                        </div>
-
-                                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                            <div class="form-group">
-                                                <label class="margin-bottom-5  control-label">Additional Number:</label>
-                                                <input type="text" id="addAdditionalNumber" name="NAAdditionalNumber" @*value="@(empInfo!=null? empInfo.ADD_ADDITIONAL_NO : "")"*@ class="form-control">
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
+                            
                         </div>
                     </div>
                     <div id="step-3">
@@ -554,7 +481,7 @@
                                             </div>
                                             <div id="currencyConvRateField" class="col-sm-6" style="display:none">
                                                 <div class="form-group">
-                                                    <label class="margin-bottom-5 control-label">Conversion Rate:</label>
+                                                    <label class="margin-bottom-5 control-label">Exchange Rate:</label>
                                                     <input type="number" min="0" id="conversionRate" name="ConversionRate" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                                                 </div>
                                             </div>
@@ -628,6 +555,7 @@
             </ejs-grid>
         </div>
     </div>
+
 </div>
 <ejs-dialog id="alert_dialog" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy with Header" content="Atleast one row should be selected to copy with header">
     <e-dialog-buttons>

@@ -4,6 +4,7 @@ using System.Dynamic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using CERP.App;
 using CERP.AppServices.HR.EmployeeService;
 using CERP.AppServices.Setup.LocationSetup;
 using CERP.HR.EMPLOYEE.RougeDTOs;
@@ -19,17 +20,20 @@ using Syncfusion.EJ2.Grids;
 using Volo.Abp.AuditLogging;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Json;
 
 namespace CERP.Web.Areas.Setup.Pages.Locations
 {
     public class ListModel : CERPPageModel
     {
+        public IRepository<DictionaryValue> DictionaryValuesRepo { get; set; }
         public LocationTemplateAppService LocationTemplateAppService { get; set; }
-        public ListModel(IJsonSerializer jsonSerializer, LocationTemplateAppService locationAppService)
+        public ListModel(IJsonSerializer jsonSerializer, LocationTemplateAppService locationAppService, IRepository<DictionaryValue> dictionaryValuesRepo)
         {
             JsonSerializer = jsonSerializer;
             LocationTemplateAppService = locationAppService;
+            DictionaryValuesRepo = dictionaryValuesRepo;
         }
 
         public IJsonSerializer JsonSerializer { get; set; }
@@ -44,14 +48,18 @@ namespace CERP.Web.Areas.Setup.Pages.Locations
             if (ModelState.IsValid)
             {
                 LocationTemplate_Dto location = JsonSerializer.Deserialize<LocationTemplate_Dto>(Request.Form["info"]);
+                List<LocationAddress> addresses = JsonSerializer.Deserialize<List<LocationAddress>>(Request.Form["addresses"]);
+                location.SetProperty("addresses", addresses);
+
                 bool IsEditing = location.Id != Guid.Empty;
                 if (IsEditing)
                 {
                     LocationTemplate curLocation = await LocationTemplateAppService.Repository.GetAsync(location.Id);
                     curLocation.LocationName = location.LocationName;
                     curLocation.LocationNameLocalized = location.LocationNameLocalized;
-                    curLocation.LocationAbbreviation = location.LocationAbbreviation;
+                    curLocation.LocationCode = location.LocationCode;
                     curLocation.Status = location.Status;
+                    curLocation.UpdateExtraProperties(location.ExtraProperties);
 
                     LocationTemplate_Dto updated = ObjectMapper.Map<LocationTemplate, LocationTemplate_Dto>(await LocationTemplateAppService.Repository.UpdateAsync(curLocation));
 
