@@ -114,8 +114,8 @@ namespace CERP.Web.Areas.Payroll.Pages.ReconcilliationPage
 
                             Employee_Dto emp = isFromD ? fromD.Employee : toD.Employee;
 
-                            payrunReconEmpDDSRow.getCompanyName = emp.Department.Company.Name;
-                            payrunReconEmpDDSRow.getCompanyAddress = emp.Department.Company.Address;
+                            payrunReconEmpDDSRow.getCompanyName = emp.Department.Company.CompanyName;
+                            payrunReconEmpDDSRow.getCompanyAddress = emp.Department.Company.CompanyLocations[0].Location.LocationName;
                             payrunReconEmpDDSRow.getEmployeeReferenceId = emp.GetReferenceId;
                             payrunReconEmpDDSRow.getEmployeeName = emp.Name;
                             payrunReconEmpDDSRow.getEmployeeDepartmentName = emp.Department.Name;

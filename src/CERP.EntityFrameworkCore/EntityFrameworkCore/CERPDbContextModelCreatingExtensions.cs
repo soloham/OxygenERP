@@ -14,6 +14,7 @@ using CERP.Payroll.Payrun;
 using CERP.Setup;
 using CERP.Users;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using Volo.Abp;
@@ -195,47 +196,73 @@ namespace CERP.EntityFrameworkCore
 
             builder.Entity<Company>(b =>
             {
-                b.ToTable(CERPConsts.DbTablePrefix + "Companies", CERPConsts.DbSchema);
+                b.ToTable(CERPConsts.DbTablePrefix + "Companies", CERPConsts.SetupDbSchema);
 
                 b.ConfigureAudited();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
-                b.Property(p => p.CompanyCode)
-                 .UseIdentityColumn();
-
-                b.Property(p => p.Name)
+                b.Property(p => p.CompanyName)
                     .IsRequired();
-                b.Property(p => p.NameLocalizationKey)
-                    .IsRequired(false);
-                b.Property(p => p.Address)
-                    .IsRequired();
-                b.Property(p => p.AddressLocalizationKey)
-                    .IsRequired(false);
-                b.Property(p => p.BankDetail)
-                    .IsRequired();
-                b.Property(p => p.BankDetailLocalizationKey)
-                    .IsRequired(false);
-                b.Property(p => p.Email)
-                    .IsRequired(false);
-                b.Property(p => p.Phone)
-                    .IsRequired(false);
-                b.Property(p => p.Website)
-                    .IsRequired(false);
-                b.Property(p => p.FiscalYearStartMonth)
-                    .IsRequired();
-                b.Property(p => p.FiscalYearBasis)
-                    .IsRequired();
-                b.Property(p => p.IsEnabled)
+                b.Property(p => p.CompanyNameLocalized)
                     .IsRequired(false);
                 b.Property(p => p.Language)
                     .IsRequired();
-                b.Property(p => p.VATNumber)
+                b.Property(p => p.Status)
                     .IsRequired();
+                b.Property(p => p.RegistrationID)
+                    .IsRequired();
+                b.Property(p => p.TaxID)
+                    .IsRequired();
+                b.Property(p => p.SocialInsuranceID)
+                    .IsRequired();
+                b.Property(p => p.VATID)
+                    .IsRequired();
+                b.Property(p => p.ClientID)
+                    .ValueGeneratedOnAdd()
+                    .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Throw); // <--
 
-                b.HasMany(p => p.Departments).WithOne(c => c.Company).OnDelete(DeleteBehavior.ClientCascade);
+                b.HasMany(p => p.Departments).WithOne(c => c.Company).OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(p => p.CompanyLocations).WithOne(c => c.Company).OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(p => p.CompanyCurrencies).WithOne(c => c.Company).OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(p => p.CompanyPrintSizes).WithOne(c => c.Company).OnDelete(DeleteBehavior.Cascade);
             });
+            builder.Entity<CompanyLocation>(b =>
+            {
+                b.ToTable(CERPConsts.DbTablePrefix + "CompanyLocations", CERPConsts.SetupDbSchema);
 
+                b.ConfigureAudited();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasKey("CompanyId", "LocationId");
+                b.HasOne(p => p.Location).WithMany().OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(p => p.Company).WithMany(x => x.CompanyLocations).OnDelete(DeleteBehavior.Cascade);
+            });
+            builder.Entity<CompanyCurrency>(b =>
+            {
+                b.ToTable(CERPConsts.DbTablePrefix + "CompanyCurrencies", CERPConsts.SetupDbSchema);
+
+                b.HasKey("CompanyId", "CurrencyId");
+                b.ConfigureAudited();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(p => p.Currency).WithMany().OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(p => p.Company).WithMany(x => x.CompanyCurrencies).OnDelete(DeleteBehavior.Cascade);
+            });
+            builder.Entity<CompanyPrintSize>(b =>
+            {
+                b.ToTable(CERPConsts.DbTablePrefix + "CompanyPrintSizes", CERPConsts.SetupDbSchema);
+
+                b.ConfigureAudited();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(p => p.Company)
+                    .WithMany(x => x.CompanyPrintSizes).OnDelete(DeleteBehavior.Cascade); ;
+            });
+            
             builder.Entity<Branch>(b =>
             {
                 b.ToTable(CERPConsts.DbTablePrefix + "Branches", CERPConsts.DbSchema);
@@ -388,8 +415,18 @@ namespace CERP.EntityFrameworkCore
             {
                 b.ToTable(CERPConsts.SetupDbTablePrefix + "LocationTemplates", CERPConsts.SetupDbSchema);
 
-                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+            });
+            
+            builder.Entity<Currency>(b =>
+            {
+                b.ToTable(CERPConsts.SetupDbTablePrefix + "Currencies", CERPConsts.SetupDbSchema);
+
+                b.ConfigureAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); 
+                b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
             });
 

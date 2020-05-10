@@ -7,6 +7,7 @@
 $(document).ready(function () {
     initSettings(); 
 
+    
 });
 Array.prototype.removeIf = function (callback) {
     var i = 0;
@@ -52,6 +53,8 @@ function areaHeaderBtnClick(e) {
     var isCollapsed = form.css('display') == 'none';
 
     if (isCollapsed) {
+        ClearForm(form);
+
         $(btnSec).slideUp(200);
         $(form).slideDown(200);
         setTimeout(function () { $(btn).html('<i class="fa fa-arrow-up p-r-5"></i> Cancel') }, 200)
@@ -421,15 +424,38 @@ function SelectPositionEmployees(positionsElmId, employeesElmId, positionsArr, e
     });
 }
 
+function ValidateFormByQuery(query) {
+    var elmForm = $(query);
+    // stepDirection === 'forward' :- this condition allows to do the form validation
+    // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
+    var valid = false;
+    for (var i = 0; i < elmForm.length; i++) {
+        let form = elmForm[i];
+        if (form) {
+            $(form).validator('validate');
+            var elmErr = $(form).find('.has-error');
+            if (elmErr) {
+                if (elmErr.length > 0) {
+                    // Form validation failed
+                    valid = false;
+                    return valid;
+                }
+                else {
+                    valid = true;
+                }
+            }
+        }
+    }
+    return valid;
+}
 function ValidateForm(formId) {
     var elmForm = $(`#${formId}`);
     // stepDirection === 'forward' :- this condition allows to do the form validation
     // only on forward navigation, that makes easy navigation on backwards still do the validation when going next
     var valid = false;
-    elmForm.validator('validate');
     if (elmForm) {
+        elmForm.validator('validate');
         var elmErr = elmForm.find('.has-error');
-        console.log(elmErr);
         if (elmErr) {
             if (elmErr.length > 0) {
                 // Form validation failed
@@ -442,3 +468,27 @@ function ValidateForm(formId) {
     }
     return valid;
 }
+
+function FillFormByObject(obj, form) {
+    let props = Object.keys(obj);
+    for (var i = 0; i < form[0].length; i++) {
+        let elm = form[0][i];
+        let propName = props.filter(function (x) { return x.toLowerCase() == elm.name.toLowerCase(); });
+        if (propName != '') {
+            elm.value = obj[propName];
+        }
+    }
+}
+function ClearForm(form) {
+    for (var i = 0; i < form[0].length; i++) {
+        console.log(form[0][i].type);
+        let type = form[0][i].type;
+        if (type != 'submit' && type != 'button' && type != 'select-one')
+            form[0][i].value = '';
+    }
+}
+function camelCase(str) {
+    return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
+        return index == 0 ? word.toLowerCase() : word.toUpperCase();
+    }).replace(/\s+/g, '');
+} 

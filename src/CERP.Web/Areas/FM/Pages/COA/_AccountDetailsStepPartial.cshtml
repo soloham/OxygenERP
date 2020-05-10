@@ -78,11 +78,11 @@
                             {
                                 @if (companyId != Guid.Empty && companies[i].Id == companyId)
                                 {
-                                    <option value="@companies[i].Id" data-companyCode="@companies[i].CompanyCode" selected>@companies[i].CompanyCode - @companies[i].Name</option>
+                                    <option value="@companies[i].Id" data-companyCode="@companies[i].CompanyCode" selected>@companies[i].CompanyCode - @companies[i].CompanyName</option>
                                 }
                                 else
                                 {
-                                    <option value="@companies[i].Id" data-companyCode="@companies[i].CompanyCode">@companies[i].CompanyCode - @companies[i].Name</option>
+                                    <option value="@companies[i].Id" data-companyCode="@companies[i].CompanyCode">@companies[i].CompanyCode - @companies[i].CompanyName</option>
                                 }
                             }
                         </select>

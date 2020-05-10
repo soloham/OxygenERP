@@ -22,11 +22,6 @@ namespace CERP.Setup.DTOs
         {
 
         }
-        public LocationTemplate_Dto(Guid id)
-        {
-            Id = id;
-        }
-
         public void Initialize()
         {
             try

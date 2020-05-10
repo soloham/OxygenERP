@@ -1,4 +1,5 @@
 ﻿using CERP.FM;
+using CERP.Setup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +35,7 @@ namespace CERP.App
         {
             var curCompanies = await _CompaniesRepo.GetListAsync();
             var curBranches = await _BranchesRepo.GetListAsync();
-            if (curCompanies.Any(x => x.Name == "TestCorp" && curBranches.Any(x => x.Name == "Head")))
+            if (curCompanies.Any(x => x.CompanyName == "TestCorp" && curBranches.Any(x => x.Name == "Head")))
             {
 
                 

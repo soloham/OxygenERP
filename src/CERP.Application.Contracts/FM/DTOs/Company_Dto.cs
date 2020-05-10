@@ -1,4 +1,7 @@
-﻿using CERP.Base;
+﻿using CERP.App.Helpers;
+using CERP.Base;
+using CERP.Setup;
+using CERP.Setup.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,28 +18,60 @@ namespace CERP.FM.DTOs
 
         }
 
-        public int CompanyCode { get; set; }
+        public string CompanyCode { get; set; }
+
+        public string CompanyName { get; set; }
+        public string CompanyNameLocalized { get; set; }
+        public string ClientID { get; set; }
+        public string RegistrationID { get; set; }
+        public string LabourOfficeId { get; set; }
+        public string TaxID { get; set; }
+        public string VATID { get; set; }
+        public string SocialInsuranceID { get; set; }
+
+        public string LanguageDescription { get => EnumExtensions.GetDescription(Language); set => Language = EnumExtensions.GetValueFromDescription<Language>(value); }
+        public Language Language { get; set; }
+        public string StatusDescription { get => EnumExtensions.GetDescription(Status); set => Status = EnumExtensions.GetValueFromDescription<CompanyStatus>(value); }
+        public CompanyStatus Status { get; set; }
+
+        public List<Department_Dto> Departments { get; set; }
+        public List<CompanyLocation_Dto> CompanyLocations { get; set; }
+        public List<CompanyCurrency_Dto> CompanyCurrencies { get; set; }
+        public List<CompanyPrintSize_Dto> CompanyPrintSizes { get; set; }
+    }
+
+    public class CompanyLocation_Dto : AuditedEntityTenantDto<int>
+    {
+        public LocationTemplate_Dto Location { get; set; }
+        public Guid LocationId { get; set; }
+
+        public Company_Dto Company { get; set; }
+        public Guid CompanyId { get; set; }
 
         public string Name { get; set; }
-        public string NameLocalizationKey { get; set; }
 
-        public string Address { get; set; }
-        public string AddressLocalizationKey { get; set; }
+        public string LocationValidityStart { get; set; }
+        public string LocationValidityEnd { get; set; }
+    }
+    public class CompanyCurrency_Dto : AuditedEntityTenantDto<int>
+    {
+        public Currency_Dto Currency { get; set; }
+        public int CurrencyId { get; set; }
 
-        public string BankDetail { get; set; }
-        public string BankDetailLocalizationKey { get; set; }
+        public Company_Dto Company { get; set; }
+        public Guid CompanyId { get; set; }
 
-        public string? Email { get; set; }
-        public string? Phone { get; set; }
-        public string? Website { get; set; }
-        public string Language { get; set; }
+        public string CurrencyTypeDescription { get => EnumExtensions.GetDescription(CurrencyType); }
+        public CurrencyType CurrencyType { get; set; }
 
-        public int FiscalYearStartMonth { get; set; }
-        public string FiscalYearBasis { get; set; }
+        public double ExchangeRate { get; set; }
+    }
+    public class CompanyPrintSize_Dto : AuditedEntityTenantDto<int>
+    {
+        public string PrintSizeDescription { get => EnumExtensions.GetDescription(PrintSize); set => PrintSize = EnumExtensions.GetValueFromDescription<PrintSize>(value); }
+        public PrintSize PrintSize { get; set; }
 
-        public bool? IsEnabled { get; set; }
-
-        public string VATNumber { get; set; }
-        public string CRNumber { get; set; }
+        public Company_Dto Company { get; set; }
+        public Guid CompanyId { get; set; }
     }
 }

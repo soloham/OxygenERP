@@ -4,6 +4,7 @@ using CERP.AppServices.HR.DepartmentService;
 using CERP.AppServices.HR.EmployeeService;
 using CERP.AppServices.HR.WorkShiftService;
 using CERP.AppServices.Payroll.PayrunService;
+using CERP.AppServices.Setup.CompanySetup;
 using CERP.HR.EMPLOYEE.DTOs;
 using CERP.HR.EMPLOYEE.RougeDTOs;
 using CERP.HR.Employees.DTOs;
@@ -35,7 +36,7 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
 
         public IJsonSerializer JsonSerializer { get; set; }
         public PayrunAppService PayrunAppService { get; set; }
-        public companyAppService CompanyAppService { get; set; }
+        public CompanyAppService CompanyAppService { get; set; }
         public EmployeeAppService EmployeeAppService { get; set; }
         public documentAppService documentAppService { get; set; }
         public TimesheetAppService timesheetAppService { get; set; }
@@ -47,12 +48,12 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
 
         public IWebHostEnvironment webHostEnvironment { get; set; }
 
-        public ListModel(IJsonSerializer jsonSerializer, PayrunAppService payrunAppService, IRepository<PayrunDetail, int> payrunDetailsRepo, companyAppService companyAppService, EmployeeAppService employeeAppService, IRepository<DictionaryValue, Guid> dicValuesRepo, documentAppService documentAppService, TimesheetAppService timesheetAppService, IWebHostEnvironment webHostEnvironment)
+        public ListModel(IJsonSerializer jsonSerializer, PayrunAppService payrunAppService, IRepository<PayrunDetail, int> payrunDetailsRepo, CompanyAppService CompanyAppService, EmployeeAppService employeeAppService, IRepository<DictionaryValue, Guid> dicValuesRepo, documentAppService documentAppService, TimesheetAppService timesheetAppService, IWebHostEnvironment webHostEnvironment)
         {
             JsonSerializer = jsonSerializer;
             PayrunAppService = payrunAppService;
             PayrunDetailsRepo = payrunDetailsRepo;
-            CompanyAppService = companyAppService;
+            CompanyAppService = CompanyAppService;
             EmployeeAppService = employeeAppService;
             DicValuesRepo = dicValuesRepo;
             this.documentAppService = documentAppService;
@@ -134,8 +135,8 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
             dynamic employeeDynamic = new ExpandoObject();
 
             dynamicDSRow.basicSalary = payrunDetail.BasicSalary;
-            dynamicDSRow.getCompanyName = payrunDetail.Employee.Department.Company.Name;
-            dynamicDSRow.getCompanyAddress = payrunDetail.Employee.Department.Company.Address;
+            dynamicDSRow.getCompanyName = payrunDetail.Employee.Department.Company.CompanyName;
+            dynamicDSRow.getCompanyAddress = payrunDetail.Employee.Department.Company.CompanyLocations.ToArray()[0].Location.LocationName;
             dynamicDSRow.getEmployeeReferenceId = payrunDetail.Employee.GetReferenceId;
             dynamicDSRow.getEmployeeName = payrunDetail.Employee.Name;
             dynamicDSRow.getEmployeeDepartmentName = payrunDetail.Employee.Department.Name;

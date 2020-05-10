@@ -1,5 +1,6 @@
 ﻿using CERP.App;
 using CERP.FM.COA;
+using CERP.Setup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,37 +52,26 @@ namespace CERP.FM
             bool deleteDuplicates = true;
             
             var curCompanies = await _CompanyRepo.GetListAsync();
-            if(deleteDuplicates)  curCompanies.ForEach(async (Company c) => { if (curCompanies.Count(x => x.Name == c.Name) > 1) { await _CompanyRepo.DeleteAsync(c.Id); } });
+            if(deleteDuplicates)  curCompanies.ForEach(async (Company c) => { if (curCompanies.Count(x => x.CompanyName == c.CompanyName) > 1) { await _CompanyRepo.DeleteAsync(c.Id); } });
             
-            if (curCompanies == null || !curCompanies.Any(x => x.Name == "TestCorp"))
+            if (curCompanies == null || !curCompanies.Any(x => x.CompanyName == "TestCorp"))
             {
                 await _CompanyRepo.InsertAsync(new Company(_guidGenerator.Create())
                 {
-                    Name = "TestCorp",
-                    NameLocalizationKey = "SERP:Company:Name:TestCorp",
-                    Address = "Safari Villas Complex, Bahria Town Ph. 7, Islamabad, Pakistan",
-                    AddressLocalizationKey = "SERP:Company:Address:TestCorp",
-                    BankDetail = @"Bank: Test Commercial Bank
-                                   Account Number: 12387104000103
-                                   Name: TestCorp
-                                   IBAN Number: SA53 1000 0012 3921 0450 0173
-                                   Beneficiary: Hamza Abdullah",
-                    BankDetailLocalizationKey = "SERP:Company:BankDetail:TestCorp",
-                    Email = "monosoft54@gmail.com",
-                    Phone = "+92-332-102-1701",
-                    Website = "www.hamza-abdullah.tk",
-                    FiscalYearStartMonth = 1,
-                    FiscalYearBasis = "Conventional",
-                    IsEnabled = true,
-                    Language = "EN",
-                    VATNumber = "1234567819912000031",
-                    CRNumber = "1234567",
+                    CompanyName = "TestCorp",
+                    CompanyNameLocalized = "تعست کہرپ",
+                    Status = CompanyStatus.Active,
+                    RegistrationID = "12345679813245679",
+                    VATID = "123456789",
+                    TaxID = "4564566456",
+                    SocialInsuranceID = "465445",
+                    //Language = Language.English,
                     TenantId = context.TenantId
                 });
             }
 
             var curBranches = await _BrachRepo.GetListAsync();
-            if (curCompanies != null && curCompanies.Any(x => x.Name == "TestCorp"))
+            if (curCompanies != null && curCompanies.Any(x => x.CompanyName == "TestCorp"))
             {
                 if (curBranches == null || !curBranches.Any(x => x.Name == "Head"))
                 {
@@ -91,7 +81,7 @@ namespace CERP.FM
                         Location = "Riyadh, KSA",
                         BranchCode = 01,
                         IsDeleted = false,
-                        Company = curCompanies.First(x => x.Name == "TestCorp"),
+                        Company = curCompanies.First(x => x.CompanyName == "TestCorp"),
                         TenantId = context.TenantId
                     });
                 }
@@ -192,11 +182,11 @@ namespace CERP.FM
                         CLI = AccountCLI.SubHeader,
                         SubCategoryId = 01,
                         Branch = curBranches.First(x => x.Name == "Head"),
-                        Company = curCompanies.First(x => x.Name == "TestCorp"),
+                        Company = curCompanies.First(x => x.CompanyName == "TestCorp"),
                         SubCategoryCode = "101",
                         LocalizationKey = "FM:COA:SubCategory:101",
                         IsDeleted = false,
-	         TenantId = context.TenantId
+             TenantId = context.TenantId
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Fixed Assets"))
@@ -208,11 +198,11 @@ namespace CERP.FM
                         CLI = AccountCLI.SubHeader,
                         SubCategoryId = 02,
                         Branch = curBranches.First(x => x.Name == "Head"),
-                        Company = curCompanies.First(x => x.Name == "TestCorp"),
+                        Company = curCompanies.First(x => x.CompanyName == "TestCorp"),
                         SubCategoryCode = "102",
                         LocalizationKey = "FM:COA:SubCategory:102",
                         IsDeleted = false,
-	         TenantId = context.TenantId
+             TenantId = context.TenantId
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Current Liabilities"))
@@ -224,11 +214,11 @@ namespace CERP.FM
                         CLI = AccountCLI.SubHeader,
                         SubCategoryId = 01,
                         Branch = curBranches.First(x => x.Name == "Head"),
-                        Company = curCompanies.First(x => x.Name == "TestCorp"),
+                        Company = curCompanies.First(x => x.CompanyName == "TestCorp"),
                         SubCategoryCode = "201",
                         LocalizationKey = "FM:COA:SubCategory:201",
                         IsDeleted = false,
-	         TenantId = context.TenantId
+             TenantId = context.TenantId
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Long Term Liabilities"))
@@ -240,11 +230,11 @@ namespace CERP.FM
                         CLI = AccountCLI.SubHeader,
                         SubCategoryId = 02,
                         Branch = curBranches.First(x => x.Name == "Head"),
-                        Company = curCompanies.First(x => x.Name == "TestCorp"),
+                        Company = curCompanies.First(x => x.CompanyName == "TestCorp"),
                         SubCategoryCode = "202",
                         LocalizationKey = "FM:COA:SubCategory:202",
                         IsDeleted = false,
-	         TenantId = context.TenantId
+             TenantId = context.TenantId
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Share Capital"))
@@ -256,11 +246,11 @@ namespace CERP.FM
                         CLI = AccountCLI.SubHeader,
                         SubCategoryId = 01,
                         Branch = curBranches.First(x => x.Name == "Head"),
-                        Company = curCompanies.First(x => x.Name == "TestCorp"),
+                        Company = curCompanies.First(x => x.CompanyName == "TestCorp"),
                         SubCategoryCode = "301",
                         LocalizationKey = "FM:COA:SubCategory:301",
                         IsDeleted = false,
-	         TenantId = context.TenantId
+             TenantId = context.TenantId
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Partner's Current Account"))
@@ -272,11 +262,11 @@ namespace CERP.FM
                         CLI = AccountCLI.SubHeader,
                         SubCategoryId = 02,
                         Branch = curBranches.First(x => x.Name == "Head"),
-                        Company = curCompanies.First(x => x.Name == "TestCorp"),
+                        Company = curCompanies.First(x => x.CompanyName == "TestCorp"),
                         SubCategoryCode = "302",
                         LocalizationKey = "FM:COA:SubCategory:302",
                         IsDeleted = false,
-	         TenantId = context.TenantId
+             TenantId = context.TenantId
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Retained Earning"))
@@ -288,11 +278,11 @@ namespace CERP.FM
                         CLI = AccountCLI.SubHeader,
                         SubCategoryId = 03,
                         Branch = curBranches.First(x => x.Name == "Head"),
-                        Company = curCompanies.First(x => x.Name == "TestCorp"),
+                        Company = curCompanies.First(x => x.CompanyName == "TestCorp"),
                         SubCategoryCode = "303",
                         LocalizationKey = "FM:COA:SubCategory:303",
                         IsDeleted = false,
-	         TenantId = context.TenantId
+             TenantId = context.TenantId
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Equity"))
@@ -304,11 +294,11 @@ namespace CERP.FM
                         CLI = AccountCLI.SubHeader,
                         SubCategoryId = 01,
                         Branch = curBranches.First(x => x.Name == "Head"),
-                        Company = curCompanies.First(x => x.Name == "TestCorp"),
+                        Company = curCompanies.First(x => x.CompanyName == "TestCorp"),
                         SubCategoryCode = "401",
                         LocalizationKey = "FM:COA:SubCategory:401",
                         IsDeleted = false,
-	         TenantId = context.TenantId
+             TenantId = context.TenantId
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Revenue"))
@@ -320,11 +310,11 @@ namespace CERP.FM
                         CLI = AccountCLI.SubHeader,
                         SubCategoryId = 01,
                         Branch = curBranches.First(x => x.Name == "Head"),
-                        Company = curCompanies.First(x => x.Name == "TestCorp"),
+                        Company = curCompanies.First(x => x.CompanyName == "TestCorp"),
                         SubCategoryCode = "501",
                         LocalizationKey = "FM:COA:SubCategory:501",
                         IsDeleted = false,
-	         TenantId = context.TenantId
+             TenantId = context.TenantId
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Direct Cost Items"))
@@ -336,11 +326,11 @@ namespace CERP.FM
                         CLI = AccountCLI.SubHeader,
                         SubCategoryId = 01,
                         Branch = curBranches.First(x => x.Name == "Head"),
-                        Company = curCompanies.First(x => x.Name == "TestCorp"),
+                        Company = curCompanies.First(x => x.CompanyName == "TestCorp"),
                         SubCategoryCode = "601",
                         LocalizationKey = "FM:COA:SubCategory:601",
                         IsDeleted = false,
-	         TenantId = context.TenantId
+             TenantId = context.TenantId
                     });
                 }
 
@@ -353,11 +343,11 @@ namespace CERP.FM
                         CLI = AccountCLI.SubHeader,
                         SubCategoryId = 02,
                         Branch = curBranches.First(x => x.Name == "Head"),
-                        Company = curCompanies.First(x => x.Name == "TestCorp"),
+                        Company = curCompanies.First(x => x.CompanyName == "TestCorp"),
                         SubCategoryCode = "602",
                         LocalizationKey = "FM:COA:SubCategory:602",
                         IsDeleted = false,
-	         TenantId = context.TenantId
+             TenantId = context.TenantId
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "G&A"))
@@ -369,11 +359,11 @@ namespace CERP.FM
                         CLI = AccountCLI.SubHeader,
                         SubCategoryId = 01,
                         Branch = curBranches.First(x => x.Name == "Head"),
-                        Company = curCompanies.First(x => x.Name == "TestCorp"),
+                        Company = curCompanies.First(x => x.CompanyName == "TestCorp"),
                         SubCategoryCode = "701",
                         LocalizationKey = "FM:COA:SubCategory:701",
                         IsDeleted = false,
-	         TenantId = context.TenantId
+             TenantId = context.TenantId
                     });
                 }
                 if (curCOASubCats == null || !curCOASubCats.Any(x => x.Title == "Other Income"))
@@ -385,11 +375,11 @@ namespace CERP.FM
                         CLI = AccountCLI.SubHeader,
                         SubCategoryId = 01,
                         Branch = curBranches.First(x => x.Name == "Head"),
-                        Company = curCompanies.First(x => x.Name == "TestCorp"),
+                        Company = curCompanies.First(x => x.CompanyName == "TestCorp"),
                         SubCategoryCode = "801",
                         LocalizationKey = "FM:COA:SubCategory:801",
                         IsDeleted = false,
-	         TenantId = context.TenantId
+             TenantId = context.TenantId
                     });
                 }
             }

@@ -33,7 +33,7 @@ namespace CERP.App
             var curDepartments = await _DepartmentsRepo.GetListAsync();
             try
             {
-                if (curCompanies.Any(x => x.Name == "TestCorp"))
+                if (curCompanies.Any(x => x.CompanyName == "TestCorp"))
                 {
                     if (!curDepartments.Any(x => x.Name == "Admin"))
                     {
@@ -46,7 +46,7 @@ namespace CERP.App
                         Department adminDepartment = new Department(departmentId)
                         {
                             Name = "Admin",
-                            Company = curCompanies.First(x => x.Name == "TestCorp"),
+                            Company = curCompanies.First(x => x.CompanyName == "TestCorp"),
                             Positions = adminPositions,
                             TenantId = context.TenantId
                         };
@@ -63,7 +63,7 @@ namespace CERP.App
                         Department department = new Department(departmentId)
                         {
                             Name = "Audit and Advisory Services",
-                            Company = curCompanies.First(x => x.Name == "TestCorp"),
+                            Company = curCompanies.First(x => x.CompanyName == "TestCorp"),
                             Positions = positions,
                             TenantId = context.TenantId
                         };
@@ -81,7 +81,7 @@ namespace CERP.App
                         Department department = new Department(departmentId)
                         {
                             Name = "IT",
-                            Company = curCompanies.First(x => x.Name == "TestCorp"),
+                            Company = curCompanies.First(x => x.CompanyName == "TestCorp"),
                             Positions = positions,
                             TenantId = context.TenantId
                         };
@@ -99,7 +99,7 @@ namespace CERP.App
                         Department department = new Department(departmentId)
                         {
                             Name = "Corporate",
-                            Company = curCompanies.First(x => x.Name == "TestCorp"),
+                            Company = curCompanies.First(x => x.CompanyName == "TestCorp"),
                             Positions = positions,
                             TenantId = context.TenantId
                         };
@@ -116,7 +116,7 @@ namespace CERP.App
                         Department department = new Department(departmentId)
                         {
                             Name = "Tax / Zakat Service",
-                            Company = curCompanies.First(x => x.Name == "TestCorp"),
+                            Company = curCompanies.First(x => x.CompanyName == "TestCorp"),
                             Positions = positions,
                             TenantId = context.TenantId,
                         };

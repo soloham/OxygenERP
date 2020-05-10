@@ -40,7 +40,7 @@ namespace CERP.App
             var curEmployees = await _EmployeesRepo.GetListAsync();
             try
             {
-                if (curCompanies.Any(x => x.Name == "TestCorp"))
+                if (curCompanies.Any(x => x.CompanyName == "TestCorp"))
                 {
                     if (curDepartments.Any(x => x.Name == "Admin"))
                     {

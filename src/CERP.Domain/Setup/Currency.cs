@@ -10,21 +10,16 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace CERP.Setup
 {
-    public class LocationTemplate : AuditedAggregateTenantRoot<Guid>
+    public class Currency : AuditedAggregateTenantRoot<int>
     {
-        public LocationTemplate()
+        public Currency()
         {
         }
-        public LocationTemplate(Guid id)
-        {
-            Id = id;
 
-        }
-
-        public string LocationName { get; set; }
-        public string LocationNameLocalized { get; set; }
-        public string LocationCode { get; set; }
-        public LocationStatus Status { get; set; }
+        public string CurrencyName { get; set; }
+        public string CurrencyNameLocal { get; set; }
+        public string CurrencyCode { get; set; }
+        public CurrencyStatus Status { get; set; }
 
         public void UpdateExtraProperties(Dictionary<string, object> extraProperties)
         {

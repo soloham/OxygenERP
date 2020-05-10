@@ -29,28 +29,4 @@ namespace CERP.Setup
         public ICollection<Position> Positions { get; set; }
     }
 
-    public class Position : FullAuditedAggregateTenantRoot<Guid>
-    {
-        public Position()
-        {
-            IsDeleted = false;
-        }
-        public Position(Guid id)
-        {
-            Id = id;
-            IsDeleted = false;
-        }
-
-        [ForeignKey("DepartmentId")]
-        public Department Department { get; set; }
-        public Guid DepartmentId { get; set; }
-
-        public string Title { get; set; }
-
-        [ForeignKey("EmployeeId")]
-        public Employee? Employee { get; set; }
-        public Guid? EmployeeId { get; set; }
-    }
-
-
 }

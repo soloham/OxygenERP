@@ -69,10 +69,22 @@ namespace CERP
             CreateMap<Company, Company_Dto>();
             CreateMap<Company_Dto, Company>();
             CreateMap<Company_UV_Dto, Company>();
-            
+
+            CreateMap<CompanyCurrency, CompanyCurrency_Dto>();
+            CreateMap<CompanyCurrency_Dto, CompanyCurrency>();
+
+            CreateMap<CompanyLocation, CompanyLocation_Dto>();
+            CreateMap<CompanyLocation_Dto, CompanyLocation>();
+
+            CreateMap<CompanyPrintSize, CompanyPrintSize_Dto>();
+            CreateMap<CompanyPrintSize_Dto, CompanyPrintSize>();
+
             CreateMap<LocationTemplate, LocationTemplate_Dto>().AfterMap((x, y) => y.Initialize());
             CreateMap<LocationTemplate_Dto, LocationTemplate>();
 
+            CreateMap<Currency, Currency_Dto>();
+            CreateMap<Currency_Dto, Currency>();
+            
             CreateMap<Document, Document_Dto>();
             CreateMap<Document_Dto, Document>();
 

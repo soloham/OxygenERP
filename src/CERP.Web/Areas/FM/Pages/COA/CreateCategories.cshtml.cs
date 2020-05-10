@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using CERP.App;
+using CERP.AppServices.Setup.CompanySetup;
 using CERP.FM;
 using CERP.FM.COA;
 using CERP.FM.COA.DTOs;
@@ -26,7 +27,7 @@ namespace CERP.Web.Areas.FM.Pages.COA
         [BindProperty]
         public COA_AccountSubCategory_UV_Dto COASubCatInput { get; set; }
 
-        private readonly companyAppService _companyAppService;
+        private readonly CompanyAppService _companyAppService;
         private readonly coaHeadAccountAppService _headAccountsAppService;
         private readonly coaAccountSubCategoryAppService _subCategoryAppService;
 
@@ -41,9 +42,9 @@ namespace CERP.Web.Areas.FM.Pages.COA
         public List<COA_AccountSubCategory_Dto> SubCategories = new List<COA_AccountSubCategory_Dto>();
         public List<COA_Account_Dto> SubLedgerAccounts = new List<COA_Account_Dto>();
 
-        public CreateCategoryModel(companyAppService companyAppService, coaHeadAccountAppService headAccountsAppService, coaAccountSubCategoryAppService subCategoryAppService, IRepository<DictionaryValue, Guid> dictionaryValuesRepo, IGuidGenerator guidGenerator)
+        public CreateCategoryModel(CompanyAppService CompanyAppService, coaHeadAccountAppService headAccountsAppService, coaAccountSubCategoryAppService subCategoryAppService, IRepository<DictionaryValue, Guid> dictionaryValuesRepo, IGuidGenerator guidGenerator)
         {
-            _companyAppService = companyAppService;
+            _companyAppService = CompanyAppService;
             _headAccountsAppService = headAccountsAppService;
             _subCategoryAppService = subCategoryAppService;
             _dictionaryValuesRepo = dictionaryValuesRepo;

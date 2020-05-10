@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CERP.AppServices.Setup.CompanySetup;
 using CERP.FM.COA;
 using CERP.FM.COA.DTOs;
 using CERP.FM.DTOs;
@@ -15,13 +16,13 @@ namespace CERP.Web.Areas.FM.Pages.COA.Categories
     {
         private readonly IGuidGenerator _guidGenerator;
         private coaAccountSubCategoryAppService _subCategoryAppService;
-        private readonly companyAppService _companyAppService;
+        private readonly CompanyAppService _companyAppService;
         private readonly coaHeadAccountAppService _headAccountsAppService;
-        public AccountCategoriesModel(coaAccountSubCategoryAppService coaAccountSubCategoryAppService, IGuidGenerator guidGenerator, companyAppService companyAppService, coaHeadAccountAppService headAccountsAppService)
+        public AccountCategoriesModel(coaAccountSubCategoryAppService coaAccountSubCategoryAppService, IGuidGenerator guidGenerator, CompanyAppService CompanyAppService, coaHeadAccountAppService headAccountsAppService)
         {
             _subCategoryAppService = coaAccountSubCategoryAppService;
             _guidGenerator = guidGenerator;
-            _companyAppService = companyAppService;
+            _companyAppService = CompanyAppService;
             _headAccountsAppService = headAccountsAppService;
         }
 

@@ -124,6 +124,26 @@
     <Compile Remove="Migrations\20200420123035_HolidayInLR.Designer.cs" />
     <Compile Remove="Migrations\20200507040404_LocationTemplateCreated.cs" />
     <Compile Remove="Migrations\20200507040404_LocationTemplateCreated.Designer.cs" />
+    <Compile Remove="Migrations\20200509020220_AddedCurrency.cs" />
+    <Compile Remove="Migrations\20200509020220_AddedCurrency.Designer.cs" />
+    <Compile Remove="Migrations\20200509085950_CompanyRevamped.cs" />
+    <Compile Remove="Migrations\20200509085950_CompanyRevamped.Designer.cs" />
+    <Compile Remove="Migrations\20200509094147_CompanyRevamped.cs" />
+    <Compile Remove="Migrations\20200509094147_CompanyRevamped.Designer.cs" />
+    <Compile Remove="Migrations\20200509102534_CompanyRevamped.cs" />
+    <Compile Remove="Migrations\20200509102534_CompanyRevamped.Designer.cs" />
+    <Compile Remove="Migrations\20200509104023_CompanyRevamped.cs" />
+    <Compile Remove="Migrations\20200509104023_CompanyRevamped.Designer.cs" />
+    <Compile Remove="Migrations\20200509104844_LocationTemplateUpdated02.cs" />
+    <Compile Remove="Migrations\20200509104844_LocationTemplateUpdated02.Designer.cs" />
+    <Compile Remove="Migrations\20200509110122_CompanyRevamped.cs" />
+    <Compile Remove="Migrations\20200509110122_CompanyRevamped.Designer.cs" />
+    <Compile Remove="Migrations\20200510005629_CompanyLocation.cs" />
+    <Compile Remove="Migrations\20200510005629_CompanyLocation.Designer.cs" />
+    <Compile Remove="Migrations\20200510010045_CompanyLocationIdentity.cs" />
+    <Compile Remove="Migrations\20200510010045_CompanyLocationIdentity.Designer.cs" />
+    <Compile Remove="Migrations\20200510010344_CompanyLocationIdentity.cs" />
+    <Compile Remove="Migrations\20200510010344_CompanyLocationIdentity.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

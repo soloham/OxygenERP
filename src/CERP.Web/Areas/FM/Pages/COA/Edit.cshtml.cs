@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CERP.App;
+using CERP.AppServices.Setup.CompanySetup;
 using CERP.FM;
 using CERP.FM.COA.DTOs;
 using CERP.FM.COA.UV_DTOs;
@@ -25,7 +26,7 @@ namespace CERP.Web.Areas.FM.Pages.COA
         public COA_Account_UV_Dto COAInput { get; set; }
 
         private readonly coaAppService _coaAppService;
-        private readonly companyAppService _companyAppService;
+        private readonly CompanyAppService _companyAppService;
         private readonly branchAppService _branchAppService;
         private readonly coaHeadAccountAppService _headAccountsAppService;
         private readonly coaAccountSubCategoryAppService _subCategoryAppService;
@@ -37,10 +38,10 @@ namespace CERP.Web.Areas.FM.Pages.COA
 
         private IGuidGenerator _guidGenerator;
 
-        public EditModel(coaAppService coaAppService, companyAppService companyAppService, branchAppService branchAppService, coaHeadAccountAppService headAccountsAppService, coaAccountSubCategoryAppService subCategoryAppService, coaSubLedgerRequirementsAppService subLedgerRequirementsAppService, IRepository<AccountStatementType, Guid> accStatementTypeRepo, IRepository<DictionaryValue, Guid> dictionaryValuesRepo, IGuidGenerator guidGenerator)
+        public EditModel(coaAppService coaAppService, CompanyAppService CompanyAppService, branchAppService branchAppService, coaHeadAccountAppService headAccountsAppService, coaAccountSubCategoryAppService subCategoryAppService, coaSubLedgerRequirementsAppService subLedgerRequirementsAppService, IRepository<AccountStatementType, Guid> accStatementTypeRepo, IRepository<DictionaryValue, Guid> dictionaryValuesRepo, IGuidGenerator guidGenerator)
         {
             _coaAppService = coaAppService;
-            _companyAppService = companyAppService;
+            _companyAppService = CompanyAppService;
             _branchAppService = branchAppService;
             _headAccountsAppService = headAccountsAppService;
             _subCategoryAppService = subCategoryAppService;

@@ -9,6 +9,7 @@ using CERP.HR.Loans;
 using CERP.HR.Timesheets;
 using CERP.HR.Workshifts;
 using CERP.Payroll.Payrun;
+using CERP.Setup;
 using CERP.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,6 +48,28 @@ namespace CERP.EntityFrameworkCore
                 /* Remove "includeAllEntities: true" to create
                  * default repositories only for aggregate roots */
                 options.AddDefaultRepositories(includeAllEntities: true);
+
+
+                options.Entity<Company>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(x => x.CompanyLocations)
+                                                        .ThenInclude(x => x.Location)
+                                                       .Include(x => x.CompanyCurrencies)
+                                                        .ThenInclude(x => x.Currency)
+                                                       .Include(x => x.CompanyPrintSizes);
+                });
+                options.Entity<CompanyLocation>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(x => x.Location);
+                });
+                options.Entity<CompanyCurrency>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(x => x.Currency);
+                });
+                options.Entity<CompanyPrintSize>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(x => x.PrintSize);
+                });
 
                 options.Entity<ApprovalRouteTemplate>(opt =>
                 {
