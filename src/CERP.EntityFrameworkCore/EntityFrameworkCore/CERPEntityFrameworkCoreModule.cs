@@ -56,6 +56,10 @@ namespace CERP.EntityFrameworkCore
                                                         .ThenInclude(x => x.Location)
                                                        .Include(x => x.CompanyCurrencies)
                                                         .ThenInclude(x => x.Currency)
+                                                       .Include(x => x.CompanyDocuments)
+                                                        .ThenInclude(x => x.Document)
+                                                       .Include(x => x.CompanyDocuments)
+                                                        .ThenInclude(x => x.DocumentType)
                                                        .Include(x => x.CompanyPrintSizes);
                 });
                 options.Entity<CompanyLocation>(opt =>
@@ -65,6 +69,10 @@ namespace CERP.EntityFrameworkCore
                 options.Entity<CompanyCurrency>(opt =>
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(x => x.Currency);
+                });
+                options.Entity<CompanyDocument>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(x => x.Document);
                 });
                 options.Entity<CompanyPrintSize>(opt =>
                 {
@@ -199,7 +207,6 @@ namespace CERP.EntityFrameworkCore
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.OwnerType)
                                                        .Include(p => p.DocumentType)
-                                                       .Include(p => p.Owner)
                                                        .Include(p => p.IssuedFrom);
                 });
 

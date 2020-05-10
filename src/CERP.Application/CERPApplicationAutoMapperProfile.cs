@@ -76,6 +76,9 @@ namespace CERP
             CreateMap<CompanyLocation, CompanyLocation_Dto>();
             CreateMap<CompanyLocation_Dto, CompanyLocation>();
 
+            CreateMap<CompanyDocument, CompanyDocument_Dto>();
+            CreateMap<CompanyDocument_Dto, CompanyDocument>();
+
             CreateMap<CompanyPrintSize, CompanyPrintSize_Dto>();
             CreateMap<CompanyPrintSize_Dto, CompanyPrintSize>();
 

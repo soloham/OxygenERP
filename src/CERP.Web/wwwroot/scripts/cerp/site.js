@@ -369,9 +369,6 @@ function SelectDepartmentPositions(departmentsElmId, positionsElmId, departments
 
             $(`#${positionsElmId}`).multiselect('dataprovider', dataMS);
 
-            console.log(isEditing);
-            console.log(isEditingLoaded);
-            console.log(toSelectPositions);
             if (isEditing && !isEditingLoaded) {
                 $(`#${positionsElmId}`).multiselect('select', toSelectPositions);
                 $(`#${positionsElmId}`).change();
@@ -481,7 +478,6 @@ function FillFormByObject(obj, form) {
 }
 function ClearForm(form) {
     for (var i = 0; i < form[0].length; i++) {
-        console.log(form[0][i].type);
         let type = form[0][i].type;
         if (type != 'submit' && type != 'button' && type != 'select-one')
             form[0][i].value = '';

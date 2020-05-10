@@ -14,18 +14,20 @@ namespace CERP.AppServices.Setup.CompanySetup
 {
     public class CompanyAppService : CrudAppService<Company, Company_Dto, Guid, PagedAndSortedResultRequestDto, Company_Dto, Company_Dto>
     {
-        public CompanyAppService(IRepository<Company, Guid> repository, IRepository<CompanyLocation> locationsRepository, IRepository<CompanyCurrency> currenciesRepository, IRepository<CompanyPrintSize> printSizesRepository) : base(repository)
+        public CompanyAppService(IRepository<Company, Guid> repository, IRepository<CompanyLocation> locationsRepository, IRepository<CompanyCurrency> currenciesRepository, IRepository<CompanyPrintSize> printSizesRepository, IRepository<CompanyDocument> documentsRepository) : base(repository)
         {
             Repository = repository;
             LocationsRepository = locationsRepository;
             CurrenciesRepository = currenciesRepository;
             PrintSizesRepository = printSizesRepository;
+            DocumentsRepository = documentsRepository;
         }
 
         public IRepository<Company, Guid> Repository { get; }
         public IRepository<CompanyLocation> LocationsRepository { get; }
         public IRepository<CompanyCurrency> CurrenciesRepository { get; }
         public IRepository<CompanyPrintSize> PrintSizesRepository { get; }
+        public IRepository<CompanyDocument> DocumentsRepository { get; }
 
         public List<Company_Dto> GetAllCompanies()
         {

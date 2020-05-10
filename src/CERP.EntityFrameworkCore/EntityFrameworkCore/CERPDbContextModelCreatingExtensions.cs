@@ -225,6 +225,7 @@ namespace CERP.EntityFrameworkCore
                 b.HasMany(p => p.Departments).WithOne(c => c.Company).OnDelete(DeleteBehavior.Cascade);
                 b.HasMany(p => p.CompanyLocations).WithOne(c => c.Company).OnDelete(DeleteBehavior.Cascade);
                 b.HasMany(p => p.CompanyCurrencies).WithOne(c => c.Company).OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(p => p.CompanyDocuments).WithOne(c => c.Company).OnDelete(DeleteBehavior.Cascade);
                 b.HasMany(p => p.CompanyPrintSizes).WithOne(c => c.Company).OnDelete(DeleteBehavior.Cascade);
             });
             builder.Entity<CompanyLocation>(b =>
@@ -251,6 +252,18 @@ namespace CERP.EntityFrameworkCore
                 b.HasOne(p => p.Currency).WithMany().OnDelete(DeleteBehavior.Cascade);
                 b.HasOne(p => p.Company).WithMany(x => x.CompanyCurrencies).OnDelete(DeleteBehavior.Cascade);
             });
+            builder.Entity<CompanyDocument>(b =>
+            {
+                b.ToTable(CERPConsts.DbTablePrefix + "CompanyDocuments", CERPConsts.SetupDbSchema);
+
+                b.HasKey("CompanyId", "DocumentId");
+                b.ConfigureAudited();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(p => p.Document).WithMany().OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(p => p.Company).WithMany(x => x.CompanyDocuments).OnDelete(DeleteBehavior.Cascade);
+            });
             builder.Entity<CompanyPrintSize>(b =>
             {
                 b.ToTable(CERPConsts.DbTablePrefix + "CompanyPrintSizes", CERPConsts.SetupDbSchema);
@@ -262,7 +275,7 @@ namespace CERP.EntityFrameworkCore
                 b.HasOne(p => p.Company)
                     .WithMany(x => x.CompanyPrintSizes).OnDelete(DeleteBehavior.Cascade); ;
             });
-            
+
             builder.Entity<Branch>(b =>
             {
                 b.ToTable(CERPConsts.DbTablePrefix + "Branches", CERPConsts.DbSchema);
@@ -502,7 +515,6 @@ namespace CERP.EntityFrameworkCore
 
                 b.HasOne(x => x.DocumentType).WithMany().OnDelete(DeleteBehavior.Restrict);
                 b.HasOne(x => x.OwnerType).WithMany().OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(x => x.Owner).WithMany().OnDelete(DeleteBehavior.Restrict);
             });
 
             builder.Entity<Timesheet>(b =>

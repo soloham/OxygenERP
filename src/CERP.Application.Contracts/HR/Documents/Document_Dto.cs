@@ -28,10 +28,8 @@ namespace CERP.CERP.HR.Documents
         [Required]
         public Guid DocumentTypeId { get; set; }
         public DictionaryValue_Dto IssuedFrom { get; set; }
-        [Required]
         public Guid IssuedFromId { get; set; }
 
-        public Employee_Dto Owner { get; set; }
         [Required]
         public Guid OwnerId { get; set; }
 

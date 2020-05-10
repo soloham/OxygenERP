@@ -104,7 +104,7 @@ namespace CERP.Web.Areas.HR.Pages.Documents
                 new GridColumn { Field = "description", HeaderText = "Description", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "ownerType.value", HeaderText = "Owner Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "documentType.value", HeaderText = "Doc Type", TextAlign=TextAlign.Center,  MinWidth="10"  },
-                new GridColumn { Field = "owner.name", HeaderText = "Owner Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
+                //new GridColumn { Field = "owner.name", HeaderText = "Owner Name", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "issuedFrom.value", Visible = false, HeaderText = "Issued From", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "issueDate", Visible = false, HeaderText = "Issue Date", Type="Date", Format="E, MMMM d, y", TextAlign=TextAlign.Center,  MinWidth="10"  },
                 new GridColumn { Field = "expiryDate", HeaderText = "Expiry Date", Type="Date", Format="E, MMMM d, y", TextAlign=TextAlign.Center,  MinWidth="10"  },

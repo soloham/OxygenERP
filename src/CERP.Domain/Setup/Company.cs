@@ -1,4 +1,6 @@
-﻿using CERP.Base;
+﻿using CERP.App;
+using CERP.Base;
+using CERP.HR.Documents;
 using CERP.Setup;
 using System;
 using System.Collections.Generic;
@@ -19,6 +21,8 @@ namespace CERP.Setup
             Id = guid;
         }
 
+        public string CompanyLogo { get; set; }
+
         public string CompanyCode { get; set; }
 
         public string CompanyName { get; set; }
@@ -36,6 +40,7 @@ namespace CERP.Setup
         public ICollection<CompanyLocation> CompanyLocations { get; set; }
         public ICollection<CompanyCurrency> CompanyCurrencies { get; set; }
         public ICollection<CompanyPrintSize> CompanyPrintSizes { get; set; }
+        public ICollection<CompanyDocument> CompanyDocuments { get; set; }
     }
 
     public class CompanyLocation : AuditedAggregateTenantRoot<int>
@@ -65,6 +70,23 @@ namespace CERP.Setup
     public class CompanyPrintSize : AuditedAggregateTenantRoot<int>
     {
         public PrintSize PrintSize { get; set; }
+
+        public Company Company { get; set; }
+        public Guid CompanyId { get; set; }
+    }
+    public class CompanyDocument : AuditedAggregateTenantRoot<int>
+    {
+        public string DocumentTitle { get; set; }
+        public string DocumentTitleLocalized { get; set; }
+
+        public string IssueDate { get; set; }
+        public string EndDate { get; set; }
+
+        public DictionaryValue DocumentType { get; set; }
+        public Guid DocumentTypeId { get; set; }
+
+        public Document Document { get; set; }
+        public Guid DocumentId { get; set; }
 
         public Company Company { get; set; }
         public Guid CompanyId { get; set; }

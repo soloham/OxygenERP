@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200510134628_SoftCopyCompanyDocument")]
+    partial class SoftCopyCompanyDocument
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1231,6 +1233,8 @@ namespace CERP.Migrations
                     b.HasIndex("DocumentTypeId");
 
                     b.HasIndex("IssuedFromId");
+
+                    b.HasIndex("OwnerId");
 
                     b.HasIndex("OwnerTypeId");
 
@@ -3204,9 +3208,6 @@ namespace CERP.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CompanyCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CompanyLogo")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CompanyName")
@@ -5577,6 +5578,12 @@ namespace CERP.Migrations
                         .WithMany()
                         .HasForeignKey("IssuedFromId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CERP.HR.Employees.Employee", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CERP.App.DictionaryValue", "OwnerType")

@@ -1,5 +1,7 @@
-﻿using CERP.App.Helpers;
+﻿using CERP.App;
+using CERP.App.Helpers;
 using CERP.Base;
+using CERP.CERP.HR.Documents;
 using CERP.Setup;
 using CERP.Setup.DTOs;
 using System;
@@ -17,6 +19,8 @@ namespace CERP.FM.DTOs
         {
 
         }
+
+        public string CompanyLogo { get; set; }
 
         public string CompanyCode { get; set; }
 
@@ -38,6 +42,7 @@ namespace CERP.FM.DTOs
         public List<CompanyLocation_Dto> CompanyLocations { get; set; }
         public List<CompanyCurrency_Dto> CompanyCurrencies { get; set; }
         public List<CompanyPrintSize_Dto> CompanyPrintSizes { get; set; }
+        public List<CompanyDocument_Dto> CompanyDocuments { get; set; }
     }
 
     public class CompanyLocation_Dto : AuditedEntityTenantDto<int>
@@ -70,6 +75,23 @@ namespace CERP.FM.DTOs
     {
         public string PrintSizeDescription { get => EnumExtensions.GetDescription(PrintSize); set => PrintSize = EnumExtensions.GetValueFromDescription<PrintSize>(value); }
         public PrintSize PrintSize { get; set; }
+
+        public Company_Dto Company { get; set; }
+        public Guid CompanyId { get; set; }
+    }
+    public class CompanyDocument_Dto : AuditedEntityTenantDto<int>
+    {
+        public string DocumentTitle { get; set; }
+        public string DocumentTitleLocalized { get; set; }
+
+        public string IssueDate { get; set; }
+        public string EndDate { get; set; }
+
+        public DictionaryValue_Dto DocumentType { get; set; }
+        public Guid DocumentTypeId { get; set; }
+
+        public Document_Dto Document { get; set; }
+        public Guid DocumentId { get; set; }
 
         public Company_Dto Company { get; set; }
         public Guid CompanyId { get; set; }

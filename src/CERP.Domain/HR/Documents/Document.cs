@@ -27,8 +27,6 @@ namespace CERP.HR.Documents
         public DictionaryValue DocumentType { get; set; }
         public Guid DocumentTypeId { get; set; }
 
-        [ForeignKey("OwnerId")]
-        public Employees.Employee Owner { get; set; }
         public Guid OwnerId { get; set; }
 
         [ForeignKey("IssuedFromId")]

@@ -55,6 +55,7 @@ namespace CERP.EntityFrameworkCore
         public DbSet<CompanyLocation> CompanyLocations { get; set; }
         public DbSet<CompanyCurrency> CompanyCurrencies { get; set; }
         public DbSet<CompanyPrintSize> CompanyPrintSizes { get; set; }
+        public DbSet<CompanyDocument> CompanyDocuments { get; set; }
         public DbSet<LocationTemplate> LocationTemplates { get; set; }
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<Department> Departments { get; set; }

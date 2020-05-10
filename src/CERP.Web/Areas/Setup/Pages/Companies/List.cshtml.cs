@@ -21,18 +21,28 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Json;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
+using CERP.CERP.HR.Documents;
+using CERP.AppServices.HR.DepartmentService;
 
 namespace CERP.Web.Areas.Setup.Pages.Companies
 {
     public class ListModel : CERPPageModel
     {
+        public IWebHostEnvironment webHostEnvironment { get; set; }
         public IRepository<DictionaryValue> DictionaryValuesRepo { get; set; }
         public CompanyAppService CompanyAppService { get; set; }
-        public ListModel(IJsonSerializer jsonSerializer, IRepository<DictionaryValue> dictionaryValuesRepo, CompanyAppService companyAppService)
+        public documentAppService documentAppService { get; set; }
+
+        public ListModel(IJsonSerializer jsonSerializer, IRepository<DictionaryValue> dictionaryValuesRepo, CompanyAppService companyAppService, IWebHostEnvironment webHostEnvironment, documentAppService documentAppService)
         {
             JsonSerializer = jsonSerializer;
             DictionaryValuesRepo = dictionaryValuesRepo;
             CompanyAppService = companyAppService;
+            this.webHostEnvironment = webHostEnvironment;
+            this.documentAppService = documentAppService;
         }
 
         public IJsonSerializer JsonSerializer { get; set; }
@@ -42,20 +52,65 @@ namespace CERP.Web.Areas.Setup.Pages.Companies
 
         }
 
+        private string UploadedFile(IFormFile file)
+        {
+            string uniqueFileName = null;
+
+            if (file != null)
+            {
+                string uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, "Uploads");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+                uniqueFileName = ((new Random()).Next(1, 9) * (new Random()).Next(10000, 900000)).ToString() + Path.GetExtension(file.FileName);
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    file.CopyTo(fileStream);
+                }
+            }
+            return uniqueFileName;
+        }
         public async Task<IActionResult> OnPostCompany()
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    Company_Dto company = JsonSerializer.Deserialize<Company_Dto>(Request.Form["info"]);
+                    var FormData = Request.Form;
+
+                    Company_Dto company = JsonSerializer.Deserialize<Company_Dto>(FormData["info"]);
                     //List<CompanyLocation_Dto> addresses = JsonSerializer.Deserialize<List<CompanyLocation_Dto>>(Request.Form["locations"]);
                     //company.SetProperty("addresses", addresses);
+
+                    bool logoChanged = false;
+                    if (FormData.Files.Count > 0 && FormData.Files.Any(x => x.Name == "CompanyPic"))
+                    {
+                        IFormFile formFile = FormData.Files.First(x => x.Name == "CompanyPic");
+
+                        string uploadedFileName = UploadedFile(formFile);
+                        company.CompanyLogo = uploadedFileName;
+
+                        logoChanged = true;
+                    }
 
                     bool IsEditing = company.Id != Guid.Empty;
                     if (IsEditing)
                     {
                         Company curCompany = await CompanyAppService.Repository.GetAsync(company.Id);
+                        if (curCompany.CompanyLogo != null && curCompany.CompanyLogo != "noimage.jpg" && logoChanged)
+                        {
+                            string uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, "Uploads");
+                            string filePath = Path.Combine(uploadsFolder, curCompany.CompanyLogo);
+
+                            if (System.IO.File.Exists(filePath))
+                            {
+                                System.IO.File.Delete(filePath);
+                            }
+                        }
+                        curCompany.CompanyLogo = company.CompanyLogo;
+
                         curCompany.CompanyName = company.CompanyName;
                         curCompany.CompanyNameLocalized = company.CompanyNameLocalized;
                         curCompany.CompanyCode = company.CompanyCode;
@@ -123,6 +178,60 @@ namespace CERP.Web.Areas.Setup.Pages.Companies
                                 toDeletePrintSizes.Add(curCompPrintSizesIds[i]);
                             }
                         }
+                        
+                        CompanyDocument_Dto[] compDocuments = company.CompanyDocuments.ToArray();
+                        int[] curCompDocumentsIds = curCompany.CompanyDocuments.Select(x => x.Id).ToArray();
+                        for (int i = 0; i < compDocuments.Length; i++)
+                        {
+                            if (!curCompDocumentsIds.Contains(compDocuments[i].Id))
+                            {
+                                string curFileName = compDocuments[i].Document.Name;
+                                if (FormData.Files.Any(x => x.Name == curFileName))
+                                {
+                                    var curDoc = compDocuments[i].Document;
+                                    if (curDoc.Id == Guid.Empty)
+                                    {
+                                        IFormFile document = FormData.Files.First(x => x.Name == curFileName);
+                                        string uploadedFileName = UploadedFile(document);
+
+                                        Document_Dto doc = new Document_Dto(GuidGenerator.Create());
+                                        doc.ReferenceNo = (new Random()).Next(10, 90) * (new Random()).Next(10000, 90000);
+                                        doc.Name = company.CompanyName + "_" + compDocuments[i].DocumentType.Value + "_" + compDocuments[i].Id;
+                                        doc.NameLocalized = company.CompanyNameLocalized + "_" + compDocuments[i].DocumentType.Value + "_" + compDocuments[i].Id;
+                                        doc.Description = $"Soft copy of {compDocuments[i].DocumentType.Value}";
+                                        doc.OwnerId = company.Id;
+                                        doc.OwnerTypeId = DictionaryValuesRepo.WithDetails().Where(x => x.Value == "Company").First(x => x.ValueType.ValueTypeFor == ValueTypeModules.OwnerType).Id;
+                                        doc.DocumentTypeId = compDocuments[i].DocumentType.Id;
+                                        doc.IssuedFromId = doc.OwnerTypeId;
+                                        doc.IssueDate = compDocuments[i].IssueDate;
+                                        doc.ExpiryDate = compDocuments[i].EndDate;
+                                        doc.FileName = uploadedFileName;
+
+                                        Document_Dto created = await documentAppService.CreateAsync(doc);
+                                        compDocuments[i].DocumentId = created.Id;
+                                    }
+                                }
+
+                                curCompany.CompanyDocuments.Add(new CompanyDocument() { 
+                                    DocumentTitle = compDocuments[i].DocumentTitle, 
+                                    DocumentTitleLocalized = compDocuments[i].DocumentTitleLocalized,
+                                    DocumentTypeId = compDocuments[i].DocumentType.Id,
+                                    DocumentId = compDocuments[i].DocumentId,
+                                    IssueDate = compDocuments[i].IssueDate,
+                                    EndDate = compDocuments[i].EndDate
+                                });
+                            }
+                        }
+                        List<CompanyDocument> toDeleteDocuments = new List<CompanyDocument>();
+                        for (int i = 0; i < curCompDocumentsIds.Length; i++)
+                        {
+                            if (!compDocuments.Any(x => x.Id == curCompDocumentsIds[i]))
+                            {
+                                var doc = curCompany.CompanyDocuments.First(x => x.Id == curCompDocumentsIds[i]);
+                                toDeleteDocuments.Add(doc);
+                                curCompany.CompanyDocuments.Remove(doc);
+                            }
+                        }
 
 
                         for (int i = 0; i < toDeletePrintSizes.Count; i++)
@@ -137,6 +246,11 @@ namespace CERP.Web.Areas.Setup.Pages.Companies
                         {
                             await CompanyAppService.CurrenciesRepository.DeleteAsync(x => x.CurrencyId == toDeleteCurrencies[i]);
                         }
+                        for (int i = 0; i < toDeleteDocuments.Count; i++)
+                        {
+                            await documentAppService.Repository.DeleteAsync(toDeleteDocuments[i].DocumentId);
+                            await CompanyAppService.DocumentsRepository.DeleteAsync(x => x.Id == toDeleteDocuments[i].Id);
+                        }
 
                         Company_Dto updated = ObjectMapper.Map<Company, Company_Dto>(await CompanyAppService.Repository.UpdateAsync(curCompany));
 
@@ -144,6 +258,50 @@ namespace CERP.Web.Areas.Setup.Pages.Companies
                     }
                     else
                     {
+                        List<Document_Dto> documentsToAdd = new List<Document_Dto>();
+                        List<CompanyDocument_Dto> companyDocuments = company.CompanyDocuments;
+                        if (FormData.Files.Count > 0)
+                        {
+                            for (int i = 0; i < companyDocuments.Count; i++)
+                            {
+                                CompanyDocument_Dto compDoc = companyDocuments[i];
+                                string curFileName = compDoc.Document.Name;
+                                if (FormData.Files.Any(x => x.Name == curFileName))
+                                {
+                                    var curDoc = compDoc.Document;
+                                    if (curDoc.Id == Guid.Empty)
+                                    {
+                                        IFormFile document = FormData.Files.First(x => x.Name == curFileName);
+                                        string uploadedFileName = UploadedFile(document);
+
+                                        Document_Dto doc = new Document_Dto(GuidGenerator.Create());
+                                        doc.ReferenceNo = (new Random()).Next(10, 90) * (new Random()).Next(10000, 90000);
+                                        doc.Name = company.CompanyName + "_" + compDoc.DocumentType.Value + "_" + compDoc.Id;
+                                        doc.NameLocalized = company.CompanyNameLocalized + "_" + compDoc.DocumentType.Value + "_" + compDoc.Id;
+                                        doc.Description = $"Soft copy of {compDoc.DocumentType.Value}";
+                                        doc.OwnerId = company.Id;
+                                        doc.OwnerTypeId = DictionaryValuesRepo.WithDetails().Where(x => x.Value == "Company").First(x => x.ValueType.ValueTypeFor == ValueTypeModules.OwnerType).Id;
+                                        doc.DocumentTypeId = compDoc.DocumentTypeId;
+                                        doc.IssuedFromId = compDoc.Document.IssuedFromId;
+                                        doc.IssueDate = compDoc.IssueDate;
+                                        doc.ExpiryDate = compDoc.EndDate;
+                                        doc.FileName = uploadedFileName;
+
+                                        Document_Dto created = await documentAppService.CreateAsync(doc);
+                                        compDoc.DocumentId = created.Id;
+                                    }
+                                }
+                            }
+                            if (company.CompanyLogo == null)
+                            {
+                                company.CompanyLogo = "noimage.jpg";
+                            }
+                        }
+                        for (int i = 0; i < documentsToAdd.Count; i++)
+                        {
+                            Document_Dto curDoc = documentsToAdd[i];
+                        }
+
                         company.Id = Guid.Empty;
                         company.CompanyCurrencies.ForEach(x => { x.Id = 0; x.CurrencyId = x.Currency.Id; x.Currency = null; });
                         company.CompanyLocations.ForEach(x => { x.Id = 0; x.LocationId = x.Location.Id; x.Location = null; });

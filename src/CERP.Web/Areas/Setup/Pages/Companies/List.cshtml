@@ -39,6 +39,7 @@
 
     List<object> companyDocsCommands = new List<object>();
     //companyDocsCommands.Add(new { type = "View", buttonOption = new { iconCss = "e-icons e-search", cssClass = "e-flat" } });
+    companyDocsCommands.Add(new { type = "View", buttonOption = new { iconCss = "e-icons zmdi zmdi-search", cssClass = "e-flat" } });
     companyDocsCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
 
     List<object> companyCurrencyCommands = new List<object>();
@@ -248,7 +249,7 @@
                 $('#currencyField').change();
             });
             cERP.appServices.setup.companySetup.company.getList({}).done(function (data) {
-                let gridObj = $("#CompaniesGrid")[0].ej2_instances[0];;
+                let gridObj = $("#CompaniesGrid")[0].ej2_instances[0];
                 gridObj.dataSource = data.items;
                 setTimeout(function () { gridObj.hideSpinner() }, 100);
             });
@@ -273,8 +274,8 @@
                 locationsGrid.refresh();
                 setTimeout(function () { locationsGrid.hideSpinner() }, 100);
                 let printSizesGrid = $("#CompanyPrintSizesGrid")[0].ej2_instances[0];
-                printSizesGrid = [];
-                locationsGrid.refresh();
+                printSizesGrid.dataSource = [];
+                printSizesGrid.refresh();
                 setTimeout(function () { printSizesGrid.hideSpinner() }, 100);
             });
 
@@ -298,15 +299,16 @@
                     let endDate = $("#documentEndDate").val();
                     let documentCopy = $("#document")[0];
                     let documentCopyFile = documentCopy.files[0];
-
+                    console.log(documentTitle);
                     grid.dataSource.push({
                         id: id + 1,
                         documentTitle,
                         documentTitleLocalized,
                         documentType: { id: documentTypeId, value: documentTypeValue },
-                        issuedDate: issueDate,
+                        issueDate: issueDate,
                         endDate: endDate,
-                        getDocument: { name: documentCopyFile.name }
+                        softCopy: documentCopyFile,
+                        document: { name: documentCopyFile.name }
                     }); // refresh the Grid.
                     grid.refresh(); // refresh the Grid.
                     toastr.info(`${documentTypeValue} Added for the company`);
@@ -429,7 +431,6 @@
                     let locationsGrid = $("#CompanyLocationsGrid")[0].ej2_instances[0];
                     let printSizesGrid = $("#CompanyPrintSizesGrid")[0].ej2_instances[0];
 
-
                     let form = [];
                     for (var i = 0; i < forms.length; i++) {
                         let curForm = forms[i];
@@ -455,9 +456,20 @@
                     params.companyPrintSizes = printSizes;
                     console.log(printSizes);
 
-                    console.log("Final");
-                    console.log(params);
+                    var fileInput = $('#imageUpload')[0];
+                    var companyPic = fileInput.files[0];
+
                     let formData = new FormData();
+                    formData.append("CompanyPic", companyPic);
+
+                    for (var i = 0; i < documents.length; i++) {
+                        if (typeof documents[i].softCopy != 'undefined') {
+                            var recKey = documents[i].softCopy.lastModified + '-' + documents[i].softCopy.size;
+                            formData.append(recKey, documents[i].softCopy);
+                            documents[i].document.name = recKey;
+                        }
+                    }
+
                     formData.append("info", JSON.stringify(params));
                     let xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
                     formData.append("__RequestVerificationToken", xhrToken);
@@ -760,17 +772,17 @@
                                               hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                                               allowSorting="true" allowMultiSorting="true" gridLines="Both" dataSource="new List<dynamic>()"
                                               toolbar="@initialToolBar" commandClick="companyDocsCommandClick" actionBegin="companyDocsActionBegin"
-                                              allowPaging="true" allowResizing="true">
+                                              toolbarClick="companyDocsToolbarClick" allowPaging="true" allowResizing="true">
 
                                         <e-grid-columns>
                                             <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
                                             <e-grid-column field="documentTitle" headerText="Title" textAlign="Center"></e-grid-column>
                                             <e-grid-column field="documentTitleLocalized" headerText="Local Title" textAlign="Center"></e-grid-column>
-                                            <e-grid-column field="issuedDate" headerText="Issue Date" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="issueDate" headerText="Issue Date" textAlign="Center"></e-grid-column>
                                             <e-grid-column field="endDate" headerText="End Date" textAlign="Center"></e-grid-column>
                                             <e-grid-column field="documentType.value" headerText="Type" textAlign="Center"></e-grid-column>
 
-                                            <e-grid-column headerText="Actions" textAlign="Center" autoFit="true" commands="companyDocsCommands"></e-grid-column>
+                                            <e-grid-column headerText="Actions" textAlign="Center" commands="companyDocsCommands"></e-grid-column>
                                         </e-grid-columns>
 
                                         <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
@@ -1086,13 +1098,13 @@
 
                 <e-grid-columns>
                     <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
-                    <e-grid-column field="clientID" headerText="Client ID" textAlign="Center" autoFit="true"></e-grid-column>
+                    <e-grid-column field="clientID" headerText="Client ID" textAlign="Center"></e-grid-column>
                     <e-grid-column headerText="Name" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "companyName", HeaderText = "English", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "companyNameLocalized", HeaderText = "Local", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
                     }'></e-grid-column>
                     <e-grid-column field="registrationID" headerText="Registration ID" textAlign="Center"></e-grid-column>
-                    <e-grid-column field="statusDescription" headerText="Status" textAlign="Center" autoFit="true"></e-grid-column>
+                    <e-grid-column field="statusDescription" headerText="Status" textAlign="Center"></e-grid-column>
 
                     <e-grid-column headerText="Actions" textAlign="Center" commands="companiesCommands"></e-grid-column>
                 </e-grid-columns>
@@ -1217,8 +1229,12 @@
             $('#companiesLoader').slideDown();
             cERP.appServices.setup.companySetup.company.get(params.id).done(function (data) {
                 $('#companiesLoader').slideUp();
-
                 curCompanyEditRow = data;
+
+                if(data.companyLogo != null && data.companyLogo != '')
+                    $('#CompLogo').attr('src', '/Uploads/' + data.companyLogo);
+                else
+                    $('#CompLogo').attr('src', '/Uploads/noimage.jpg');
 
                 docGrid.dataSource = data.companyDocuments;
                 docGrid.refresh();
@@ -1291,7 +1307,7 @@
         let docsGrid = $('#CompanyDocumentsGrid')[0].ej2_instances[0];
         if (args.commandColumn.type == "View") {
             console.log(args);
-            let data = args.rowData;
+            let data = args.rowData.document;
             let re = /(?:\.([^.]+))?$/;
             let ext = re.exec(data.fileName)[1];   // "txt"
             let html = ``;
@@ -1314,7 +1330,7 @@
                 showCancelButton: true,
                 focusConfirm: false,
                 confirmButtonText:
-                    `<a style="text-decoration: none; color: white;" id="downlod" download="${data.owner.name}_Document.${ext}" href='/Uploads/${data.fileName}' ><i class="zmdi zmdi-download m-r-5"></i> Download</a>`,
+                    `<a style="text-decoration: none; color: white;" id="downlod" download="Document.${ext}" href='/Uploads/${data.fileName}' ><i class="zmdi zmdi-download m-r-5"></i> Download</a>`,
                 confirmButtonAriaLabel: 'Download Document',
                 cancelButtonText:
                     'Close',
@@ -1335,6 +1351,75 @@
             this.copy(false);
         }
         setTimeout(function () { docsGrid.hideSpinner() }, 100)
+    }
+    function companyDocsToolbarClick(args) {
+        let gridObj = document.getElementById("CompanyDocumentsGrid").ej2_instances[0];
+
+        if (args.item.id === 'CompanyDocumentsGrid_pdfexport') {
+            gridObj.pdfExport();
+        }
+        if (args.item.id === 'CompanyDocumentsGrid_excelexport') {
+            gridObj.excelExport();
+        }
+        if (args.item.id === 'CompanyDocumentsGrid_csvexport') {
+            gridObj.csvExport();
+        }
+        if (this.getSelectedRecords().length > 0) {
+            let withHeader = false;
+            if (args.item.id === 'copyHeader') {
+                withHeader = true;
+            }
+            this.copy(withHeader);
+        }
+        else {
+            if (args.item.id === 'copyHeader') {
+                let dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+                dialogObj.show();
+            }
+            else if (args.item.id === 'copy') {
+                let dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+                dialogObj.show();
+            }
+        }
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.showColumnChooser = true;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            let visCount = 0;
+            for (let i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (let i = 0; i < gridObj.columns.length; i++) {
+                    let col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (let i = 0; i < gridObj.columns.length; i++) {
+                    let col = gridObj.columns[i];
+                    if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+        }
+        if (args.item.id === 'toggleaudittrail') {
+
+        }
+        setTimeout(function () { gridObj.hideSpinner() }, 100);
     }
 
     function companyCurrenciesActionBegin(args) {
@@ -1380,6 +1465,7 @@
         }
         grid.hideSpinner();
     }
+
     function companyPrintSizesCommandClick(args) {
         let grid = $('#CompanyPrintSizesGrid')[0].ej2_instances[0];
         if (args.commandColumn.type == "Copy") {
