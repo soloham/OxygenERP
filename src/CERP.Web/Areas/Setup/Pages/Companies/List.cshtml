@@ -13,7 +13,7 @@
 
     List<DictionaryValue> documentTypes = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.CompanyDocumentType).OrderBy(x => x.Key).ToList(); ;
 
-    ViewData["Title"] = L["Company"].Name;
+    ViewData["Title"] = L["Companies"].Name;
     ViewData["IconClass"] = "fa fa-building";
     ViewData["HeaderTitle"] = L["Companies"].Name.ToUpper();
     ViewData["SubTitle"] = $"{L["ListOf"]} {L["Companies"]}";
@@ -54,11 +54,14 @@
     //companyDocsCommands.Add(new { type = "View", buttonOption = new { iconCss = "e-icons e-search", cssClass = "e-flat" } });
     companyPrintSizeCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
 
+    List<CERP.Setup.LocationType> locationTypes = Enum.GetValues(typeof(CERP.Setup.LocationType)).Cast<CERP.Setup.LocationType>().ToList();
+
     List<CERP.Setup.CompanyStatus> companyStatuses = Enum.GetValues(typeof(CERP.Setup.CompanyStatus)).Cast<CERP.Setup.CompanyStatus>().ToList();
     List<CERP.Setup.CurrencyType> currencyTypes = Enum.GetValues(typeof(CERP.Setup.CurrencyType)).Cast<CERP.Setup.CurrencyType>().ToList();
     List<CERP.Setup.Language> languages = Enum.GetValues(typeof(CERP.Setup.Language)).Cast<CERP.Setup.Language>().ToList();
     List<CERP.Setup.PrintSize> printSizes = Enum.GetValues(typeof(CERP.Setup.PrintSize)).Cast<CERP.Setup.PrintSize>().ToList();
     List<CERP.Setup.PrintSizeStatus> printSizeStatuses = Enum.GetValues(typeof(CERP.Setup.PrintSizeStatus)).Cast<CERP.Setup.PrintSizeStatus>().ToList();
+
 
 }
 @section styles {
@@ -251,7 +254,7 @@
             cERP.appServices.setup.companySetup.company.getList({}).done(function (data) {
                 let gridObj = $("#CompaniesGrid")[0].ej2_instances[0];
                 gridObj.dataSource = data.items;
-                setTimeout(function () { gridObj.hideSpinner() }, 100);
+                setTimeout(function () { gridObj.hideSpinner() }, 200);
             });
 
             $('#clientId').val('[Auto Generated]');
@@ -264,19 +267,19 @@
                 let docGrid = $("#CompanyDocumentsGrid")[0].ej2_instances[0];
                 docGrid.dataSource = [];
                 docGrid.refresh();
-                setTimeout(function () { docGrid.hideSpinner() }, 100);
+                setTimeout(function () { docGrid.hideSpinner() }, 200);
                 let currenciesGrid = $("#CompanyCurrenciesGrid")[0].ej2_instances[0];
                 currenciesGrid.dataSource = [];
                 currenciesGrid.refresh();
-                setTimeout(function () { currenciesGrid.hideSpinner() }, 100);
+                setTimeout(function () { currenciesGrid.hideSpinner() }, 200);
                 let locationsGrid = $("#CompanyLocationsGrid")[0].ej2_instances[0];
                 locationsGrid.dataSource = [];
                 locationsGrid.refresh();
-                setTimeout(function () { locationsGrid.hideSpinner() }, 100);
+                setTimeout(function () { locationsGrid.hideSpinner() }, 200);
                 let printSizesGrid = $("#CompanyPrintSizesGrid")[0].ej2_instances[0];
                 printSizesGrid.dataSource = [];
                 printSizesGrid.refresh();
-                setTimeout(function () { printSizesGrid.hideSpinner() }, 100);
+                setTimeout(function () { printSizesGrid.hideSpinner() }, 200);
             });
 
             $("#submitDocumentBtn").on("click", function (e) {
@@ -392,25 +395,56 @@
                 if (ValidateForm('locationsForm')) {
                     let grid = $("#CompanyLocationsGrid")[0].ej2_instances[0];
 
-                    let location = locations.filter(function (x) { return x.id == $("#locationsField").val() })[0];
-                    if (grid.dataSource.filter(function (x) { return x.id == location.id }).length > 0) {
-                        toastr.error(`${location.locationName} - already exists in the company`);
+                    let allLocationsIds = $("#locationsField").val();
+                    console.log(allLocationsIds);
+                    let selectedlocations = locations.filter(function (x) { return allLocationsIds.includes(x.id); });
+                    console.log(selectedlocations);
+
+                    let existantLocs = grid.dataSource.filter(function (x) { console.log(x.location.id.toString()); return allLocationsIds.includes(x.location.id.toString()); });
+                    console.log(existantLocs);
+                    for (var i = 0; i < existantLocs.length; i++) {
+                        toastr.error(`${selectedlocations[i].locationName} - already exists in the company`);
+                        grid.hideSpinner();
+                    }
+                    if (existantLocs.length > 0) {
+                        return;
+                    }
+                    if (selectedlocations.length > 1 && grid.dataSource.length == 0) {
+                        toastr.error('A @EnumExtensions.GetDescription(CERP.Setup.LocationType.HeadOffice) location is required to perform this action');
                         grid.hideSpinner();
                         return;
                     }
 
-                    let locationName = $("#locationName").val();
+                    let existantDefaults = grid.dataSource.filter(function (x) { return x.locationType == "@((int)CERP.Setup.LocationType.HeadOffice)" || x.locationType == "@(CERP.Setup.LocationType.HeadOffice)" });
 
-                    let locationValidFrom = $('#locationStartDate').val();
-                    let locationValidTill = $('#locationEndDate').val();
+                    for (var i = 0; i < selectedlocations.length; i++)
+                    {
+                        let locationName = $("#locationName").val();
 
-                    let id = 0;
-                    if (grid.dataSource.length > 0) {
-                        id = grid.dataSource[grid.dataSource.length - 1].id;
+                        let locationValidFrom = $('#locationStartDate').val();
+                        let locationValidTill = $('#locationEndDate').val();
+
+                        let locationType = $('#locationType').val();
+                        let locationTypeDescription = $('option:selected', '#locationType').attr('data-value');
+                        if (selectedlocations.length > 1) {
+                            locationType = "@CERP.Setup.LocationType.Branch";
+                            locationName = selectedlocations[i].locationCode + " - " + selectedlocations[i].locationName;
+                        }
+                        else if (locationType == '@CERP.Setup.LocationType.HeadOffice' && existantDefaults.length > 0) {
+                            toastr.error('A @EnumExtensions.GetDescription(CERP.Setup.LocationType.HeadOffice) location already exists');
+                            grid.hideSpinner();
+                            return;
+                        }
+                        let id = 0;
+                        if (grid.dataSource.length > 0) {
+                            id = grid.dataSource[grid.dataSource.length - 1].id;
+                        }
+
+                        let isDefault = locationType == "@CERP.Setup.LocationType.HeadOffice";
+                        grid.dataSource.push({ id: id + 1, isDefault, location: selectedlocations[i], name: locationName, locationValidityStart: locationValidFrom, locationValidityEnd: locationValidTill, locationType, locationTypeDescription }); // refresh the Grid.
+                        toastr.info(`${locationName} - added for the company`);
                     }
-                    $("#CompanyLocationsGrid")[0].ej2_instances[0].dataSource.push({ id, location, name: locationName, locationValidityStart: locationValidFrom, locationValidityEnd: locationValidTill }); // refresh the Grid.
                     grid.refresh(); // refresh the Grid.
-                    toastr.info(`${locationName} - added for the company`);
                     grid.hideSpinner();
                 }
             });
@@ -447,8 +481,19 @@
                     params.companyDocuments = documents;
                     console.log(documents);
                     let locations = locationsGrid.dataSource;
-                    params.companyLocations = locations;
                     console.log(locations);
+                    params.companyLocations = locations;
+                    if (locations.length == 0 || locations.filter(function (x) { return x.locationType == '@((int)CERP.Setup.LocationType.HeadOffice)' || x.locationType == '@((int)CERP.Setup.LocationType.HeadOffice)'; }).length == 0) {
+                        toastr.error('A @EnumExtensions.GetDescription(CERP.Setup.LocationType.HeadOffice) location is required to perform this action');
+                        Swal.hideLoading();
+                        if (isEditingCompany)
+                            swal.fire("Failed", "A @EnumExtensions.GetDescription(CERP.Setup.LocationType.HeadOffice) location is required in a company to perform this action", "error");
+                        else
+                            swal.fire("Failed", "A @EnumExtensions.GetDescription(CERP.Setup.LocationType.HeadOffice) location is required in a company to perform this action", "error");
+
+                        grid.hideSpinner();
+                        return;
+                    }
                     let currencies = currenciesGrid.dataSource;
                     params.companyCurrencies = currencies;
                     console.log(currencies);
@@ -822,7 +867,7 @@
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-12">
                                             <div class="form-group">
                                                 <label class="control-label m-b-5 ">Location:</label>
-                                                <select id="locationsField" onchange="$('#locationName').val($('option:selected', '#locationsField').text())" name="Location" class="form-control" required>
+                                                <select id="locationsField" multiple="multiple" onchange="if ($('#locationsField').val().length > 1) { $('#locationType').attr('readonly', 'readonly'); $('#locationType').val(''); $('#locationName').val('[Auto]'); $('#locationName').attr('readonly','readonly'); } else { $('#locationType').removeAttr('readonly'); $('#locationName').removeAttr('readonly'); $('#locationName').val($('option:selected', '#locationsField').text()); $('#locationType').val('@CERP.Setup.LocationType.HeadOffice');  }" name="Location" class="form-control" required>
                                                 </select>
                                             </div>
                                         </div>
@@ -847,12 +892,20 @@
                                             </div>
                                         </div>
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                                            <div>
-                                                <label class="control-label m-b-5 "></label>
+                                            <div class="form-group">
+                                                <label class="control-label m-b-5 ">Location Type:</label>
+                                                <select id="locationType" name="LocationTypeDescription" class="form-control" required>
+                                                    @for (int i = 0; i < locationTypes.Count; i++)
+                                                    {
+                                                        <option value="@locationTypes[i]" data-value="@EnumExtensions.GetDescription(locationTypes[i])">@EnumExtensions.GetDescription(locationTypes[i])</option>
+                                                    }
+                                                </select>
                                             </div>
-                                            <div class="col-lg-12">
-                                                <button id="submitLocationBtn" type="button" class="btn btn-success btn-block">Add Location</button>
-                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <button id="submitLocationBtn" type="button" class="btn btn-success btn-block">Add Location</button>
                                         </div>
                                     </div>
                                 </div>
@@ -861,23 +914,25 @@
                                               allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
                                               hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                                               allowSorting="true" allowMultiSorting="true" gridLines="Both" dataSource="new List<dynamic>()"
-                                              toolbar="@initialToolBar" commandClick="companyLocationsCommandClick" actionBegin="companyLocationsActionBegin" actionComplete="companyLocationsActionComplete"
+                                              toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" commandClick="companyLocationsCommandClick" actionBegin="companyLocationsActionBegin" actionComplete="companyLocationsActionComplete"
                                               allowPaging="true" allowResizing="true">
 
                                         <e-grid-columns>
                                             <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
-                                            <e-grid-column field="location.locationName" headerText="Location" textAlign="Center"></e-grid-column>
-                                            <e-grid-column field="location.locationCode" headerText="Code" textAlign="Center"></e-grid-column>
-                                            <e-grid-column field="name" headerText="Name" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="location.locationName" allowEditing="false" headerText="Location" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="location.locationCode" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="name" headerText="Name" allowEditing="true" textAlign="Center"></e-grid-column>
                                             <e-grid-column headerText="Validity Period" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
-                                                new Syncfusion.EJ2.Grids.GridColumn(){ Field="locationValidityStart", HeaderText="From", TextAlign= Syncfusion.EJ2.Grids.TextAlign.Center },
-                                                new Syncfusion.EJ2.Grids.GridColumn(){ Field="locationValidityEnd", HeaderText="Till", TextAlign= Syncfusion.EJ2.Grids.TextAlign.Center },
+                                                new Syncfusion.EJ2.Grids.GridColumn(){ Field="locationValidityStart", AllowEditing = true, EditType = "date", HeaderText="From", TextAlign= Syncfusion.EJ2.Grids.TextAlign.Center },
+                                                new Syncfusion.EJ2.Grids.GridColumn(){ Field="locationValidityEnd", AllowEditing = true, EditType = "date", HeaderText="Till", TextAlign= Syncfusion.EJ2.Grids.TextAlign.Center },
                                             }'></e-grid-column>
-                                            <e-grid-column headerText="Actions" textAlign="Center" autoFit="true" commands="companyLocationsCommands"></e-grid-column>
+                                            <e-grid-column field="isDefault" allowEditing="false" headerText="Default" displayAsCheckBox="true" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="locationTypeDescription" allowEditing="false" headerText="Location Type" textAlign="Center"></e-grid-column>
+                                            <e-grid-column headerText="Actions" textAlign="Center" commands="companyLocationsCommands"></e-grid-column>
                                         </e-grid-columns>
 
                                         <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
-                                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
+                                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
                                         <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
                                         <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
                                     </ejs-grid>
@@ -967,7 +1022,7 @@
                                             <div id="currencyConvRateField" class="col-sm-6" style="display:none">
                                                 <div class="form-group">
                                                     <label class="margin-bottom-5 control-label">Exchange Rate:</label>
-                                                    <input type="number" min="0" id="conversionRate" name="ConversionRate" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                                    <input type="number" step="0.0000000001" min="0" id="conversionRate" name="ConversionRate" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                                                 </div>
                                             </div>
                                         </div>
@@ -984,7 +1039,7 @@
                                               allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
                                               hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                                               allowSorting="true" allowMultiSorting="true" gridLines="Both" dataSource="new List<dynamic>()"
-                                              toolbar="@initialToolBar" commandClick="companyCurrenciesCommandClick" actionBegin="companyCurrenciesActionBegin" actionComplete="companyCurrenciesActionComplete"
+                                              toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" commandClick="companyCurrenciesCommandClick" actionBegin="companyCurrenciesActionBegin" actionComplete="companyCurrenciesActionComplete"
                                               allowPaging="true" allowResizing="true">
 
                                         <e-grid-columns>
@@ -996,7 +1051,7 @@
                                             <e-grid-column field="currencyTypeDescription" headerText="Type" textAlign="Center"></e-grid-column>
                                             <e-grid-column field="exchangeRate" headerText="Exchange Rate" textAlign="Center"></e-grid-column>
 
-                                            <e-grid-column headerText="Actions" textAlign="Center" autoFit="true" commands="companyCurrencyCommands"></e-grid-column>
+                                            <e-grid-column headerText="Actions" textAlign="Center" commands="companyCurrencyCommands"></e-grid-column>
                                         </e-grid-columns>
 
                                         <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
@@ -1059,7 +1114,7 @@
                                               allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
                                               hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
                                               allowSorting="true" allowMultiSorting="true" gridLines="Both" dataSource="new List<dynamic>()"
-                                              toolbar="@initialToolBar" commandClick="companyPrintSizesCommandClick"
+                                              toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" commandClick="companyPrintSizesCommandClick"
                                               allowPaging="true" allowResizing="true">
 
                                         <e-grid-columns>
@@ -1197,7 +1252,7 @@
         if (args.item.id === 'toggleaudittrail') {
 
         }
-        setTimeout(function () { gridObj.hideSpinner() }, 100);
+        setTimeout(function () { gridObj.hideSpinner() }, 200);
     }
     function alertBtnClick() {
         let dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
@@ -1238,27 +1293,27 @@
 
                 docGrid.dataSource = data.companyDocuments;
                 docGrid.refresh();
-                setTimeout(function () { docGrid.hideSpinner() }, 100);
+                setTimeout(function () { docGrid.hideSpinner() }, 200);
                 currenciesGrid.dataSource = data.companyCurrencies;
                 currenciesGrid.refresh();
-                setTimeout(function () { currenciesGrid.hideSpinner() }, 100);
+                setTimeout(function () { currenciesGrid.hideSpinner() }, 200);
                 locationsGrid.dataSource = data.companyLocations;
                 locationsGrid.refresh();
-                setTimeout(function () { locationsGrid.hideSpinner() }, 100);
+                setTimeout(function () { locationsGrid.hideSpinner() }, 200);
                 printSizesGrid.dataSource = data.companyPrintSizes;
                 printSizesGrid.refresh();
-                setTimeout(function () { printSizesGrid.hideSpinner() }, 100);
+                setTimeout(function () { printSizesGrid.hideSpinner() }, 200);
             });
         }
         else if (args.commandColumn.type == "Copy") {
             this.copy(false);
         }
 
-        setTimeout(function () { gridObj.hideSpinner() }, 100);
+        setTimeout(function () { gridObj.hideSpinner() }, 200);
     }
     function companyActionComplete(args) {
         let gridObj = document.getElementById("CompaniesGrid").ej2_instances[0];
-        setTimeout(function () { gridObj.hideSpinner() }, 100)
+        setTimeout(function () { gridObj.hideSpinner() }, 200)
     }
     function companyActionBegin(args) {
         if (args.requestType == "delete") {
@@ -1292,7 +1347,7 @@
                     console.log(err);
                 }
             });
-            setTimeout(function () { gridObj.hideSpinner() }, 100);
+            setTimeout(function () { gridObj.hideSpinner() }, 200);
         }
     }
 
@@ -1301,7 +1356,7 @@
         //if (args.requestType == "delete") {
 
         //}
-        setTimeout(function () { docsGrid.hideSpinner() }, 100)
+        setTimeout(function () { docsGrid.hideSpinner() }, 200)
     }
     function companyDocsCommandClick(args) {
         let docsGrid = $('#CompanyDocumentsGrid')[0].ej2_instances[0];
@@ -1350,7 +1405,7 @@
         else if (args.commandColumn.type == "Copy") {
             this.copy(false);
         }
-        setTimeout(function () { docsGrid.hideSpinner() }, 100)
+        setTimeout(function () { docsGrid.hideSpinner() }, 200)
     }
     function companyDocsToolbarClick(args) {
         let gridObj = document.getElementById("CompanyDocumentsGrid").ej2_instances[0];
@@ -1419,7 +1474,7 @@
         if (args.item.id === 'toggleaudittrail') {
 
         }
-        setTimeout(function () { gridObj.hideSpinner() }, 100);
+        setTimeout(function () { gridObj.hideSpinner() }, 200);
     }
 
     function companyCurrenciesActionBegin(args) {
@@ -1427,14 +1482,14 @@
         //if (args.requestType == "delete") {
 
         //}
-        setTimeout(function () { grid.hideSpinner() }, 100)
+        setTimeout(function () { grid.hideSpinner() }, 200)
     }
     function companyCurrenciesActionComplete(args) {
         let grid = $('#CompanyCurrenciesGrid')[0].ej2_instances[0];
         //if (args.requestType == "delete") {
 
         //}
-        setTimeout(function () { grid.hideSpinner() }, 100)
+        setTimeout(function () { grid.hideSpinner() }, 200)
     }
     function companyCurrenciesCommandClick(args) {
         let grid = $('#CompanyCurrenciesGrid')[0].ej2_instances[0];
@@ -1449,14 +1504,14 @@
         //if (args.requestType == "delete") {
 
         //}
-        setTimeout(function () { grid.hideSpinner() }, 100)
+        setTimeout(function () { grid.hideSpinner() }, 200)
     }
     function companyLocationsActionComplete(args) {
         let grid = $('#CompanyCurrenciesGrid')[0].ej2_instances[0];
         //if (args.requestType == "delete") {
 
         //}
-        setTimeout(function () { grid.hideSpinner() }, 100)
+        setTimeout(function () { grid.hideSpinner() }, 200)
     }
     function companyLocationsCommandClick(args) {
         let grid = $('#CompanyCurrenciesGrid')[0].ej2_instances[0];

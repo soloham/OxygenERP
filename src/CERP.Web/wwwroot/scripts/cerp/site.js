@@ -488,3 +488,74 @@ function camelCase(str) {
         return index == 0 ? word.toLowerCase() : word.toUpperCase();
     }).replace(/\s+/g, '');
 } 
+
+function defaultToolbarClick(args) {
+    let gridObj = this;
+    let id = this.element.id;
+
+    if (args.item.id === `${id}_pdfexport`) {
+        gridObj.pdfExport();
+    }
+    if (args.item.id === `${id}_excelexport`) {
+        gridObj.excelExport();
+    }
+    if (args.item.id === `${id}_csvexport`) {
+        gridObj.csvExport();
+    }
+    if (this.getSelectedRecords().length > 0) {
+        let withHeader = false;
+        if (args.item.id === 'copyHeader') {
+            withHeader = true;
+        }
+        this.copy(withHeader);
+    }
+    else {
+        if (args.item.id === 'copyHeader') {
+            let dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+            dialogObj.show();
+        }
+        else if (args.item.id === 'copy') {
+            let dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+            dialogObj.show();
+        }
+    }
+    if (args.item.id === 'showActions') {
+        gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+        gridObj.refresh();
+    }
+    if (args.item.id === 'hideActions') {
+        gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+        gridObj.showColumnChooser = true;
+        gridObj.refresh();
+    }
+    if (args.item.id === 'toggleGrouping') {
+        gridObj.allowGrouping = !gridObj.allowGrouping;
+        gridObj.refresh();
+    }
+    if (args.item.id === 'toggleDetailed') {
+        let visCount = 0;
+        for (let i = 0; i < gridObj.columns.length; i++) {
+            if (gridObj.columns[i].visible) visCount++;
+        }
+        if (visCount == gridObj.columns.length) {
+            for (let i = 0; i < gridObj.columns.length; i++) {
+                let col = gridObj.columns[i];
+                if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                    gridObj.showHider.hide(col.headerText, 'headerText');
+                else if (col.showInColumnChooser)
+                    gridObj.showHider.show(col.headerText, 'headerText');
+            }
+        }
+        else {
+            for (let i = 0; i < gridObj.columns.length; i++) {
+                let col = gridObj.columns[i];
+                if (col.showInColumnChooser)
+                    gridObj.showHider.show(col.headerText, 'headerText');
+            }
+        }
+    }
+    if (args.item.id === 'toggleaudittrail') {
+
+    }
+    setTimeout(function () { gridObj.hideSpinner() }, 200);
+}

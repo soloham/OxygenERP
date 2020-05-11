@@ -651,7 +651,7 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="with-sub">
+                    @*<li class="with-sub">
                         <a href="#" aria-haspopup="true">
                             <span class="menu-icon">
                                 <i class="fas fa-info"></i>
@@ -707,6 +707,29 @@
                                     <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
                                     <span class="menu-text">Expense Claims</span>
                                 </a>
+                            </li>
+                        </ul>
+                    </li>*@
+                    <li class="with-sub">
+                        <a href="#" aria-haspopup="true">
+                            <span class="menu-icon">
+                                <i class="zmdi zmdi-wrench"></i>
+                            </span>
+                            <span class="menu-text">HCM Setup</span>
+                        </a>
+                        <ul class="sidebar-submenu collapse">
+                            <li class="with-sub">
+                                <a href="#" aria-haspopup="true">
+                                    <span class="menu-icon">
+                                        <i class="zmdi zmdi-arrow-merge"></i>
+                                    </span>
+                                    <span class="menu-text">Organizational Management</span>
+                                </a>
+                                <ul class="sidebar-submenu collapse" style="padding-left: 31px">
+                                    <li class="menu-subtitle">Organizational Management</li>
+                                    <li class=""><a href="index-2.html">Company Setup</a></li>
+                                    <li class=""><a href="index-2.html">Organization Structure</a></li>
+                                </ul>
                             </li>
                         </ul>
                     </li>
@@ -837,7 +860,18 @@
         </div>
 
         <div id="main-loader" class="mainLoader">
-            <div class="loader"></div>
+            @*<div class="loader"></div>*@
+            <div id="circle">
+                <div class="loader">
+                    <div class="loader">
+                        <div class="loader">
+                            <div class="loader">
+                                <img id="" src="~/img/logos/OxygenERPLogo.png" alt="" height="35">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         @RenderBody()
 

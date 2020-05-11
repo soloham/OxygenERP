@@ -45,36 +45,50 @@ namespace CERP.Web.Areas.Setup.Pages.Locations
 
         public async Task<IActionResult> OnPostLocationTemplate()
         {
-            if (ModelState.IsValid)
+            try
             {
-                LocationTemplate_Dto location = JsonSerializer.Deserialize<LocationTemplate_Dto>(Request.Form["info"]);
-                List<LocationAddress> addresses = JsonSerializer.Deserialize<List<LocationAddress>>(Request.Form["addresses"]);
-                location.SetProperty("addresses", addresses);
-
-                bool IsEditing = location.Id != Guid.Empty;
-                if (IsEditing)
+                if (ModelState.IsValid)
                 {
-                    LocationTemplate curLocation = await LocationTemplateAppService.Repository.GetAsync(location.Id);
-                    curLocation.LocationName = location.LocationName;
-                    curLocation.LocationNameLocalized = location.LocationNameLocalized;
-                    curLocation.LocationCode = location.LocationCode;
-                    curLocation.Status = location.Status;
-                    curLocation.UpdateExtraProperties(location.ExtraProperties);
+                    LocationTemplate_Dto location = JsonSerializer.Deserialize<LocationTemplate_Dto>(Request.Form["info"]);
+                    LocationAddress address = JsonSerializer.Deserialize<LocationAddress>(Request.Form["address"]);
+                    location.SetProperty("address", address);
 
-                    LocationTemplate_Dto updated = ObjectMapper.Map<LocationTemplate, LocationTemplate_Dto>(await LocationTemplateAppService.Repository.UpdateAsync(curLocation));
+                    bool IsEditing = location.Id != Guid.Empty;
+                    if (IsEditing)
+                    {
+                        LocationTemplate curLocation = await LocationTemplateAppService.Repository.GetAsync(location.Id);
+                        curLocation.LocationName = location.LocationName;
+                        curLocation.LocationNameLocalized = location.LocationNameLocalized;
+                        curLocation.LocationCode = location.LocationCode;
+                        curLocation.Status = location.Status;
+                        curLocation.LocationCountryId = location.LocationCountryId;
+                        curLocation.LocationEmail = location.LocationEmail;
+                        curLocation.LocationFax = location.LocationFax;
+                        curLocation.LocationMobile = location.LocationMobile;
+                        curLocation.LocationPhone = location.LocationPhone;
 
-                    return StatusCode(200, updated);
-                }
-                else
-                {
-                    location.Id = Guid.Empty;
+                        curLocation.LocationCountry = null;
+                        curLocation.UpdateExtraProperties(location.ExtraProperties);
 
-                    LocationTemplate_Dto added = await LocationTemplateAppService.CreateAsync(location);
+                        LocationTemplate_Dto updated = ObjectMapper.Map<LocationTemplate, LocationTemplate_Dto>(await LocationTemplateAppService.Repository.UpdateAsync(curLocation));
+                        updated.LocationCountry = ObjectMapper.Map<DictionaryValue, DictionaryValue_Dto>(await DictionaryValuesRepo.GetAsync(x => x.Id == updated.LocationCountryId));
 
-                    return StatusCode(200, added);
+                        return StatusCode(200, updated);
+                    }
+                    else
+                    {
+                        location.Id = Guid.Empty;
+
+                        LocationTemplate_Dto added = await LocationTemplateAppService.CreateAsync(location);
+                        added.LocationCountry = location.LocationCountry;
+                        return StatusCode(200, added);
+                    }
                 }
             }
+            catch(Exception ex)
+            { 
 
+            }
             return StatusCode(500);
         }
 

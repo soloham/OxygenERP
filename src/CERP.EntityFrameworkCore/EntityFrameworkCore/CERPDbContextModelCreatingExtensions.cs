@@ -428,6 +428,8 @@ namespace CERP.EntityFrameworkCore
             {
                 b.ToTable(CERPConsts.SetupDbTablePrefix + "LocationTemplates", CERPConsts.SetupDbSchema);
 
+                b.HasOne(x => x.LocationCountry).WithMany();
+
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();

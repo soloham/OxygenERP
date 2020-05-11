@@ -108,8 +108,10 @@ namespace CERP.Web.Areas.Setup.Pages.Companies
                             {
                                 System.IO.File.Delete(filePath);
                             }
+
                         }
-                        curCompany.CompanyLogo = company.CompanyLogo;
+                        if(logoChanged)
+                            curCompany.CompanyLogo = company.CompanyLogo;
 
                         curCompany.CompanyName = company.CompanyName;
                         curCompany.CompanyNameLocalized = company.CompanyNameLocalized;
@@ -124,20 +126,31 @@ namespace CERP.Web.Areas.Setup.Pages.Companies
 
                         CompanyLocation_Dto[] compLocs = company.CompanyLocations.ToArray();
                         Guid[] curCompLocsIds = curCompany.CompanyLocations.Select(x => x.Location.Id).ToArray();
-                        for (int i = 0; i < compLocs.Length; i++)
-                        {
-                            if (!curCompLocsIds.Contains(compLocs[i].Location.Id))
-                            {
-                                curCompany.CompanyLocations.Add(new CompanyLocation() { Name = compLocs[i].Name, LocationValidityStart = compLocs[i].LocationValidityStart, LocationValidityEnd = compLocs[i].LocationValidityEnd, LocationId = compLocs[i].Location.Id });
-                            }
-                        }
                         List<Guid> toDeleteLocs = new List<Guid>();
                         for (int i = 0; i < curCompLocsIds.Length; i++)
                         {
-                            if (!compLocs.Any(x => x.LocationId == curCompLocsIds[i]))
+                            CompanyLocation curCompanyLocation = curCompany.CompanyLocations.First(x => x.Location.Id == curCompLocsIds[i]);
+                            if (!compLocs.Any(x => x.LocationId == curCompLocsIds[i] && x.CreationTime == curCompanyLocation.CreationTime))
                             {
                                 curCompany.CompanyLocations.Remove(curCompany.CompanyLocations.First(x => x.Location.Id == curCompLocsIds[i]));
                                 toDeleteLocs.Add(curCompLocsIds[i]);
+                            }
+                        }
+                        for (int i = 0; i < compLocs.Length; i++)
+                        {
+                            if (!curCompany.CompanyLocations.Any(x => x.LocationId == compLocs[i].Location.Id && x.CreationTime == compLocs[i].CreationTime))
+                            {
+                                curCompany.CompanyLocations.Add(new CompanyLocation() { Name = compLocs[i].Name, LocationValidityStart = compLocs[i].LocationValidityStart, LocationValidityEnd = compLocs[i].LocationValidityEnd, LocationId = compLocs[i].Location.Id, LocationType = compLocs[i].LocationType });
+                            }
+                            else
+                            {
+                                //var _companyLoc = await CompanyAppService.LocationsRepository.GetAsync(x => x.LocationId == compLocs[i].Location.Id);
+                                //_companyLoc.LocationValidityStart = compLocs[i].LocationValidityStart;
+                                //_companyLoc.LocationValidityEnd = compLocs[i].LocationValidityEnd;
+                                //_companyLoc.Name = compLocs[i].Name;
+
+                                ////curCompany.CompanyLocations.Remove(curCompany.CompanyLocations.First(x => x.LocationId == _companyLoc.LocationId));
+                                //await CompanyAppService.LocationsRepository.UpdateAsync(_companyLoc);
                             }
                         }
                         
@@ -232,7 +245,6 @@ namespace CERP.Web.Areas.Setup.Pages.Companies
                                 curCompany.CompanyDocuments.Remove(doc);
                             }
                         }
-
 
                         for (int i = 0; i < toDeletePrintSizes.Count; i++)
                         {

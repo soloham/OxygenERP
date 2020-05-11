@@ -28,6 +28,13 @@ namespace CERP.Setup
         [Description("Exchange Currency")]
         Exchange,
     }
+    public enum LocationType
+    {
+        [Description("Head Office")]
+        HeadOffice,
+        [Description("Branch")]
+        Branch,
+    }
     public enum Language
     {
         [Description("Arabic")]

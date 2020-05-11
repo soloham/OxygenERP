@@ -1,4 +1,5 @@
-﻿using CERP.Base;
+﻿using CERP.App;
+using CERP.Base;
 using CERP.FM;
 using CERP.HR.Employees;
 using System;
@@ -19,6 +20,14 @@ namespace CERP.Setup
         public string LocationName { get; set; }
         public string LocationNameLocalized { get; set; }
         public string LocationCode { get; set; }
+        public string LocationPhone { get; set; }
+        public string LocationMobile { get; set; }
+        public string LocationFax { get; set; }
+        public string LocationEmail { get; set; }
+
+        public DictionaryValue LocationCountry { get; set; }
+        public Guid LocationCountryId { get; set; }
+
         public LocationStatus Status { get; set; }
 
         public void UpdateExtraProperties(Dictionary<string, object> extraProperties)

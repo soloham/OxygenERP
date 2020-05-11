@@ -55,6 +55,8 @@ namespace CERP.Setup
 
         public string LocationValidityStart { get; set; }
         public string LocationValidityEnd { get; set; }
+
+        public LocationType LocationType { get; set; }
     }
     public class CompanyCurrency : AuditedAggregateTenantRoot<int>
     {

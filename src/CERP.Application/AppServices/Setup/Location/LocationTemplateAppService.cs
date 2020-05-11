@@ -17,6 +17,11 @@ namespace CERP.AppServices.Setup.LocationSetup
             Repository = repository;
         }
 
+        public List<LocationTemplate_Dto> GetAllLocations()
+        {
+            return Repository.WithDetails().Select(MapToGetListOutputDto).ToList();
+        }
+
         public IRepository<LocationTemplate, Guid> Repository { get; }
     }
 }

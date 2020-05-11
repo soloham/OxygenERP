@@ -3428,6 +3428,9 @@ namespace CERP.Migrations
                         .HasColumnName("LastModifierId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("LocationType")
+                        .HasColumnType("int");
+
                     b.Property<string>("LocationValidityEnd")
                         .HasColumnType("nvarchar(max)");
 
@@ -3647,10 +3650,25 @@ namespace CERP.Migrations
                     b.Property<string>("LocationCode")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("LocationCountryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("LocationEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LocationFax")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LocationMobile")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("LocationName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LocationNameLocalized")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LocationPhone")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
@@ -3661,6 +3679,8 @@ namespace CERP.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LocationCountryId");
 
                     b.ToTable("LocationTemplates","SETUP");
                 });
@@ -6103,6 +6123,15 @@ namespace CERP.Migrations
                     b.HasOne("CERP.Setup.Company", "Company")
                         .WithMany("Departments")
                         .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CERP.Setup.LocationTemplate", b =>
+                {
+                    b.HasOne("CERP.App.DictionaryValue", "LocationCountry")
+                        .WithMany()
+                        .HasForeignKey("LocationCountryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

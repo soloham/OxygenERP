@@ -94,6 +94,17 @@ i.fab {
     background-color: white;
     height: 100% !important;
 }*/
+.site-left-sidebar{
+    width: 260px;
+}
+.sidebar-backdrop {
+    width: 260px;
+}
+@media (min-width: 768px) {
+    .site-content {
+        margin-left: 260px !important;
+    }
+}
 .layout-left-sidebar-collapsed .site-left-sidebar {
     margin-top: 50px !important;
     position: fixed !important;
@@ -159,9 +170,12 @@ i.fab {
     transition: color .3s;
     width: 10px
 }*/
+.sidebar-submenu > li.with-sub > a {
+    margin-left: -15px !important;
+}
 .sidebar-submenu > li.with-sub.open > a:before {
     -webkit-transform: rotate(90deg);
-    transform: rotate(90deg)
+    transform: rotate(90deg);
 }
 
 @media screen and (max-width:780px) {
@@ -756,7 +770,7 @@ p {
     animation: spin 2s linear infinite;
 }
 
-.loader {
+/*.loader {
     left: 50%;
     top: 50%;
     z-index: 1;
@@ -768,7 +782,31 @@ p {
     height: 60px;
     -webkit-animation: spin 2s linear infinite;
     animation: spin 2s linear infinite;
+}*/
+#circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 100px;
+    height: 100px;
 }
+
+.loader {
+    width: calc(100% - 0px);
+    height: calc(100% - 0px);
+    border: 8px solid #162534;
+    border-top: 8px solid #09f;
+    border-radius: 50%;
+    animation: rotate 5s linear infinite;
+}
+
+@keyframes rotate {
+    100% {
+        transform: rotate(360deg);
+    }
+} 
+
 
 @-webkit-keyframes spin {
     0% {

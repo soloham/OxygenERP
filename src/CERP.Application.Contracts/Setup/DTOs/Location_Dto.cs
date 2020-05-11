@@ -1,4 +1,5 @@
-﻿using CERP.App.Helpers;
+﻿using CERP.App;
+using CERP.App.Helpers;
 using CERP.Base;
 using CERP.FM;
 using CERP.FM.DTOs;
@@ -26,13 +27,11 @@ namespace CERP.Setup.DTOs
         {
             try
             {
-                string value = ExtraProperties["addresses"].ToString();
-                List<LocationAddress> addresses = JsonConvert.DeserializeObject<List<LocationAddress>>(value);
-                for (int i = 0; i < addresses.Count; i++)
-                {
-                    addresses[i].Id = Id.ToString();
-                }
-                this.SetProperty("addresses", addresses);
+                string value = ExtraProperties["address"].ToString();
+                LocationAddress address = JsonConvert.DeserializeObject<LocationAddress>(value);
+                address.Id = Id.ToString();
+
+                this.SetProperty("address", address);
             }
             catch(Exception ex)
             {
@@ -43,6 +42,13 @@ namespace CERP.Setup.DTOs
         public string LocationName { get; set; }
         public string LocationNameLocalized { get; set; }
         public string LocationCode { get; set; }
+        public string LocationPhone { get; set; }
+        public string LocationMobile { get; set; }
+        public string LocationFax { get; set; }
+        public string LocationEmail { get; set; }
+
+        public DictionaryValue_Dto LocationCountry { get; set; }
+        public Guid LocationCountryId { get; set; }
 
         public string StatusDescription { get => EnumExtensions.GetDescription(Status); set => Status = EnumExtensions.GetValueFromDescription<LocationStatus>(value); }
         public LocationStatus Status { get; set; }

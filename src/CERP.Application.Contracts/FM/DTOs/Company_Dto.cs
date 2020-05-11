@@ -57,6 +57,11 @@ namespace CERP.FM.DTOs
 
         public string LocationValidityStart { get; set; }
         public string LocationValidityEnd { get; set; }
+
+        public string LocationTypeDescription { get => EnumExtensions.GetDescription(LocationType); set => LocationType = EnumExtensions.GetValueFromDescription<LocationType>(value); }
+        public LocationType LocationType { get; set; }
+
+        public bool IsDefault { get => LocationType == LocationType.HeadOffice;  }
     }
     public class CompanyCurrency_Dto : AuditedEntityTenantDto<int>
     {
@@ -73,7 +78,7 @@ namespace CERP.FM.DTOs
     }
     public class CompanyPrintSize_Dto : AuditedEntityTenantDto<int>
     {
-        public string PrintSizeDescription { get => EnumExtensions.GetDescription(PrintSize); set => PrintSize = EnumExtensions.GetValueFromDescription<PrintSize>(value); }
+        public string PrintSizeDescription { get => EnumExtensions.GetDescription(PrintSize); }
         public PrintSize PrintSize { get; set; }
 
         public Company_Dto Company { get; set; }
