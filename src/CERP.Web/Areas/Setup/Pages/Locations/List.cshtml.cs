@@ -80,7 +80,7 @@ namespace CERP.Web.Areas.Setup.Pages.Locations
                         location.Id = Guid.Empty;
 
                         LocationTemplate_Dto added = await LocationTemplateAppService.CreateAsync(location);
-                        added.LocationCountry = location.LocationCountry;
+                        added.LocationCountry = ObjectMapper.Map<DictionaryValue, DictionaryValue_Dto>(await DictionaryValuesRepo.GetAsync(x => x.Id == added.LocationCountryId));
                         return StatusCode(200, added);
                     }
                 }

@@ -26,9 +26,6 @@ namespace CERP.Setup.DTOs
         public string CurrencyName { get; set; }
         public string CurrencyNameLocal { get; set; }
         public string CurrencyCode { get; set; }
-
-        public string StatusDescription { get => EnumExtensions.GetDescription(Status); set => Status = EnumExtensions.GetValueFromDescription<CurrencyStatus>(value); }
-        public CurrencyStatus Status { get; set; }
     }
 
 }

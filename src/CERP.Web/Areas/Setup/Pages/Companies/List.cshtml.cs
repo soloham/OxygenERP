@@ -144,13 +144,13 @@ namespace CERP.Web.Areas.Setup.Pages.Companies
                             }
                             else
                             {
-                                //var _companyLoc = await CompanyAppService.LocationsRepository.GetAsync(x => x.LocationId == compLocs[i].Location.Id);
-                                //_companyLoc.LocationValidityStart = compLocs[i].LocationValidityStart;
-                                //_companyLoc.LocationValidityEnd = compLocs[i].LocationValidityEnd;
-                                //_companyLoc.Name = compLocs[i].Name;
+                                var _companyLoc = curCompany.CompanyLocations.First(x => x.LocationId == compLocs[i].Location.Id);
+                                _companyLoc.LocationValidityStart = compLocs[i].LocationValidityStart;
+                                _companyLoc.LocationValidityEnd = compLocs[i].LocationValidityEnd;
+                                _companyLoc.Name = compLocs[i].Name;
 
-                                ////curCompany.CompanyLocations.Remove(curCompany.CompanyLocations.First(x => x.LocationId == _companyLoc.LocationId));
-                                //await CompanyAppService.LocationsRepository.UpdateAsync(_companyLoc);
+                                //curCompany.CompanyLocations.Remove(curCompany.CompanyLocations.First(x => x.LocationId == _companyLoc.LocationId));
+                                await CompanyAppService.LocationsRepository.UpdateAsync(_companyLoc);
                             }
                         }
                         
@@ -160,7 +160,16 @@ namespace CERP.Web.Areas.Setup.Pages.Companies
                         {
                             if (!curCompCurrenciesIds.Contains(compCurrencies[i].Currency.Id))
                             {
-                                curCompany.CompanyCurrencies.Add(new CompanyCurrency() { ExchangeRate = compCurrencies[i].ExchangeRate,  CurrencyId = compCurrencies[i].Currency.Id });
+                                curCompany.CompanyCurrencies.Add(new CompanyCurrency() { ExchangeRate = compCurrencies[i].ExchangeRate,  CurrencyId = compCurrencies[i].Currency.Id, Status = compCurrencies[i].Status });
+                            }
+                            else
+                            {
+                                var _companyCurrency = curCompany.CompanyCurrencies.First(x => x.CurrencyId == compCurrencies[i].Currency.Id);
+                                _companyCurrency.ExchangeRate = compCurrencies[i].ExchangeRate;
+                                _companyCurrency.Status = compCurrencies[i].Status;
+
+                                //curCompany.CompanyLocations.Remove(curCompany.CompanyLocations.First(x => x.LocationId == _companyLoc.LocationId));
+                                await CompanyAppService.CurrenciesRepository.UpdateAsync(_companyCurrency);
                             }
                         }
                         List<int> toDeleteCurrencies = new List<int>();

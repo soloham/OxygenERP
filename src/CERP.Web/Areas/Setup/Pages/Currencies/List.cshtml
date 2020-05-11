@@ -27,7 +27,6 @@
     currenciesCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
     currenciesCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" }});
     
-    List<CERP.Setup.CurrencyStatus> currencyStatuses = Enum.GetValues(typeof(CERP.Setup.CurrencyStatus)).Cast<CERP.Setup.CurrencyStatus>().ToList();
 }
 @section styles {
 
@@ -155,7 +154,7 @@
         <form id="currenciesForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
             <div id="currencySpecificForm">
                 <div class="row">
-                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                         <div class="col-sm-6" style="padding-right:0">
                             <div class="form-group">
                                 <label class="control-label m-b-5 ">Name:</label>
@@ -169,21 +168,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="control-label m-b-5 ">Code:</label>
                             <input type="text" id="currencyCode" name="CurrencyCode" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Currency Status:</label>
-                            <select id="currencyStatus" name="Status" class="form-control" required>
-                                @for (int i = 0; i < currencyStatuses.Count; i++)
-                                {
-                                    <option value="@currencyStatuses[i]">@EnumExtensions.GetDescription(currencyStatuses[i])</option>
-                                }
-                            </select>
                         </div>
                     </div>
                 </div>

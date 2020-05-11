@@ -75,6 +75,9 @@ namespace CERP.FM.DTOs
         public CurrencyType CurrencyType { get; set; }
 
         public double ExchangeRate { get; set; }
+
+        public string StatusDescription { get => EnumExtensions.GetDescription(Status); set => Status = EnumExtensions.GetValueFromDescription<CurrencyStatus>(value); }
+        public CurrencyStatus Status { get; set; }
     }
     public class CompanyPrintSize_Dto : AuditedEntityTenantDto<int>
     {

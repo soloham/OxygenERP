@@ -146,6 +146,8 @@
     <Compile Remove="Migrations\20200510010344_CompanyLocationIdentity.Designer.cs" />
     <Compile Remove="Migrations\20200510122354_CompanyDocument.cs" />
     <Compile Remove="Migrations\20200510122354_CompanyDocument.Designer.cs" />
+    <Compile Remove="Migrations\20200511162818_CompanyCurrencyStatus.cs" />
+    <Compile Remove="Migrations\20200511162818_CompanyCurrencyStatus.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

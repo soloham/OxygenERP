@@ -68,6 +68,8 @@ namespace CERP.Setup
 
         public CurrencyType CurrencyType { get; set; }
         public double ExchangeRate { get; set; }
+
+        public CurrencyStatus Status { get; set; }
     }
     public class CompanyPrintSize : AuditedAggregateTenantRoot<int>
     {

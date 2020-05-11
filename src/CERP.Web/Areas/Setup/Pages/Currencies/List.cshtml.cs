@@ -56,7 +56,6 @@ namespace CERP.Web.Areas.Setup.Pages.Currencies
                     curCurrency.CurrencyName = currency.CurrencyName;
                     curCurrency.CurrencyNameLocal = currency.CurrencyNameLocal;
                     curCurrency.CurrencyCode = currency.CurrencyCode;
-                    curCurrency.Status = currency.Status;
 
                     Currency_Dto updated = ObjectMapper.Map<Currency, Currency_Dto>(await CurrencyAppService.Repository.UpdateAsync(curCurrency));
 

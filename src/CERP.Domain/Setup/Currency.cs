@@ -19,7 +19,6 @@ namespace CERP.Setup
         public string CurrencyName { get; set; }
         public string CurrencyNameLocal { get; set; }
         public string CurrencyCode { get; set; }
-        public CurrencyStatus Status { get; set; }
 
         public void UpdateExtraProperties(Dictionary<string, object> extraProperties)
         {
