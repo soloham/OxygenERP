@@ -6,6 +6,7 @@ using CERP.HR.Employees;
 using CERP.HR.Holidays;
 using CERP.HR.Leaves;
 using CERP.HR.Loans;
+using CERP.HR.OrganizationalManagement.OrganizationStructure;
 using CERP.HR.Timesheets;
 using CERP.HR.Workshifts;
 using CERP.Payroll.Payrun;
@@ -203,6 +204,32 @@ namespace CERP.EntityFrameworkCore
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.ValueType);
                 });
+
+                #region HR
+                #region Organizational Management
+                #region Organization Structure
+                options.Entity<OS_DepartmentTemplate>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.SubDepartmentTemplates)
+                                                        .ThenInclude(p => p.SubDepartmentTemplate)
+                                                       .Include(p => p.DepartmentPositionTemplates)
+                                                        .ThenInclude(p => p.PositionTemplate)
+                                                       //.Include(p => p.DepartmentHead)
+                                                       // .ThenInclude(p => p.PositionTemplate)
+                                                       .Include(p => p.CostCenter);
+                });
+                options.Entity<OS_PositionTemplate>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.PositionJobTemplates)
+                                                        .ThenInclude(p => p.JobTemplate)
+                                                       .Include(p => p.PositionTaskTemplates)
+                                                        .ThenInclude(p => p.TaskTemplate)
+                                                       .Include(p => p.CostCenter)
+                                                       .Include(p => p.DepartmentTemplate);
+                });
+                #endregion
+                #endregion
+                #endregion
 
                 options.Entity<WorkShift>(opt =>
                 {

@@ -15,7 +15,7 @@ namespace CERP.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.2")
+                .HasAnnotation("ProductVersion", "3.1.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -2100,6 +2100,415 @@ namespace CERP.Migrations
                     b.HasIndex("PositionId");
 
                     b.ToTable("LoanRequestTemplatePositions","HR");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_DepartmentPositionTemplate", b =>
+                {
+                    b.Property<int>("DepartmentTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PositionTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("DepartmentTemplateId", "PositionTemplateId");
+
+                    b.HasIndex("PositionTemplateId");
+
+                    b.ToTable("DepartmentPositionTemplates","HR.OrganizationalManagement.OrganizationStructure");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_DepartmentSubDepartmentTemplate", b =>
+                {
+                    b.Property<int>("DepartmentTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubDepartmentTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SubDepartmentRelationshipType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("DepartmentTemplateId", "SubDepartmentTemplateId");
+
+                    b.HasIndex("SubDepartmentTemplateId")
+                        .IsUnique();
+
+                    b.ToTable("DepartmentSubDepartmentTemplates","HR.OrganizationalManagement.OrganizationStructure");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_DepartmentTemplate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("ActivationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CostCenterId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameLocalized")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ValidityFromDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ValidityToDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CostCenterId");
+
+                    b.ToTable("DepartmentTemplates","HR.OrganizationalManagement.OrganizationStructure");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_JobTemplate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("ActivationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameLocalized")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ValidityFromDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ValidityToDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("JobTemplates","HR.OrganizationalManagement.OrganizationStructure");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_PositionJobTemplate", b =>
+                {
+                    b.Property<int>("PositionTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("JobTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("PositionTemplateId", "JobTemplateId");
+
+                    b.HasIndex("JobTemplateId");
+
+                    b.ToTable("PositionJobTemplates","HR.OrganizationalManagement.OrganizationStructure");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_PositionTaskTemplate", b =>
+                {
+                    b.Property<int>("PositionTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TaskTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("PositionTemplateId", "TaskTemplateId");
+
+                    b.HasIndex("TaskTemplateId");
+
+                    b.ToTable("PositionTaskTemplates","HR.OrganizationalManagement.OrganizationStructure");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_PositionTemplate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("ActivationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CostCenterId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameLocalized")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ValidityFromDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ValidityToDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CostCenterId");
+
+                    b.ToTable("PositionTemplates","HR.OrganizationalManagement.OrganizationStructure");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_TaskTemplate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("ActivationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameLocalized")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ValidityFromDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ValidityToDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TaskTemplates","HR.OrganizationalManagement.OrganizationStructure");
                 });
 
             modelBuilder.Entity("CERP.HR.Timesheets.Timesheet", b =>
@@ -5874,6 +6283,84 @@ namespace CERP.Migrations
                     b.HasOne("CERP.Setup.Position", "Position")
                         .WithMany()
                         .HasForeignKey("PositionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_DepartmentPositionTemplate", b =>
+                {
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_DepartmentTemplate", "DepartmentTemplate")
+                        .WithMany("DepartmentPositionTemplates")
+                        .HasForeignKey("DepartmentTemplateId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_PositionTemplate", "PositionTemplate")
+                        .WithMany()
+                        .HasForeignKey("PositionTemplateId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_DepartmentSubDepartmentTemplate", b =>
+                {
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_DepartmentTemplate", "DepartmentTemplate")
+                        .WithMany("SubDepartmentTemplates")
+                        .HasForeignKey("DepartmentTemplateId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_DepartmentTemplate", "SubDepartmentTemplate")
+                        .WithOne()
+                        .HasForeignKey("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_DepartmentSubDepartmentTemplate", "SubDepartmentTemplateId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_DepartmentTemplate", b =>
+                {
+                    b.HasOne("CERP.App.DictionaryValue", "CostCenter")
+                        .WithMany()
+                        .HasForeignKey("CostCenterId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_PositionJobTemplate", b =>
+                {
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_JobTemplate", "JobTemplate")
+                        .WithMany()
+                        .HasForeignKey("JobTemplateId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_PositionTemplate", "PositionTemplate")
+                        .WithMany("PositionJobTemplates")
+                        .HasForeignKey("PositionTemplateId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_PositionTaskTemplate", b =>
+                {
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_PositionTemplate", "PositionTemplate")
+                        .WithMany("PositionTaskTemplates")
+                        .HasForeignKey("PositionTemplateId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_TaskTemplate", "TaskTemplate")
+                        .WithMany()
+                        .HasForeignKey("TaskTemplateId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_PositionTemplate", b =>
+                {
+                    b.HasOne("CERP.App.DictionaryValue", "CostCenter")
+                        .WithMany()
+                        .HasForeignKey("CostCenterId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });

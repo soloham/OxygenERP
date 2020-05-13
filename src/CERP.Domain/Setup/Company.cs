@@ -1,15 +1,14 @@
 ﻿using CERP.App;
+using CERP.Attributes;
 using CERP.Base;
 using CERP.HR.Documents;
-using CERP.Setup;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Volo.Abp;
-using Volo.Abp.Domain.Entities.Auditing;
+using Volo.Abp.Auditing;
 
 namespace CERP.Setup
 {
+    [DisableAuditing]
     public class Company : AuditedAggregateTenantRoot<Guid> 
     {
         public Company()
@@ -21,19 +20,31 @@ namespace CERP.Setup
             Id = guid;
         }
 
+        [CustomAudited]
         public string CompanyLogo { get; set; }
 
+        [CustomAudited]
         public string CompanyCode { get; set; }
 
+        [CustomAudited]
         public string CompanyName { get; set; }
+        [CustomAudited]
         public string CompanyNameLocalized { get; set; }
+        [CustomAudited]
         public string ClientID { get; set; }
+        [CustomAudited]
         public string RegistrationID { get; set; }
+        [CustomAudited]
         public string LabourOfficeId { get; set; }
+        [CustomAudited]
         public string TaxID { get; set; }
+        [CustomAudited]
         public string VATID { get; set; }
+        [CustomAudited]
         public string SocialInsuranceID { get; set; }
+        [CustomAudited]
         public Language Language { get; set; }
+        [CustomAudited]
         public CompanyStatus Status { get; set; }
 
         public ICollection<Department> Departments { get; set; }

@@ -2,12 +2,8 @@
 using CERP.FM;
 using CERP.Setup;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 using Volo.Abp.Auditing;
-using Volo.Abp.Domain.Entities.Auditing;
-using Volo.Abp.MultiTenancy;
 
 namespace CERP.App
 {

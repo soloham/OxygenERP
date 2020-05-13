@@ -16,12 +16,23 @@
 }
 <hr />
 <div class="control-section">
-    <div class="areaHeader m-b-5 font-roboto" style="display:flex;">
-        <h3 class="control-label" style="flex-grow: 1; margin:0">Audit Trail</h3>
+    <div class="areaHeader" style="display:flex;">
+        <div id="printSizesLoader" class="pull-left loader-inline" style="display:none"></div>
+        <div class="areaHeaderTitle">
+            <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Audit Trail</span>
+            @*<span id="" class="areaHeaderTitleInNode menu-text"> > </span>*@
+            @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
+        </div>
+        @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
+        <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+            @*<div class="clearfix margin-15"></div>*@
+            @*<a id="addPrintSizeBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>*@
+        </div>
     </div>
+    @*childGrid="@Model.secondaryGrid"*@
     <ejs-grid id="AuditTrailGrid"
               enableAutoFill="true" columns="@Model.primaryGridColumns" dataSource="@Model.dataSource"
-              allowExcelExport="true" height="100%" allowPdfExport="true" childGrid="@Model.secondaryGrid"
+              allowExcelExport="true" height="100%" allowPdfExport="true"
               hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
               allowSorting="true" allowMultiSorting="true" gridLines="Both"
               toolbarClick="ATGtoolbarClick" showColumnChooser="true" toolbar="@initialToolBar"

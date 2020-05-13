@@ -1,9 +1,5 @@
 ﻿using CERP.Base;
 using CERP.HR.Holidays;
-using CERP.Setup;
-using CERP.Setup.DTOs;
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CERP.HR.Leaves
 {

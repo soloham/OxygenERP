@@ -148,6 +148,16 @@
     <Compile Remove="Migrations\20200510122354_CompanyDocument.Designer.cs" />
     <Compile Remove="Migrations\20200511162818_CompanyCurrencyStatus.cs" />
     <Compile Remove="Migrations\20200511162818_CompanyCurrencyStatus.Designer.cs" />
+    <Compile Remove="Migrations\20200512124653_Departments_SubDepartments.cs" />
+    <Compile Remove="Migrations\20200512124653_Departments_SubDepartments.Designer.cs" />
+    <Compile Remove="Migrations\20200512125212_Departments_SubDepartments.cs" />
+    <Compile Remove="Migrations\20200512125212_Departments_SubDepartments.Designer.cs" />
+    <Compile Remove="Migrations\20200513021100_HR_OM_OS_Department_SubDepartment_Position.cs" />
+    <Compile Remove="Migrations\20200513021100_HR_OM_OS_Department_SubDepartment_Position.Designer.cs" />
+    <Compile Remove="Migrations\20200513064548_HR_OM_OS_All.cs" />
+    <Compile Remove="Migrations\20200513064548_HR_OM_OS_All.Designer.cs" />
+    <Compile Remove="Migrations\20200513070713_HR_OM_OS_All.cs" />
+    <Compile Remove="Migrations\20200513070713_HR_OM_OS_All.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

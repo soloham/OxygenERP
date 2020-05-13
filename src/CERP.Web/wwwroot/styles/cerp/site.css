@@ -104,6 +104,12 @@ i.fab {
     .site-content {
         margin-left: 260px !important;
     }
+    .layout-left-sidebar-collapsed .site-content {
+        margin-left: 60px !important;
+    }
+}
+.sidebar-submenu-simple > li > a {
+    padding-left: 20px !important;
 }
 .layout-left-sidebar-collapsed .site-left-sidebar {
     margin-top: 50px !important;
@@ -170,6 +176,7 @@ i.fab {
     transition: color .3s;
     width: 10px
 }*/
+
 .sidebar-submenu > li.with-sub > a {
     margin-left: -15px !important;
 }

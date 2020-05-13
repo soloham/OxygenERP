@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Volo.Abp.Auditing;
-using Volo.Abp.AuditLogging;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
-using Volo.Abp.Domain.Entities.Auditing;
 
 namespace CERP.App.CustomEntityHistorySystem
 {

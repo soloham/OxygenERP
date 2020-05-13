@@ -70,6 +70,8 @@ namespace CERP
         [Description("Loan Type")]
         LoanType,
         [Description("Company Document Type")]
-        CompanyDocumentType
+        CompanyDocumentType,
+        [Description("Cost Center")]
+        CostCenter
     }
 }

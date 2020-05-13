@@ -1,18 +1,13 @@
 ﻿using CERP.App;
 using CERP.Attributes;
 using CERP.Base;
-using CERP.FM;
 using CERP.HR.Workshifts;
 using CERP.Setup;
 using CERP.Users;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 using Volo.Abp.Auditing;
-using Volo.Abp.Domain.Entities.Auditing;
-using Volo.Abp.Domain.Repositories;
-using Volo.Abp.Identity;
 
 namespace CERP.HR.Employees
 {

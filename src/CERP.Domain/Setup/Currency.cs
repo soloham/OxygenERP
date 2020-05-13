@@ -1,12 +1,5 @@
 ﻿using CERP.Base;
-using CERP.FM;
-using CERP.HR.Employees;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
-using Volo.Abp.Data;
-using Volo.Abp.Domain.Entities.Auditing;
 
 namespace CERP.Setup
 {

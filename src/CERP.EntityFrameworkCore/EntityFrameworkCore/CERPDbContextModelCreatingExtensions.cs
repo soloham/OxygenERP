@@ -8,6 +8,7 @@ using CERP.HR.Employees;
 using CERP.HR.Holidays;
 using CERP.HR.Leaves;
 using CERP.HR.Loans;
+using CERP.HR.OrganizationalManagement.OrganizationStructure;
 using CERP.HR.Timesheets;
 using CERP.HR.Workshifts;
 using CERP.Payroll.Payrun;
@@ -380,9 +381,104 @@ namespace CERP.EntityFrameworkCore
                 .WithMany(c => c.SubLedgerRequirementAccounts)
                 .HasForeignKey(bc => bc.AccountId);
 
+            #region HR
+            #region Organizational Management
+            #region Organization Structure
+            builder.Entity<OS_DepartmentTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}DepartmentTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(p => p.CostCenter).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasMany(p => p.DepartmentPositionTemplates).WithOne(p => p.DepartmentTemplate).OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(p => p.SubDepartmentTemplates).WithOne(p => p.DepartmentTemplate).OnDelete(DeleteBehavior.Cascade);
+            });
+            builder.Entity<OS_DepartmentSubDepartmentTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}DepartmentSubDepartmentTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.HasKey("DepartmentTemplateId", "SubDepartmentTemplateId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.DepartmentTemplate).WithMany(x => x.SubDepartmentTemplates).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.SubDepartmentTemplate).WithOne().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<OS_DepartmentPositionTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}DepartmentPositionTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.HasKey("DepartmentTemplateId", "PositionTemplateId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.DepartmentTemplate).WithMany(x => x.DepartmentPositionTemplates).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.PositionTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<OS_PositionTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}PositionTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(p => p.CostCenter).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasMany(p => p.PositionJobTemplates).WithOne(p => p.PositionTemplate).OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(p => p.PositionTaskTemplates).WithOne(p => p.PositionTemplate).OnDelete(DeleteBehavior.Cascade);
+            });
+            builder.Entity<OS_PositionJobTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}PositionJobTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.HasKey("PositionTemplateId", "JobTemplateId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.PositionTemplate).WithMany(x => x.PositionJobTemplates).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.JobTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<OS_PositionTaskTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}PositionTaskTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.HasKey("PositionTemplateId", "TaskTemplateId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.PositionTemplate).WithMany(x => x.PositionTaskTemplates).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.TaskTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<OS_JobTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}JobTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+            });
+            builder.Entity<OS_TaskTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}TaskTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+            });
+            #endregion
+            #endregion
+            #endregion
+
             builder.Entity<Employee>(b =>
             {
-                b.ToTable(CERPConsts.HRDbTablePrefix + "Employees", CERPConsts.HRDbSchema);
+                b.ToTable(CERPConsts.HRDbTablePrefix + "Employees", CERPConsts.HR_DbSchema);
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
@@ -461,7 +557,7 @@ namespace CERP.EntityFrameworkCore
             });
             builder.Entity<WorkShift>(b =>
             {
-                b.ToTable(CERPConsts.HRDbTablePrefix + "WorkShifts", CERPConsts.HRDbSchema);
+                b.ToTable(CERPConsts.HRDbTablePrefix + "WorkShifts", CERPConsts.HR_DbSchema);
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
@@ -477,7 +573,7 @@ namespace CERP.EntityFrameworkCore
             });
             builder.Entity<DeductionMethod>(b =>
             {
-                b.ToTable(CERPConsts.HRDbTablePrefix + "DeductionMethods", CERPConsts.HRDbSchema);
+                b.ToTable(CERPConsts.HRDbTablePrefix + "DeductionMethods", CERPConsts.HR_DbSchema);
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
@@ -493,7 +589,7 @@ namespace CERP.EntityFrameworkCore
             });
             builder.Entity<Document>(b =>
             {
-                b.ToTable(CERPConsts.HRDbTablePrefix + "Documents", CERPConsts.HRDbSchema);
+                b.ToTable(CERPConsts.HRDbTablePrefix + "Documents", CERPConsts.HR_DbSchema);
 
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
@@ -521,7 +617,7 @@ namespace CERP.EntityFrameworkCore
 
             builder.Entity<Timesheet>(b =>
             {
-                b.ToTable(CERPConsts.HRDbTablePrefix + "Timesheets", CERPConsts.HRDbSchema);
+                b.ToTable(CERPConsts.HRDbTablePrefix + "Timesheets", CERPConsts.HR_DbSchema);
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
@@ -557,7 +653,7 @@ namespace CERP.EntityFrameworkCore
             });
             builder.Entity<TimesheetWeekSummary>(b =>
             {
-                b.ToTable(CERPConsts.HRDbTablePrefix + "WeeklyTimesheets", CERPConsts.HRDbSchema);
+                b.ToTable(CERPConsts.HRDbTablePrefix + "WeeklyTimesheets", CERPConsts.HR_DbSchema);
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
@@ -600,7 +696,7 @@ namespace CERP.EntityFrameworkCore
             });
             builder.Entity<TimesheetWeekJobSummary>(b =>
             {
-                b.ToTable(CERPConsts.HRDbTablePrefix + "WeeklyTimesheetsJobs", CERPConsts.HRDbSchema);
+                b.ToTable(CERPConsts.HRDbTablePrefix + "WeeklyTimesheetsJobs", CERPConsts.HR_DbSchema);
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
@@ -868,7 +964,7 @@ namespace CERP.EntityFrameworkCore
 
             builder.Entity<Holiday>(b =>
             {
-                b.ToTable(CERPConsts.DbTablePrefix + "Holidays", CERPConsts.HRDbSchema);
+                b.ToTable(CERPConsts.DbTablePrefix + "Holidays", CERPConsts.HR_DbSchema);
 
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
@@ -879,7 +975,7 @@ namespace CERP.EntityFrameworkCore
 
             builder.Entity<LeaveRequestTemplate>(b =>
             {
-                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplates", CERPConsts.HRDbSchema);
+                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplates", CERPConsts.HR_DbSchema);
 
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
@@ -895,7 +991,7 @@ namespace CERP.EntityFrameworkCore
             });
             builder.Entity<LeaveRequestTemplateDepartment>(b =>
             {
-                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplateDepartments", CERPConsts.HRDbSchema);
+                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplateDepartments", CERPConsts.HR_DbSchema);
 
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
@@ -906,7 +1002,7 @@ namespace CERP.EntityFrameworkCore
             });
             builder.Entity<LeaveRequestTemplatePosition>(b =>
             {
-                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplatePositions", CERPConsts.HRDbSchema);
+                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplatePositions", CERPConsts.HR_DbSchema);
 
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
@@ -917,7 +1013,7 @@ namespace CERP.EntityFrameworkCore
             });
             builder.Entity<LeaveRequestTemplateEmployeeStatus>(b =>
             {
-                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplateEmployeeStatuses", CERPConsts.HRDbSchema);
+                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplateEmployeeStatuses", CERPConsts.HR_DbSchema);
 
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
@@ -928,7 +1024,7 @@ namespace CERP.EntityFrameworkCore
             });
             builder.Entity<LeaveRequestTemplateEmploymentType>(b =>
             {
-                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplateEmploymentTypes", CERPConsts.HRDbSchema);
+                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplateEmploymentTypes", CERPConsts.HR_DbSchema);
 
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
@@ -939,7 +1035,7 @@ namespace CERP.EntityFrameworkCore
             }); 
             builder.Entity<LeaveRequestTemplateHoliday>(b =>
             {
-                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplateHolidays", CERPConsts.HRDbSchema);
+                b.ToTable(CERPConsts.DbTablePrefix + "LeaveRequestTemplateHolidays", CERPConsts.HR_DbSchema);
 
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
@@ -951,7 +1047,7 @@ namespace CERP.EntityFrameworkCore
 
             builder.Entity<LoanRequestTemplate>(b =>
             {
-                b.ToTable(CERPConsts.DbTablePrefix + "LoanRequestTemplates", CERPConsts.HRDbSchema);
+                b.ToTable(CERPConsts.DbTablePrefix + "LoanRequestTemplates", CERPConsts.HR_DbSchema);
 
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
@@ -966,7 +1062,7 @@ namespace CERP.EntityFrameworkCore
             });
             builder.Entity<LoanRequestTemplateDepartment>(b =>
             {
-                b.ToTable(CERPConsts.DbTablePrefix + "LoanRequestTemplateDepartments", CERPConsts.HRDbSchema);
+                b.ToTable(CERPConsts.DbTablePrefix + "LoanRequestTemplateDepartments", CERPConsts.HR_DbSchema);
 
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
@@ -977,7 +1073,7 @@ namespace CERP.EntityFrameworkCore
             });
             builder.Entity<LoanRequestTemplatePosition>(b =>
             {
-                b.ToTable(CERPConsts.DbTablePrefix + "LoanRequestTemplatePositions", CERPConsts.HRDbSchema);
+                b.ToTable(CERPConsts.DbTablePrefix + "LoanRequestTemplatePositions", CERPConsts.HR_DbSchema);
 
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
@@ -988,7 +1084,7 @@ namespace CERP.EntityFrameworkCore
             });
             builder.Entity<LoanRequestTemplateEmployeeStatus>(b =>
             {
-                b.ToTable(CERPConsts.DbTablePrefix + "LoanRequestTemplateEmployeeStatuses", CERPConsts.HRDbSchema);
+                b.ToTable(CERPConsts.DbTablePrefix + "LoanRequestTemplateEmployeeStatuses", CERPConsts.HR_DbSchema);
 
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
@@ -999,7 +1095,7 @@ namespace CERP.EntityFrameworkCore
             });
             builder.Entity<LoanRequestTemplateEmploymentType>(b =>
             {
-                b.ToTable(CERPConsts.DbTablePrefix + "LoanRequestTemplateEmploymentTypes", CERPConsts.HRDbSchema);
+                b.ToTable(CERPConsts.DbTablePrefix + "LoanRequestTemplateEmploymentTypes", CERPConsts.HR_DbSchema);
 
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();
@@ -1011,7 +1107,7 @@ namespace CERP.EntityFrameworkCore
 
             builder.Entity<Attendance>(b =>
             {
-                b.ToTable(CERPConsts.DbTablePrefix + "Attendance", CERPConsts.HRDbSchema);
+                b.ToTable(CERPConsts.DbTablePrefix + "Attendance", CERPConsts.HR_DbSchema);
 
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureMultiTenant();

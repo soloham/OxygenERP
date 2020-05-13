@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CERP.App;
+using CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructure;
 using CERP.CERP.HR.Documents;
 using CERP.FM;
 using CERP.FM.COA;
@@ -16,6 +17,7 @@ using CERP.HR.Employees.UV_DTOs;
 using CERP.HR.Holidays;
 using CERP.HR.Leaves;
 using CERP.HR.Loans;
+using CERP.HR.OrganizationalManagement.OrganizationStructure;
 using CERP.HR.Timesheets;
 using CERP.HR.Workshift.DTOs;
 using CERP.HR.Workshifts;
@@ -145,6 +147,32 @@ namespace CERP
             CreateMap<PhysicalID_Dto, PhysicalID_UV_Dto>().ForMember(d => d.Employee, opt => opt.Ignore());
             CreateMap<PhysicalID_UV_Dto, PhysicalID>().ForMember(d => d.Employee, opt => opt.Ignore());
             //CreateMap<DictionaryValue_UV_Dto, DictionaryValue>();
+
+            #region HR
+            #region Organizational Management
+            #region Organization Structure
+            CreateMap<OS_DepartmentTemplate, OS_DepartmentTemplate_Dto>();
+            CreateMap<OS_DepartmentTemplate_Dto, OS_DepartmentTemplate>();
+            CreateMap<OS_DepartmentSubDepartmentTemplate, OS_DepartmentSubDepartmentTemplate_Dto>();
+            CreateMap<OS_DepartmentSubDepartmentTemplate_Dto, OS_DepartmentSubDepartmentTemplate>();
+            CreateMap<OS_DepartmentPositionTemplate, OS_DepartmentPositionTemplate_Dto>();
+            CreateMap<OS_DepartmentPositionTemplate_Dto, OS_DepartmentPositionTemplate>();
+
+            CreateMap<OS_PositionTemplate, OS_PositionTemplate_Dto>();
+            CreateMap<OS_PositionTemplate_Dto, OS_PositionTemplate>();
+            CreateMap<OS_PositionJobTemplate, OS_PositionJobTemplate_Dto>();
+            CreateMap<OS_PositionJobTemplate_Dto, OS_PositionJobTemplate>();
+            CreateMap<OS_PositionTaskTemplate, OS_PositionTaskTemplate_Dto>();
+            CreateMap<OS_PositionTaskTemplate_Dto, OS_PositionTaskTemplate>();
+
+            CreateMap<OS_JobTemplate, OS_JobTemplate_Dto>();
+            CreateMap<OS_JobTemplate_Dto, OS_JobTemplate>();
+
+            CreateMap<OS_TaskTemplate, OS_TaskTemplate_Dto>();
+            CreateMap<OS_TaskTemplate_Dto, OS_TaskTemplate>();
+            #endregion
+            #endregion
+            #endregion
 
             CreateMap<WorkShift, WorkShift_Dto>().ForMember(d => d.Employees, opt => opt.Ignore());
             CreateMap<WorkShift_Dto, WorkShift>().ForMember(d => d.Employees, opt => opt.Ignore());

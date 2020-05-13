@@ -18,6 +18,7 @@ using CERP.HR.Leaves;
 using CERP.HR.Holidays;
 using CERP.HR.Attendance;
 using CERP.HR.Loans;
+using CERP.HR.OrganizationalManagement.OrganizationStructure;
 
 namespace CERP.EntityFrameworkCore
 {
@@ -69,6 +70,21 @@ namespace CERP.EntityFrameworkCore
 
         public DbSet<DictionaryValue> ValuesDictionary { get; set; }
         public DbSet<DictionaryValueType> ValueTypesDictionary { get; set; }
+
+        #region HR
+        #region Organizational Management
+        #region Organization Structure
+        public DbSet<OS_DepartmentTemplate> OS_DepartmentTemplates { get; set; }
+        public DbSet<OS_DepartmentPositionTemplate> OS_DepartmentPositionTemplates { get; set; }
+        public DbSet<OS_DepartmentSubDepartmentTemplate> OS_DepartmentSubDepartmentTemplates { get; set; }
+        public DbSet<OS_PositionTemplate> OS_PositionTemplates { get; set; }
+        public DbSet<OS_PositionJobTemplate> OS_PositionJobTemplates { get; set; }
+        public DbSet<OS_PositionTaskTemplate> OS_PositionTaskTemplates { get; set; }
+        public DbSet<OS_JobTemplate> OS_JobTemplates { get; set; }
+        public DbSet<OS_TaskTemplate> OS_TaskTemplates { get; set; }
+        #endregion
+        #endregion
+        #endregion
 
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Document> Documents { get; set; }

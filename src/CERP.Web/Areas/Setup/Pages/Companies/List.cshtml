@@ -633,33 +633,33 @@
                                             </div>
                                             <div class="avatar-preview">
                                                 @*<div id="imagePreview" style="background-image: url(/images/@(isEditing && employee != null? employee.ProfilePic : "noimage.jpg"));">
-                                                    </div>*@
+                                                </div>*@
                                                 <img id="CompLogo" src="/Uploads/noimage.jpg" class="img-responsive padding-5" style="cursor:pointer" />
                                             </div>
                                         </div>
                                         @*<div id='profile-upload'>
-                                                <div class="hvr-profile-img"><input type="file" name="logo" id='getval' onchange="showpreview(this);" class="upload fa-w-18" title="Dimensions 180 X 180" id="imag"></div>
-                                                <i class="fa fa-camera"></i>
-                                            </div>*@
+                                            <div class="hvr-profile-img"><input type="file" name="logo" id='getval' onchange="showpreview(this);" class="upload fa-w-18" title="Dimensions 180 X 180" id="imag"></div>
+                                            <i class="fa fa-camera"></i>
+                                        </div>*@
 
                                         @*<img id="EmpPhoto" src="~/images/@(isEditing && employee != null? employee.ProfilePic : "noimage.jpg")" class="img-responsive padding-5" style="cursor:pointer" />*@
                                         @*@if (empInfo != null && empInfo.PHOTO != null)
-                                            {
-                                                <img id="EmpPhoto" src='@(Url.Content("~")+"Files\\"+ Model.EMP_ID+"\\"+Convert.ToString(empInfo.PHOTO)+"?v="+DateTime.Now.Second.ToString())' class="img-responsive padding-5" style="cursor:pointer" />
-                                            }
-                                            else
-                                            {
-                                                <img id="EmpPhoto" src="@Url.Content("~")assets/img/noimage.jpg" class="img-responsive padding-5" style="cursor:pointer" />
-                                            }*@
+                                        {
+                                            <img id="EmpPhoto" src='@(Url.Content("~")+"Files\\"+ Model.EMP_ID+"\\"+Convert.ToString(empInfo.PHOTO)+"?v="+DateTime.Now.Second.ToString())' class="img-responsive padding-5" style="cursor:pointer" />
+                                        }
+                                        else
+                                        {
+                                            <img id="EmpPhoto" src="@Url.Content("~")assets/img/noimage.jpg" class="img-responsive padding-5" style="cursor:pointer" />
+                                        }*@
 
                                         @*<input type="hidden" id="PHOTO" name="PHOTO" value="@(empInfo!=null? empInfo.PHOTO : "")" class="form-control">*@
 
                                         @*<div id="divPhoto" class="form-control" style="display:none">
-                                                <input type="file" id="PIC" name="PIC" width="100px"  />
-                                                <div class="col-lg-3">
-                                                    <span class="fas fa-close pull-right"> Remove</span>
-                                                </div>
-                                            </div>*@
+                                            <input type="file" id="PIC" name="PIC" width="100px"  />
+                                            <div class="col-lg-3">
+                                                <span class="fas fa-close pull-right"> Remove</span>
+                                            </div>
+                                        </div>*@
 
                                     </div>
                                     <div style="width: 100%; padding: 0 20px;">
@@ -791,13 +791,13 @@
                                             <div class="col-sm-6" style="padding-right:0">
                                                 <div class="form-group">
                                                     <label class="control-label m-b-5 ">Issue Date:</label>
-                                                    <input type="text" id="documentIssueDate" name="DocumentIssueDate" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="text-left form-control inline pull-left DatePicker is-calendarsPicker" required>
+                                                    <input type="text" id="documentIssueDate" name="DocumentIssueDate" class="text-left form-control inline pull-left" required>
                                                 </div>
                                             </div>
                                             <div class="col-sm-6" style="padding-left:0">
                                                 <div class="form-group">
                                                     <label class="control-label m-b-5 ">End Date:</label>
-                                                    <input type="text" id="documentEndDate" name="DocumentEndDate" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="text-left form-control inline pull-left DatePicker is-calendarsPicker" required>
+                                                    <input type="text" id="documentEndDate" name="DocumentEndDate" class="text-left form-control inline pull-left" required>
                                                 </div>
                                             </div>
                                         </div>
@@ -896,13 +896,13 @@
                                             <div class="col-sm-6" style="padding-right:0">
                                                 <div class="form-group">
                                                     <label class="control-label m-b-5 ">Start Date:</label>
-                                                    <input type="text" id="locationStartDate" name="LocationStartDate" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="text-left form-control inline pull-left DatePicker is-calendarsPicker" required>
+                                                    <input type="text" id="locationStartDate" name="LocationStartDate" class="text-left form-control inline pull-left" required>
                                                 </div>
                                             </div>
                                             <div class="col-sm-6" style="padding-left:0">
                                                 <div class="form-group">
                                                     <label class="control-label m-b-5 ">End Date:</label>
-                                                    <input type="text" id="locationEndDate" name="LocationEndDate" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="text-left form-control inline pull-left DatePicker is-calendarsPicker" required>
+                                                    <input type="text" id="locationEndDate" name="LocationEndDate" class="text-left form-control inline pull-left" required>
                                                 </div>
                                             </div>
                                         </div>
@@ -1198,6 +1198,9 @@
                 <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
             </ejs-grid>
         </div>
+        <div id="auditTrail" style="display:none;">
+            <partial name="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />
+        </div>
     </div>
 
 </div>
@@ -1213,6 +1216,7 @@
 </ejs-dialog>
 
 <script>
+    let isAuditTrail = false;
     function loadCurrencyStatusesDropdown() {
 
     }
@@ -1246,7 +1250,7 @@
             }
         }
         if (args.item.id === 'showActions') {
-            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Audit Trail", tooltipText: "View Audit Trail", prefixIcon: "e-custom-audit-trail", id: "toggleaudittrail" },  { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
             gridObj.refresh();
         }
         if (args.item.id === 'hideActions') {
@@ -1282,6 +1286,44 @@
         }
         if (args.item.id === 'toggleaudittrail') {
 
+            if (!isAuditTrail) {
+                var grid = gridObj;
+                var agtGrid = $("#AuditTrailGrid")[0].ej2_instances[0];
+                grid.showSpinner();
+
+                $.ajax({
+                    url: '?handler=DataAuditTrail',
+                    async: true,
+                    type: "GET",
+                    data: {},
+                    success: function (data) {
+                        grid.hideSpinner();
+
+                        //agtGrid.childGrid.childGrid.dataSource = data.tertiaryDS;
+                        //agtGrid.childGrid.dataSource = data.secondaryDS;
+                        agtGrid.dataSource = data.ds;
+                        agtGrid.refresh();
+
+                        $(".customContentArea").css('position', 'unset');
+                        $("#auditTrail").slideDown(200);
+                    },
+                    error: function (data) {
+                        grid.hideSpinner();
+
+                        $(".customContentArea").css('position', 'absolute');
+                        $("#auditTrail").slideUp(200);
+
+                        swal.fire('Failed', `An error occured while generating the audit trail`, 'error');
+                    }
+                });
+
+            }
+            else {
+                $(".customContentArea").css('position', 'absolute');
+                $("#auditTrail").slideUp(200);
+            }
+
+            isAuditTrail = !isAuditTrail;
         }
         setTimeout(function () { gridObj.hideSpinner() }, 200);
     }
@@ -1314,6 +1356,7 @@
 
             $('#companiesLoader').slideDown();
             cERP.appServices.setup.companySetup.company.get(params.id).done(function (data) {
+                console.log(data);
                 $('#companiesLoader').slideUp();
                 curCompanyEditRow = data;
 
