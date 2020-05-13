@@ -22,6 +22,8 @@ using CERP.Attributes;
 using CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructure;
 using CERP.HR.OrganizationalManagement.OrganizationStructure;
 using CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure;
+using CERP.HR.Setup.OrganizationalManagement.OrganizationStructure;
+using CERP.App.Helpers;
 
 namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure.Pages.Positions
 {
@@ -31,18 +33,20 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
         public IRepository<DictionaryValue, Guid> DictionaryValuesRepo { get; set; }
         public IAuditLogRepository AuditLogsRepo { get; set; }
 
+        public OS_DepartmentTemplateAppService OS_DepartmentTemplateAppService { get; set; }
         public OS_PositionTemplateAppService OS_PositionTemplateAppService { get; set; }
 
         public IAuditingManager AuditingManager { get; set; }
         public IRepository<CustomEntityChange> CustomEntityChangesRepo { get; set; }
 
-        public ListModel(IJsonSerializer jsonSerializer, IRepository<DictionaryValue, Guid> dictionaryValuesRepo, IWebHostEnvironment webHostEnvironment, IAuditLogRepository auditLogsRepo, OS_PositionTemplateAppService oS_PositionTemplateAppService)
+        public ListModel(IJsonSerializer jsonSerializer, IRepository<DictionaryValue, Guid> dictionaryValuesRepo, IWebHostEnvironment webHostEnvironment, IAuditLogRepository auditLogsRepo, OS_PositionTemplateAppService oS_PositionTemplateAppService, OS_DepartmentTemplateAppService oS_DepartmentTemplateAppService)
         {
             JsonSerializer = jsonSerializer;
             DictionaryValuesRepo = dictionaryValuesRepo;
             this.webHostEnvironment = webHostEnvironment;
             AuditLogsRepo = auditLogsRepo;
             OS_PositionTemplateAppService = oS_PositionTemplateAppService;
+            OS_DepartmentTemplateAppService = oS_DepartmentTemplateAppService;
         }
 
         public IJsonSerializer JsonSerializer { get; set; }
@@ -61,6 +65,16 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                     var FormData = Request.Form;
 
                     OS_PositionTemplate_Dto positionTemplate_Dto = JsonSerializer.Deserialize<OS_PositionTemplate_Dto>(FormData["info"]);
+
+                    if (positionTemplate_Dto.Level == OS_PositionLevel.One)
+                    {
+                        OS_DepartmentTemplate curPositionDepTemplate = await OS_DepartmentTemplateAppService.Repository.GetAsync(positionTemplate_Dto.DepartmentTemplateId);
+                        if(curPositionDepTemplate.PositionTemplates.Any(x => x.Level == OS_PositionLevel.One))
+                        {
+                            Exception ex = new Exception($"The position '{curPositionDepTemplate.PositionTemplates.First(x => x.Level == OS_PositionLevel.One).Name}' as a level '{App.Helpers.EnumExtensions.GetDescription(OS_PositionLevel.One)}' position already exists in the department '{curPositionDepTemplate.Name}'");
+                            throw ex;
+                        }
+                    }
 
                     bool IsEditing = positionTemplate_Dto.Id > 0;
                     if (IsEditing)
@@ -231,7 +245,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         }
                         for (int i = 0; i < posJobs.Length; i++)
                         {
-                            if (!curPositionTemplate.PositionJobTemplates.Any(x => x.PositionTemplateId == posJobs[i].PositionTemplate.Id && x.CreationTime == posJobs[i].CreationTime))
+                            if (!curPositionTemplate.PositionJobTemplates.Any(x => x.JobTemplateId == posJobs[i].JobTemplate.Id && x.CreationTime == posJobs[i].CreationTime))
                             {
                                 curPositionTemplate.PositionJobTemplates.Add(new OS_PositionJobTemplate() { JobTemplateId = posJobs[i].JobTemplate.Id });
                             }
@@ -295,8 +309,10 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                     else
                     {
                         positionTemplate_Dto.Id = 0;
-                        positionTemplate_Dto.PositionJobTemplates.ForEach(x => { x.Id = 0; x.JobTemplateId = x.JobTemplate.Id; x.JobTemplate = null; });
-                        positionTemplate_Dto.PositionTaskTemplates.ForEach(x => { x.Id = 0; x.TaskTemplateId = x.TaskTemplate.Id; x.TaskTemplate = null; });
+                        if(positionTemplate_Dto.PositionJobTemplates != null)
+                            positionTemplate_Dto.PositionJobTemplates.ForEach(x => { x.Id = 0; x.JobTemplateId = x.JobTemplate.Id; x.JobTemplate = null; });
+                        if(positionTemplate_Dto.PositionTaskTemplates != null)
+                            positionTemplate_Dto.PositionTaskTemplates.ForEach(x => { x.Id = 0; x.TaskTemplateId = x.TaskTemplate.Id; x.TaskTemplate = null; });
 
                         OS_PositionTemplate_Dto added = await OS_PositionTemplateAppService.CreateAsync(positionTemplate_Dto);
 
@@ -317,7 +333,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                 }
                 catch(Exception ex)
                 {
-                    
+                    return StatusCode(500, ex);
                 }
             }
 
@@ -332,6 +348,20 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                 {
                     OS_PositionTemplate_Dto position = positions[i];
                     //await TaskTemplatesAppService.Repository.DeleteAsync(leaveRequest.);
+                    if (position.PositionJobTemplates != null)
+                    {
+                        for (int y = 0; y < position.PositionJobTemplates.Count; y++)
+                        {
+                            await OS_PositionTemplateAppService.PositionJobsTemplateRepo.DeleteAsync(x => x.JobTemplateId == position.PositionJobTemplates[y].JobTemplateId && x.CreationTime == position.PositionJobTemplates[y].CreationTime);
+                        }
+                    }
+                    if (position.PositionTaskTemplates != null)
+                    {
+                        for (int y = 0; y < position.PositionTaskTemplates.Count; y++)
+                        {
+                            await OS_PositionTemplateAppService.PositionTasksTemplateRepo.DeleteAsync(x => x.TaskTemplateId == position.PositionTaskTemplates[y].TaskTemplateId && x.CreationTime == position.PositionTaskTemplates[y].CreationTime);
+                        }
+                    }
                     await OS_PositionTemplateAppService.Repository.DeleteAsync(position.Id);
 
                     if (AuditingManager.Current != null)

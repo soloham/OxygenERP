@@ -1,4 +1,5 @@
 ﻿using CERP.App;
+using CERP.App.Helpers;
 using CERP.Base;
 using CERP.FM;
 using CERP.HR.Employees;
@@ -22,6 +23,7 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public string Name { get; set; }
         public string NameLocalized { get; set; }
 
+        public string LevelDescription { get => EnumExtensions.GetDescription(Level); set => Level = EnumExtensions.GetValueFromDescription<OS_PositionLevel>(value); }
         public OS_PositionLevel Level { get; set; }
 
         public DictionaryValue_Dto CostCenter { get; set; }

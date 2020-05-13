@@ -1,6 +1,5 @@
 ﻿using CERP.App;
 using CERP.FM.COA;
-using CERP.HR.Attendance;
 using CERP.HR.Documents;
 using CERP.HR.Employees;
 using CERP.HR.Holidays;
@@ -212,8 +211,7 @@ namespace CERP.EntityFrameworkCore
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.SubDepartmentTemplates)
                                                         .ThenInclude(p => p.SubDepartmentTemplate)
-                                                       .Include(p => p.DepartmentPositionTemplates)
-                                                        .ThenInclude(p => p.PositionTemplate)
+                                                       .Include(p => p.PositionTemplates)
                                                        //.Include(p => p.DepartmentHead)
                                                        // .ThenInclude(p => p.PositionTemplate)
                                                        .Include(p => p.CostCenter);
@@ -380,14 +378,14 @@ namespace CERP.EntityFrameworkCore
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.HolidayType)
                                                        .Include(p => p.ReligiousDenomination);
-                                                      
+
                 });
 
                 //options.Entity<Attendance>(opt =>
                 //{
                 //    opt.DefaultWithDetailsFunc = q => q.Include(p => p.HolidayType)
                 //                                       .Include(p => p.ReligiousDenomination);
-                                                      
+
                 //});
 
                 Configure<AbpDbContextOptions>(options =>

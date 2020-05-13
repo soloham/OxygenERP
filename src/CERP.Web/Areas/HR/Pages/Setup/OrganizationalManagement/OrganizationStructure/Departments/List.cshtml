@@ -55,6 +55,14 @@
     var positionEdit = new {@@params = new Syncfusion.EJ2.DropDowns.DropDownList() { CssClass = "moduleTypeDropDown", BeforeOpen = "loadPositionStatusesDropdown", DataSource = positionStatusesDescs, Query = "new ej.data.Query()", AllowFiltering = true }};
     List<DictionaryValue> costCenters = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.CostCenter).OrderBy(x => x.Key).ToList(); ;
 
+
+    List<object> positionsCommands = new List<object>();
+    positionsCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
+    positionsCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+    positionsCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
+
+    List<OS_PositionLevel> positionLevels = Enum.GetValues(typeof(OS_PositionLevel)).Cast<OS_PositionLevel>().ToList();
+
 }
 @section styles {
     @if ((bool)ViewData["IsEditing"])
@@ -73,9 +81,16 @@
     <script>
         let isEditingDepartments = false;
         let curDepartmentsEditRow;
+
+        let isEditingPositions = false;
+        let curPositionsEditRow;
+
         let departments = [];
         let possibleSubDepartments = [];
         let positions = [];
+
+        let positionJobs = [];
+        let positionTasks = [];
         $(document).ready(function () {
             let options = {
                 buttonWidth: '100%',
@@ -86,25 +101,36 @@
                 includeResetDivider: true,
                 enableCollapsibleOptGroups: true
             };
-            $('#positionIds').multiselect(options);
             $('#depHeadId').multiselect(options);
             $('#subDepartmentsField').multiselect(options);
-            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_PositionTemplate.getList({}).done(function (data) {
-                positions = data.items;
+
+            $('#positionJobs').multiselect(options);
+            $('#positionTasks').multiselect(options);
+
+            let gridObj = $("#DepartmentsGrid")[0].ej2_instances[0];
+            let positionsGrid = $("#PositionsGrid")[0].ej2_instances[0];
+            let subDGrid = $("#SubDepartmentsGrid")[0].ej2_instances[0];
+
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_JobTemplate.getList({}).done(function (data) {
+                positionJobs = data.items;
+                console.log(positionJobs);
                 let dataMS = [];
                 for (let i = 0; i < data.items.length; i++) {
                     let item = data.items[i];
                     dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
                 }
-                $('#positionIds').multiselect('dataprovider', dataMS);
-                $('#positionIds').change();
-
-                $('#depHeadId').multiselect('dataprovider', dataMS);
-                $('#depHeadId').change();
+                $('#positionJobs').multiselect('dataprovider', dataMS);
             });
-
-            let gridObj = $("#DepartmentsGrid")[0].ej2_instances[0];
-            let subDGrid = $("#SubDepartmentsGrid")[0].ej2_instances[0];
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_TaskTemplate.getList({}).done(function (data) {
+                positionTasks = data.items;
+                console.log(positionTasks);
+                let dataMS = [];
+                for (let i = 0; i < data.items.length; i++) {
+                    let item = data.items[i];
+                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+                }
+                $('#positionTasks').multiselect('dataprovider', dataMS);
+            });
 
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_DepartmentTemplate.getAllDepartmentTemplates({}).done(function (data) {
                 departments = data;
@@ -120,6 +146,115 @@
                 }
                 $('#subDepartmentsField').multiselect('dataprovider', dataMS);
                 $('#subDepartmentsField').change();
+            });
+
+            $('#addPositionsBtn').on('click', function () {
+                isEditingPositions = false;
+
+                $('#submitPositionBtn').val('Create Position');
+            });
+            $('#submitPositionBtn').on('click', function (e) {
+                e.preventDefault();
+                if (ValidateForm('positionSpecificForm')) {
+                    positionsGrid.showSpinner();
+                    Swal.showLoading();
+
+                    let form = [];
+                    let positionDetails = $('#positionSpecificForm').find("textarea, input, select").serializeArray();
+                    form = form.concat(positionDetails);
+
+                    let params = objectifyForm(form);
+
+                    let id = 0;
+                    if (positionsGrid.dataSource.length > 0)
+                        id = positionsGrid.dataSource[positionsGrid.dataSource.length - 1].id;
+
+                    params.isEditing = isEditingPositions;
+
+                    if (isEditingPositions) {
+                        params.id = curPositionsEditRow.id;
+
+                        //cERP.appServices.hR.leaveRequestTemplates.update()
+                    }
+                    else {
+
+                        //cERP.appServices.hR.leaveRequestTemplates.update()
+                    }
+
+                    let selectedPositionJobs = $('#positionJobs').val();
+                    console.log(selectedPositionJobs);
+                    let selectedPositionJobTemplates = [];
+                    params.positionJobTemplates = [];
+                    for (var i = 0; i < selectedPositionJobs.length; i++) {
+                        selectedPositionJobTemplates.push(positionJobs.filter(x => x.id == selectedPositionJobs[i])[0]);
+                        params.positionJobTemplates.push({ jobTemplate: selectedPositionJobTemplates[i] });
+                    }
+
+                    let selectedPositionTasks = $('#positionTasks').val();
+                    console.log(selectedPositionTasks);
+                    let selectedPositionTaskTemplates = [];
+                    params.positionTaskTemplates = [];
+                    for (var i = 0; i < selectedPositionTasks.length; i++) {
+                        selectedPositionTaskTemplates.push(positionTasks.filter(x => x.id == selectedPositionTasks[i])[0]);
+                        params.positionTaskTemplates.push({ taskTemplate: selectedPositionTaskTemplates[i] });
+                    }
+
+                    params.departmentTemplateId = curDepartmentsEditRow.id;
+
+                    let formData = new FormData();
+                    formData.append("info", JSON.stringify(params));
+                    let xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+                    formData.append("__RequestVerificationToken", xhrToken);
+
+                    $.ajax({
+                        url: "@Url.Content("~")/HR/OrganizationStructure/Positions?handler=PositionTemplate",
+                        async: true,
+                        type: "POST",
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (data) {
+                            Swal.hideLoading();
+                            console.log(data);
+                            if (isEditingPositions) {
+                                positionsGrid.refresh(); // refresh the Grid.
+
+                                swal.fire("Success", "Position has successfully been updated", "success");
+
+                                for (let i = 0; i < positionsGrid.dataSource.length; i++) {
+                                    if (positionsGrid.dataSource[i].id == data.id) {
+                                        positionsGrid.dataSource[i] = data;
+                                    }
+                                }
+                                positionsGrid.refresh();
+                            }
+                            else {
+                                positionsGrid.dataSource.push(data);
+
+                                positionsGrid.refresh(); // refresh the Grid.
+
+                                swal.fire("Success", "Position has successfully been added", "success");
+                            }
+                            positionsGrid.hideSpinner();
+                        },
+                        error: function (err) {
+                            Swal.hideLoading();
+                            let errMsg = "";
+                            if (typeof err !== 'undefined')  errMsg = err.responseJSON.Message;
+                            if (isEditingPositions)
+                                swal.fire("Failed", errMsg + " \nPosition couldn't be updated, please fix all errors and try again.", "error");
+                            else
+                                swal.fire("Failed", errMsg + " \nPosition couldn't be added, please fix all errors and try again.", "error");
+
+                            console.log(err);
+                            positionsGrid.hideSpinner();
+                        }
+                    });
+                }
+                else {
+                    Swal.close();
+                    Swal.hideLoading();
+                }
             });
 
             $('#addDepartmentsBtn').on('click', function () {
@@ -156,7 +291,7 @@
                     }*@
 
                     for (var i = 0; i < selectedSubDepartments.length; i++)
-                    { 
+                    {
                         let subDepartmentType = $('#subDepartmentTypeField').val();
                         let subDepartmentRelationshipTypeDescription = $('option:selected', '#subDepartmentTypeField').attr('data-value');
 
@@ -212,18 +347,19 @@
                         //cERP.appServices.hR.leaveRequestTemplates.update()
                     }
 
-                    let selectedPositions = $('#positionIds').val();
-                    console.log(selectedPositions);
-                    let selectedPositionTemplates = [];
-                    params.departmentPositionTemplates = [];
-                    for (var i = 0; i < selectedPositions.length; i++) {
-                        selectedPositionTemplates.push(positions.filter(x => x.id == selectedPositions[i])[0]);
-                        params.departmentPositionTemplates.push({ positionTemplate: selectedPositionTemplates[i] });
-                    }
+                    //let selectedPositions = $('#positionIds').val();
+                    //console.log(selectedPositions);
+                    //let selectedPositionTemplates = [];
+                    params.positionTemplates = positionsGrid.dataSource;
+                    //for (var i = 0; i < selectedPositions.length; i++) {
+                    //    selectedPositionTemplates.push(positions.filter(x => x.id == selectedPositions[i])[0]);
+                    //    params.positionTemplates.push(selectedPositionTemplates[i]);
+                    //}
 
-                    let selectedDepHead = $('#depHeadId').val();
-                    let selectedDepHeadTemplate = selectedPositionTemplates.push(positions.filter(x => x.id == selectedDepHead)[0]);
-                    params.departmentHead = { positionTemplate: selectedDepHeadTemplate };
+                    //let selectedDepHead = $('#depHeadId').val();
+                    //let selectedDepHeadTemplate = selectedPositionTemplates.push(positions.filter(x => x.id == selectedDepHead)[0]);
+                    //params.departmentHead = { positionTemplate: selectedDepHeadTemplate };
+
                     params.subDepartmentTemplates = subDGrid.dataSource;
 
                     let formData = new FormData();
@@ -324,11 +460,10 @@
                             <input type="text" id="departmentCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                    <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                         <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Positions:</label>
-                            <select id="positionIds" name="Positions" multiple="multiple" class="form-control">
-                            </select>
+                            <label class="control-label m-b-5 ">Activation Date:</label>
+                            <input type="date" id="activationDate" name="ActivationDate" class="text-left form-control inline pull-left" required>
                         </div>
                     </div>
                     @*<div class="col-lg-3 col-md-3 col-sm-3 col-12">
@@ -342,22 +477,14 @@
                 <div class="row">
                     <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                         <div class="form-group">
-                            <label class="control-label m-b-5 ">Activation Date:</label>
-                            <input type="date" id="activationDate" name="ActivationDate" class="text-left form-control inline pull-left" required>
+                            <label class="control-label m-b-5 ">Valid From:</label>
+                            <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-6 col-sm-6 col-12">
-                        <div class="col-sm-6" style="padding-right:0">
-                            <div class="form-group">
-                                <label class="control-label m-b-5 ">Valid From:</label>
-                                <input type="date" id="validityFromDate" name="ValidFromDate" class="text-left form-control inline pull-left" required>
-                            </div>
-                        </div>
-                        <div class="col-sm-6" style="padding-left:0">
-                            <div class="form-group">
-                                <label class="control-label m-b-5 ">Valid To:</label>
-                                <input type="date" id="validityToDate" name="ValidToDate" class="text-left form-control inline pull-left" required>
-                            </div>
+                        <div class="form-group">
+                            <label class="control-label m-b-5 ">Valid To:</label>
+                            <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-6 col-sm-6 col-12">
@@ -374,78 +501,222 @@
                 </div>
             </div>
             <hr />
-            <div class="panel-body p-t-0" style="padding-bottom:0;">
-                <div class="areaHeader" style="display:flex;">
-                    <div id="subDepartmentsLoader" class="pull-left loader-inline" style="display:none"></div>
-                    <div class="areaHeaderTitle">
-                        <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Sub Departments</span>
-                        @*<span id="" class="areaHeaderTitleInNode menu-text"> > </span>*@
-                        @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
-                    </div>
-                    @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
-                    <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
-                        @*<div class="clearfix margin-15"></div>*@
-                        <a id="addSubDepartmentBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="panel-body p-t-0" style="padding:0;">
+                        <div class="areaHeader" style="display:flex;">
+                            <div id="positionsLoader" class="pull-left loader-inline" style="display:none"></div>
+                            <div class="areaHeaderTitle">
+                                <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Positions</span>
+                                @*<span id="" class="areaHeaderTitleInNode menu-text"> > </span>*@
+                                @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
+                            </div>
+                            @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
+                            <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                @*<div class="clearfix margin-15"></div>*@
+                                <a id="addPositionsBtn" onclick="areaHeaderBtnClick(event); isEditingPositions = false;" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                            </div>
+                        </div>
+                        <div role="form" id="positionsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                            <div id="positionSpecificForm">
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                        <div class="col-sm-6" style="padding:0">
+                                            <div class="form-group">
+                                                <label class="control-label m-b-5 ">Title:</label>
+                                                <input type="text" id="positionTitle" name="Name" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6" style="padding:0">
+                                            <div class="form-group">
+                                                <label class="control-label m-b-5 ">Title (In Arabic):</label>
+                                                <input type="text" id="positionTitleLocalized" name="NameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                        <div class="form-group">
+                                            <label class="margin-bottom-5 control-label">Position Code:</label>
+                                            <input type="text" id="positionCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                        <div class="form-group">
+                                            <label class="margin-bottom-5 control-label">Jobs:</label>
+                                            <select id="positionJobs" multiple="multiple" name="Jobs" class="form-control">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                        <div class="form-group">
+                                            <label class="margin-bottom-5 control-label">Tasks:</label>
+                                            <select id="positionTasks" multiple="multiple" name="Tasks" class="form-control">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            <label class="margin-bottom-5 control-label">Level:</label>
+                                            <select id="positionLevel" name="Level" class="form-control">
+                                                @for (int i = 0; i < positionLevels.Count; i++)
+                                                {
+                                                    <option value="@((int)positionLevels[i])">@EnumExtensions.GetDescription(positionLevels[i])</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            <label class="control-label m-b-5 ">Activation Date:</label>
+                                            <input type="date" id="positionActivationDate" name="ActivationDate" class="text-left form-control inline pull-left" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                        <div class="col-sm-6" style="padding:0">
+                                            <div class="form-group">
+                                                <label class="control-label m-b-5 ">Valid From:</label>
+                                                <input type="date" id="positionValidityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6" style="padding:0">
+                                            <div class="form-group">
+                                                <label class="control-label m-b-5 ">Valid To:</label>
+                                                <input type="date" id="positionValidityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            <label class="margin-bottom-5 control-label">Cost Center:</label>
+                                            <select id="positionCostCenterId" name="CostCenterId" class="form-control">
+                                                @for (int i = 0; i < costCenters.Count; i++)
+                                                {
+                                                    <option value="@costCenters[i].Id" data-value="@costCenters[i].Value">@costCenters[i].Value</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row m-t-20">
+                                <div class="col-lg-12">
+                                    <input id="submitPositionBtn" type="button" class="btn btn-success btn-block" value="Create Position" required />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="positionsCS" class="control-section">
+                            <ejs-grid id="PositionsGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="positionCommandClick"
+                                      showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                      hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="positionActionBegin" actionComplete="positionActionComplete"
+                                      allowSorting="true" allowMultiSorting="true" gridLines="Both" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                      toolbarClick="defaultToolbarClick" toolbar="@initialToolBar"
+                                      allowPaging="true" allowResizing="true">
+
+                                <e-grid-columns>
+                                    <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                    <e-grid-column headerText="Name" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
+                        new Syncfusion.EJ2.Grids.GridColumn() { Field= "name", HeaderText = "English", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
+                        new Syncfusion.EJ2.Grids.GridColumn() { Field= "nameLocalized", HeaderText = "Local", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
+                    }'></e-grid-column>
+                                    <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
+                                    <e-grid-column field="costCenter.value" headerText="Cost Center" textAlign="Center"></e-grid-column>
+                                    <e-grid-column field="levelDescription" headerText="Level" textAlign="Center"></e-grid-column>
+                                    <e-grid-column field="activationDate" headerText="Activation Date" type="date" format="yMd" , allowEditing="true" editType="datepicker" textAlign="Center"></e-grid-column>
+                                    <e-grid-column headerText="Validity" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
+                        new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityFromDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "From", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
+                        new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityToDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "To", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
+                    }'></e-grid-column>
+
+                                    <e-grid-column headerText="Actions" textAlign="Center" commands="positionsCommands"></e-grid-column>
+                                </e-grid-columns>
+
+                                <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
+                                <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                            </ejs-grid>
+                        </div>
                     </div>
                 </div>
-                <div role="form" id="subDepartmentsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
-                    <div class="row">
-                        <div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                            <div class="form-group">
-                                <label class="control-label m-b-5 ">Sub Department:</label>
-                                <select id="subDepartmentsField" multiple="multiple" onchange="if ($('#subDepartmentsField').val().length > 1) { $('#subDepartmentTypeField').attr('readonly', 'readonly'); $('#subDepartmentTypeField').val(''); $('#subDepartmentName').val('[Auto]'); $('#subDepartmentName').attr('readonly','readonly'); } else { $('#subDepartmentTypeField').removeAttr('readonly'); $('#subDepartmentName').removeAttr('readonly'); $('#subDepartmentName').val($('option:selected', '#subDepartmentsField').text()); $('#subDepartmentTypeField').val('@OS_SubDepartmentRelationshipType.ReportingTo');  }" name="SubDepartment" class="form-control" required>
-                                </select>
+                <div class="col-md-4">
+                    <div class="panel-body p-t-0" style="padding:0;">
+                        <div class="areaHeader" style="display:flex;">
+                            <div id="subDepartmentsLoader" class="pull-left loader-inline" style="display:none"></div>
+                            <div class="areaHeaderTitle">
+                                <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Sub Departments</span>
+                                @*<span id="" class="areaHeaderTitleInNode menu-text"> > </span>*@
+                                @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
+                            </div>
+                            @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
+                            <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                @*<div class="clearfix margin-15"></div>*@
+                                <a id="addSubDepartmentBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                            <div class="form-group">
-                                <label class="control-label m-b-5 ">Name:</label>
-                                <input type="text" id="subDepartmentName" name="SubDepartmentName" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                        <div role="form" id="subDepartmentsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                    <div class="form-group">
+                                        <label class="control-label m-b-5 ">Sub Department:</label>
+                                        <select id="subDepartmentsField" multiple="multiple" onchange="if ($('#subDepartmentsField').val().length > 1) { $('#subDepartmentTypeField').attr('readonly', 'readonly'); $('#subDepartmentTypeField').val(''); $('#subDepartmentName').val('[Auto]'); $('#subDepartmentName').attr('readonly','readonly'); } else { $('#subDepartmentTypeField').removeAttr('readonly'); $('#subDepartmentName').removeAttr('readonly'); $('#subDepartmentName').val($('option:selected', '#subDepartmentsField').text()); $('#subDepartmentTypeField').val('@OS_SubDepartmentRelationshipType.ReportingTo');  }" name="SubDepartment" class="form-control" required>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                    <div class="form-group">
+                                        <label class="control-label m-b-5 ">Name:</label>
+                                        <input type="text" id="subDepartmentName" name="SubDepartmentName" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                    <div class="form-group">
+                                        <label class="control-label m-b-5 ">Sub Department Type:</label>
+                                        <select id="subDepartmentTypeField" name="subDepartmentRelationshipTypeDescription" class="form-control" required>
+                                            @for (int i = 0; i < subDepartmentRelationshipTypes.Count; i++)
+                                            {
+                                                <option value="@subDepartmentRelationshipTypes[i]" data-value="@EnumExtensions.GetDescription(subDepartmentRelationshipTypes[i])">@EnumExtensions.GetDescription(subDepartmentRelationshipTypes[i])</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <button id="submitSubDepartmentBtn" type="button" class="btn btn-success btn-block">Add Sub Department</button>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                            <div class="form-group">
-                                <label class="control-label m-b-5 ">Sub Department Type:</label>
-                                <select id="subDepartmentTypeField" name="subDepartmentRelationshipTypeDescription" class="form-control" required>
-                                    @for (int i = 0; i < subDepartmentRelationshipTypes.Count; i++)
-                                    {
-                                        <option value="@subDepartmentRelationshipTypes[i]" data-value="@EnumExtensions.GetDescription(subDepartmentRelationshipTypes[i])">@EnumExtensions.GetDescription(subDepartmentRelationshipTypes[i])</option>
-                                    }
-                                </select>
-                            </div>
+                        <div id="subDepartmentsCS" class="control-section">
+                            <ejs-grid id="SubDepartmentsGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                      allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                      hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                      allowSorting="true" allowMultiSorting="true" gridLines="Both" dataSource="new List<dynamic>()"
+                                      toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" commandClick="subDepartmentsCommandClick" actionBegin="subDepartmentsActionBegin" actionComplete="subDepartmentsActionComplete"
+                                      allowPaging="true" allowResizing="true">
+
+                                <e-grid-columns>
+                                    <e-grid-column field="subDepartmentTemplate.id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                    <e-grid-column field="subDepartmentTemplate.name" allowEditing="false" headerText="Sub Department" textAlign="Center"></e-grid-column>
+                                    <e-grid-column field="subDepartmentTemplate.code" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                    <e-grid-column field="name" headerText="Name" allowEditing="true" validationRules="new { required = true, minLength = 1 }" textAlign="Center"></e-grid-column>
+                                    @*<e-grid-column field="isDefault" allowEditing="false" headerText="Default" displayAsCheckBox="true" textAlign="Center"></e-grid-column>*@
+                                    <e-grid-column field="subDepartmentRelationshipTypeDescription" allowEditing="false" headerText="Sub Department Type" textAlign="Center"></e-grid-column>
+                                    <e-grid-column headerText="Actions" textAlign="Center" commands="subDepartmentsCommands"></e-grid-column>
+                                </e-grid-columns>
+
+                                <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                            </ejs-grid>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <button id="submitSubDepartmentBtn" type="button" class="btn btn-success btn-block">Add Sub Department</button>
-                        </div>
-                    </div>
-                </div>
-                <div id="subDepartmentsCS" class="control-section">
-                    <ejs-grid id="SubDepartmentsGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
-                              allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
-                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
-                              allowSorting="true" allowMultiSorting="true" gridLines="Both" dataSource="new List<dynamic>()"
-                              toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" commandClick="subDepartmentsCommandClick" actionBegin="subDepartmentsActionBegin" actionComplete="subDepartmentsActionComplete"
-                              allowPaging="true" allowResizing="true">
-
-                        <e-grid-columns>
-                            <e-grid-column field="subDepartmentTemplate.id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
-                            <e-grid-column field="subDepartmentTemplate.name" allowEditing="false" headerText="Sub Department" textAlign="Center"></e-grid-column>
-                            <e-grid-column field="subDepartmentTemplate.code" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
-                            <e-grid-column field="name" headerText="Name" allowEditing="true" validationRules="new { required = true, minLength = 1 }" textAlign="Center"></e-grid-column>
-                            @*<e-grid-column field="isDefault" allowEditing="false" headerText="Default" displayAsCheckBox="true" textAlign="Center"></e-grid-column>*@
-                            <e-grid-column field="subDepartmentRelationshipTypeDescription" allowEditing="false" headerText="Sub Department Type" textAlign="Center"></e-grid-column>
-                            <e-grid-column headerText="Actions" textAlign="Center" commands="subDepartmentsCommands"></e-grid-column>
-                        </e-grid-columns>
-
-                        <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
-                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
-                        <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
-                        <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
-                    </ejs-grid>
                 </div>
             </div>
+            <hr />
             <div class="row m-t-20">
                 <div class="col-lg-12">
                     <input id="submitDepartmentBtn" type="button" class="btn btn-success btn-block" value="Create Department" required />
@@ -509,6 +780,13 @@
     }
 
     let isAuditTrail = false;
+    function alertBtnClick() {
+        let dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+        let dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
+        dialogObj.hide();
+        dialogObj1.hide();
+    }
+
     function toolbarClick(args) {
         let gridObj = document.getElementById("DepartmentsGrid").ej2_instances[0];
 
@@ -615,12 +893,6 @@
         }
         setTimeout(function () { gridObj.hideSpinner() }, 200);
     }
-    function alertBtnClick() {
-        let dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
-        let dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
-        dialogObj.hide();
-        dialogObj1.hide();
-    }
     function commandClick(args) {
         let gridObj = document.getElementById("DepartmentsGrid").ej2_instances[0];
 
@@ -639,6 +911,7 @@
             FillFormByObject(params, $('#departmentsForm'));
 
             let subDepartmentsGrid = $("#SubDepartmentsGrid")[0].ej2_instances[0];
+            let positionsGrid = $("#PositionsGrid")[0].ej2_instances[0];
 
             $('#departmentsLoader').slideDown();
             $('#positionIds').multiselect('deselectAll', false);
@@ -661,17 +934,27 @@
                 $('#subDepartmentsField').multiselect('dataprovider', dataMS);
                 $('#subDepartmentsField').change();
 
+                for (var i = 0; i < data.positionTemplates.length; i++) {
+                    let posTemplate = data.positionTemplates[i];
+                    cERP.appServices.setup.lookup.dictionaryValue.get(data.costCenterId).done(function (d) {
+                        posTemplate.costCenter = d;
+                        positionsGrid.refresh();
+                    });
+                }
+
+                positionsGrid.dataSource = data.positionTemplates;
+                positionsGrid.refresh();
+                setTimeout(function () { positionsGrid.hideSpinner() }, 200);
+
                 subDepartmentsGrid.dataSource = data.subDepartmentTemplates;
                 subDepartmentsGrid.refresh();
                 setTimeout(function () { subDepartmentsGrid.hideSpinner() }, 200);
 
-                let positionIds = [];
-                for (var i = 0; i < data.departmentPositionTemplates.length; i++) {
-                    positionIds.push(data.departmentPositionTemplates[i].positionTemplateId);
-                }
-
-                $('#positionIds').multiselect('select', positionIds);
-                $('#depHeadId').multiselect('select', data.departmentHeadId);
+                //let positionIds = [];
+                //for (var i = 0; i < data.positionTemplates.length; i++) {
+                //    positionIds.push(data.positionTemplates[i].id);
+                //}
+                //$('#depHeadId').multiselect('select', data.departmentHeadId);
             });
         }
         else if (args.commandColumn.type == "Copy") {
@@ -717,6 +1000,96 @@
                 }
             });
             setTimeout(function () { gridObj.hideSpinner() }, 200);
+        }
+    }
+
+    function positionCommandClick(args) {
+        let gridObj = document.getElementById("PositionsGrid").ej2_instances[0];
+
+        if (args.commandColumn.type == "Edit") {
+            isEditingPositions = true;
+            let params = args.rowData;
+            curPositionsEditRow = params;
+
+            toggleAreaFormBtn('positionsForm', false);
+
+            setTimeout(function () {
+                $('#submitPositionBtn').val('Update Position');
+                toggleAreaFormBtn('positionsForm', true);
+            }, 200);
+
+            FillDivFormByObject(params, $('#positionsForm :input'));
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_PositionTemplate.get(params.id).done(function (data) {
+                console.log(data);
+
+
+                let positionJobs = data.positionJobTemplates;
+                let positionTasks = data.positionTaskTemplates;
+                let jobIds = positionJobs.map(function (item) { return item.jobTemplateId });
+                console.log(jobIds);
+                $('#positionJobs').multiselect('select', jobIds);
+                $('#positionTasks').multiselect('select', positionTasks.map(function (item) { return item.taskTemplateId }));
+
+                $('#positionLevel').val(data.levelDescription);
+                $('#positionDepartmentId').multiselect('select', data.departmentTemplate.id);
+
+                FillDivFormByObject(data, $('#positionsForm :input'));
+            });
+        }
+        else if (args.commandColumn.type == "Copy") {
+            this.copy(false);
+        }
+
+        setTimeout(function () { gridObj.hideSpinner() }, 200);
+    }
+    function positionActionComplete(args) {
+        let gridObj = document.getElementById("PositionsGrid").ej2_instances[0];
+        setTimeout(function () { gridObj.hideSpinner() }, 200)
+    }
+    function positionActionBegin(args) {
+        if (args.requestType == "delete") {
+            let gridObj = document.getElementById("PositionsGrid").ej2_instances[0];
+            Swal.showLoading();
+
+            let fullPositions = [];
+            for (var i = 0; i < args.data.length; i++) {
+                cERP.appServices.hR.organizationalManagement.organizationStructure.oS_PositionTemplate.get(args.data[i].id).done(function (data) {
+                    fullPositions.push(data);
+
+                    if (fullPositions.length == args.data.length)
+                    {
+                        let formData = new FormData();
+                        formData.append("positions", JSON.stringify(fullPositions));
+                        let xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+                        formData.append("__RequestVerificationToken", xhrToken);
+
+                        $.ajax({
+                            url: '@Url.Content("~")/HR/OrganizationStructure/Positions?handler=PositionTemplate',
+                            async: true,
+                            type: "DELETE",
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            success: function (data) {
+                                gridObj.hideSpinner();
+                                swal.fire("Success", "Position(s) has successfully been deleted", "success");
+
+                                if ($('#positionsForm').css('display') !== 'none') {
+                                    $('#positionsForm').slideUp();
+                                }
+                            },
+                            error: function (err) {
+                                gridObj.hideSpinner();
+                                swal.fire("Failed", "Position(s) couldn't be deleted, please fix all errors and try again.", "error");
+
+                                console.log(err);
+                            }
+                        });
+
+                        setTimeout(function () { gridObj.hideSpinner() }, 200);
+                    }
+                });
+            }
         }
     }
 

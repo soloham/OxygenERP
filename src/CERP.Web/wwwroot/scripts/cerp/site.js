@@ -471,13 +471,35 @@ function FillFormByObject(obj, form) {
     for (var i = 0; i < form[0].length; i++) {
         let elm = form[0][i];
         let type = elm.type;
-        console.log(type);
         let propName = props.filter(function (x) { return x.toLowerCase() == elm.name.toLowerCase(); });
         if (propName != '') {
             if (type == 'date') {
                 let val = new Date(obj[propName]);
-                let month = ('0' + val.getUTCMonth()).slice(-2);
-                let dateVal = `${val.getUTCFullYear()}-${month}-${val.getUTCDate()}`;
+                let month = ('0' + (val.getMonth()+1)).slice(-2);
+                let date = ('0' + (val.getDate())).slice(-2);
+                let dateVal = `${val.getUTCFullYear()}-${month}-${date}`;
+                console.log(dateVal.toString());
+                elm.value = dateVal.toString();
+                console.log(elm.value);
+            }
+            else
+                elm.value = obj[propName];
+        }
+    }
+}
+function FillDivFormByObject(obj, elements) {
+    let props = Object.keys(obj);
+    for (var i = 0; i < elements.length; i++) {
+        let elm = elements[i];
+        let type = elm.type;
+        let propName = props.filter(function (x) { return x.toLowerCase() == elm.name.toLowerCase(); });
+        if (propName != '') {
+            if (type == 'date') {
+                let val = new Date(obj[propName]);
+                let month = ('0' + (val.getMonth() + 1)).slice(-2);
+                let date = ('0' + (val.getDate())).slice(-2);
+                let dateVal = `${val.getUTCFullYear()}-${month}-${date}`;
+                console.log(dateVal.toString());
                 elm.value = dateVal.toString();
                 console.log(elm.value);
             }

@@ -75,7 +75,7 @@ namespace CERP.EntityFrameworkCore
         #region Organizational Management
         #region Organization Structure
         public DbSet<OS_DepartmentTemplate> OS_DepartmentTemplates { get; set; }
-        public DbSet<OS_DepartmentPositionTemplate> OS_DepartmentPositionTemplates { get; set; }
+        //public DbSet<OS_DepartmentPositionTemplate> OS_DepartmentPositionTemplates { get; set; }
         public DbSet<OS_DepartmentSubDepartmentTemplate> OS_DepartmentSubDepartmentTemplates { get; set; }
         public DbSet<OS_PositionTemplate> OS_PositionTemplates { get; set; }
         public DbSet<OS_PositionJobTemplate> OS_PositionJobTemplates { get; set; }

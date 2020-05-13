@@ -38,10 +38,10 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
                 string result = "";
                 try
                 {
-                    for (int i = 0; i < DepartmentPositionTemplates.Count; i++)
+                    for (int i = 0; i < PositionTemplates.Count; i++)
                     {
-                        OS_DepartmentPositionTemplate_Dto curPos = DepartmentPositionTemplates[i];
-                        result += curPos.PositionTemplate.Name + (i == DepartmentPositionTemplates.Count - 1 ? "" : ", ");
+                        OS_PositionTemplate_Dto curPos = PositionTemplates[i];
+                        result += curPos.Name + (i == PositionTemplates.Count - 1 ? "" : ", ");
                     }
                 }
                 catch (Exception ex)
@@ -51,7 +51,7 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
                 return result == "" ? "-" : result;
             }
         }
-        public List<OS_DepartmentPositionTemplate_Dto> DepartmentPositionTemplates { get; set; } = new List<OS_DepartmentPositionTemplate_Dto>();
+        public List<OS_PositionTemplate_Dto> PositionTemplates { get; set; } = new List<OS_PositionTemplate_Dto>();
 
         public bool ContainsDepartment(int id)
         {

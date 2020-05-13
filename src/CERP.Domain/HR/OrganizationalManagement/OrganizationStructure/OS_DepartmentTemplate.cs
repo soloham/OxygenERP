@@ -37,7 +37,7 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         [CustomAudited]
         public DateTime ValidityToDate { get; set; }
 
-        public virtual ICollection<OS_DepartmentPositionTemplate> DepartmentPositionTemplates { get; set; }
+        public virtual ICollection<OS_PositionTemplate> PositionTemplates { get; set; }
         public virtual ICollection<OS_DepartmentSubDepartmentTemplate> SubDepartmentTemplates { get; set; }
 
         public bool ContainsDepartment(int id)

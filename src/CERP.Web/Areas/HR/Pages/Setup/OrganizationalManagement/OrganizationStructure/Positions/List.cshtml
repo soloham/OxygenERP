@@ -32,15 +32,15 @@
     var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
     var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Audit Trail", tooltipText = "View Audit Trail", prefixIcon = "e-toggleaudittrail", id = "toggleaudittrail" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
 
-    List<object> positionsCommands = new List<object>();
-    positionsCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
-    positionsCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
-    positionsCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
-
     List<object> positionJobsCommands = new List<object>();
     positionJobsCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
     positionJobsCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
     positionJobsCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
+
+    List<object> positionsCommands = new List<object>();
+    positionsCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
+    positionsCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+    positionsCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
 
     List<OS_PositionStatus> positionStatuses = Enum.GetValues(typeof(OS_PositionStatus)).Cast<OS_PositionStatus>().ToList(); 
     List<OS_PositionLevel> positionLevels = Enum.GetValues(typeof(OS_PositionLevel)).Cast<OS_PositionLevel>().ToList(); 
@@ -161,7 +161,7 @@
                     params.positionJobTemplates = [];
                     for (var i = 0; i < selectedPositionJobs.length; i++) {
                         selectedPositionJobTemplates.push(positionJobs.filter(x => x.id == selectedPositionJobs[i])[0]);
-                        params.positionJobTemplates.push({ positionTemplate: selectedPositionJobTemplates[i] });
+                        params.positionJobTemplates.push({ jobTemplate: selectedPositionJobTemplates[i] });
                     }
 
                     let selectedPositionTasks = $('#positionTasks').val();
@@ -170,7 +170,7 @@
                     params.positionTaskTemplates = [];
                     for (var i = 0; i < selectedPositionTasks.length; i++) {
                         selectedPositionTaskTemplates.push(positionTasks.filter(x => x.id == selectedPositionTasks[i])[0]);
-                        params.positionTaskTemplates.push({ positionTemplate: selectedPositionTaskTemplates[i] });
+                        params.positionTaskTemplates.push({ taskTemplate: selectedPositionTaskTemplates[i] });
                     }
 
                     let formData = new FormData();
@@ -211,10 +211,12 @@
                         },
                         error: function (err) {
                             Swal.hideLoading();
+                            let errMsg = "";
+                            if (typeof err !== 'undefined') errMsg = err.responseJSON.Message;
                             if (isEditingPositions)
-                                swal.fire("Failed", "Position couldn't be updated, please fix all errors and try again.", "error");
+                                swal.fire("Failed", errMsg + " \nPosition couldn't be updated, please fix all errors and try again.", "error");
                             else
-                                swal.fire("Failed", "Position couldn't be added, please fix all errors and try again.", "error");
+                                swal.fire("Failed", errMsg + " \nPosition couldn't be added, please fix all errors and try again.", "error");
 
                             console.log(err);
                             gridObj.hideSpinner();
@@ -287,7 +289,7 @@
                     <div class="col-lg-3 col-md-3 col-sm-3 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5 control-label">Department / Sub Department:</label>
-                            <select id="positionDepartmentId" multiple="multiple" name="DepartmentTemplateId" class="form-control">
+                            <select id="positionDepartmentId" name="DepartmentTemplateId" class="form-control" required>
                             </select>
                         </div>
                     </div>
@@ -299,7 +301,7 @@
                             <select id="positionLevel" name="Level" class="form-control">
                                 @for (int i = 0; i < positionLevels.Count; i++)
                                 {
-                                    <option value="@positionLevels[i]">@EnumExtensions.GetDescription(positionLevels[i])</option>
+                                    <option value="@((int)positionLevels[i])">@EnumExtensions.GetDescription(positionLevels[i])</option>
                                 }
                             </select>
                         </div>
@@ -360,6 +362,8 @@
                     }'></e-grid-column>
                     <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
                     <e-grid-column field="costCenter.value" headerText="Cost Center" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="levelDescription" headerText="Level" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="departmentTemplate.name" headerText="Department" textAlign="Center"></e-grid-column>
                     <e-grid-column field="activationDate" headerText="Activation Date" type="date" format="yMd" , allowEditing="true" editType="datepicker" textAlign="Center"></e-grid-column>
                     <e-grid-column headerText="Validity" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityFromDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "From", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
@@ -398,6 +402,12 @@
     }
 
     let isAuditTrail = false;
+    function alertBtnClick() {
+        let dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+        let dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
+        dialogObj.hide();
+        dialogObj1.hide();
+    }
     function toolbarClick(args) {
         let gridObj = document.getElementById("PositionsGrid").ej2_instances[0];
 
@@ -504,12 +514,6 @@
         }
         setTimeout(function () { gridObj.hideSpinner() }, 200);
     }
-    function alertBtnClick() {
-        let dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
-        let dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
-        dialogObj.hide();
-        dialogObj1.hide();
-    }
     function commandClick(args) {
         let gridObj = document.getElementById("PositionsGrid").ej2_instances[0];
 
@@ -526,8 +530,22 @@
             }, 200);
 
             FillFormByObject(params, $('#positionsForm'));
+            $('#positionDepartmentId').multiselect('deselectAll', false);
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_PositionTemplate.get(params.id).done(function (data) {
+                console.log(data);
+                let positionJobs = data.positionJobTemplates;
+                let positionTasks = data.positionTaskTemplates;
+                let jobIds = positionJobs.map(function (item) { return item.jobTemplateId });
+                console.log(jobIds);
+                $('#positionJobs').multiselect('select', jobIds);
+                $('#positionTasks').multiselect('select', positionTasks.map(function (item) { return item.taskTemplateId }));
 
-            let positionsGrid = $("#PositionPositionsGrid")[0].ej2_instances[0];
+                $('#positionLevel').val(data.levelDescription);
+                $('#positionDepartmentId').multiselect('select',data.departmentTemplate.id);
+                $('#positionDepartmentId').multiselect('refresh');
+
+                FillFormByObject(data, $('#positionsForm'));
+            });
         }
         else if (args.commandColumn.type == "Copy") {
             this.copy(false);
@@ -550,7 +568,7 @@
             formData.append("__RequestVerificationToken", xhrToken);
 
             $.ajax({
-                url: '?handler=Position',
+                url: '?handler=PositionTemplate',
                 async: true,
                 type: "DELETE",
                 data: formData,

@@ -33,17 +33,19 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
         public IAuditLogRepository AuditLogsRepo { get; set; }
 
         public OS_DepartmentTemplateAppService OS_DepartmentTemplateAppService { get; set; }
+        public OS_PositionTemplateAppService OS_PositionTemplateAppService { get; set; }
 
         public IAuditingManager AuditingManager { get; set; }
         public IRepository<CustomEntityChange> CustomEntityChangesRepo { get; set; }
 
-        public ListModel(IJsonSerializer jsonSerializer, IRepository<DictionaryValue, Guid> dictionaryValuesRepo, IWebHostEnvironment webHostEnvironment, IAuditLogRepository auditLogsRepo, OS_DepartmentTemplateAppService oS_DepartmentTemplateAppService)
+        public ListModel(IJsonSerializer jsonSerializer, IRepository<DictionaryValue, Guid> dictionaryValuesRepo, IWebHostEnvironment webHostEnvironment, IAuditLogRepository auditLogsRepo, OS_DepartmentTemplateAppService oS_DepartmentTemplateAppService, OS_PositionTemplateAppService oS_PositionTemplateAppService)
         {
             JsonSerializer = jsonSerializer;
             DictionaryValuesRepo = dictionaryValuesRepo;
             this.webHostEnvironment = webHostEnvironment;
             AuditLogsRepo = auditLogsRepo;
             OS_DepartmentTemplateAppService = oS_DepartmentTemplateAppService;
+            OS_PositionTemplateAppService = oS_PositionTemplateAppService;
         }
 
         public IJsonSerializer JsonSerializer { get; set; }
@@ -214,15 +216,15 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curDepartmentTemplate.ValidityToDate = departmentTemplate_Dto.ValidityToDate;
                         curDepartmentTemplate.ActivationDate = departmentTemplate_Dto.ActivationDate;
 
-                        OS_DepartmentPositionTemplate_Dto[] depPositions = departmentTemplate_Dto.DepartmentPositionTemplates.ToArray();
-                        int[] curDepPositionsIds = curDepartmentTemplate.DepartmentPositionTemplates != null && curDepartmentTemplate.DepartmentPositionTemplates.Count > 0? curDepartmentTemplate.DepartmentPositionTemplates.Select(x => x.PositionTemplate.Id).ToArray() : new int[0];
-                        List<OS_DepartmentPositionTemplate> toDeletePositions = new List<OS_DepartmentPositionTemplate>();
+                        OS_PositionTemplate_Dto[] depPositions = departmentTemplate_Dto.PositionTemplates.ToArray();
+                        int[] curDepPositionsIds = curDepartmentTemplate.PositionTemplates != null && curDepartmentTemplate.PositionTemplates.Count > 0? curDepartmentTemplate.PositionTemplates.Select(x => x.Id).ToArray() : new int[0];
+                        List<OS_PositionTemplate> toDeletePositions = new List<OS_PositionTemplate>();
                         for (int i = 0; i < curDepPositionsIds.Length; i++)
                         {
-                            OS_DepartmentPositionTemplate curDepartmentPosition = curDepartmentTemplate.DepartmentPositionTemplates.First(x => x.PositionTemplate.Id == curDepPositionsIds[i]);
-                            if (!depPositions.Any(x => x.PositionTemplateId == curDepPositionsIds[i] && x.CreationTime == curDepartmentPosition.CreationTime))
+                            OS_PositionTemplate curDepartmentPosition = curDepartmentTemplate.PositionTemplates.First(x => x.Id == curDepPositionsIds[i]);
+                            if (!depPositions.Any(x => x.Id == curDepPositionsIds[i] && x.CreationTime == curDepartmentPosition.CreationTime))
                             {
-                                curDepartmentTemplate.DepartmentPositionTemplates.Remove(curDepartmentPosition);
+                                //curDepartmentTemplate.PositionTemplates.Remove(curDepartmentPosition);
                                 toDeletePositions.Add(curDepartmentPosition);
                             }
                             else
@@ -232,24 +234,42 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         }
                         for (int i = 0; i < depPositions.Length; i++)
                         {
-                            if (!curDepartmentTemplate.DepartmentPositionTemplates.Any(x => x.PositionTemplateId == depPositions[i].PositionTemplate.Id && x.CreationTime == depPositions[i].CreationTime))
+                            if (!curDepartmentTemplate.PositionTemplates.Any(x => x.Id == depPositions[i].Id && x.CreationTime == depPositions[i].CreationTime))
                             {
-                                curDepartmentTemplate.DepartmentPositionTemplates.Add(new OS_DepartmentPositionTemplate() { PositionTemplateId = depPositions[i].PositionTemplate.Id });
+                                OS_PositionTemplate positionTemplate = await OS_DepartmentTemplateAppService.PositionTemplateRepo.GetAsync(depPositions[i].Id);
+                                curDepartmentTemplate.PositionTemplates.Add(positionTemplate);
+                                positionTemplate.DepartmentTemplateId = curDepartmentTemplate.Id;
+                                positionTemplate.DepartmentTemplate = null;
                             }
                             else
                             {
-                                var _departmentLoc = curDepartmentTemplate.DepartmentPositionTemplates.First(x => x.PositionTemplateId == depPositions[i].PositionTemplate.Id);
+                                var _positionLoc = curDepartmentTemplate.PositionTemplates.First(x => x.Id == depPositions[i].Id);
                                 //_departmentLoc.PositionValidityStart = depPositions[i].PositionValidityStart;
                                 //_departmentLoc.PositionValidityEnd = depPositions[i].PositionValidityEnd;
                                 //_departmentLoc.Name = depPositions[i].Name;
 
                                 //curDepartment.DepartmentPositionTemplates.Remove(curDepartment.DepartmentPositionTemplates.First(x => x.PositionTemplateId == _departmentLoc.PositionTemplateId));
-                                await OS_DepartmentTemplateAppService.DepartmentPositionTemplateRepo.UpdateAsync(_departmentLoc);
+                                //await OS_DepartmentTemplateAppService.PositionTemplateRepo.UpdateAsync(_positionLoc);
                             }
                         }        
                         for (int i = 0; i < toDeletePositions.Count; i++)
                         {
-                            await OS_DepartmentTemplateAppService.DepartmentPositionTemplateRepo.DeleteAsync(x => x.PositionTemplateId == toDeletePositions[i].PositionTemplateId && x.CreationTime == toDeletePositions[i].CreationTime);
+                            curDepartmentTemplate.PositionTemplates.Remove(curDepartmentTemplate.PositionTemplates.First(x => x.Id == toDeletePositions[i].Id && x.CreationTime == toDeletePositions[i].CreationTime));
+                            if (toDeletePositions[i].PositionJobTemplates != null)
+                            {
+                                for (int y = 0; y < toDeletePositions[i].PositionJobTemplates.Count; y++)
+                                {
+                                    await OS_PositionTemplateAppService.PositionJobsTemplateRepo.DeleteAsync(toDeletePositions[i].PositionJobTemplates.ElementAt(y).Id);
+                                }
+                            }
+                            if (toDeletePositions[i].PositionTaskTemplates != null)
+                            {
+                                for (int y = 0; y < toDeletePositions[i].PositionTaskTemplates.Count; y++)
+                                {
+                                    await OS_PositionTemplateAppService.PositionTasksTemplateRepo.DeleteAsync(toDeletePositions[i].PositionTaskTemplates.ElementAt(y).Id);
+                                }
+                            }
+                            await OS_DepartmentTemplateAppService.PositionTemplateRepo.DeleteAsync(x => x.Id == toDeletePositions[i].Id && x.CreationTime == toDeletePositions[i].CreationTime);
                         }
 
                         OS_DepartmentSubDepartmentTemplate_Dto[] depSubDeps = departmentTemplate_Dto.SubDepartmentTemplates.ToArray();
@@ -269,7 +289,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         {
                             if (!curDepartmentTemplate.SubDepartmentTemplates.Any(x => x.Id == depSubDeps[i].Id && x.CreationTime == depSubDeps[i].CreationTime))
                             {
-                                if (depSubDeps[i].SubDepartmentTemplate.ContainsDepartment(curDepartmentTemplate.Id))
+                                if (!depSubDeps[i].SubDepartmentTemplate.ContainsDepartment(curDepartmentTemplate.Id))
                                     curDepartmentTemplate.SubDepartmentTemplates.Add(new OS_DepartmentSubDepartmentTemplate { SubDepartmentTemplateId = depSubDeps[i].SubDepartmentTemplate.Id });
                                 else {
                                     Exception ex = new Exception($"Cannot add the parent/sibling department '{depSubDeps[i].SubDepartmentTemplate.Name}', as a sub department.");
@@ -300,11 +320,11 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                     else
                     {
                         departmentTemplate_Dto.Id = 0;
-                        departmentTemplate_Dto.DepartmentPositionTemplates.ForEach(x => { x.Id = 0; x.PositionTemplateId = x.PositionTemplate.Id; x.PositionTemplate = null; });
+                        //departmentTemplate_Dto.PositionTemplates.ForEach(x => { x.Id = 0; x.Id = x.Id; });
                         departmentTemplate_Dto.SubDepartmentTemplates.ForEach(x => { x.Id = 0; x.SubDepartmentTemplateId = x.SubDepartmentTemplate.Id; x.SubDepartmentTemplate = null; });
 
                         OS_DepartmentTemplate_Dto added = await OS_DepartmentTemplateAppService.CreateAsync(departmentTemplate_Dto);
-
+                        added.CostCenter = ObjectMapper.Map<DictionaryValue, DictionaryValue_Dto>(await DictionaryValuesRepo.GetAsync(added.CostCenterId));
                         if (AuditingManager.Current != null)
                         {
                             EntityChangeInfo entityChangeInfo = new EntityChangeInfo();

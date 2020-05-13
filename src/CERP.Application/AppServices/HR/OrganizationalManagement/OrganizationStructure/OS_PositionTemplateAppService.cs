@@ -17,10 +17,10 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
 {
     public class OS_PositionTemplateAppService : CrudAppService<OS_PositionTemplate, OS_PositionTemplate_Dto, int, PagedAndSortedResultRequestDto, OS_PositionTemplate_Dto, OS_PositionTemplate_Dto>
     {
-        public OS_PositionTemplateAppService(IRepository<OS_PositionTemplate, int> repository, IRepository<OS_DepartmentPositionTemplate, int> departmentPositionTemplateRepo, IRepository<OS_PositionJobTemplate, int> positionJobsTemplateRepo, IRepository<OS_PositionTaskTemplate, int> positionTasksTemplateRepo) : base(repository)
+        public OS_PositionTemplateAppService(IRepository<OS_PositionTemplate, int> repository, /*IRepository<OS_DepartmentPositionTemplate, int> departmentPositionTemplateRepo,*/ IRepository<OS_PositionJobTemplate, int> positionJobsTemplateRepo, IRepository<OS_PositionTaskTemplate, int> positionTasksTemplateRepo) : base(repository)
         {
             Repository = repository;
-            DepartmentPositionTemplateRepo = departmentPositionTemplateRepo;
+            //DepartmentPositionTemplateRepo = departmentPositionTemplateRepo;
             PositionJobsTemplateRepo = positionJobsTemplateRepo;
             PositionTasksTemplateRepo = positionTasksTemplateRepo;
         }
@@ -28,7 +28,7 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
         public IRepository<OS_PositionTemplate, int> Repository { get; }
         public IRepository<OS_PositionJobTemplate, int> PositionJobsTemplateRepo { get; }
         public IRepository<OS_PositionTaskTemplate, int> PositionTasksTemplateRepo { get; }
-        public IRepository<OS_DepartmentPositionTemplate, int> DepartmentPositionTemplateRepo { get; }
+        //public IRepository<OS_DepartmentPositionTemplate, int> DepartmentPositionTemplateRepo { get; }
 
         public async Task<List<OS_PositionTemplate_Dto>> GetAllPositionTemplatesAsync()
         {
