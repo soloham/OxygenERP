@@ -462,7 +462,22 @@ namespace CERP.EntityFrameworkCore
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp(); 
+
+                b.HasMany(x => x.JobQualificationTemplates).WithOne(x => x.JobTemplate).OnDelete(DeleteBehavior.Cascade);
+            });
+            builder.Entity<OS_JobQualificationTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}JobQualificationTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.Degree).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.Institute).WithMany().OnDelete(DeleteBehavior.NoAction);
+
+                b.HasOne(x => x.JobTemplate).WithMany(x => x.JobQualificationTemplates).OnDelete(DeleteBehavior.Cascade);
             });
             builder.Entity<OS_TaskTemplate>(b =>
             {
@@ -471,6 +486,21 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
+
+                b.HasMany(x => x.TaskQualificationTemplates).WithOne(x => x.TaskTemplate).OnDelete(DeleteBehavior.Cascade);
+            });
+            builder.Entity<OS_TaskQualificationTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}TaskQualificationTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.Degree).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.Institute).WithMany().OnDelete(DeleteBehavior.NoAction);
+
+                b.HasOne(x => x.TaskTemplate).WithMany(x => x.TaskQualificationTemplates).OnDelete(DeleteBehavior.Cascade);
             });
             #endregion
             #endregion

@@ -21,10 +21,19 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public string NameLocalized { get; set; }
 
         [CustomAudited]
+        public string Description { get; set; }
+
+        [CustomAudited]
+        public bool DoesKPI { get; set; }
+
+        [CustomAudited]
         public DateTime ActivationDate { get; set; }
         [CustomAudited]
         public DateTime ValidityFromDate { get; set; }
         [CustomAudited]
         public DateTime ValidityToDate { get; set; }
+
+        public virtual ICollection<OS_TaskQualificationTemplate> TaskQualificationTemplates { get; set; }
+
     }
 }

@@ -210,6 +210,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curJobTemplate.ValidityFromDate = jobTemplate_Dto.ValidityFromDate;
                         curJobTemplate.ValidityToDate = jobTemplate_Dto.ValidityToDate;
                         curJobTemplate.ActivationDate = jobTemplate_Dto.ActivationDate;
+                        curJobTemplate.Description = jobTemplate_Dto.Description;
 
                         OS_JobTemplate_Dto updated = ObjectMapper.Map<OS_JobTemplate, OS_JobTemplate_Dto>(await OS_JobTemplateAppService.Repository.UpdateAsync(curJobTemplate));
 
@@ -275,6 +276,148 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
             }
         }
 
+        public async Task<IActionResult> OnPostJobQualificationTemplate()
+        {
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var FormData = Request.Form;
+
+                    OS_JobQualificationTemplate_Dto jobQualificationTemplate_Dto = JsonSerializer.Deserialize<OS_JobQualificationTemplate_Dto>(FormData["info"]);
+
+                    bool IsEditing = jobQualificationTemplate_Dto.Id > 0;
+                    if (IsEditing)
+                    {
+                        OS_JobQualificationTemplate curJobQualificationTemplate = await OS_JobTemplateAppService.QualificationsRepository.GetAsync(jobQualificationTemplate_Dto.Id);
+
+                        if (AuditingManager.Current != null)
+                        {
+                            EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
+
+                            entityChangeInfo.EntityId = jobQualificationTemplate_Dto.Id.ToString();
+                            entityChangeInfo.EntityTenantId = jobQualificationTemplate_Dto.TenantId;
+                            entityChangeInfo.ChangeTime = DateTime.Now;
+                            entityChangeInfo.ChangeType = EntityChangeType.Updated;
+                            entityChangeInfo.EntityTypeFullName = typeof(OS_JobQualificationTemplate).FullName;
+
+                            entityChangeInfo.PropertyChanges = new List<EntityPropertyChangeInfo>();
+                            List<EntityPropertyChangeInfo> entityPropertyChanges = new List<EntityPropertyChangeInfo>();
+                            var auditProps = typeof(OS_JobQualificationTemplate).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+
+                            OS_JobQualificationTemplate mappedInput = ObjectMapper.Map<OS_JobQualificationTemplate_Dto, OS_JobQualificationTemplate>(jobQualificationTemplate_Dto);
+                            foreach (var prop in auditProps)
+                            {
+                                EntityPropertyChangeInfo propertyChange = new EntityPropertyChangeInfo();
+                                object origVal = prop.GetValue(curJobQualificationTemplate);
+                                propertyChange.OriginalValue = origVal == null ? "" : origVal.ToString();
+                                object newVal = prop.GetValue(mappedInput);
+                                propertyChange.NewValue = newVal == null ? "" : newVal.ToString();
+                                if (propertyChange.OriginalValue == propertyChange.NewValue) continue;
+
+                                propertyChange.PropertyName = prop.Name;
+
+                                if (prop.Name.EndsWith("Id"))
+                                {
+                                    try
+                                    {
+                                        string valuePropName = prop.Name.TrimEnd('d', 'I');
+                                        propertyChange.PropertyName = valuePropName;
+
+                                        var valueProp = typeof(OS_JobQualificationTemplate).GetProperty(valuePropName);
+
+                                        DictionaryValue _origValObj = (DictionaryValue)valueProp.GetValue(jobQualificationTemplate_Dto);
+                                        if (_origValObj == null) _origValObj = await DictionaryValuesRepo.GetAsync((Guid)origVal);
+                                        string _origVal = _origValObj.Value;
+                                        propertyChange.OriginalValue = origVal == null ? "" : _origVal;
+                                        DictionaryValue _newValObj = (DictionaryValue)valueProp.GetValue(mappedInput);
+                                        if (_newValObj == null) _newValObj = await DictionaryValuesRepo.GetAsync((Guid)newVal);
+                                        string _newVal = _newValObj.Value;
+                                        propertyChange.NewValue = _newValObj == null ? "" : _newVal;
+                                    }
+                                    catch (Exception ex)
+                                    {
+
+                                    }
+                                }
+
+                                propertyChange.PropertyTypeFullName = prop.Name.GetType().FullName;
+
+                                entityChangeInfo.PropertyChanges.Add(propertyChange);
+                            }
+
+                            AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
+                        }
+
+                        curJobQualificationTemplate.DegreeId = jobQualificationTemplate_Dto.DegreeId;
+                        curJobQualificationTemplate.InstituteId = jobQualificationTemplate_Dto.InstituteId;
+                        curJobQualificationTemplate.PeriodStartDate = jobQualificationTemplate_Dto.PeriodStartDate;
+                        curJobQualificationTemplate.PeriodEndDate = jobQualificationTemplate_Dto.PeriodEndDate;
+
+                        OS_JobQualificationTemplate_Dto updated = ObjectMapper.Map<OS_JobQualificationTemplate, OS_JobQualificationTemplate_Dto>(await OS_JobTemplateAppService.QualificationsRepository.UpdateAsync(curJobQualificationTemplate));
+
+                        return StatusCode(200, updated);
+                    }
+                    else
+                    {
+                        jobQualificationTemplate_Dto.Id = 0;
+
+                        OS_JobQualificationTemplate_Dto added = await OS_JobTemplateAppService.AddQualificationTemplate(jobQualificationTemplate_Dto);
+
+                        if (AuditingManager.Current != null)
+                        {
+                            EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
+                            entityChangeInfo.EntityId = added.Id.ToString();
+                            entityChangeInfo.EntityTenantId = added.TenantId;
+                            entityChangeInfo.ChangeTime = DateTime.Now;
+                            entityChangeInfo.ChangeType = EntityChangeType.Created;
+                            entityChangeInfo.EntityTypeFullName = typeof(OS_JobQualificationTemplate).FullName;
+
+                            AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
+                        }
+
+                        return StatusCode(200, added);
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+
+            return StatusCode(500);
+        }
+        public async Task<IActionResult> OnDeleteJobQualificationTemplate()
+        {
+            List<OS_JobQualificationTemplate_Dto> entitites = JsonSerializer.Deserialize<List<OS_JobQualificationTemplate_Dto>>(Request.Form["qualifications"]);
+            try
+            {
+                for (int i = 0; i < entitites.Count; i++)
+                {
+                    OS_JobQualificationTemplate_Dto entity = entitites[i];
+                    //await JobQualificationTemplatesAppService.Repository.DeleteAsync(leaveRequest.);
+                    await OS_JobTemplateAppService.QualificationsRepository.DeleteAsync(entity.Id);
+
+                    if (AuditingManager.Current != null)
+                    {
+                        EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
+                        entityChangeInfo.EntityId = entity.Id.ToString();
+                        entityChangeInfo.EntityTenantId = entity.TenantId;
+                        entityChangeInfo.ChangeTime = DateTime.Now;
+                        entityChangeInfo.ChangeType = EntityChangeType.Deleted;
+                        entityChangeInfo.EntityTypeFullName = typeof(OS_JobQualificationTemplate).FullName;
+
+                        AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
+                    }
+                }
+                return StatusCode(200);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500);
+            }
+        }
 
         public dynamic GetDataAuditTrailModel()
         {

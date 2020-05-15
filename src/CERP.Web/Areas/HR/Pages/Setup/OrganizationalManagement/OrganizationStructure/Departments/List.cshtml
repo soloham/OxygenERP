@@ -113,7 +113,6 @@
 
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_JobTemplate.getList({}).done(function (data) {
                 positionJobs = data.items;
-                console.log(positionJobs);
                 let dataMS = [];
                 for (let i = 0; i < data.items.length; i++) {
                     let item = data.items[i];
@@ -297,14 +296,21 @@
 
                         let subDepartmentName = $('#subDepartmentName').val();
 
+
                         if (selectedSubDepartments.length > 1) {
                             subDepartmentType = "@OS_SubDepartmentRelationshipType.ReportingTo";
                             subDepartmentName = selectedSubDepartments[i].subDepartmentCode + " - " + selectedSubDepartments[i].subDepartmentName;
                         }
-                        else if (subDepartmentType == '@OS_SubDepartmentRelationshipType.Assistant' && existantDefaults.length > 0) {
-                            toastr.error('A @EnumExtensions.GetDescription(OS_SubDepartmentRelationshipType.Assistant) Sub department already exists');
-                            grid.hideSpinner();
-                            return;
+                        else if (subDepartmentType == '@OS_SubDepartmentRelationshipType.Assistant') {
+                            let existantDefaults = grid.dataSource.filter(function (x) {
+                                console.log(x.subDepartmentTemplate.subDepartmentType); return x.subDepartmentTemplate.subDepartmentType == subDepartmentType
+                            });
+
+                            if (existantDefaults.length > 0) {
+                                toastr.error('A @EnumExtensions.GetDescription(OS_SubDepartmentRelationshipType.Assistant) Sub department already exists');
+                                grid.hideSpinner();
+                                return;
+                            }
                         }
                         let id = 0;
                         if (grid.dataSource.length > 0) {
@@ -616,7 +622,7 @@
                                       allowPaging="true" allowResizing="true">
 
                                 <e-grid-columns>
-                                    <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                    <e-grid-column field="id" headerText="Id" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
                                     <e-grid-column headerText="Name" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "name", HeaderText = "English", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "nameLocalized", HeaderText = "Local", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
@@ -732,7 +738,7 @@
                       allowPaging="true" allowResizing="true" dataSource="new List<dynamic>()">
 
                 <e-grid-columns>
-                    <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                    <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
                     <e-grid-column headerText="Name" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "name", HeaderText = "English", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "nameLocalized", HeaderText = "Local", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
@@ -985,7 +991,8 @@
                 contentType: false,
                 processData: false,
                 success: function (data) {
-                    gridObj.hideSpinner();
+                    gridObj.refresh();
+                    setTimeout(function () { gridObj.hideSpinner() }, 200);
                     swal.fire("Success", "Department(s) has successfully been deleted", "success");
 
                     if ($('#departmentsForm').css('display') !== 'none') {
@@ -993,13 +1000,17 @@
                     }
                 },
                 error: function (err) {
-                    gridObj.hideSpinner();
+                    gridObj.refresh();
+                    setTimeout(function () { gridObj.hideSpinner() }, 200);
                     swal.fire("Failed", "Department(s) couldn't be deleted, please fix all errors and try again.", "error");
 
                     console.log(err);
                 }
             });
-            setTimeout(function () { gridObj.hideSpinner() }, 200);
+            //gridObj.refresh();
+            //setTimeout(function () { gridObj.hideSpinner() }, 200);
+
+            return true;
         }
     }
 

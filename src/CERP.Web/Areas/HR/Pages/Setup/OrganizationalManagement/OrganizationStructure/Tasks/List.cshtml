@@ -14,7 +14,7 @@
     bool IsEditing = (bool)ViewData["IsEditing"];
 
     ViewData["Title"] = L["Tasks"].Name;
-    ViewData["IconClass"] = "far fa-building";
+    ViewData["IconClass"] = "fas fa-tasks";
     ViewData["HeaderTitle"] = L["Tasks"].Name.ToUpper();
     ViewData["SubTitle"] = $"{L["ListOf"]} {L["Tasks"]}";
     ViewData["Area"] = "Setup";
@@ -41,6 +41,15 @@
     taskPositionsCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
     taskPositionsCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
     taskPositionsCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
+
+
+    List<object> qualificationsCommands = new List<object>();
+    qualificationsCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
+    qualificationsCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+    qualificationsCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
+
+    List<DictionaryValue> degrees = Model.DictionaryValuesRepo.Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Degree).ToList();
+    List<DictionaryValue> institues = Model.DictionaryValuesRepo.Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.AcademicInstitution).ToList();
 }
 
 @section styles {
@@ -72,6 +81,7 @@
             };
 
             let gridObj = $("#TasksGrid")[0].ej2_instances[0];
+            let qualificationsObj = $("#QualificationsGrid")[0].ej2_instances[0];
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_TaskTemplate.getList({}).done(function (data) {
                 gridObj.dataSource = data.items;
                 setTimeout(function () { gridObj.hideSpinner() }, 200);
@@ -109,6 +119,8 @@
 
                         //cERP.appServices.hR.leaveRequestTemplates.update()
                     }
+
+                    params.doesKPI = $('#doesKPI').parent().hasClass('active');
 
                     let formData = new FormData();
                     formData.append("info", JSON.stringify(params));
@@ -164,6 +176,89 @@
                     Swal.hideLoading();
                 }
             });
+
+            $('#submitQualificationBtn').on('click', function (e) {
+                e.preventDefault();
+                if (ValidateForm('qualificationsForm')) {
+                    qualificationsObj.showSpinner();
+                    Swal.showLoading();
+
+                    let form = [];
+                    let qualificationDetails = $('#qualificationsForm').find("textarea, input, select").serializeArray();
+                    form = form.concat(qualificationDetails);
+
+                    let params = objectifyForm(form);
+
+                    let id = 0;
+                    if (qualificationsObj.dataSource.length > 0)
+                        id = qualificationsObj.dataSource[qualificationsObj.dataSource.length - 1].id;
+
+                    params.isEditing = isEditingQualifications;
+
+                    if (isEditingQualifications) {
+                        params.id = curQualificationsEditRow.id;
+
+                        //cERP.appServices.hR.leaveRequestTemplates.update()
+                    }
+                    else {
+
+                        //cERP.appServices.hR.leaveRequestTemplates.update()
+                    }
+
+                    let formData = new FormData();
+                    formData.append("info", JSON.stringify(params));
+                    let xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+                    formData.append("__RequestVerificationToken", xhrToken);
+                    console.log(params);
+
+                    $.ajax({
+                        url: "?handler=TaskQualificationTemplate",
+                        async: true,
+                        type: "POST",
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (data) {
+                            Swal.hideLoading();
+                            console.log(data);
+                            if (isEditingQualifications) {
+                                qualificationsObj.refresh(); // refresh the Grid.
+
+                                swal.fire("Success", "Qualification has successfully been updated", "success");
+
+                                for (let i = 0; i < qualificationsObj.dataSource.length; i++) {
+                                    if (qualificationsObj.dataSource[i].id == data.id) {
+                                        qualificationsObj.dataSource[i] = data;
+                                    }
+                                }
+                                qualificationsObj.refresh();
+                            }
+                            else {
+                                qualificationsObj.dataSource.push(data);
+
+                                qualificationsObj.refresh(); // refresh the Grid.
+
+                                swal.fire("Success", "Qualification has successfully been added", "success");
+                            }
+                            qualificationsObj.hideSpinner();
+                        },
+                        error: function (err) {
+                            Swal.hideLoading();
+                            if (isEditingQualifications)
+                                swal.fire("Failed", "Qualification couldn't be updated, please fix all errors and try again.", "error");
+                            else
+                                swal.fire("Failed", "Qualification couldn't be added, please fix all errors and try again.", "error");
+
+                            console.log(err);
+                            qualificationsObj.hideSpinner();
+                        }
+                    });
+                }
+                else {
+                    Swal.close();
+                    Swal.hideLoading();
+                }
+            });
         });
     </script>
 }
@@ -186,7 +281,7 @@
         <form id="tasksForm" onkeydown="return event.key != 'Enter';" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
             <div id="taskSpecificForm">
                 <div class="row">
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
                         <div class="col-sm-6" style="padding:0">
                             <div class="form-group">
                                 <label class="control-label m-b-5 ">Title:</label>
@@ -200,19 +295,27 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5 control-label">Task Code:</label>
                             <input type="text" id="taskCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label class="margin-bottom-5 control-label">Task Description:</label>
+                            <input type="text" id="taskDescription" name="Description" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="control-label m-b-5 ">Activation Date:</label>
                             <input type="date" id="activationDate" name="ActivationDate" class="text-left form-control inline pull-left" required>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
                         <div class="col-sm-6" style="padding-right:0">
                             <div class="form-group">
                                 <label class="control-label m-b-5 ">Valid From:</label>
@@ -226,12 +329,130 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <div class="col-md-4 col-sm-12" style="padding: 0">
+                            <div class="form-group">
+                                <label class="control-label m-b-5 "></label>
+                                <div class="btn-group" data-toggle="buttons" style="width: 100%">
+                                    <label class="btn btn-default" style="width: 100%">
+                                        <input type="checkbox" id="doesKPI" name="DoesKPI" autocomplete="off" style="width: 100%"> Perform KPI
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8 col-sm-12" style="padding: 0">
+                            <label class="control-label m-b-5 "></label>
+                            <input id="submitTaskBtn" type="button" class="btn btn-success btn-block" value="Create Task" required />
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <hr />
-            <div class="row m-t-20">
-                <div class="col-lg-12">
-                    <input id="submitTaskBtn" type="button" class="btn btn-success btn-block" value="Create Task" required />
+                <div class="row">
+                    <div class="panel-body p-t-0" style="padding:0;">
+                        <div class="areaHeader" style="display:flex;">
+                            <div id="qualificationsLoader" class="pull-left loader-inline" style="display:none"></div>
+                            <div class="areaHeaderTitle">
+                                <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Qualifications</span>
+                                @*<span id="" class="areaHeaderTitleInNode menu-text"> > </span>*@
+                                @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
+                            </div>
+                            @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
+                            <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                @*<div class="clearfix margin-15"></div>*@
+                                <a id="addqualificationBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                            </div>
+                        </div>
+                        <div role="form" id="qualificationsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                            <div class="row">
+                                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label class="margin-bottom-5  control-label">Degree / Certification:</label>
+                                        <select id="degreeId" name="DegreeId" class="form-control" required>
+                                            <option></option>
+                                            @for (int i = 0; i < degrees.Count; i++)
+                                            {
+                                                <option value="@degrees[i].Id" data-value="@degrees[i].Value">@degrees[i].Value</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label class="margin-bottom-5  control-label">Institution:</label>
+                                        <select id="institutionId" name="InstitutionId" class="form-control" required>
+                                            <option></option>
+                                            @for (int i = 0; i < institues.Count; i++)
+                                            {
+                                                <option value="@institues[i].Id" data-value="@institues[i].Value">@institues[i].Value</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                    <div class="col-sm-6" style="padding:0">
+                                        <div class="form-group">
+                                            <label class="control-label m-b-5">From:</label>
+                                            <input type="text" id="fromDate" name="FromDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6" style="padding:0">
+                                        <div class="form-group">
+                                            <label class="control-label m-b-5 pull-right ">Hijri Date</label>
+                                            <input type="text" id="fromHDate" name="FromHDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                    <div class="col-sm-6" style="padding:0">
+                                        <div class="form-group">
+                                            <label class="control-label m-b-5">To:</label>
+                                            <input type="text" id="toDate" name="ToDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6" style="padding:0">
+                                        <div class="form-group">
+                                            <label class="control-label m-b-5 pull-right ">Hijri Date</label>
+                                            <input type="text" id="toHDate" name="ToHDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <button id="submitQualificationBtn" type="button" class="btn btn-success btn-block">Add Qualification</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="qualificationsCS" class="control-section">
+                            <ejs-grid id="qualificationsGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                      allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                      hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                      allowSorting="true" allowMultiSorting="true" gridLines="Both" dataSource="new List<dynamic>()"
+                                      toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" commandClick="qualificationsCommandClick" actionBegin="qualificationsActionBegin" actionComplete="qualificationsActionComplete"
+                                      allowPaging="true" allowResizing="true">
+
+                                <e-grid-columns>
+                                    <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                    <e-grid-column field="degree.value" allowEditing="false" headerText="Qualification" textAlign="Center"></e-grid-column>
+                                    <e-grid-column field="institute.value" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                    <e-grid-column headerText="Period" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
+                                        new Syncfusion.EJ2.Grids.GridColumn() { Field= "periodFromDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "From", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
+                                        new Syncfusion.EJ2.Grids.GridColumn() { Field= "periodToDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "To", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
+                                    }'></e-grid-column>
+                                    <e-grid-column headerText="Actions" textAlign="Center" commands="qualificationsCommands"></e-grid-column>
+                                </e-grid-columns>
+
+                                <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                            </ejs-grid>
+                        </div>
+                    </div>
                 </div>
             </div>
         </form>
@@ -244,13 +465,15 @@
                       allowPaging="true" allowResizing="true">
 
                 <e-grid-columns>
-                    <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                    <e-grid-column field="id" headerText="Id" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
                     <e-grid-column headerText="Name" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "name", HeaderText = "English", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "nameLocalized", HeaderText = "Local", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
                     }'></e-grid-column>
                     <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
-                    <e-grid-column field="activationDate" headerText="Activation Date" type="date" format="yMd" , allowEditing="true" editType="datepicker" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="description" headerText="Description" allowEditing="true" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="doesKPI" headerText="Perform KPI" displayAsCheckBox="true" editType="booleanedit" allowEditing="true" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="activationDate" headerText="Activation Date" type="date" format="yMd" allowEditing="true" editType="datepicker" textAlign="Center"></e-grid-column>
                     <e-grid-column headerText="Validity" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityFromDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "From", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityToDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "To", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
@@ -288,6 +511,13 @@
     }
 
     let isAuditTrail = false;
+
+    function alertBtnClick() {
+        let dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+        let dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
+        dialogObj.hide();
+        dialogObj1.hide();
+    }
     function toolbarClick(args) {
         let gridObj = document.getElementById("TasksGrid").ej2_instances[0];
 
@@ -394,12 +624,6 @@
         }
         setTimeout(function () { gridObj.hideSpinner() }, 200);
     }
-    function alertBtnClick() {
-        let dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
-        let dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
-        dialogObj.hide();
-        dialogObj1.hide();
-    }
     function commandClick(args) {
         let gridObj = document.getElementById("TasksGrid").ej2_instances[0];
 
@@ -416,6 +640,10 @@
             }, 200);
 
             FillFormByObject(params, $('#tasksForm'));
+
+            $('#doesKPI').parent().removeClass('active');
+            if (params.doesKPI)
+                $('#doesKPI').parent().addClass('active');
         }
         else if (args.commandColumn.type == "Copy") {
             this.copy(false);
@@ -438,7 +666,7 @@
             formData.append("__RequestVerificationToken", xhrToken);
 
             $.ajax({
-                url: '?handler=Task',
+                url: '?handler=TaskTemplate',
                 async: true,
                 type: "DELETE",
                 data: formData,
@@ -462,5 +690,69 @@
             setTimeout(function () { gridObj.hideSpinner() }, 200);
         }
     }
+
+    function qualificationsCommandClick(args) {
+        let gridObj = document.getElementById("QualificationsGrid").ej2_instances[0];
+
+        if (args.commandColumn.type == "Edit") {
+            isEditingQualifications = true;
+            let params = args.rowData;
+            curQualificationsEditRow = params;
+
+            toggleAreaFormBtn('qualificationsForm', false);
+
+            setTimeout(function () {
+                $('#submitQualificationBtn').val('Update Qualification');
+                toggleAreaFormBtn('qualificationsForm', true);
+            }, 200);
+
+            FillFormByObject(params, $('#qualificationsForm'));
+        }
+        else if (args.commandColumn.type == "Copy") {
+            this.copy(false);
+        }
+
+        setTimeout(function () { gridObj.hideSpinner() }, 200);
+    }
+    function qualificationsActionComplete(args) {
+        let gridObj = document.getElementById("QualificationsGrid").ej2_instances[0];
+        setTimeout(function () { gridObj.hideSpinner() }, 200)
+    }
+    function qualificationsActionBegin(args) {
+        if (args.requestType == "delete") {
+            let gridObj = document.getElementById("QualificationsGrid").ej2_instances[0];
+            Swal.showLoading();
+
+            let formData = new FormData();
+            formData.append("qualifications", JSON.stringify(args.data));
+            let xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+            formData.append("__RequestVerificationToken", xhrToken);
+
+            $.ajax({
+                url: '?handler=TaskQualificationTemplate',
+                async: true,
+                type: "DELETE",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    gridObj.hideSpinner();
+                    swal.fire("Success", "Qualification(s) has successfully been deleted", "success");
+
+                    if ($('#qualificationsForm').css('display') !== 'none') {
+                        $('#qualificationsForm').slideUp();
+                    }
+                },
+                error: function (err) {
+                    gridObj.hideSpinner();
+                    swal.fire("Failed", "Qualification(s) couldn't be deleted, please fix all errors and try again.", "error");
+
+                    console.log(err);
+                }
+            });
+            setTimeout(function () { gridObj.hideSpinner() }, 200);
+        }
+    }
+
 </script>
 

@@ -101,6 +101,11 @@ i.fab {
     width: 260px;
 }
 @media (min-width: 768px) {
+    .site-footer {
+        margin-left: 260px !important;
+    }
+}
+@media (min-width: 768px) {
     .site-content {
         margin-left: 260px !important;
     }

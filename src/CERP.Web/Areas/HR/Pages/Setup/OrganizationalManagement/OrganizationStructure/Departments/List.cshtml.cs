@@ -314,8 +314,8 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         }
 
                         OS_DepartmentTemplate_Dto updated = ObjectMapper.Map<OS_DepartmentTemplate, OS_DepartmentTemplate_Dto>(await OS_DepartmentTemplateAppService.Repository.UpdateAsync(curDepartmentTemplate));
-                        updated.CostCenter = ObjectMapper.Map<DictionaryValue,DictionaryValue_Dto>(await DictionaryValuesRepo.GetAsync(updated.CostCenterId));
-                        return StatusCode(200, updated);
+                        OS_DepartmentTemplate_Dto updatedDto = await OS_DepartmentTemplateAppService.GetDepartmentTemplateAsync(updated.Id);
+                        return StatusCode(200, updatedDto);
                     }
                     else
                     {
@@ -324,7 +324,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         departmentTemplate_Dto.SubDepartmentTemplates.ForEach(x => { x.Id = 0; x.SubDepartmentTemplateId = x.SubDepartmentTemplate.Id; x.SubDepartmentTemplate = null; });
 
                         OS_DepartmentTemplate_Dto added = await OS_DepartmentTemplateAppService.CreateAsync(departmentTemplate_Dto);
-                        added.CostCenter = ObjectMapper.Map<DictionaryValue, DictionaryValue_Dto>(await DictionaryValuesRepo.GetAsync(added.CostCenterId));
+                        OS_DepartmentTemplate_Dto addeddDto = await OS_DepartmentTemplateAppService.GetDepartmentTemplateAsync(added.Id);
                         if (AuditingManager.Current != null)
                         {
                             EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
@@ -337,7 +337,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                             AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
                         }
 
-                        return StatusCode(200, added);
+                        return StatusCode(200, addeddDto);
                     }
                 }
                 catch(Exception ex)
@@ -357,6 +357,14 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                 {
                     OS_DepartmentTemplate_Dto department = departments[i];
                     //await TaskTemplatesAppService.Repository.DeleteAsync(leaveRequest.);
+                    var depSubDeps = OS_DepartmentTemplateAppService.DepartmentSubDepartmentTemplateRepo.Where(x => x.DepartmentTemplateId == department.Id || x.SubDepartmentTemplateId == department.Id).ToList();
+                    for (int y = 0; y < depSubDeps.Count; y++)
+                    {
+                        await OS_DepartmentTemplateAppService.DepartmentSubDepartmentTemplateRepo.DeleteAsync(depSubDeps[y]);
+                    }
+                    var depPoses = OS_DepartmentTemplateAppService.PositionTemplateRepo.WithDetails().Where(x => x.DepartmentTemplateId == department.Id).ToList();
+                    await Positions.ListModel.DeletePositions(depPoses, OS_PositionTemplateAppService.PositionJobsTemplateRepo, OS_PositionTemplateAppService.PositionTasksTemplateRepo, OS_PositionTemplateAppService.Repository, AuditingManager);
+
                     await OS_DepartmentTemplateAppService.Repository.DeleteAsync(department.Id);
 
                     if (AuditingManager.Current != null)

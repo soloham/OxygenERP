@@ -54,7 +54,7 @@ function areaHeaderBtnClick(e) {
 
     if (isCollapsed) {
         ClearForm(form);
-
+        console.log('cleared');
         $(btnSec).slideUp(200);
         $(form).slideDown(200);
         setTimeout(function () { $(btn).html('<i class="fa fa-arrow-up p-r-5"></i> Cancel') }, 200)
@@ -509,11 +509,58 @@ function FillDivFormByObject(obj, elements) {
     }
 }
 function ClearForm(form) {
+    if (typeof form[0].length === 'undefined') {
+        let selection = `#${form[0].id} :input`;
+        ClearDivForm($(selection));
+        return;
+    }
+    let grids = $(`*[role="grid"]`, `#${form[0].id}`);
+    if (grids.length > 0) {
+        for (var y = 0; y < grids.length; y++)
+        {
+            try {
+                let grid = $(`#${grids[y].id.toString()}`)[0].ej2_instances[0];
+
+                grid.dataSource = [];
+                grid.refresh();
+                setTimeout(function () { grid.hideSpinner(); }, 200);
+            } catch (e) {
+
+            }
+        }
+    }
     for (var i = 0; i < form[0].length; i++) {
         let type = form[0][i].type;
-        console.log(type);
         if (type != 'submit' && type != 'button' && type != 'select-one' && type != 'select-multiple' && type != 'checkbox')
             form[0][i].value = '';
+    }
+    //let grids = $(`*[id*="Grid"]`, form);
+    //for (var i = 0; i < grids.length; i++) {
+
+    //}
+}
+function ClearDivForm(elements) {
+    for (var i = 0; i < elements.length; i++) {
+        let elm = elements[i];
+        let type = elm.type;
+        let role = elm.role;
+        if (role == 'grid') {
+            console.log(role);
+            try {
+                let grid = $(`#${elm.id}`)[0].ej2_instances[0];
+
+                grid.dataSource = [];
+                grid.refresh();
+                setTimeout(function () { grid.hideSpinner(); }, 200);
+            } catch (e) {
+
+            }
+        }
+        else if (type != 'submit' && type != 'button' && type != 'select-one' && type != 'select-multiple' && type != 'checkbox') {
+            if (type == 'date') {
+                elm.value = '';
+            }
+        }
     }
 }
 function camelCase(str) {

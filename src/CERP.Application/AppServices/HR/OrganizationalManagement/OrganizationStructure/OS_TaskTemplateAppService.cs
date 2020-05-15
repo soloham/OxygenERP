@@ -17,16 +17,28 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
 {
     public class OS_TaskTemplateAppService : CrudAppService<OS_TaskTemplate, OS_TaskTemplate_Dto, int, PagedAndSortedResultRequestDto, OS_TaskTemplate_Dto, OS_TaskTemplate_Dto>
     {
-        public OS_TaskTemplateAppService(IRepository<OS_TaskTemplate, int> repository) : base(repository)
+        public OS_TaskTemplateAppService(IRepository<OS_TaskTemplate, int> repository, IRepository<OS_TaskQualificationTemplate, int> tasksQualificationsRepository) : base(repository)
         {
             Repository = repository;
+            QualificationsRepository = tasksQualificationsRepository;
         }
 
         public IRepository<OS_TaskTemplate, int> Repository { get; }
+        public IRepository<OS_TaskQualificationTemplate, int> QualificationsRepository { get; }
 
         public async Task<List<OS_TaskTemplate_Dto>> GetAllTaskTemplatesAsync()
         {
             return (await Repository.GetListAsync(true)).Select(MapToGetListOutputDto).ToList();
+        }
+
+        public async Task<OS_TaskQualificationTemplate_Dto> AddQualificationTemplate(OS_TaskQualificationTemplate taskQualificationTemplate)
+        {
+            return ObjectMapper.Map<OS_TaskQualificationTemplate, OS_TaskQualificationTemplate_Dto>(await QualificationsRepository.InsertAsync(taskQualificationTemplate));
+        }
+        public async Task<OS_TaskQualificationTemplate_Dto> AddQualificationTemplate(OS_TaskQualificationTemplate_Dto taskQualificationTemplate)
+        {
+            OS_TaskQualificationTemplate toAdd = ObjectMapper.Map<OS_TaskQualificationTemplate_Dto, OS_TaskQualificationTemplate>(taskQualificationTemplate);
+            return ObjectMapper.Map<OS_TaskQualificationTemplate, OS_TaskQualificationTemplate_Dto>(await QualificationsRepository.InsertAsync(toAdd));
         }
     }
 }

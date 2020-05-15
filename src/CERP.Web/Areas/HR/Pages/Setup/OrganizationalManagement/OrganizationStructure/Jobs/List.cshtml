@@ -14,7 +14,7 @@
     bool IsEditing = (bool)ViewData["IsEditing"];
 
     ViewData["Title"] = L["Jobs"].Name;
-    ViewData["IconClass"] = "far fa-building";
+    ViewData["IconClass"] = "fas fa-user-md";
     ViewData["HeaderTitle"] = L["Jobs"].Name.ToUpper();
     ViewData["SubTitle"] = $"{L["ListOf"]} {L["Jobs"]}";
     ViewData["Area"] = "Setup";
@@ -185,7 +185,7 @@
         <form id="jobsForm" onkeydown="return event.key != 'Enter';" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
             <div id="jobSpecificForm">
                 <div class="row">
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
                         <div class="col-md-6 col-sm-6" style="padding:0">
                             <div class="form-group">
                                 <label class="control-label m-b-5 ">Title:</label>
@@ -199,19 +199,27 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5 control-label">Job Code:</label>
                             <input type="text" id="jobCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label class="margin-bottom-5 control-label">Job Description:</label>
+                            <input type="text" id="jobDescription" name="Description" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="control-label m-b-5 ">Activation Date:</label>
                             <input type="date" id="activationDate" name="ActivationDate" class="text-left form-control inline pull-left" required>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
                         <div class="col-sm-6" style="padding-right:0">
                             <div class="form-group">
                                 <label class="control-label m-b-5 ">Valid From:</label>
@@ -225,12 +233,12 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <hr />
-            <div class="row m-t-20">
-                <div class="col-lg-12">
-                    <input id="submitJobBtn" type="button" class="btn btn-success btn-block" value="Create Job" required />
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <div class="col-lg-12" style="padding: 0">
+                            <label class="control-label m-b-5 "></label>
+                            <input id="submitJobBtn" type="button" class="btn btn-success btn-block" value="Create Job" required />
+                        </div>
+                    </div>
                 </div>
             </div>
         </form>
@@ -243,12 +251,13 @@
                       allowPaging="true" allowResizing="true">
 
                 <e-grid-columns>
-                    <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                    <e-grid-column field="id" headerText="Id" textAlign="Center" isPrimaryKey="true" visible="false" showInColumnChooser="false"></e-grid-column>
                     <e-grid-column headerText="Name" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "name", HeaderText = "English", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "nameLocalized", HeaderText = "Local", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
                     }'></e-grid-column>
                     <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="description" headerText="Description" allowEditing="true" textAlign="Center"></e-grid-column>
                     <e-grid-column field="activationDate" headerText="Activation Date" type="date" format="E, MMMM d, y" , allowEditing="true" editType="datepicker" textAlign="Center"></e-grid-column>
                     <e-grid-column headerText="Validity" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityFromDate", Type="date", Format="E, MMMM d, y", AllowEditing=true, EditType="datepicker", HeaderText = "From", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },

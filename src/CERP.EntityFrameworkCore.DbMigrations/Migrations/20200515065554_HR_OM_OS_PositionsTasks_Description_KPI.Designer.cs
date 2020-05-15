@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200515065554_HR_OM_OS_PositionsTasks_Description_KPI")]
+    partial class HR_OM_OS_PositionsTasks_Description_KPI
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2212,64 +2214,6 @@ namespace CERP.Migrations
                     b.ToTable("DepartmentTemplates","HR.OrganizationalManagement.OrganizationStructure");
                 });
 
-            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_JobQualificationTemplate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnName("ConcurrencyStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("DegreeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnName("ExtraProperties")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("InstituteId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("JobTemplateId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("PeriodEndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("PeriodStartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DegreeId");
-
-                    b.HasIndex("InstituteId");
-
-                    b.HasIndex("JobTemplateId");
-
-                    b.ToTable("JobQualificationTemplates","HR.OrganizationalManagement.OrganizationStructure");
-                });
-
             modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_JobTemplate", b =>
                 {
                     b.Property<int>("Id")
@@ -2480,64 +2424,6 @@ namespace CERP.Migrations
                     b.HasIndex("DepartmentTemplateId");
 
                     b.ToTable("PositionTemplates","HR.OrganizationalManagement.OrganizationStructure");
-                });
-
-            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_TaskQualificationTemplate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnName("ConcurrencyStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("DegreeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnName("ExtraProperties")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("InstituteId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("PeriodEndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("PeriodStartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("TaskTemplateId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DegreeId");
-
-                    b.HasIndex("InstituteId");
-
-                    b.HasIndex("TaskTemplateId");
-
-                    b.ToTable("TaskQualificationTemplates","HR.OrganizationalManagement.OrganizationStructure");
                 });
 
             modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_TaskTemplate", b =>
@@ -6401,27 +6287,6 @@ namespace CERP.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_JobQualificationTemplate", b =>
-                {
-                    b.HasOne("CERP.App.DictionaryValue", "Degree")
-                        .WithMany()
-                        .HasForeignKey("DegreeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("CERP.App.DictionaryValue", "Institute")
-                        .WithMany()
-                        .HasForeignKey("InstituteId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_JobTemplate", "JobTemplate")
-                        .WithMany("JobQualificationTemplates")
-                        .HasForeignKey("JobTemplateId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_PositionJobTemplate", b =>
                 {
                     b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_JobTemplate", "JobTemplate")
@@ -6463,27 +6328,6 @@ namespace CERP.Migrations
                     b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_DepartmentTemplate", "DepartmentTemplate")
                         .WithMany("PositionTemplates")
                         .HasForeignKey("DepartmentTemplateId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_TaskQualificationTemplate", b =>
-                {
-                    b.HasOne("CERP.App.DictionaryValue", "Degree")
-                        .WithMany()
-                        .HasForeignKey("DegreeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("CERP.App.DictionaryValue", "Institute")
-                        .WithMany()
-                        .HasForeignKey("InstituteId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_TaskTemplate", "TaskTemplate")
-                        .WithMany("TaskQualificationTemplates")
-                        .HasForeignKey("TaskTemplateId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
