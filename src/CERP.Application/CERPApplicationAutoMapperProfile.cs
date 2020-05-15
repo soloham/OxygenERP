@@ -167,9 +167,13 @@ namespace CERP
 
             CreateMap<OS_JobTemplate, OS_JobTemplate_Dto>();
             CreateMap<OS_JobTemplate_Dto, OS_JobTemplate>();
+            CreateMap<OS_JobQualificationTemplate, OS_JobQualificationTemplate_Dto>();
+            CreateMap<OS_JobQualificationTemplate_Dto, OS_JobQualificationTemplate>();
 
             CreateMap<OS_TaskTemplate, OS_TaskTemplate_Dto>();
             CreateMap<OS_TaskTemplate_Dto, OS_TaskTemplate>();
+            CreateMap<OS_TaskQualificationTemplate, OS_TaskQualificationTemplate_Dto>();
+            CreateMap<OS_TaskQualificationTemplate_Dto, OS_TaskQualificationTemplate>();
             #endregion
             #endregion
             #endregion

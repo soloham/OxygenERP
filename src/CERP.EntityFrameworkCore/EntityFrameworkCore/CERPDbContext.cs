@@ -81,7 +81,9 @@ namespace CERP.EntityFrameworkCore
         public DbSet<OS_PositionJobTemplate> OS_PositionJobTemplates { get; set; }
         public DbSet<OS_PositionTaskTemplate> OS_PositionTaskTemplates { get; set; }
         public DbSet<OS_JobTemplate> OS_JobTemplates { get; set; }
+        public DbSet<OS_JobQualificationTemplate> OS_JobQualificationTemplates { get; set; }
         public DbSet<OS_TaskTemplate> OS_TaskTemplates { get; set; }
+        public DbSet<OS_TaskQualificationTemplate> OS_TaskQualificationTemplates { get; set; }
         #endregion
         #endregion
         #endregion

@@ -28,7 +28,13 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
 
         public async Task<List<OS_TaskTemplate_Dto>> GetAllTaskTemplatesAsync()
         {
-            return (await Repository.GetListAsync(true)).Select(MapToGetListOutputDto).ToList();
+            List<OS_TaskTemplate_Dto> list = (await Repository.GetListAsync(true)).Select(MapToGetListOutputDto).ToList();
+            return list;
+        }
+        public async Task<OS_TaskTemplate_Dto> GetTaskTemplateAsync(int id)
+        {
+            OS_TaskTemplate_Dto obj = ObjectMapper.Map< OS_TaskTemplate, OS_TaskTemplate_Dto>(await Repository.GetAsync(id, true));
+            return obj;
         }
 
         public async Task<OS_TaskQualificationTemplate_Dto> AddQualificationTemplate(OS_TaskQualificationTemplate taskQualificationTemplate)

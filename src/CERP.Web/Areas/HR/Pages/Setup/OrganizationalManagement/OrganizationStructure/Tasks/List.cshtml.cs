@@ -378,6 +378,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                             AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
                         }
 
+                        added = ObjectMapper.Map<OS_TaskQualificationTemplate, OS_TaskQualificationTemplate_Dto>(await OS_TaskTemplateAppService.QualificationsRepository.GetAsync(added.Id));
                         return StatusCode(200, added);
                     }
                 }

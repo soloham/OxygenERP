@@ -225,6 +225,30 @@ namespace CERP.EntityFrameworkCore
                                                        .Include(p => p.CostCenter)
                                                        .Include(p => p.DepartmentTemplate);
                 });
+                options.Entity<OS_JobTemplate>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.JobQualificationTemplates)
+                                                        .ThenInclude(p => p.Degree)
+                                                       .Include(p => p.JobQualificationTemplates)
+                                                        .ThenInclude(p => p.Institute);
+                });
+                options.Entity<OS_TaskTemplate>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.TaskQualificationTemplates)
+                                                        .ThenInclude(p => p.Degree)
+                                                       .Include(p => p.TaskQualificationTemplates)
+                                                        .ThenInclude(p => p.Institute);
+                });
+                options.Entity<OS_TaskQualificationTemplate>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.Degree)
+                                                       .Include(p => p.Institute);
+                });
+                options.Entity<OS_JobQualificationTemplate>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.Degree)
+                                                       .Include(p => p.Institute);
+                });
                 #endregion
                 #endregion
                 #endregion

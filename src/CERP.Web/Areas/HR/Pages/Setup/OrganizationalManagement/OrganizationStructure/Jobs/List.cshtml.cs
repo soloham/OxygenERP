@@ -356,6 +356,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curJobQualificationTemplate.PeriodEndDate = jobQualificationTemplate_Dto.PeriodEndDate;
 
                         OS_JobQualificationTemplate_Dto updated = ObjectMapper.Map<OS_JobQualificationTemplate, OS_JobQualificationTemplate_Dto>(await OS_JobTemplateAppService.QualificationsRepository.UpdateAsync(curJobQualificationTemplate));
+                        updated = ObjectMapper.Map<OS_JobQualificationTemplate, OS_JobQualificationTemplate_Dto>(await OS_JobTemplateAppService.QualificationsRepository.GetAsync(updated.Id));
 
                         return StatusCode(200, updated);
                     }
@@ -376,6 +377,8 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
 
                             AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
                         }
+
+                        added = ObjectMapper.Map<OS_JobQualificationTemplate, OS_JobQualificationTemplate_Dto>(await OS_JobTemplateAppService.QualificationsRepository.GetAsync(added.Id));
 
                         return StatusCode(200, added);
                     }
