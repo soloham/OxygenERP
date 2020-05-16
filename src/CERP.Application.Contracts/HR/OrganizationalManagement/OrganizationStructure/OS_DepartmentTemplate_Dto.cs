@@ -53,11 +53,11 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         }
         public List<OS_PositionTemplate_Dto> PositionTemplates { get; set; } = new List<OS_PositionTemplate_Dto>();
 
-        public bool ContainsDepartment(int id)
+        public bool ContainsDepartment(int id, bool state = false)
         {
-            bool result = false;
-            if (SubDepartmentTemplates != null && SubDepartmentTemplates.Count > 0)
-                result = SubDepartmentTemplates.Any(x => x.SubDepartmentTemplate.ContainsDepartment(id));
+            bool result = state;
+            if (!state && SubDepartmentTemplates != null && SubDepartmentTemplates.Count > 0)
+                result = SubDepartmentTemplates.Any(x => x.SubDepartmentTemplateId == id || x.SubDepartmentTemplate.ContainsDepartment(id, state));
             return result;
         }
         public string GetDepartmentStructure()
@@ -76,9 +76,9 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
                         {
                             result += " > " + curSubDep.SubDepartmentTemplate.SubDepartmentTemplates[y].SubDepartmentTemplate.GetDepartmentStructure();
                         }
-                        result += ")";
+                        //result += ")";
                     }
-                    result += (i == SubDepartmentTemplates.Count - 1 ? "" : ", ");
+                    result += (i == SubDepartmentTemplates.Count - 1 ? "" : "), ");
                 }
                 result += SubDepartmentTemplates.Count == 0 ? "" : ")";
             }

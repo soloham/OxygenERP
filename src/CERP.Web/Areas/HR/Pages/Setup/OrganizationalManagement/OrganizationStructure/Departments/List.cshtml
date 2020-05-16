@@ -186,7 +186,11 @@
                     params.positionJobTemplates = [];
                     for (var i = 0; i < selectedPositionJobs.length; i++) {
                         selectedPositionJobTemplates.push(positionJobs.filter(x => x.id == selectedPositionJobs[i])[0]);
-                        params.positionJobTemplates.push({ jobTemplate: selectedPositionJobTemplates[i] });
+                        let toAdd = { jobTemplate: selectedPositionJobTemplates[i] };
+                        if (isEditingPositions) {
+                            toAdd.positionTemplateId = curPositionsEditRow.id;
+                        }
+                        params.positionJobTemplates.push(toAdd);
                     }
 
                     let selectedPositionTasks = $('#positionTasks').val();
@@ -195,7 +199,11 @@
                     params.positionTaskTemplates = [];
                     for (var i = 0; i < selectedPositionTasks.length; i++) {
                         selectedPositionTaskTemplates.push(positionTasks.filter(x => x.id == selectedPositionTasks[i])[0]);
-                        params.positionTaskTemplates.push({ taskTemplate: selectedPositionTaskTemplates[i] });
+                        let toAdd = { taskTemplate: selectedPositionTaskTemplates[i] };
+                        if (isEditingPositions) {
+                            toAdd.positionTemplateId = curPositionsEditRow.id;
+                        }
+                        params.positionTaskTemplates.push(toAdd);
                     }
 
                     params.departmentTemplateId = curDepartmentsEditRow.id;
@@ -1229,35 +1237,35 @@
     function subDepartmentsActionBegin(args) {
         if (args.requestType == "delete") {
             let gridObj = document.getElementById("SubDepartmentsGrid").ej2_instances[0];
-            Swal.showLoading();
+            //Swal.showLoading();
 
-            let formData = new FormData();
-            formData.append("departments", JSON.stringify(args.data));
-            let xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
-            formData.append("__RequestVerificationToken", xhrToken);
+            //let formData = new FormData();
+            //formData.append("departments", JSON.stringify(args.data));
+            //let xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+            //formData.append("__RequestVerificationToken", xhrToken);
 
-            $.ajax({
-                url: '?handler=Department',
-                async: true,
-                type: "DELETE",
-                data: formData,
-                contentType: false,
-                processData: false,
-                success: function (data) {
-                    gridObj.hideSpinner();
-                    swal.fire("Success", "Department(s) has successfully been deleted", "success");
+            //$.ajax({
+            //    url: '?handler=Department',
+            //    async: true,
+            //    type: "DELETE",
+            //    data: formData,
+            //    contentType: false,
+            //    processData: false,
+            //    success: function (data) {
+            //        gridObj.hideSpinner();
+            //        swal.fire("Success", "Department(s) has successfully been deleted", "success");
 
-                    if ($('#subDepartmentsForm').css('display') !== 'none') {
-                        $('#subDepartmentsForm').slideUp();
-                    }
-                },
-                error: function (err) {
-                    gridObj.hideSpinner();
-                    swal.fire("Failed", "Department(s) couldn't be deleted, please fix all errors and try again.", "error");
+            //        if ($('#subDepartmentsForm').css('display') !== 'none') {
+            //            $('#subDepartmentsForm').slideUp();
+            //        }
+            //    },
+            //    error: function (err) {
+            //        gridObj.hideSpinner();
+            //        swal.fire("Failed", "Department(s) couldn't be deleted, please fix all errors and try again.", "error");
 
-                    console.log(err);
-                }
-            });
+            //        console.log(err);
+            //    }
+            //});
             setTimeout(function () { gridObj.hideSpinner() }, 200);
         }
     }

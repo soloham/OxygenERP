@@ -275,7 +275,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         }
                         for (int i = 0; i < posTasks.Length; i++)
                         {
-                            if (!curPositionTemplate.PositionTaskTemplates.Any(x => x.PositionTemplateId == posTasks[i].PositionTemplate.Id && x.CreationTime == posTasks[i].CreationTime))
+                            if (!curPositionTemplate.PositionTaskTemplates.Any(x => x.PositionTemplateId == posTasks[i].PositionTemplateId))
                             {
                                 curPositionTemplate.PositionTaskTemplates.Add(new OS_PositionTaskTemplate() { TaskTemplateId = posTasks[i].TaskTemplate.Id });
                             }

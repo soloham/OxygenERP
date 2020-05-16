@@ -32,7 +32,8 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
 
         public async Task<List<OS_PositionTemplate_Dto>> GetAllPositionTemplatesAsync()
         {
-            return (await Repository.GetListAsync(true)).Select(MapToGetListOutputDto).ToList();
+            List<OS_PositionTemplate_Dto> list = (await Repository.GetListAsync(true)).Select(MapToGetListOutputDto).ToList();
+            return list;
         }
     }
 }

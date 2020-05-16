@@ -80,18 +80,20 @@
             };
             $('#positionJobs').multiselect(options);
             $('#positionTasks').multiselect(options);
-            $('#positionDepartmentId').multiselect(options);
+            //$('#positionDepartmentId').multiselect(options);
 
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_DepartmentTemplate.getList({}).done(function (data) {
                 departments = data.items;
 
                 let dataMS = [];
+                $('#positionDepartmentId').find('option').remove().end();
                 for (let i = 0; i < departments.length; i++) {
                     let item = departments[i];
                     dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+                    $('#positionDepartmentId').append(`<option value='${item.id}'>${item.code} - ${item.name}</option>`);
                 }
-                $('#positionDepartmentId').multiselect('dataprovider', dataMS);
-                $('#positionDepartmentId').change();
+                //$('#positionDepartmentId').multiselect('dataprovider', dataMS);
+                //$('#positionDepartmentId').change();
             });
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_JobTemplate.getList({}).done(function (data) {
                 positionJobs = data.items;
@@ -161,7 +163,11 @@
                     params.positionJobTemplates = [];
                     for (var i = 0; i < selectedPositionJobs.length; i++) {
                         selectedPositionJobTemplates.push(positionJobs.filter(x => x.id == selectedPositionJobs[i])[0]);
-                        params.positionJobTemplates.push({ jobTemplate: selectedPositionJobTemplates[i] });
+                        let toAdd = { jobTemplate: selectedPositionJobTemplates[i] };
+                        if (isEditingPositions) {
+                            toAdd.positionTemplateId = curPositionsEditRow.id;
+                        }
+                        params.positionJobTemplates.push(toAdd);
                     }
 
                     let selectedPositionTasks = $('#positionTasks').val();
@@ -170,7 +176,11 @@
                     params.positionTaskTemplates = [];
                     for (var i = 0; i < selectedPositionTasks.length; i++) {
                         selectedPositionTaskTemplates.push(positionTasks.filter(x => x.id == selectedPositionTasks[i])[0]);
-                        params.positionTaskTemplates.push({ taskTemplate: selectedPositionTaskTemplates[i] });
+                        let toAdd = { taskTemplate: selectedPositionTaskTemplates[i] };
+                        if (isEditingPositions) {
+                            toAdd.positionTemplateId = curPositionsEditRow.id;
+                        }
+                        params.positionTaskTemplates.push(toAdd);
                     }
 
                     let formData = new FormData();
@@ -530,7 +540,7 @@
             }, 200);
 
             FillFormByObject(params, $('#positionsForm'));
-            $('#positionDepartmentId').multiselect('deselectAll', false);
+            //$('#positionDepartmentId').multiselect('deselectAll', false);
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_PositionTemplate.get(params.id).done(function (data) {
                 console.log(data);
                 let positionJobs = data.positionJobTemplates;
@@ -541,8 +551,7 @@
                 $('#positionTasks').multiselect('select', positionTasks.map(function (item) { return item.taskTemplateId }));
 
                 $('#positionLevel').val(data.levelDescription);
-                $('#positionDepartmentId').multiselect('select',data.departmentTemplate.id);
-                $('#positionDepartmentId').multiselect('refresh');
+                $('#positionDepartmentId').val(data.departmentTemplate.id);
 
                 FillFormByObject(data, $('#positionsForm'));
             });

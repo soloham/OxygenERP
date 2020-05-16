@@ -290,7 +290,11 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                             if (!curDepartmentTemplate.SubDepartmentTemplates.Any(x => x.Id == depSubDeps[i].Id && x.CreationTime == depSubDeps[i].CreationTime))
                             {
                                 if (!depSubDeps[i].SubDepartmentTemplate.ContainsDepartment(curDepartmentTemplate.Id))
-                                    curDepartmentTemplate.SubDepartmentTemplates.Add(new OS_DepartmentSubDepartmentTemplate { SubDepartmentTemplateId = depSubDeps[i].SubDepartmentTemplate.Id });
+                                    curDepartmentTemplate.SubDepartmentTemplates.Add(new OS_DepartmentSubDepartmentTemplate { 
+                                        SubDepartmentTemplateId = depSubDeps[i].SubDepartmentTemplate.Id,
+                                        SubDepartmentRelationshipType = depSubDeps[i].SubDepartmentRelationshipType,
+                                        Name = depSubDeps[i].Name
+                                    });
                                 else {
                                     Exception ex = new Exception($"Cannot add the parent/sibling department '{depSubDeps[i].SubDepartmentTemplate.Name}', as a sub department.");
                                     ex.Data.Add(depSubDeps[i], "main");
@@ -300,7 +304,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                             }
                             else
                             {
-                                var _departmentSubDep = curDepartmentTemplate.SubDepartmentTemplates.First(x => x.Id == depSubDeps[i].Id);
+                                var _departmentSubDep = curDepartmentTemplate.SubDepartmentTemplates.First(x => x.SubDepartmentTemplateId == depSubDeps[i].SubDepartmentTemplateId);
                                 _departmentSubDep.SubDepartmentRelationshipType = depSubDeps[i].SubDepartmentRelationshipType;
                                 _departmentSubDep.Name = depSubDeps[i].Name;
 

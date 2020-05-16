@@ -533,6 +533,17 @@ function ClearForm(form) {
         let type = form[0][i].type;
         if (type != 'submit' && type != 'button' && type != 'select-one' && type != 'select-multiple' && type != 'checkbox')
             form[0][i].value = '';
+        else if (type == 'select-one') {
+            try {
+                let melm = $('#' + form[0][i].id);
+                if ($(melm).parent().id.includes('multiselect')) {
+                    console.log(melm.id);
+                    melm.multiselect('refresh');
+                }
+            } catch (e) {
+
+            }
+        }
     }
     //let grids = $(`*[id*="Grid"]`, form);
     //for (var i = 0; i < grids.length; i++) {
@@ -557,8 +568,17 @@ function ClearDivForm(elements) {
             }
         }
         else if (type != 'submit' && type != 'button' && type != 'select-one' && type != 'select-multiple' && type != 'checkbox') {
-            if (type == 'date') {
-                elm.value = '';
+            elm.value = '';
+        }
+        else if (type == 'select-one') {
+            try {
+                let melm = $('#' + elm.id);
+                if ($(melm).parent().id.includes('multiselect')) {
+                    console.log(melm.id);
+                    melm.multiselect('refresh');
+                }
+            } catch (e) {
+
             }
         }
     }

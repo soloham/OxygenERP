@@ -764,9 +764,28 @@
                                     <li class=""><a asp-area="" asp-page="">Personnel Structure</a></li>
                                 </ul>
                             </li>
+                            <li class="with-sub">
+                                <a href="#" aria-haspopup="true">
+                                    <span class="menu-text">Users Management</span>
+                                </a>
+                                <ul class="sidebar-submenu sidebar-submenu-simple collapse" style="padding-left: 31px">
+                                    <li class="menu-subtitle">Users Management</li>
+                                    <li class="">
+                                        <a asp-area="HR" asp-page="/Setup/UsersManagement/Users/List">
+                                            <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                            <span class="menu-text">Users</span>
+                                        </a>
+                                    </li>
+                                    <li class="">
+                                        <a asp-area="HR" asp-page="/Setup/UsersManagement/Roles/List">
+                                            <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                            <span class="menu-text">Roles</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
                         </ul>
                     </li>
-
 
                     <li class="menu-title">CUSTOMERS</li>
                     <li class="with-sub">
