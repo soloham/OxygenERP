@@ -209,7 +209,6 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curJobTemplate.Code = jobTemplate_Dto.Code;
                         curJobTemplate.ValidityFromDate = jobTemplate_Dto.ValidityFromDate;
                         curJobTemplate.ValidityToDate = jobTemplate_Dto.ValidityToDate;
-                        curJobTemplate.ActivationDate = jobTemplate_Dto.ActivationDate;
                         curJobTemplate.Description = jobTemplate_Dto.Description;
 
                         OS_JobTemplate_Dto updated = ObjectMapper.Map<OS_JobTemplate, OS_JobTemplate_Dto>(await OS_JobTemplateAppService.Repository.UpdateAsync(curJobTemplate));

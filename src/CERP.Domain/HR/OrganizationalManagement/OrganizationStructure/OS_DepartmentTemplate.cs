@@ -31,8 +31,6 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public Guid CostCenterId { get; set; }
 
         [CustomAudited]
-        public DateTime ActivationDate { get; set; }
-        [CustomAudited]
         public DateTime ValidityFromDate { get; set; }
         [CustomAudited]
         public DateTime ValidityToDate { get; set; }

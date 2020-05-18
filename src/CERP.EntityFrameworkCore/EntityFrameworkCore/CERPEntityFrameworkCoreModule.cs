@@ -225,30 +225,102 @@ namespace CERP.EntityFrameworkCore
                                                        .Include(p => p.CostCenter)
                                                        .Include(p => p.DepartmentTemplate);
                 });
+
                 options.Entity<OS_JobTemplate>(opt =>
                 {
-                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.JobQualificationTemplates)
-                                                        .ThenInclude(p => p.Degree)
-                                                       .Include(p => p.JobQualificationTemplates)
-                                                        .ThenInclude(p => p.Institute);
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.JobSkillTemplates)
+                                                        .ThenInclude(p => p.SkillTemplate)
+                                                        .ThenInclude(p => p.SkillSubType)
+                                                       .Include(p => p.JobAcademiaTemplates)
+                                                        .ThenInclude(p => p.AcademiaTemplate)
+                                                        .ThenInclude(p => p.AcademiaCertificateSubType)
+                                                       .Include(p => p.JobFunctionTemplates)
+                                                        .ThenInclude(p => p.FunctionTemplate)
+                                                       .Include(p => p.JobTaskTemplates)
+                                                        .ThenInclude(p => p.TaskTemplate)
+                                                       .Include(p => p.CompensationMatrix);
                 });
+                options.Entity<OS_JobTaskTemplate>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.TaskTemplate)
+                                                        .ThenInclude(p => p.TaskSkillTemplates)
+                                                        .ThenInclude(p => p.SkillTemplate)
+                                                       .Include(p => p.TaskTemplate)
+                                                        .ThenInclude(p => p.TaskAcademiaTemplates)
+                                                        .ThenInclude(p => p.AcademiaTemplate)
+                                                       .Include(p => p.TaskTemplate)
+                                                        .ThenInclude(p => p.CompensationMatrix);
+                });
+                options.Entity<OS_JobFunctionTemplate>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.FunctionTemplate)
+                                                        .ThenInclude(p => p.FunctionSkillTemplates)
+                                                        .ThenInclude(p => p.SkillTemplate)
+                                                       .Include(p => p.FunctionTemplate)
+                                                        .ThenInclude(p => p.FunctionAcademiaTemplates)
+                                                        .ThenInclude(p => p.AcademiaTemplate)
+                                                       .Include(p => p.FunctionTemplate)
+                                                        .ThenInclude(p => p.CompensationMatrix);
+                });
+                options.Entity<OS_JobSkillTemplate>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.SkillTemplate)
+                                                       .ThenInclude(p => p.SkillSubType);
+                });
+                options.Entity<OS_JobAcademiaTemplate>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.AcademiaTemplate)
+                                                       .ThenInclude(p => p.AcademiaCertificateSubType);
+                });
+
                 options.Entity<OS_TaskTemplate>(opt =>
                 {
-                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.TaskQualificationTemplates)
-                                                        .ThenInclude(p => p.Degree)
-                                                       .Include(p => p.TaskQualificationTemplates)
-                                                        .ThenInclude(p => p.Institute);
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.TaskSkillTemplates)
+                                                        .ThenInclude(p => p.SkillTemplate)
+                                                       .Include(p => p.TaskAcademiaTemplates)
+                                                        .ThenInclude(p => p.AcademiaTemplate)
+                                                       .Include(p => p.CompensationMatrix);
                 });
-                options.Entity<OS_TaskQualificationTemplate>(opt =>
+                options.Entity<OS_TaskSkillTemplate>(opt =>
                 {
-                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.Degree)
-                                                       .Include(p => p.Institute);
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.SkillTemplate)
+                                                       .ThenInclude(p => p.SkillSubType);
                 });
-                options.Entity<OS_JobQualificationTemplate>(opt =>
+                options.Entity<OS_TaskAcademiaTemplate>(opt =>
                 {
-                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.Degree)
-                                                       .Include(p => p.Institute);
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.AcademiaTemplate)
+                                                       .ThenInclude(p => p.AcademiaCertificateSubType);
                 });
+
+                options.Entity<OS_FunctionTemplate>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.FunctionSkillTemplates)
+                                                        .ThenInclude(p => p.SkillTemplate)
+                                                       .Include(p => p.FunctionAcademiaTemplates)
+                                                        .ThenInclude(p => p.AcademiaTemplate)
+                                                       .Include(p => p.CompensationMatrix);
+                });
+                options.Entity<OS_FunctionSkillTemplate>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.SkillTemplate)
+                                                       .ThenInclude(p => p.SkillSubType);
+                });
+                options.Entity<OS_FunctionAcademiaTemplate>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.AcademiaTemplate)
+                                                       .ThenInclude(p => p.AcademiaCertificateSubType);
+                });
+
+                //options.Entity<OS_TaskQualificationTemplate>(opt =>
+                //{
+                //    opt.DefaultWithDetailsFunc = q => q.Include(p => p.Degree)
+                //                                       .Include(p => p.Institute);
+                //});
+                //options.Entity<OS_JobQualificationTemplate>(opt =>
+                //{
+                //    opt.DefaultWithDetailsFunc = q => q.Include(p => p.Degree)
+                //                                       .Include(p => p.Institute);
+                //});
                 #endregion
                 #endregion
                 #endregion

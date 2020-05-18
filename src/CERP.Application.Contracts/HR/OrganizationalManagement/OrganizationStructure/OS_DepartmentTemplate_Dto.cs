@@ -29,7 +29,6 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public DictionaryValue_Dto CostCenter { get; set; }
         public Guid CostCenterId { get; set; }
 
-        public DateTime ActivationDate { get; set; }
         public DateTime ValidityFromDate { get; set; }
         public DateTime ValidityToDate { get; set; }
 

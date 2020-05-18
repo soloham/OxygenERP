@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace CERP.HR.OrganizationalManagement.OrganizationStructure
 {
-    public class OS_TaskTemplate : AuditedAggregateTenantRoot<int>
+    public class OS_FunctionTemplate : AuditedAggregateTenantRoot<int>
     {
-        public OS_TaskTemplate()
+        public OS_FunctionTemplate()
         {
         }
 
@@ -26,35 +26,31 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
 
         [CustomAudited]
         public bool DoesKPI { get; set; }
-        [CustomAudited]
-        public bool WorkflowLinkability { get; set; }
 
         [CustomAudited]
         public DateTime ValidityFromDate { get; set; }
         [CustomAudited]
         public DateTime ValidityToDate { get; set; }
 
-        //public virtual ICollection<OS_TaskQualificationTemplate> TaskQualificationTemplates { get; set; }
-
         public virtual OS_CompensationMatrixTemplate CompensationMatrix { get; set; }
         [CustomAudited]
         public int CompensationMatrixId { get; set; }
 
-        public virtual ICollection<OS_TaskSkillTemplate> TaskSkillTemplates { get; set; }
-        public virtual ICollection<OS_TaskAcademiaTemplate> TaskAcademiaTemplates { get; set; }
+        public virtual ICollection<OS_FunctionSkillTemplate> FunctionSkillTemplates { get; set; }
+        public virtual ICollection<OS_FunctionAcademiaTemplate> FunctionAcademiaTemplates { get; set; }
     }
-    public class OS_TaskSkillTemplate : AuditedAggregateTenantRoot<int>
+    public class OS_FunctionSkillTemplate : AuditedAggregateTenantRoot<int>
     {
-        public OS_TaskTemplate TaskTemplate { get; set; }
-        public int TaskTemplateId { get; set; }
+        public OS_FunctionTemplate FunctionTemplate { get; set; }
+        public int FunctionTemplateId { get; set; }
 
         public OS_SkillTemplate SkillTemplate { get; set; }
         public int SkillTemplateId { get; set; }
     }
-    public class OS_TaskAcademiaTemplate : AuditedAggregateTenantRoot<int>
+    public class OS_FunctionAcademiaTemplate : AuditedAggregateTenantRoot<int>
     {
-        public OS_TaskTemplate TaskTemplate { get; set; }
-        public int TaskTemplateId { get; set; }
+        public OS_FunctionTemplate FunctionTemplate { get; set; }
+        public int FunctionTemplateId { get; set; }
 
         public OS_AcademiaTemplate AcademiaTemplate { get; set; }
         public int AcademiaTemplateId { get; set; }

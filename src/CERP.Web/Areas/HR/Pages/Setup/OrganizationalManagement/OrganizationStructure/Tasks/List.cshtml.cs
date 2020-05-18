@@ -209,7 +209,6 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curTaskTemplate.Code = taskTemplate_Dto.Code;
                         curTaskTemplate.ValidityFromDate = taskTemplate_Dto.ValidityFromDate;
                         curTaskTemplate.ValidityToDate = taskTemplate_Dto.ValidityToDate;
-                        curTaskTemplate.ActivationDate = taskTemplate_Dto.ActivationDate;
                         curTaskTemplate.Description = taskTemplate_Dto.Description;
                         curTaskTemplate.DoesKPI = taskTemplate_Dto.DoesKPI;
 
@@ -277,149 +276,149 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
             }
         }
 
-        public async Task<IActionResult> OnPostTaskQualificationTemplate()
-        {
+        //public async Task<IActionResult> OnPostTaskQualificationTemplate()
+        //{
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var FormData = Request.Form;
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            var FormData = Request.Form;
 
-                    OS_TaskQualificationTemplate_Dto taskQualificationTemplate_Dto = JsonSerializer.Deserialize<OS_TaskQualificationTemplate_Dto>(FormData["info"]);
+        //            OS_TaskQualificationTemplate_Dto taskQualificationTemplate_Dto = JsonSerializer.Deserialize<OS_TaskQualificationTemplate_Dto>(FormData["info"]);
 
-                    bool IsEditing = taskQualificationTemplate_Dto.Id > 0;
-                    if (IsEditing)
-                    {
-                        OS_TaskQualificationTemplate curTaskQualificationTemplate = await OS_TaskTemplateAppService.QualificationsRepository.GetAsync(taskQualificationTemplate_Dto.Id);
+        //            bool IsEditing = taskQualificationTemplate_Dto.Id > 0;
+        //            if (IsEditing)
+        //            {
+        //                OS_TaskQualificationTemplate curTaskQualificationTemplate = await OS_TaskTemplateAppService.QualificationsRepository.GetAsync(taskQualificationTemplate_Dto.Id);
 
-                        if (AuditingManager.Current != null)
-                        {
-                            EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
+        //                if (AuditingManager.Current != null)
+        //                {
+        //                    EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
 
-                            entityChangeInfo.EntityId = taskQualificationTemplate_Dto.Id.ToString();
-                            entityChangeInfo.EntityTenantId = taskQualificationTemplate_Dto.TenantId;
-                            entityChangeInfo.ChangeTime = DateTime.Now;
-                            entityChangeInfo.ChangeType = EntityChangeType.Updated;
-                            entityChangeInfo.EntityTypeFullName = typeof(OS_TaskQualificationTemplate).FullName;
+        //                    entityChangeInfo.EntityId = taskQualificationTemplate_Dto.Id.ToString();
+        //                    entityChangeInfo.EntityTenantId = taskQualificationTemplate_Dto.TenantId;
+        //                    entityChangeInfo.ChangeTime = DateTime.Now;
+        //                    entityChangeInfo.ChangeType = EntityChangeType.Updated;
+        //                    entityChangeInfo.EntityTypeFullName = typeof(OS_TaskQualificationTemplate).FullName;
 
-                            entityChangeInfo.PropertyChanges = new List<EntityPropertyChangeInfo>();
-                            List<EntityPropertyChangeInfo> entityPropertyChanges = new List<EntityPropertyChangeInfo>();
-                            var auditProps = typeof(OS_TaskQualificationTemplate).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+        //                    entityChangeInfo.PropertyChanges = new List<EntityPropertyChangeInfo>();
+        //                    List<EntityPropertyChangeInfo> entityPropertyChanges = new List<EntityPropertyChangeInfo>();
+        //                    var auditProps = typeof(OS_TaskQualificationTemplate).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
 
-                            OS_TaskQualificationTemplate mappedInput = ObjectMapper.Map<OS_TaskQualificationTemplate_Dto, OS_TaskQualificationTemplate>(taskQualificationTemplate_Dto);
-                            foreach (var prop in auditProps)
-                            {
-                                EntityPropertyChangeInfo propertyChange = new EntityPropertyChangeInfo();
-                                object origVal = prop.GetValue(curTaskQualificationTemplate);
-                                propertyChange.OriginalValue = origVal == null ? "" : origVal.ToString();
-                                object newVal = prop.GetValue(mappedInput);
-                                propertyChange.NewValue = newVal == null ? "" : newVal.ToString();
-                                if (propertyChange.OriginalValue == propertyChange.NewValue) continue;
+        //                    OS_TaskQualificationTemplate mappedInput = ObjectMapper.Map<OS_TaskQualificationTemplate_Dto, OS_TaskQualificationTemplate>(taskQualificationTemplate_Dto);
+        //                    foreach (var prop in auditProps)
+        //                    {
+        //                        EntityPropertyChangeInfo propertyChange = new EntityPropertyChangeInfo();
+        //                        object origVal = prop.GetValue(curTaskQualificationTemplate);
+        //                        propertyChange.OriginalValue = origVal == null ? "" : origVal.ToString();
+        //                        object newVal = prop.GetValue(mappedInput);
+        //                        propertyChange.NewValue = newVal == null ? "" : newVal.ToString();
+        //                        if (propertyChange.OriginalValue == propertyChange.NewValue) continue;
 
-                                propertyChange.PropertyName = prop.Name;
+        //                        propertyChange.PropertyName = prop.Name;
 
-                                if (prop.Name.EndsWith("Id"))
-                                {
-                                    try
-                                    {
-                                        string valuePropName = prop.Name.TrimEnd('d', 'I');
-                                        propertyChange.PropertyName = valuePropName;
+        //                        if (prop.Name.EndsWith("Id"))
+        //                        {
+        //                            try
+        //                            {
+        //                                string valuePropName = prop.Name.TrimEnd('d', 'I');
+        //                                propertyChange.PropertyName = valuePropName;
 
-                                        var valueProp = typeof(OS_TaskQualificationTemplate).GetProperty(valuePropName);
+        //                                var valueProp = typeof(OS_TaskQualificationTemplate).GetProperty(valuePropName);
 
-                                        DictionaryValue _origValObj = (DictionaryValue)valueProp.GetValue(taskQualificationTemplate_Dto);
-                                        if (_origValObj == null) _origValObj = await DictionaryValuesRepo.GetAsync((Guid)origVal);
-                                        string _origVal = _origValObj.Value;
-                                        propertyChange.OriginalValue = origVal == null ? "" : _origVal;
-                                        DictionaryValue _newValObj = (DictionaryValue)valueProp.GetValue(mappedInput);
-                                        if (_newValObj == null) _newValObj = await DictionaryValuesRepo.GetAsync((Guid)newVal);
-                                        string _newVal = _newValObj.Value;
-                                        propertyChange.NewValue = _newValObj == null ? "" : _newVal;
-                                    }
-                                    catch (Exception ex)
-                                    {
+        //                                DictionaryValue _origValObj = (DictionaryValue)valueProp.GetValue(taskQualificationTemplate_Dto);
+        //                                if (_origValObj == null) _origValObj = await DictionaryValuesRepo.GetAsync((Guid)origVal);
+        //                                string _origVal = _origValObj.Value;
+        //                                propertyChange.OriginalValue = origVal == null ? "" : _origVal;
+        //                                DictionaryValue _newValObj = (DictionaryValue)valueProp.GetValue(mappedInput);
+        //                                if (_newValObj == null) _newValObj = await DictionaryValuesRepo.GetAsync((Guid)newVal);
+        //                                string _newVal = _newValObj.Value;
+        //                                propertyChange.NewValue = _newValObj == null ? "" : _newVal;
+        //                            }
+        //                            catch (Exception ex)
+        //                            {
 
-                                    }
-                                }
+        //                            }
+        //                        }
 
-                                propertyChange.PropertyTypeFullName = prop.Name.GetType().FullName;
+        //                        propertyChange.PropertyTypeFullName = prop.Name.GetType().FullName;
 
-                                entityChangeInfo.PropertyChanges.Add(propertyChange);
-                            }
+        //                        entityChangeInfo.PropertyChanges.Add(propertyChange);
+        //                    }
 
-                            AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
-                        }
+        //                    AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
+        //                }
 
-                        curTaskQualificationTemplate.DegreeId = taskQualificationTemplate_Dto.DegreeId;
-                        curTaskQualificationTemplate.InstituteId = taskQualificationTemplate_Dto.InstituteId;
-                        curTaskQualificationTemplate.PeriodStartDate = taskQualificationTemplate_Dto.PeriodStartDate;
-                        curTaskQualificationTemplate.PeriodEndDate = taskQualificationTemplate_Dto.PeriodEndDate;
+        //                curTaskQualificationTemplate.DegreeId = taskQualificationTemplate_Dto.DegreeId;
+        //                curTaskQualificationTemplate.InstituteId = taskQualificationTemplate_Dto.InstituteId;
+        //                curTaskQualificationTemplate.PeriodStartDate = taskQualificationTemplate_Dto.PeriodStartDate;
+        //                curTaskQualificationTemplate.PeriodEndDate = taskQualificationTemplate_Dto.PeriodEndDate;
 
-                        OS_TaskQualificationTemplate_Dto updated = ObjectMapper.Map<OS_TaskQualificationTemplate, OS_TaskQualificationTemplate_Dto>(await OS_TaskTemplateAppService.QualificationsRepository.UpdateAsync(curTaskQualificationTemplate));
+        //                OS_TaskQualificationTemplate_Dto updated = ObjectMapper.Map<OS_TaskQualificationTemplate, OS_TaskQualificationTemplate_Dto>(await OS_TaskTemplateAppService.QualificationsRepository.UpdateAsync(curTaskQualificationTemplate));
 
-                        return StatusCode(200, updated);
-                    }
-                    else
-                    {
-                        taskQualificationTemplate_Dto.Id = 0;
+        //                return StatusCode(200, updated);
+        //            }
+        //            else
+        //            {
+        //                taskQualificationTemplate_Dto.Id = 0;
 
-                        OS_TaskQualificationTemplate_Dto added = await OS_TaskTemplateAppService.AddQualificationTemplate(taskQualificationTemplate_Dto);
+        //                OS_TaskQualificationTemplate_Dto added = await OS_TaskTemplateAppService.AddQualificationTemplate(taskQualificationTemplate_Dto);
 
-                        if (AuditingManager.Current != null)
-                        {
-                            EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
-                            entityChangeInfo.EntityId = added.Id.ToString();
-                            entityChangeInfo.EntityTenantId = added.TenantId;
-                            entityChangeInfo.ChangeTime = DateTime.Now;
-                            entityChangeInfo.ChangeType = EntityChangeType.Created;
-                            entityChangeInfo.EntityTypeFullName = typeof(OS_TaskQualificationTemplate).FullName;
+        //                if (AuditingManager.Current != null)
+        //                {
+        //                    EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
+        //                    entityChangeInfo.EntityId = added.Id.ToString();
+        //                    entityChangeInfo.EntityTenantId = added.TenantId;
+        //                    entityChangeInfo.ChangeTime = DateTime.Now;
+        //                    entityChangeInfo.ChangeType = EntityChangeType.Created;
+        //                    entityChangeInfo.EntityTypeFullName = typeof(OS_TaskQualificationTemplate).FullName;
 
-                            AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
-                        }
+        //                    AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
+        //                }
 
-                        added = ObjectMapper.Map<OS_TaskQualificationTemplate, OS_TaskQualificationTemplate_Dto>(await OS_TaskTemplateAppService.QualificationsRepository.GetAsync(added.Id));
-                        return StatusCode(200, added);
-                    }
-                }
-                catch (Exception ex)
-                {
+        //                added = ObjectMapper.Map<OS_TaskQualificationTemplate, OS_TaskQualificationTemplate_Dto>(await OS_TaskTemplateAppService.QualificationsRepository.GetAsync(added.Id));
+        //                return StatusCode(200, added);
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
 
-                }
-            }
+        //        }
+        //    }
 
-            return StatusCode(500);
-        }
-        public async Task<IActionResult> OnDeleteTaskQualificationTemplate()
-        {
-            List<OS_TaskQualificationTemplate_Dto> entitites = JsonSerializer.Deserialize<List<OS_TaskQualificationTemplate_Dto>>(Request.Form["qualifications"]);
-            try
-            {
-                for (int i = 0; i < entitites.Count; i++)
-                {
-                    OS_TaskQualificationTemplate_Dto entity = entitites[i];
-                    //await TaskQualificationTemplatesAppService.Repository.DeleteAsync(leaveRequest.);
-                    await OS_TaskTemplateAppService.QualificationsRepository.DeleteAsync(entity.Id);
+        //    return StatusCode(500);
+        //}
+        //public async Task<IActionResult> OnDeleteTaskQualificationTemplate()
+        //{
+        //    List<OS_TaskQualificationTemplate_Dto> entitites = JsonSerializer.Deserialize<List<OS_TaskQualificationTemplate_Dto>>(Request.Form["qualifications"]);
+        //    try
+        //    {
+        //        for (int i = 0; i < entitites.Count; i++)
+        //        {
+        //            OS_TaskQualificationTemplate_Dto entity = entitites[i];
+        //            //await TaskQualificationTemplatesAppService.Repository.DeleteAsync(leaveRequest.);
+        //            await OS_TaskTemplateAppService.QualificationsRepository.DeleteAsync(entity.Id);
 
-                    if (AuditingManager.Current != null)
-                    {
-                        EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
-                        entityChangeInfo.EntityId = entity.Id.ToString();
-                        entityChangeInfo.EntityTenantId = entity.TenantId;
-                        entityChangeInfo.ChangeTime = DateTime.Now;
-                        entityChangeInfo.ChangeType = EntityChangeType.Deleted;
-                        entityChangeInfo.EntityTypeFullName = typeof(OS_TaskQualificationTemplate).FullName;
+        //            if (AuditingManager.Current != null)
+        //            {
+        //                EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
+        //                entityChangeInfo.EntityId = entity.Id.ToString();
+        //                entityChangeInfo.EntityTenantId = entity.TenantId;
+        //                entityChangeInfo.ChangeTime = DateTime.Now;
+        //                entityChangeInfo.ChangeType = EntityChangeType.Deleted;
+        //                entityChangeInfo.EntityTypeFullName = typeof(OS_TaskQualificationTemplate).FullName;
 
-                        AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
-                    }
-                }
-                return StatusCode(200);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500);
-            }
-        }
+        //                AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
+        //            }
+        //        }
+        //        return StatusCode(200);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500);
+        //    }
+        //}
 
 
         public dynamic GetDataAuditTrailModel()

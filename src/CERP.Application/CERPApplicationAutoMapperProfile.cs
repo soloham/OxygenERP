@@ -167,13 +167,36 @@ namespace CERP
 
             CreateMap<OS_JobTemplate, OS_JobTemplate_Dto>();
             CreateMap<OS_JobTemplate_Dto, OS_JobTemplate>();
-            CreateMap<OS_JobQualificationTemplate, OS_JobQualificationTemplate_Dto>();
-            CreateMap<OS_JobQualificationTemplate_Dto, OS_JobQualificationTemplate>();
+            CreateMap<OS_JobTaskTemplate, OS_JobTaskTemplate_Dto>();
+            CreateMap<OS_JobTaskTemplate_Dto, OS_JobTaskTemplate>();
+            CreateMap<OS_JobFunctionTemplate, OS_JobFunctionTemplate_Dto>();
+            CreateMap<OS_JobFunctionTemplate_Dto, OS_JobFunctionTemplate>();
+            CreateMap<OS_JobSkillTemplate, OS_JobSkillTemplate_Dto>();
+            CreateMap<OS_JobSkillTemplate_Dto, OS_JobSkillTemplate>();
+            CreateMap<OS_JobAcademiaTemplate, OS_JobAcademiaTemplate_Dto>();
+            CreateMap<OS_JobAcademiaTemplate_Dto, OS_JobAcademiaTemplate>();
 
             CreateMap<OS_TaskTemplate, OS_TaskTemplate_Dto>();
             CreateMap<OS_TaskTemplate_Dto, OS_TaskTemplate>();
-            CreateMap<OS_TaskQualificationTemplate, OS_TaskQualificationTemplate_Dto>();
-            CreateMap<OS_TaskQualificationTemplate_Dto, OS_TaskQualificationTemplate>();
+            CreateMap<OS_TaskSkillTemplate, OS_TaskSkillTemplate_Dto>();
+            CreateMap<OS_TaskSkillTemplate_Dto, OS_TaskSkillTemplate>();
+            CreateMap<OS_TaskAcademiaTemplate, OS_TaskAcademiaTemplate_Dto>();
+            CreateMap<OS_TaskAcademiaTemplate_Dto, OS_TaskAcademiaTemplate>();
+            
+            CreateMap<OS_FunctionTemplate, OS_FunctionTemplate_Dto>();
+            CreateMap<OS_FunctionTemplate_Dto, OS_FunctionTemplate>();
+            CreateMap<OS_FunctionSkillTemplate, OS_FunctionSkillTemplate_Dto>();
+            CreateMap<OS_FunctionSkillTemplate_Dto, OS_FunctionSkillTemplate>();
+            CreateMap<OS_FunctionAcademiaTemplate, OS_FunctionAcademiaTemplate_Dto>();
+            CreateMap<OS_FunctionAcademiaTemplate_Dto, OS_FunctionAcademiaTemplate>();
+
+            CreateMap<OS_SkillTemplate, OS_SkillTemplate_Dto>();
+            CreateMap<OS_SkillTemplate_Dto, OS_SkillTemplate>();
+            CreateMap<OS_AcademiaTemplate, OS_AcademiaTemplate_Dto>();
+            CreateMap<OS_AcademiaTemplate_Dto, OS_AcademiaTemplate>();
+
+            CreateMap<OS_CompensationMatrixTemplate, OS_CompensationMatrixTemplate_Dto>();
+            CreateMap<OS_CompensationMatrixTemplate_Dto, OS_CompensationMatrixTemplate>();
             #endregion
             #endregion
             #endregion

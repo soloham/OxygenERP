@@ -214,7 +214,6 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curDepartmentTemplate.CostCenterId = departmentTemplate_Dto.CostCenterId;
                         curDepartmentTemplate.ValidityFromDate = departmentTemplate_Dto.ValidityFromDate;
                         curDepartmentTemplate.ValidityToDate = departmentTemplate_Dto.ValidityToDate;
-                        curDepartmentTemplate.ActivationDate = departmentTemplate_Dto.ActivationDate;
 
                         OS_PositionTemplate_Dto[] depPositions = departmentTemplate_Dto.PositionTemplates.ToArray();
                         int[] curDepPositionsIds = curDepartmentTemplate.PositionTemplates != null && curDepartmentTemplate.PositionTemplates.Count > 0? curDepartmentTemplate.PositionTemplates.Select(x => x.Id).ToArray() : new int[0];

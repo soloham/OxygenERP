@@ -29,6 +29,9 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public OS_PositionLevel Level { get; set; }
 
         [CustomAudited]
+        public int MaxPositionsPerDepartment { get; set; }
+
+        [CustomAudited]
         public DictionaryValue CostCenter { get; set; }
         [CustomAudited]
         public Guid CostCenterId { get; set; }

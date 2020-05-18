@@ -19,6 +19,7 @@ using CERP.HR.Holidays;
 using CERP.HR.Attendance;
 using CERP.HR.Loans;
 using CERP.HR.OrganizationalManagement.OrganizationStructure;
+using CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructure;
 
 namespace CERP.EntityFrameworkCore
 {
@@ -77,13 +78,29 @@ namespace CERP.EntityFrameworkCore
         public DbSet<OS_DepartmentTemplate> OS_DepartmentTemplates { get; set; }
         //public DbSet<OS_DepartmentPositionTemplate> OS_DepartmentPositionTemplates { get; set; }
         public DbSet<OS_DepartmentSubDepartmentTemplate> OS_DepartmentSubDepartmentTemplates { get; set; }
+
         public DbSet<OS_PositionTemplate> OS_PositionTemplates { get; set; }
         public DbSet<OS_PositionJobTemplate> OS_PositionJobTemplates { get; set; }
         public DbSet<OS_PositionTaskTemplate> OS_PositionTaskTemplates { get; set; }
+
         public DbSet<OS_JobTemplate> OS_JobTemplates { get; set; }
-        public DbSet<OS_JobQualificationTemplate> OS_JobQualificationTemplates { get; set; }
+        //public DbSet<OS_JobQualificationTemplate> OS_JobQualificationTemplates { get; set; }
+        public DbSet<OS_JobTaskTemplate> OS_JobTaskTemplate { get; set; }
+        public DbSet<OS_JobFunctionTemplate> OS_JobFunctionTemplates { get; set; }
+        public DbSet<OS_JobSkillTemplate> OS_JobSkillTemplates { get; set; }
+        public DbSet<OS_JobAcademiaTemplate> OS_JobAcademiaTemplates { get; set; }
+
         public DbSet<OS_TaskTemplate> OS_TaskTemplates { get; set; }
-        public DbSet<OS_TaskQualificationTemplate> OS_TaskQualificationTemplates { get; set; }
+        //public DbSet<OS_TaskQualificationTemplate> OS_TaskQualificationTemplates { get; set; }
+        public DbSet<OS_TaskSkillTemplate> OS_TaskSkillTemplates { get; set; }
+        public DbSet<OS_TaskAcademiaTemplate> OS_TaskAcademiaTemplates { get; set; }
+
+        public DbSet<OS_FunctionTemplate> OS_FunctionTemplates { get; set; }
+
+        public DbSet<OS_SkillTemplate> OS_SkillTemplates { get; set; }
+        public DbSet<OS_AcademiaTemplate> OS_AcademiaTemplates { get; set; }
+
+        public DbSet<OS_CompensationMatrixTemplate> OS_CompensationMatrixTemplates { get; set; }
         #endregion
         #endregion
         #endregion

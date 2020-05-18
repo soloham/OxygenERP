@@ -456,6 +456,7 @@ namespace CERP.EntityFrameworkCore
                 b.HasOne(x => x.PositionTemplate).WithMany(x => x.PositionTaskTemplates).OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(x => x.TaskTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
+
             builder.Entity<OS_JobTemplate>(b =>
             {
                 b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}JobTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
@@ -464,21 +465,62 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp(); 
 
-                b.HasMany(x => x.JobQualificationTemplates).WithOne(x => x.JobTemplate).OnDelete(DeleteBehavior.Cascade);
-            });
-            builder.Entity<OS_JobQualificationTemplate>(b =>
-            {
-                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}JobQualificationTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+                b.HasMany(x => x.JobTaskTemplates).WithOne(x => x.JobTemplate).OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(x => x.JobFunctionTemplates).WithOne(x => x.JobTemplate).OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(x => x.JobSkillTemplates).WithOne(x => x.JobTemplate).OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(x => x.JobAcademiaTemplates).WithOne(x => x.JobTemplate).OnDelete(DeleteBehavior.Cascade);
 
+                b.HasOne(x => x.CompensationMatrix).WithMany().OnDelete(DeleteBehavior.Cascade);
+            });
+            builder.Entity<OS_JobTaskTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}JobTaskTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.HasKey("JobTemplateId", "TaskTemplateId");
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
-                b.HasOne(x => x.Degree).WithMany().OnDelete(DeleteBehavior.NoAction);
-                b.HasOne(x => x.Institute).WithMany().OnDelete(DeleteBehavior.NoAction);
-
-                b.HasOne(x => x.JobTemplate).WithMany(x => x.JobQualificationTemplates).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.JobTemplate).WithMany(x => x.JobTaskTemplates).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.TaskTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
+            builder.Entity<OS_JobFunctionTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}JobFunctionTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.HasKey("JobTemplateId", "FunctionTemplateId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.JobTemplate).WithMany(x => x.JobFunctionTemplates).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.FunctionTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<OS_JobSkillTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}JobSkillTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.HasKey("JobTemplateId", "SkillTemplateId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.JobTemplate).WithMany(x => x.JobSkillTemplates).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.SkillTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<OS_JobAcademiaTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}JobAcademiaTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.HasKey("JobTemplateId", "AcademiaTemplateId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.JobTemplate).WithMany(x => x.JobAcademiaTemplates).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.AcademiaTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+
             builder.Entity<OS_TaskTemplate>(b =>
             {
                 b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}TaskTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
@@ -487,20 +529,101 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
-                b.HasMany(x => x.TaskQualificationTemplates).WithOne(x => x.TaskTemplate).OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(x => x.TaskSkillTemplates).WithOne(x => x.TaskTemplate).OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(x => x.TaskAcademiaTemplates).WithOne(x => x.TaskTemplate).OnDelete(DeleteBehavior.Cascade);
+
+                b.HasOne(x => x.CompensationMatrix).WithMany().OnDelete(DeleteBehavior.Cascade);
             });
-            builder.Entity<OS_TaskQualificationTemplate>(b =>
+            builder.Entity<OS_TaskSkillTemplate>(b =>
             {
-                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}TaskQualificationTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}TaskSkillTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.HasKey("TaskTemplateId", "SkillTemplateId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.TaskTemplate).WithMany(x => x.TaskSkillTemplates).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.SkillTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<OS_TaskAcademiaTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}TaskAcademiaTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.HasKey("TaskTemplateId", "AcademiaTemplateId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.TaskTemplate).WithMany(x => x.TaskAcademiaTemplates).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.AcademiaTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+
+            builder.Entity<OS_FunctionTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}FunctionTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
-                b.HasOne(x => x.Degree).WithMany().OnDelete(DeleteBehavior.NoAction);
-                b.HasOne(x => x.Institute).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasMany(x => x.FunctionSkillTemplates).WithOne(x => x.FunctionTemplate).OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(x => x.FunctionAcademiaTemplates).WithOne(x => x.FunctionTemplate).OnDelete(DeleteBehavior.Cascade);
 
-                b.HasOne(x => x.TaskTemplate).WithMany(x => x.TaskQualificationTemplates).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.CompensationMatrix).WithMany().OnDelete(DeleteBehavior.Cascade);
+            });
+            builder.Entity<OS_FunctionSkillTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}FunctionSkillTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.HasKey("FunctionTemplateId", "SkillTemplateId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.FunctionTemplate).WithMany(x => x.FunctionSkillTemplates).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.SkillTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<OS_FunctionAcademiaTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}FunctionAcademiaTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.HasKey("FunctionTemplateId", "AcademiaTemplateId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.FunctionTemplate).WithMany(x => x.FunctionAcademiaTemplates).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.AcademiaTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+
+            builder.Entity<OS_SkillTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}SkillTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+            });
+            builder.Entity<OS_AcademiaTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}AcademiaTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.Institute).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.AcademiaCertificateSubType).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+
+            builder.Entity<OS_CompensationMatrixTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}CompensationMatrixTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
             });
             #endregion
             #endregion

@@ -26,6 +26,8 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public string LevelDescription { get => EnumExtensions.GetDescription(Level); set => Level = EnumExtensions.GetValueFromDescription<OS_PositionLevel>(value); }
         public OS_PositionLevel Level { get; set; }
 
+        public int MaxPositionsPerDepartment { get; set; }
+
         public DictionaryValue_Dto CostCenter { get; set; }
         public Guid CostCenterId { get; set; }
 

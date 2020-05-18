@@ -17,14 +17,16 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
 {
     public class OS_TaskTemplateAppService : CrudAppService<OS_TaskTemplate, OS_TaskTemplate_Dto, int, PagedAndSortedResultRequestDto, OS_TaskTemplate_Dto, OS_TaskTemplate_Dto>
     {
-        public OS_TaskTemplateAppService(IRepository<OS_TaskTemplate, int> repository, IRepository<OS_TaskQualificationTemplate, int> tasksQualificationsRepository) : base(repository)
+        public OS_TaskTemplateAppService(IRepository<OS_TaskTemplate, int> repository, IRepository<OS_TaskSkillTemplate, int> skillsRepository, IRepository<OS_TaskAcademiaTemplate, int> academiaRepository) : base(repository)
         {
             Repository = repository;
-            QualificationsRepository = tasksQualificationsRepository;
+            SkillsRepository = skillsRepository;
+            AcademiaRepository = academiaRepository;
         }
 
         public IRepository<OS_TaskTemplate, int> Repository { get; }
-        public IRepository<OS_TaskQualificationTemplate, int> QualificationsRepository { get; }
+        public IRepository<OS_TaskSkillTemplate, int> SkillsRepository { get; }
+        public IRepository<OS_TaskAcademiaTemplate, int> AcademiaRepository { get; }
 
         public async Task<List<OS_TaskTemplate_Dto>> GetAllTaskTemplatesAsync()
         {
@@ -37,14 +39,35 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
             return obj;
         }
 
-        public async Task<OS_TaskQualificationTemplate_Dto> AddQualificationTemplate(OS_TaskQualificationTemplate taskQualificationTemplate)
+        //public async Task<OS_TaskQualificationTemplate_Dto> AddQualificationTemplate(OS_TaskQualificationTemplate taskQualificationTemplate)
+        //{
+        //    return ObjectMapper.Map<OS_TaskQualificationTemplate, OS_TaskQualificationTemplate_Dto>(await QualificationsRepository.InsertAsync(taskQualificationTemplate));
+        //}
+        //public async Task<OS_TaskQualificationTemplate_Dto> AddQualificationTemplate(OS_TaskQualificationTemplate_Dto taskQualificationTemplate)
+        //{
+        //    OS_TaskQualificationTemplate toAdd = ObjectMapper.Map<OS_TaskQualificationTemplate_Dto, OS_TaskQualificationTemplate>(taskQualificationTemplate);
+        //    return ObjectMapper.Map<OS_TaskQualificationTemplate, OS_TaskQualificationTemplate_Dto>(await QualificationsRepository.InsertAsync(toAdd));
+        //}
+
+        public async Task<OS_TaskSkillTemplate_Dto> AddSkillTemplate(OS_TaskSkillTemplate functionSkillTemplate)
         {
-            return ObjectMapper.Map<OS_TaskQualificationTemplate, OS_TaskQualificationTemplate_Dto>(await QualificationsRepository.InsertAsync(taskQualificationTemplate));
+            return ObjectMapper.Map<OS_TaskSkillTemplate, OS_TaskSkillTemplate_Dto>(await SkillsRepository.InsertAsync(functionSkillTemplate));
         }
-        public async Task<OS_TaskQualificationTemplate_Dto> AddQualificationTemplate(OS_TaskQualificationTemplate_Dto taskQualificationTemplate)
+        public async Task<OS_TaskSkillTemplate_Dto> AddSkillTemplate(OS_TaskSkillTemplate_Dto functionSkillTemplate)
         {
-            OS_TaskQualificationTemplate toAdd = ObjectMapper.Map<OS_TaskQualificationTemplate_Dto, OS_TaskQualificationTemplate>(taskQualificationTemplate);
-            return ObjectMapper.Map<OS_TaskQualificationTemplate, OS_TaskQualificationTemplate_Dto>(await QualificationsRepository.InsertAsync(toAdd));
+            OS_TaskSkillTemplate toAdd = ObjectMapper.Map<OS_TaskSkillTemplate_Dto, OS_TaskSkillTemplate>(functionSkillTemplate);
+            return ObjectMapper.Map<OS_TaskSkillTemplate, OS_TaskSkillTemplate_Dto>(await SkillsRepository.InsertAsync(toAdd));
         }
+
+        public async Task<OS_TaskAcademiaTemplate_Dto> AddAcademiaTemplate(OS_TaskAcademiaTemplate functionAcademiaTemplate)
+        {
+            return ObjectMapper.Map<OS_TaskAcademiaTemplate, OS_TaskAcademiaTemplate_Dto>(await AcademiaRepository.InsertAsync(functionAcademiaTemplate));
+        }
+        public async Task<OS_TaskAcademiaTemplate_Dto> AddAcademia(OS_TaskAcademiaTemplate_Dto functionAcademiaTemplate)
+        {
+            OS_TaskAcademiaTemplate toAdd = ObjectMapper.Map<OS_TaskAcademiaTemplate_Dto, OS_TaskAcademiaTemplate>(functionAcademiaTemplate);
+            return ObjectMapper.Map<OS_TaskAcademiaTemplate, OS_TaskAcademiaTemplate_Dto>(await AcademiaRepository.InsertAsync(toAdd));
+        }
+
     }
 }

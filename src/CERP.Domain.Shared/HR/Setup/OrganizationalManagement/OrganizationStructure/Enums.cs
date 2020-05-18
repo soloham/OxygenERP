@@ -41,4 +41,51 @@ namespace CERP.HR.Setup.OrganizationalManagement.OrganizationStructure
         [Description("Assistant")]
         Assistant
     }
+
+    public enum OS_SkillAquisitionType
+    {
+        [Description("Reporting To")]
+        ReportingTo,
+        [Description("Isolated")]
+        Isolated,
+        [Description("Assistant")]
+        Assistant
+    }
+    public enum OS_SkillType
+    {
+        [Description("Reporting To")]
+        ReportingTo,
+        [Description("Isolated")]
+        Isolated,
+        [Description("Assistant")]
+        Assistant
+    }
+    public enum OS_SkillUpdatePeriod
+    {
+        [Description("Reporting To")]
+        ReportingTo,
+        [Description("Isolated")]
+        Isolated,
+        [Description("Assistant")]
+        Assistant
+    }
+
+    public enum OS_AcademicType
+    {
+        [Description("Reporting To")]
+        ReportingTo,
+        [Description("Isolated")]
+        Isolated,
+        [Description("Assistant")]
+        Assistant
+    }
+    public enum OS_AcademiaCertificateType
+    {
+        [Description("Reporting To")]
+        ReportingTo,
+        [Description("Isolated")]
+        Isolated,
+        [Description("Assistant")]
+        Assistant
+    }
 }

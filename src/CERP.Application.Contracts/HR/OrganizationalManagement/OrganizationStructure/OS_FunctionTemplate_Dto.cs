@@ -10,12 +10,12 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructure
 {
-    public class OS_TaskTemplate_Dto : AuditedEntityTenantDto<int>
+    public class OS_FunctionTemplate_Dto : AuditedEntityTenantDto<int>
     {
-        public OS_TaskTemplate_Dto()
+        public OS_FunctionTemplate_Dto()
         {
         }
-
+         
         public string Code { get; set; }
 
         public string Name { get; set; }
@@ -23,9 +23,8 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
 
         public string Description { get; set; }
         public bool DoesKPI { get; set; }
-        public bool WorkflowLinkability { get; set; }
 
-        //public virtual List<OS_TaskQualificationTemplate_Dto> TaskQualificationTemplates { get; set; }
+        //public virtual List<OS_FunctionQualificationTemplate_Dto> FunctionQualificationTemplates { get; set; }
 
         public virtual OS_CompensationMatrixTemplate_Dto CompensationMatrix { get; set; }
         public int CompensationMatrixId { get; set; }
@@ -33,21 +32,21 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public DateTime ValidityFromDate { get; set; }
         public DateTime ValidityToDate { get; set; }
 
-        public virtual List<OS_TaskSkillTemplate_Dto> TaskSkillTemplates { get; set; }
-        public virtual List<OS_TaskAcademiaTemplate_Dto> TaskAcademiaTemplates { get; set; }
+        public virtual List<OS_FunctionSkillTemplate_Dto> FunctionSkillTemplates { get; set; }
+        public virtual List<OS_FunctionAcademiaTemplate_Dto> FunctionAcademiaTemplates { get; set; }
     }
-    public class OS_TaskSkillTemplate_Dto : AuditedEntityTenantDto<int>
+    public class OS_FunctionSkillTemplate_Dto : AuditedEntityTenantDto<int>
     {
-        public OS_TaskTemplate_Dto TaskTemplate { get; set; }
-        public int TaskTemplateId { get; set; }
+        public OS_FunctionTemplate_Dto FunctionTemplate { get; set; }
+        public int FunctionTemplateId { get; set; }
 
         public OS_SkillTemplate_Dto SkillTemplate { get; set; }
         public int SkillTemplateId { get; set; }
     }
-    public class OS_TaskAcademiaTemplate_Dto : AuditedEntityTenantDto<int>
+    public class OS_FunctionAcademiaTemplate_Dto : AuditedEntityTenantDto<int>
     {
-        public OS_TaskTemplate_Dto TaskTemplate { get; set; }
-        public int TaskTemplateId { get; set; }
+        public OS_FunctionTemplate_Dto FunctionTemplate { get; set; }
+        public int FunctionTemplateId { get; set; }
 
         public OS_AcademiaTemplate_Dto AcademiaTemplate { get; set; }
         public int AcademiaTemplateId { get; set; }
