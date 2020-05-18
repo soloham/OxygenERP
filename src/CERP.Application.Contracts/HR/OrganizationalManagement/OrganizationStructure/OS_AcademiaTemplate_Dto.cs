@@ -1,4 +1,5 @@
 ﻿using CERP.App;
+using CERP.App.Helpers;
 using CERP.Base;
 using CERP.FM;
 using CERP.HR.Employees;
@@ -26,7 +27,9 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public DictionaryValue_Dto Institute { get; set; }
         public Guid InstituteId { get; set; }
 
+        public string AcademicTypeDescription { get => EnumExtensions.GetDescription(AcademicType); set => AcademicType = EnumExtensions.GetValueFromDescription<OS_AcademicType>(value); }
         public OS_AcademicType AcademicType { get; set; }
+        public string AcademiaCertificateTypeDescription { get => EnumExtensions.GetDescription(AcademiaCertificateType); set => AcademiaCertificateType = EnumExtensions.GetValueFromDescription<OS_AcademiaCertificateType>(value); }
         public OS_AcademiaCertificateType AcademiaCertificateType { get; set; }
 
         public DictionaryValue_Dto AcademiaCertificateSubType { get; set; }
@@ -34,7 +37,9 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
 
         public string Description { get; set; }
         public bool DoesKPI { get; set; }
-        
+
+        public int PassoutYear { get; set; }
+
         public virtual OS_CompensationMatrixTemplate_Dto CompensationMatrix { get; set; }
         public int CompensationMatrixId { get; set; }
     }

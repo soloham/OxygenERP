@@ -17,16 +17,18 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
 {
     public class OS_TaskTemplateAppService : CrudAppService<OS_TaskTemplate, OS_TaskTemplate_Dto, int, PagedAndSortedResultRequestDto, OS_TaskTemplate_Dto, OS_TaskTemplate_Dto>
     {
-        public OS_TaskTemplateAppService(IRepository<OS_TaskTemplate, int> repository, IRepository<OS_TaskSkillTemplate, int> skillsRepository, IRepository<OS_TaskAcademiaTemplate, int> academiaRepository) : base(repository)
+        public OS_TaskTemplateAppService(IRepository<OS_TaskTemplate, int> repository, IRepository<OS_TaskSkillTemplate, int> skillsRepository, IRepository<OS_TaskAcademiaTemplate, int> academiaRepository, IRepository<OS_CompensationMatrixTemplate, int> compensationmatrixRepository) : base(repository)
         {
             Repository = repository;
             SkillsRepository = skillsRepository;
             AcademiaRepository = academiaRepository;
+            CompensationMatrixRepository = compensationmatrixRepository;
         }
 
         public IRepository<OS_TaskTemplate, int> Repository { get; }
         public IRepository<OS_TaskSkillTemplate, int> SkillsRepository { get; }
         public IRepository<OS_TaskAcademiaTemplate, int> AcademiaRepository { get; }
+        public IRepository<OS_CompensationMatrixTemplate, int> CompensationMatrixRepository { get; }
 
         public async Task<List<OS_TaskTemplate_Dto>> GetAllTaskTemplatesAsync()
         {
@@ -69,5 +71,10 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
             return ObjectMapper.Map<OS_TaskAcademiaTemplate, OS_TaskAcademiaTemplate_Dto>(await AcademiaRepository.InsertAsync(toAdd));
         }
 
+        public async Task<OS_CompensationMatrixTemplate_Dto> GetCompensationMatrixAsync(int compensationMatrixId)
+        {
+            OS_CompensationMatrixTemplate_Dto result = ObjectMapper.Map<OS_CompensationMatrixTemplate, OS_CompensationMatrixTemplate_Dto>(await CompensationMatrixRepository.GetAsync(compensationMatrixId, true));
+            return result;
+        }
     }
 }

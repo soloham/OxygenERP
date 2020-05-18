@@ -273,6 +273,17 @@ namespace CERP.EntityFrameworkCore
                                                        .ThenInclude(p => p.AcademiaCertificateSubType);
                 });
 
+                options.Entity<OS_AcademiaTemplate>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.AcademiaCertificateSubType)
+                                                        .Include(p => p.CompensationMatrix);
+                });
+                options.Entity<OS_SkillTemplate>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.SkillSubType)
+                                                        .Include(p => p.CompensationMatrix);
+                });
+
                 options.Entity<OS_TaskTemplate>(opt =>
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.TaskSkillTemplates)

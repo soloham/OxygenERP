@@ -17,16 +17,18 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
 {
     public class OS_FunctionTemplateAppService : CrudAppService<OS_FunctionTemplate, OS_FunctionTemplate_Dto, int, PagedAndSortedResultRequestDto, OS_FunctionTemplate_Dto, OS_FunctionTemplate_Dto>
     {
-        public OS_FunctionTemplateAppService(IRepository<OS_FunctionTemplate, int> repository, IRepository<OS_FunctionSkillTemplate, int> skillsRepository, IRepository<OS_FunctionAcademiaTemplate, int> academiaRepository) : base(repository)
+        public OS_FunctionTemplateAppService(IRepository<OS_FunctionTemplate, int> repository, IRepository<OS_FunctionSkillTemplate, int> skillsRepository, IRepository<OS_FunctionAcademiaTemplate, int> academiaRepository, IRepository<OS_CompensationMatrixTemplate, int> compensationMatrixRepository) : base(repository)
         {
             Repository = repository;
             SkillsRepository = skillsRepository;
             AcademiaRepository = academiaRepository;
+            CompensationMatrixRepository = compensationMatrixRepository;
         }
 
         public IRepository<OS_FunctionTemplate, int> Repository { get; }
         public IRepository<OS_FunctionSkillTemplate, int> SkillsRepository { get; }
         public IRepository<OS_FunctionAcademiaTemplate, int> AcademiaRepository { get; }
+        public IRepository<OS_CompensationMatrixTemplate, int> CompensationMatrixRepository { get; }
 
         public async Task<List<OS_FunctionTemplate_Dto>> GetAllFunctionTemplatesAsync()
         {
@@ -57,6 +59,12 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
         {
             OS_FunctionAcademiaTemplate toAdd = ObjectMapper.Map<OS_FunctionAcademiaTemplate_Dto, OS_FunctionAcademiaTemplate>(functionAcademiaTemplate);
             return ObjectMapper.Map<OS_FunctionAcademiaTemplate, OS_FunctionAcademiaTemplate_Dto>(await AcademiaRepository.InsertAsync(toAdd));
+        }
+
+        public async Task<OS_CompensationMatrixTemplate_Dto> GetCompensationMatrixAsync(int compensationMatrixId)
+        {
+            OS_CompensationMatrixTemplate_Dto result = ObjectMapper.Map<OS_CompensationMatrixTemplate, OS_CompensationMatrixTemplate_Dto>(await CompensationMatrixRepository.GetAsync(compensationMatrixId, true));
+            return result;
         }
     }
 }

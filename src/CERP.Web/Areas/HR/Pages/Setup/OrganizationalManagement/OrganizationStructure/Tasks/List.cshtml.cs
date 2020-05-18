@@ -211,14 +211,95 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curTaskTemplate.ValidityToDate = taskTemplate_Dto.ValidityToDate;
                         curTaskTemplate.Description = taskTemplate_Dto.Description;
                         curTaskTemplate.DoesKPI = taskTemplate_Dto.DoesKPI;
+                        curTaskTemplate.WorkflowLinkability = taskTemplate_Dto.WorkflowLinkability;
+                        curTaskTemplate.CompensationMatrix = null;
+                        curTaskTemplate.CompensationMatrixId = taskTemplate_Dto.CompensationMatrixId;
+
+                        #region Child Entities
+                        OS_TaskSkillTemplate_Dto[] taskSkills = taskTemplate_Dto.TaskSkillTemplates.ToArray();
+                        int[] curTaskSkillsIds = curTaskTemplate.TaskSkillTemplates != null && curTaskTemplate.TaskSkillTemplates.Count > 0 ? curTaskTemplate.TaskSkillTemplates.Select(x => x.SkillTemplate.Id).ToArray() : new int[0];
+                        List<int> toDeleteSkills = new List<int>();
+                        for (int i = 0; i < curTaskSkillsIds.Length; i++)
+                        {
+                            OS_TaskSkillTemplate curTaskSkill = curTaskTemplate.TaskSkillTemplates.First(x => x.SkillTemplateId == curTaskSkillsIds[i]);
+                            if (!taskSkills.Any(x => x.SkillTemplate.Id == curTaskSkillsIds[i]))
+                            {
+                                curTaskTemplate.TaskSkillTemplates.Remove(curTaskTemplate.TaskSkillTemplates.First(x => x.SkillTemplateId == curTaskSkillsIds[i]));
+                                toDeleteSkills.Add(curTaskSkillsIds[i]);
+                            }
+                        }
+                        for (int i = 0; i < taskSkills.Length; i++)
+                        {
+                            if (!curTaskTemplate.TaskSkillTemplates.Any(x => x.SkillTemplateId == taskSkills[i].SkillTemplate.Id))
+                            {
+                                curTaskTemplate.TaskSkillTemplates.Add(new OS_TaskSkillTemplate() { SkillTemplateId = taskSkills[i].SkillTemplate.Id });
+                            }
+                            else
+                            {
+                                var _taskSkill = curTaskTemplate.TaskSkillTemplates.First(x => x.SkillTemplateId == taskSkills[i].SkillTemplate.Id);
+                                //_taskLoc.TaskValidityStart = posTasks[i].TaskValidityStart;
+                                //_taskLoc.TaskValidityEnd = posTasks[i].TaskValidityEnd;
+                                //_taskLoc.Name = posTasks[i].Name;
+
+                                //curTask.TaskSkillTemplates.Remove(curTask.TaskSkillTemplates.First(x => x.TaskTemplateId == _taskLoc.TaskTemplateId));
+                                await OS_TaskTemplateAppService.SkillsRepository.UpdateAsync(_taskSkill);
+                            }
+                        }
+                        for (int i = 0; i < toDeleteSkills.Count; i++)
+                        {
+                            await OS_TaskTemplateAppService.SkillsRepository.DeleteAsync(x => x.SkillTemplateId == toDeleteSkills[i]);
+                        }
+
+                        OS_TaskAcademiaTemplate_Dto[] taskAcademia = taskTemplate_Dto.TaskAcademiaTemplates.ToArray();
+                        int[] curTaskAcademiaIds = curTaskTemplate.TaskAcademiaTemplates != null && curTaskTemplate.TaskAcademiaTemplates.Count > 0 ? curTaskTemplate.TaskAcademiaTemplates.Select(x => x.AcademiaTemplate.Id).ToArray() : new int[0];
+                        List<int> toDeleteAcademia = new List<int>();
+                        for (int i = 0; i < curTaskAcademiaIds.Length; i++)
+                        {
+                            OS_TaskAcademiaTemplate curTaskAcademia = curTaskTemplate.TaskAcademiaTemplates.First(x => x.AcademiaTemplateId == curTaskAcademiaIds[i]);
+                            if (!taskAcademia.Any(x => x.AcademiaTemplate.Id == curTaskAcademiaIds[i]))
+                            {
+                                curTaskTemplate.TaskAcademiaTemplates.Remove(curTaskTemplate.TaskAcademiaTemplates.First(x => x.AcademiaTemplateId == curTaskAcademiaIds[i]));
+                                toDeleteSkills.Add(curTaskAcademiaIds[i]);
+                            }
+                        }
+                        for (int i = 0; i < taskAcademia.Length; i++)
+                        {
+                            if (!curTaskTemplate.TaskAcademiaTemplates.Any(x => x.AcademiaTemplateId == taskAcademia[i].AcademiaTemplate.Id))
+                            {
+                                curTaskTemplate.TaskAcademiaTemplates.Add(new OS_TaskAcademiaTemplate() { AcademiaTemplateId = taskAcademia[i].AcademiaTemplate.Id });
+                            }
+                            else
+                            {
+                                var _taskAcademia = curTaskTemplate.TaskAcademiaTemplates.First(x => x.AcademiaTemplateId == taskAcademia[i].AcademiaTemplate.Id);
+                                //_taskLoc.TaskValidityStart = posTasks[i].TaskValidityStart;
+                                //_taskLoc.TaskValidityEnd = posTasks[i].TaskValidityEnd;
+                                //_taskLoc.Name = posTasks[i].Name;
+
+                                //curTask.TaskAcademiaTemplates.Remove(curTask.TaskAcademiaTemplates.First(x => x.TaskTemplateId == _taskLoc.TaskTemplateId));
+                                await OS_TaskTemplateAppService.AcademiaRepository.UpdateAsync(_taskAcademia);
+                            }
+                        }
+                        for (int i = 0; i < toDeleteAcademia.Count; i++)
+                        {
+                            await OS_TaskTemplateAppService.AcademiaRepository.DeleteAsync(x => x.AcademiaTemplateId == toDeleteAcademia[i]);
+                        }
+                        #endregion
 
                         OS_TaskTemplate_Dto updated = ObjectMapper.Map<OS_TaskTemplate, OS_TaskTemplate_Dto>(await OS_TaskTemplateAppService.Repository.UpdateAsync(curTaskTemplate));
+                        updated.TaskSkillTemplates = ObjectMapper.Map<List<OS_TaskSkillTemplate>, List<OS_TaskSkillTemplate_Dto>>(curTaskTemplate.TaskSkillTemplates.ToList());
+                        updated.TaskAcademiaTemplates = ObjectMapper.Map<List<OS_TaskAcademiaTemplate>, List<OS_TaskAcademiaTemplate_Dto>>(curTaskTemplate.TaskAcademiaTemplates.ToList());
+                        updated.CompensationMatrix = await OS_TaskTemplateAppService.GetCompensationMatrixAsync(updated.CompensationMatrixId);
 
                         return StatusCode(200, updated);
                     }
                     else
                     {
-                        taskTemplate_Dto.Id = 0;
+                        taskTemplate_Dto.Id = 0; 
+                        if (taskTemplate_Dto.TaskSkillTemplates != null)
+                            taskTemplate_Dto.TaskSkillTemplates.ForEach(x => { x.Id = 0; x.SkillTemplateId = x.SkillTemplate.Id; x.SkillTemplate = null; });
+                        if (taskTemplate_Dto.TaskAcademiaTemplates != null)
+                            taskTemplate_Dto.TaskAcademiaTemplates.ForEach(x => { x.Id = 0; x.AcademiaTemplateId = x.AcademiaTemplate.Id; x.AcademiaTemplate = null; });
+                        taskTemplate_Dto.CompensationMatrix = null;
 
                         OS_TaskTemplate_Dto added = await OS_TaskTemplateAppService.CreateAsync(taskTemplate_Dto);
 

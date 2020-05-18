@@ -1,4 +1,5 @@
 ﻿using CERP.App;
+using CERP.App.Helpers;
 using CERP.Base;
 using CERP.FM;
 using CERP.HR.Employees;
@@ -24,7 +25,9 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public string Name { get; set; }
         public string NameLocalized { get; set; }
 
+        public string SkillAquisitionTypeDescription { get => EnumExtensions.GetDescription(SkillAquisitionType); set => SkillAquisitionType = EnumExtensions.GetValueFromDescription<OS_SkillAquisitionType>(value); }
         public OS_SkillAquisitionType SkillAquisitionType { get; set; }
+        public string SkillTypeDescription { get => EnumExtensions.GetDescription(SkillType); set => SkillType = EnumExtensions.GetValueFromDescription<OS_SkillType>(value); }
         public OS_SkillType SkillType { get; set; }
 
         public DictionaryValue_Dto SkillSubType { get; set; }
@@ -34,6 +37,7 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
 
         public bool DoesKPI { get; set; }
 
+        public string SkillUpdatePeriodDescription { get => EnumExtensions.GetDescription(SkillUpdatePeriod); set => SkillUpdatePeriod = EnumExtensions.GetValueFromDescription<OS_SkillUpdatePeriod>(value); }
         public OS_SkillUpdatePeriod SkillUpdatePeriod { get; set; }
 
         public virtual OS_CompensationMatrixTemplate_Dto CompensationMatrix { get; set; }

@@ -17,14 +17,22 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
 {
     public class OS_JobTemplateAppService : CrudAppService<OS_JobTemplate, OS_JobTemplate_Dto, int, PagedAndSortedResultRequestDto, OS_JobTemplate_Dto, OS_JobTemplate_Dto>
     {
-        public OS_JobTemplateAppService(IRepository<OS_JobTemplate, int> repository, IRepository<OS_JobQualificationTemplate, int> qualificationsRepository) : base(repository)
+        public OS_JobTemplateAppService(IRepository<OS_JobTemplate, int> repository, IRepository<OS_JobTaskTemplate, int> tasksRepository, IRepository<OS_JobFunctionTemplate, int> functionsRepository, IRepository<OS_JobSkillTemplate, int> skillsRepository, IRepository<OS_JobAcademiaTemplate, int> academiaRepository, IRepository<OS_CompensationMatrixTemplate, int> compensationMatrixRepository) : base(repository)
         {
             Repository = repository;
-            QualificationsRepository = qualificationsRepository;
+            TasksRepository = tasksRepository;
+            FunctionsRepository = functionsRepository;
+            SkillsRepository = skillsRepository;
+            AcademiaRepository = academiaRepository;
+            CompensationMatrixRepository = compensationMatrixRepository;
         }
 
         public IRepository<OS_JobTemplate, int> Repository { get; }
-        public IRepository<OS_JobQualificationTemplate, int> QualificationsRepository { get; }
+        public IRepository<OS_JobTaskTemplate, int> TasksRepository { get; }
+        public IRepository<OS_JobFunctionTemplate, int> FunctionsRepository { get; }
+        public IRepository<OS_JobSkillTemplate, int> SkillsRepository { get; }
+        public IRepository<OS_JobAcademiaTemplate, int> AcademiaRepository { get; }
+        public IRepository<OS_CompensationMatrixTemplate, int> CompensationMatrixRepository { get; }
 
         public async Task<List<OS_JobTemplate_Dto>> GetAllJobTemplatesAsync()
         {
@@ -37,15 +45,10 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
             return obj;
         }
 
-        public async Task<OS_JobQualificationTemplate_Dto> AddQualificationTemplate(OS_JobQualificationTemplate taskQualificationTemplate)
+        public async Task<OS_CompensationMatrixTemplate_Dto> GetCompensationMatrixAsync(int compensationMatrixId)
         {
-            return ObjectMapper.Map<OS_JobQualificationTemplate, OS_JobQualificationTemplate_Dto>(await QualificationsRepository.InsertAsync(taskQualificationTemplate));
+            OS_CompensationMatrixTemplate_Dto result = ObjectMapper.Map<OS_CompensationMatrixTemplate, OS_CompensationMatrixTemplate_Dto>(await CompensationMatrixRepository.GetAsync(compensationMatrixId, true));
+            return result;
         }
-        public async Task<OS_JobQualificationTemplate_Dto> AddQualificationTemplate(OS_JobQualificationTemplate_Dto taskQualificationTemplate)
-        {
-            OS_JobQualificationTemplate toAdd = ObjectMapper.Map<OS_JobQualificationTemplate_Dto, OS_JobQualificationTemplate>(taskQualificationTemplate);
-            return ObjectMapper.Map<OS_JobQualificationTemplate, OS_JobQualificationTemplate_Dto>(await QualificationsRepository.InsertAsync(toAdd));
-        }
-
     }
 }

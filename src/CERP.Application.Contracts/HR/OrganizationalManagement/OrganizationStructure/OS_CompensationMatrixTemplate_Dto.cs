@@ -22,9 +22,8 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public string NameLocalized { get; set; }
 
         public string Description { get; set; }
-        public bool DoesKPI { get; set; }
+        public string CompensationMatrixData { get; set; }
 
-        public DateTime ActivationDate { get; set; }
         public DateTime ValidityFromDate { get; set; }
         public DateTime ValidityToDate { get; set; }
     }

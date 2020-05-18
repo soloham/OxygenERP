@@ -45,7 +45,10 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public string Description { get; set; }
         [CustomAudited]
         public bool DoesKPI { get; set; }
-        
+
+        [CustomAudited]
+        public int PassoutYear { get; set; }
+
         public virtual OS_CompensationMatrixTemplate CompensationMatrix { get; set; }
         [CustomAudited]
         public int CompensationMatrixId { get; set; }

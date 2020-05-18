@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200518164115_HR_OM_OS_CompensationMatrix")]
+    partial class HR_OM_OS_CompensationMatrix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2160,9 +2162,6 @@ namespace CERP.Migrations
                     b.Property<string>("NameLocalized")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PassoutYear")
-                        .HasColumnType("int");
-
                     b.Property<Guid?>("TenantId")
                         .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
@@ -2184,6 +2183,9 @@ namespace CERP.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("ActivationDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Code")
                         .HasColumnType("nvarchar(max)");

@@ -24,10 +24,8 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public string Description { get; set; }
 
         [CustomAudited]
-        public bool DoesKPI { get; set; }
+        public string CompensationMatrixData { get; set; }
 
-        [CustomAudited]
-        public DateTime ActivationDate { get; set; }
         [CustomAudited]
         public DateTime ValidityFromDate { get; set; }
         [CustomAudited]

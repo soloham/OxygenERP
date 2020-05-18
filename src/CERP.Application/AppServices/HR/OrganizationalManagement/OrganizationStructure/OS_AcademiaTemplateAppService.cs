@@ -15,19 +15,27 @@ using Volo.Abp.Domain.Repositories;
 
 namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
 {
-    public class AcademiaTemplateAppService : CrudAppService<OS_AcademiaTemplate, OS_AcademiaTemplate_Dto, int, PagedAndSortedResultRequestDto, OS_AcademiaTemplate_Dto, OS_AcademiaTemplate_Dto>
+    public class OS_AcademiaTemplateAppService : CrudAppService<OS_AcademiaTemplate, OS_AcademiaTemplate_Dto, int, PagedAndSortedResultRequestDto, OS_AcademiaTemplate_Dto, OS_AcademiaTemplate_Dto>
     {
-        public AcademiaTemplateAppService(IRepository<OS_AcademiaTemplate, int> repository /*IRepository<OS_DepartmentAcademiaTemplate, int> departmentAcademiaTemplateRepo,*/) : base(repository)
+        public OS_AcademiaTemplateAppService(IRepository<OS_AcademiaTemplate, int> repository /*IRepository<OS_DepartmentAcademiaTemplate, int> departmentAcademiaTemplateRepo,*/, IRepository<OS_CompensationMatrixTemplate, int> compensationMatrixRepository) : base(repository)
         {
             Repository = repository;
+            CompensationMatrixRepository = compensationMatrixRepository;
         }
 
         public IRepository<OS_AcademiaTemplate, int> Repository { get; }
+        public IRepository<OS_CompensationMatrixTemplate, int> CompensationMatrixRepository { get; }
 
         public async Task<List<OS_AcademiaTemplate_Dto>> GetAllAcademiaTemplatesAsync()
         {
             List<OS_AcademiaTemplate_Dto> list = (await Repository.GetListAsync(true)).Select(MapToGetListOutputDto).ToList();
             return list;
+        }
+
+        public async Task<OS_CompensationMatrixTemplate_Dto> GetCompensationMatrixAsync(int compensationMatrixId)
+        {
+            OS_CompensationMatrixTemplate_Dto result = ObjectMapper.Map<OS_CompensationMatrixTemplate, OS_CompensationMatrixTemplate_Dto>(await CompensationMatrixRepository.GetAsync(compensationMatrixId, true));
+            return result;
         }
     }
 }

@@ -96,6 +96,8 @@ namespace CERP.EntityFrameworkCore
         public DbSet<OS_TaskAcademiaTemplate> OS_TaskAcademiaTemplates { get; set; }
 
         public DbSet<OS_FunctionTemplate> OS_FunctionTemplates { get; set; }
+        public DbSet<OS_FunctionSkillTemplate> OS_FunctionSkillTemplates { get; set; }
+        public DbSet<OS_FunctionAcademiaTemplate> OS_FunctionAcademiaTemplates { get; set; }
 
         public DbSet<OS_SkillTemplate> OS_SkillTemplates { get; set; }
         public DbSet<OS_AcademiaTemplate> OS_AcademiaTemplates { get; set; }

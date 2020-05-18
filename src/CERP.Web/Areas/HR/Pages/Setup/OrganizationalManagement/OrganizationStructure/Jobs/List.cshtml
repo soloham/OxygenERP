@@ -41,13 +41,6 @@
     jobPositionsCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
     jobPositionsCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
     jobPositionsCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
-
-
-    List<object> qualificationsCommands = new List<object>();
-    qualificationsCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
-
-    List<DictionaryValue> degrees = Model.DictionaryValuesRepo.Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Degree).ToList();
-    List<DictionaryValue> institues = Model.DictionaryValuesRepo.Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.AcademicInstitution).ToList();
 }
 
 @section styles {
@@ -66,9 +59,13 @@
 
     <script>
         var isEditingJobs = false;
-        var isEditingQualifications  = false;
         var curJobsEditRow;
-        var curQualificationsEditRow;
+
+        let functions = []
+        let tasks = []
+        let skills = []
+        let academia = []
+        let compensationMatrices = []
         $(document).ready(function () {
             let options = {
                 buttonWidth: '100%',
@@ -79,9 +76,64 @@
                 includeResetDivider: true,
                 enableCollapsibleOptGroups: true
             };
+            $('#tasksIds').multiselect(options);
+            $('#functionsIds').multiselect(options);
+            $('#skillsIds').multiselect(options);
+            $('#academiaIds').multiselect(options);
+            $('#compensationMatrixId').multiselect(options);
+
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_TaskTemplate.getList({}).done(function (data) {
+                tasks = data.items;
+
+                let dataMS = [];
+                for (let i = 0; i < data.items.length; i++) {
+                    let item = data.items[i];
+                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+                }
+                $('#tasksIds').multiselect('dataprovider', dataMS);
+            });
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_FunctionTemplate.getList({}).done(function (data) {
+                functions = data.items;
+
+                let dataMS = [];
+                for (let i = 0; i < data.items.length; i++) {
+                    let item = data.items[i];
+                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+                }
+                $('#functionsIds').multiselect('dataprovider', dataMS);
+            });
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_SkillTemplate.getList({}).done(function (data) {
+                skills = data.items;
+
+                let dataMS = [];
+                for (let i = 0; i < data.items.length; i++) {
+                    let item = data.items[i];
+                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+                }
+                $('#skillsIds').multiselect('dataprovider', dataMS);
+            });
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_AcademiaTemplate.getList({}).done(function (data) {
+                academia = data.items;
+
+                let dataMS = [];
+                for (let i = 0; i < data.items.length; i++) {
+                    let item = data.items[i];
+                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+                }
+                $('#academiaIds').multiselect('dataprovider', dataMS);
+            });
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_CompensationMatrixTemplate.getList({}).done(function (data) {
+                compensationMatrices = data.items;
+
+                let dataMS = [];
+                for (let i = 0; i < data.items.length; i++) {
+                    let item = data.items[i];
+                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+                }
+                $('#compensationMatrixId').multiselect('dataprovider', dataMS);
+            });
 
             let gridObj = $("#JobsGrid")[0].ej2_instances[0];
-            let qualificationsObj = $("#QualificationsGrid")[0].ej2_instances[0];
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_JobTemplate.getAllJobTemplates().done(function (data) {
                 gridObj.dataSource = data;
                 gridObj.refresh();
@@ -119,6 +171,56 @@
                     else {
 
                         //cERP.appServices.hR.leaveRequestTemplates.update()
+                    }
+
+                    let selectedTasks = $('#tasksIds').val();
+                    console.log(selectedTasks);
+                    let selectedTasksTemplates = [];
+                    params.jobTaskTemplates = [];
+                    for (var i = 0; i < selectedTasks.length; i++) {
+                        selectedTasksTemplates.push(tasks.filter(x => x.id == selectedTasks[i])[0]);
+                        let toAdd = { taskTemplate: selectedTasksTemplates[i] };
+                        if (isEditingJobs) {
+                            toAdd.jobTemplateId = curJobsEditRow.id;
+                        }
+                        params.jobTaskTemplates.push(toAdd);
+                    }
+                    let selectedFunctions = $('#functionsIds').val();
+                    console.log(selectedFunctions);
+                    let selectedFunctionsTemplates = [];
+                    params.jobFunctionTemplates = [];
+                    for (var i = 0; i < selectedFunctions.length; i++) {
+                        selectedFunctionsTemplates.push(functions.filter(x => x.id == selectedFunctions[i])[0]);
+                        let toAdd = { functionTemplate: selectedFunctionsTemplates[i] };
+                        if (isEditingJobs) {
+                            toAdd.jobTemplateId = curJobsEditRow.id;
+                        }
+                        params.jobFunctionTemplates.push(toAdd);
+                    }
+
+                    let selectedSkills = $('#skillsIds').val();
+                    console.log(selectedSkills);
+                    let selectedSkillsTemplates = [];
+                    params.jobSkillTemplates = [];
+                    for (var i = 0; i < selectedSkills.length; i++) {
+                        selectedSkillsTemplates.push(skills.filter(x => x.id == selectedSkills[i])[0]);
+                        let toAdd = { skillTemplate: selectedSkillsTemplates[i] };
+                        if (isEditingJobs) {
+                            toAdd.jobTemplateId = curJobsEditRow.id;
+                        }
+                        params.jobSkillTemplates.push(toAdd);
+                    }
+                    let selectedAcademia = $('#academiaIds').val();
+                    console.log(selectedAcademia);
+                    let selectedAcademiaTemplates = [];
+                    params.jobAcademiaTemplates = [];
+                    for (var i = 0; i < selectedAcademia.length; i++) {
+                        selectedAcademiaTemplates.push(academia.filter(x => x.id == selectedAcademia[i])[0]);
+                        let toAdd = { academiaTemplate: selectedAcademiaTemplates[i] };
+                        if (isEditingJobs) {
+                            toAdd.jobTemplateId = curJobsEditRow.id;
+                        }
+                        params.jobAcademiaTemplates.push(toAdd);
                     }
 
                     let formData = new FormData();
@@ -309,145 +411,69 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                         <div class="form-group">
-                            <label class="control-label m-b-5 ">Activation Date:</label>
-                            <input type="date" id="activationDate" name="ActivationDate" class="text-left form-control inline pull-left" required>
+                            <label class="margin-bottom-5 control-label">Max Positions:</label>
+                            <input type="number" min="1" id="maxJobPositions" name="MaxJobPositions" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                        <div class="col-sm-6" style="padding-right:0">
-                            <div class="form-group">
-                                <label class="control-label m-b-5 ">Valid From:</label>
-                                <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
-                            </div>
-                        </div>
-                        <div class="col-sm-6" style="padding-left:0">
-                            <div class="form-group">
-                                <label class="control-label m-b-5 ">Valid To:</label>
-                                <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
-                            </div>
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 ">Valid From:</label>
+                            <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                        <div class="col-lg-12" style="padding: 0">
-                            <label class="control-label m-b-5 "></label>
-                            <input id="submitJobBtn" type="button" class="btn btn-success btn-block" value="Create Job" required />
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label class="control-label m-b-5 ">Valid To:</label>
+                            <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
                         </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                        <div class="form-group">
+                            <label class="margin-bottom-5 control-label">Compensation Matrix:</label>
+                            <select id="compensationMatrixId" name="CompensationMatrixId" class="form-control" required>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                        <div class="form-group">
+                            <label class="margin-bottom-5 control-label">Skills:</label>
+                            <select id="skillsIds" name="SkillsIds" multiple="multiple" class="form-control" required>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                        <div class="form-group">
+                            <label class="margin-bottom-5 control-label">Academia:</label>
+                            <select id="academiaIds" name="AcademiaIds" multiple="multiple" class="form-control" required>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                        <div class="form-group">
+                            <label class="margin-bottom-5 control-label">Tasks:</label>
+                            <select id="tasksIds" name="TasksIds" multiple="multiple" class="form-control" required>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                        <div class="form-group">
+                            <label class="margin-bottom-5 control-label">Functions:</label>
+                            <select id="functionsIds" name="FunctionsIds" multiple="multiple" class="form-control" required>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label class="control-label m-b-5 "></label>
+                        <input id="submitJobBtn" type="button" class="btn btn-success btn-block" value="Create Job" required />
                     </div>
                 </div>
             </div>
-            <hr />
-            <div class="row">
-                    <div class="col-md-12">
-                        <div class="panel-body p-t-0" style="padding:0;">
-                            <div class="areaHeader" style="display:flex;">
-                                <div id="qualificationsLoader" class="pull-left loader-inline" style="display:none"></div>
-                                <div class="areaHeaderTitle">
-                                    <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Qualifications</span>
-                                    @*<span id="" class="areaHeaderTitleInNode menu-text"> > </span>*@
-                                    @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
-                                </div>
-                                @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
-                                <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
-                                    @*<div class="clearfix margin-15"></div>*@
-                                    <a id="addqualificationBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
-                                </div>
-                            </div>
-                            <div role="form" id="qualificationsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                        <div class="form-group">
-                                            <label class="margin-bottom-5  control-label">Degree / Certification:</label>
-                                            <select id="degreeId" name="DegreeId" class="form-control" required>
-                                                <option></option>
-                                                @for (int i = 0; i < degrees.Count; i++)
-                                                {
-                                                    <option value="@degrees[i].Id" data-value="@degrees[i].Value">@degrees[i].Value</option>
-                                                }
-                                            </select>
-                                        </div>
-                                    </div>
-
-
-                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                        <div class="form-group">
-                                            <label class="margin-bottom-5  control-label">Institution:</label>
-                                            <select id="institutionId" name="InstituteId" class="form-control" required>
-                                                <option></option>
-                                                @for (int i = 0; i < institues.Count; i++)
-                                                {
-                                                    <option value="@institues[i].Id" data-value="@institues[i].Value">@institues[i].Value</option>
-                                                }
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                        <div class="col-sm-6" style="padding:0">
-                                            <div class="form-group">
-                                                <label class="control-label m-b-5">From:</label>
-                                                <input type="text" id="fromDate" name="PeriodStartDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6" style="padding:0">
-                                            <div class="form-group">
-                                                <label class="control-label m-b-5 pull-right ">Hijri Date</label>
-                                                <input type="text" id="fromHDate" name="FromHDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                        <div class="col-sm-6" style="padding:0">
-                                            <div class="form-group">
-                                                <label class="control-label m-b-5">To:</label>
-                                                <input type="text" id="toDate" name="PeriodEndDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE : "")"*@ style="width:100% !important" class="text-left form-control inline pull-left DatePicker" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6" style="padding:0">
-                                            <div class="form-group">
-                                                <label class="control-label m-b-5 pull-right ">Hijri Date</label>
-                                                <input type="text" id="toHDate" name="ToHDate" @*value="@(empInfo!=null? empInfo.JOINING_DATE_H : "")"*@ style="width:100% !important" class="text-right  form-control inline   DatePickerHijri">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <button id="submitQualificationBtn" type="button" class="btn btn-success btn-block">Add Qualification</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="qualificationsCS" class="control-section">
-                                <ejs-grid id="QualificationsGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
-                                          allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
-                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
-                                          allowSorting="true" allowMultiSorting="true" gridLines="Both" dataSource="new List<dynamic>()"
-                                          toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" commandClick="qualificationsCommandClick" actionBegin="qualificationsActionBegin" actionComplete="qualificationsActionComplete"
-                                          allowPaging="true" allowResizing="true">
-
-                                    <e-grid-columns>
-                                        <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
-                                        <e-grid-column field="degree.value" allowEditing="false" headerText="Degree" textAlign="Center"></e-grid-column>
-                                        <e-grid-column field="institute.value" allowEditing="false" headerText="Institute" textAlign="Center"></e-grid-column>
-                                        <e-grid-column headerText="Period" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
-                                        new Syncfusion.EJ2.Grids.GridColumn() { Field= "periodStartDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "Start", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
-                                        new Syncfusion.EJ2.Grids.GridColumn() { Field= "periodEndDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "End", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
-                                    }'></e-grid-column>
-                                        <e-grid-column headerText="Actions" textAlign="Center" commands="qualificationsCommands"></e-grid-column>
-                                    </e-grid-columns>
-
-                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
-                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
-                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
-                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
-                                </ejs-grid>
-                            </div>
-                        </div>
-                    </div>
-                </div>
         </form>
         <div id="jobsCS" class="control-section">
             <ejs-grid id="JobsGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="commandClick"
@@ -465,7 +491,8 @@
                     }'></e-grid-column>
                     <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
                     <e-grid-column field="description" headerText="Description" allowEditing="true" textAlign="Center"></e-grid-column>
-                    <e-grid-column field="activationDate" headerText="Activation Date" type="date" format="E, MMMM d, y" , allowEditing="true" editType="datepicker" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="compensationMatrix.name" headerText="Compensation Matrix" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="maxJobPositions" headerText="Max Positions" textAlign="Center"></e-grid-column>
                     <e-grid-column headerText="Validity" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityFromDate", Type="date", Format="E, MMMM d, y", AllowEditing=true, EditType="datepicker", HeaderText = "From", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityToDate", Type="date", Format="E, MMMM d, y", AllowEditing=true, EditType="datepicker", HeaderText = "To", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
@@ -617,7 +644,6 @@
     }
     function commandClick(args) {
         let gridObj = document.getElementById("JobsGrid").ej2_instances[0];
-        let qualGrid = $('#QualificationsGrid')[0].ej2_instances[0];
 
         if (args.commandColumn.type == "Edit") {
             isEditingJobs = true;
@@ -635,9 +661,14 @@
 
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_JobTemplate.getJobTemplate(params.id).done(function (data) {
                 console.log(data);
-                qualGrid.dataSource = data.jobQualificationTemplates;
-                setTimeout(function () { qualGrid.hideSpinner() }, 200);
 
+                $('#tasksIds').multiselect('select', params.jobTaskTemplates.map(function (item) { return item.taskTemplateId }));
+                $('#functionsIds').multiselect('select', params.jobFunctionTemplates.map(function (item) { return item.functionTemplateId }));
+                
+                $('#skillsIds').multiselect('select', params.jobSkillTemplates.map(function (item) { return item.skillTemplateId }));
+                $('#academiaIds').multiselect('select', params.jobAcademiaTemplates.map(function (item) { return item.academiaTemplateId }));
+
+                $('#compensationMatrixId').multiselect('select', params.compensationMatrixTemplateId);
             });
         }
         else if (args.commandColumn.type == "Copy") {
@@ -645,7 +676,6 @@
         }
 
         setTimeout(function () { gridObj.hideSpinner() }, 200);
-        setTimeout(function () { qualGrid.hideSpinner() }, 200);
     }
     function jobActionComplete(args) {
         let gridObj = document.getElementById("JobsGrid").ej2_instances[0];

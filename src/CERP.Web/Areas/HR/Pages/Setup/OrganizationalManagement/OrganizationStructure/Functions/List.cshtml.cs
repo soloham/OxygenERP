@@ -23,7 +23,7 @@ using CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructur
 using CERP.HR.OrganizationalManagement.OrganizationStructure;
 using CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure;
 
-namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure.Pages.Jobs
+namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure.Pages.Functions
 {
     public class ListModel : CERPPageModel
     {
@@ -31,18 +31,18 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
         public IRepository<DictionaryValue, Guid> DictionaryValuesRepo { get; set; }
         public IAuditLogRepository AuditLogsRepo { get; set; }
 
-        public OS_JobTemplateAppService OS_JobTemplateAppService { get; set; }
+        public OS_FunctionTemplateAppService OS_FunctionTemplateAppService { get; set; }
 
         public IAuditingManager AuditingManager { get; set; }
         public IRepository<CustomEntityChange> CustomEntityChangesRepo { get; set; }
 
-        public ListModel(IJsonSerializer jsonSerializer, IRepository<DictionaryValue, Guid> dictionaryValuesRepo, IWebHostEnvironment webHostEnvironment, IAuditLogRepository auditLogsRepo, OS_JobTemplateAppService oS_JobTemplateAppService)
+        public ListModel(IJsonSerializer jsonSerializer, IRepository<DictionaryValue, Guid> dictionaryValuesRepo, IWebHostEnvironment webHostEnvironment, IAuditLogRepository auditLogsRepo, OS_FunctionTemplateAppService oS_FunctionTemplateAppService)
         {
             JsonSerializer = jsonSerializer;
             DictionaryValuesRepo = dictionaryValuesRepo;
             this.webHostEnvironment = webHostEnvironment;
             AuditLogsRepo = auditLogsRepo;
-            OS_JobTemplateAppService = oS_JobTemplateAppService;
+            OS_FunctionTemplateAppService = oS_FunctionTemplateAppService;
         }
 
         public IJsonSerializer JsonSerializer { get; set; }
@@ -52,7 +52,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
 
         }
 
-        public async Task<IActionResult> OnPostJobTemplate()
+        public async Task<IActionResult> OnPostFunctionTemplate()
         {
             if (ModelState.IsValid)
             {
@@ -60,32 +60,32 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                 {
                     var FormData = Request.Form;
 
-                    OS_JobTemplate_Dto jobTemplate_Dto = JsonSerializer.Deserialize<OS_JobTemplate_Dto>(FormData["info"]);
+                    OS_FunctionTemplate_Dto functionTemplate_Dto = JsonSerializer.Deserialize<OS_FunctionTemplate_Dto>(FormData["info"]);
 
-                    bool IsEditing = jobTemplate_Dto.Id > 0;
+                    bool IsEditing = functionTemplate_Dto.Id > 0;
                     if (IsEditing)
                     {
-                        OS_JobTemplate curJobTemplate = await OS_JobTemplateAppService.Repository.GetAsync(jobTemplate_Dto.Id);
+                        OS_FunctionTemplate curFunctionTemplate = await OS_FunctionTemplateAppService.Repository.GetAsync(functionTemplate_Dto.Id);
 
                         if (AuditingManager.Current != null)
                         {
                             EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
 
-                            entityChangeInfo.EntityId = jobTemplate_Dto.Id.ToString();
-                            entityChangeInfo.EntityTenantId = jobTemplate_Dto.TenantId;
+                            entityChangeInfo.EntityId = functionTemplate_Dto.Id.ToString();
+                            entityChangeInfo.EntityTenantId = functionTemplate_Dto.TenantId;
                             entityChangeInfo.ChangeTime = DateTime.Now;
                             entityChangeInfo.ChangeType = EntityChangeType.Updated;
-                            entityChangeInfo.EntityTypeFullName = typeof(OS_JobTemplate).FullName;
+                            entityChangeInfo.EntityTypeFullName = typeof(OS_FunctionTemplate).FullName;
 
                             entityChangeInfo.PropertyChanges = new List<EntityPropertyChangeInfo>();
                             List<EntityPropertyChangeInfo> entityPropertyChanges = new List<EntityPropertyChangeInfo>();
-                            var auditProps = typeof(OS_JobTemplate).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+                            var auditProps = typeof(OS_FunctionTemplate).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
 
-                            OS_JobTemplate mappedInput = ObjectMapper.Map<OS_JobTemplate_Dto, OS_JobTemplate>(jobTemplate_Dto);
+                            OS_FunctionTemplate mappedInput = ObjectMapper.Map<OS_FunctionTemplate_Dto, OS_FunctionTemplate>(functionTemplate_Dto);
                             foreach (var prop in auditProps)
                             {
                                 EntityPropertyChangeInfo propertyChange = new EntityPropertyChangeInfo();
-                                object origVal = prop.GetValue(curJobTemplate);
+                                object origVal = prop.GetValue(curFunctionTemplate);
                                 propertyChange.OriginalValue = origVal == null ? "" : origVal.ToString();
                                 object newVal = prop.GetValue(mappedInput);
                                 propertyChange.NewValue = newVal == null ? "" : newVal.ToString();
@@ -100,9 +100,9 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                                         string valuePropName = prop.Name.TrimEnd('d', 'I');
                                         propertyChange.PropertyName = valuePropName;
 
-                                        var valueProp = typeof(OS_JobTemplate).GetProperty(valuePropName);
+                                        var valueProp = typeof(OS_FunctionTemplate).GetProperty(valuePropName);
 
-                                        DictionaryValue _origValObj = (DictionaryValue)valueProp.GetValue(jobTemplate_Dto);
+                                        DictionaryValue _origValObj = (DictionaryValue)valueProp.GetValue(functionTemplate_Dto);
                                         if (_origValObj == null) _origValObj = await DictionaryValuesRepo.GetAsync((Guid)origVal);
                                         string _origVal = _origValObj.Value;
                                         propertyChange.OriginalValue = origVal == null ? "" : _origVal;
@@ -124,7 +124,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
 
                             #region ExtraProperties
                             //List<EmployeeExtraPropertyHistory> allExtraPropertyHistories = new List<EmployeeExtraPropertyHistory>();
-                            //if (departmentTemplate_Dto.ExtraProperties != curJobTemplate.ExtraProperties)
+                            //if (departmentTemplate_Dto.ExtraProperties != curFunctionTemplate.ExtraProperties)
                             //{
                             //    //GeneralInfo oldGeneralInfo = department.GetProperty<GeneralInfo>("generalInfo");
                             //    //List<EmployeeExtraPropertyHistory> physicalIdsHistory = new List<EmployeeExtraPropertyHistory>();
@@ -204,178 +204,103 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                             AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
                         }
 
-                        curJobTemplate.Name = jobTemplate_Dto.Name;
-                        curJobTemplate.NameLocalized = jobTemplate_Dto.NameLocalized;
-                        curJobTemplate.Code = jobTemplate_Dto.Code;
-                        curJobTemplate.ValidityFromDate = jobTemplate_Dto.ValidityFromDate;
-                        curJobTemplate.ValidityToDate = jobTemplate_Dto.ValidityToDate;
-                        curJobTemplate.Description = jobTemplate_Dto.Description;
-                        curJobTemplate.MaxJobPositions = jobTemplate_Dto.MaxJobPositions;
-                        curJobTemplate.CompensationMatrix = null;
-                        curJobTemplate.CompensationMatrixId = jobTemplate_Dto.CompensationMatrixId;
+                        curFunctionTemplate.Name = functionTemplate_Dto.Name;
+                        curFunctionTemplate.NameLocalized = functionTemplate_Dto.NameLocalized;
+                        curFunctionTemplate.Code = functionTemplate_Dto.Code;
+                        curFunctionTemplate.ValidityFromDate = functionTemplate_Dto.ValidityFromDate;
+                        curFunctionTemplate.ValidityToDate = functionTemplate_Dto.ValidityToDate;
+                        curFunctionTemplate.Description = functionTemplate_Dto.Description;
+                        curFunctionTemplate.DoesKPI = functionTemplate_Dto.DoesKPI;
+                        curFunctionTemplate.CompensationMatrix = null;
+                        curFunctionTemplate.CompensationMatrixId = functionTemplate_Dto.CompensationMatrixId;
 
                         #region Child Entities
-                        OS_JobTaskTemplate_Dto[] jobTasks = jobTemplate_Dto.JobTaskTemplates.ToArray();
-                        int[] curJobTasksIds = curJobTemplate.JobTaskTemplates != null && curJobTemplate.JobTaskTemplates.Count > 0 ? curJobTemplate.JobTaskTemplates.Select(x => x.TaskTemplate.Id).ToArray() : new int[0];
-                        List<int> toDeleteTasks = new List<int>();
-                        for (int i = 0; i < curJobTasksIds.Length; i++)
-                        {
-                            OS_JobTaskTemplate curJobTask = curJobTemplate.JobTaskTemplates.First(x => x.TaskTemplateId == curJobTasksIds[i]);
-                            if (!jobTasks.Any(x => x.TaskTemplate.Id == curJobTasksIds[i]))
-                            {
-                                curJobTemplate.JobTaskTemplates.Remove(curJobTemplate.JobTaskTemplates.First(x => x.TaskTemplateId == curJobTasksIds[i]));
-                                toDeleteTasks.Add(curJobTasksIds[i]);
-                            }
-                        }
-                        for (int i = 0; i < jobTasks.Length; i++)
-                        {
-                            if (!curJobTemplate.JobTaskTemplates.Any(x => x.TaskTemplateId == jobTasks[i].TaskTemplate.Id))
-                            {
-                                curJobTemplate.JobTaskTemplates.Add(new OS_JobTaskTemplate() { TaskTemplateId = jobTasks[i].TaskTemplate.Id });
-                            }
-                            else
-                            {
-                                var _jobTask = curJobTemplate.JobTaskTemplates.First(x => x.TaskTemplateId == jobTasks[i].TaskTemplate.Id);
-                                //_jobLoc.JobValidityStart = posJobs[i].JobValidityStart;
-                                //_jobLoc.JobValidityEnd = posJobs[i].JobValidityEnd;
-                                //_jobLoc.Name = posJobs[i].Name;
-
-                                //curJob.JobTaskTemplates.Remove(curJob.JobTaskTemplates.First(x => x.JobTemplateId == _jobLoc.JobTemplateId));
-                                await OS_JobTemplateAppService.TasksRepository.UpdateAsync(_jobTask);
-                            }
-                        }
-                        for (int i = 0; i < toDeleteTasks.Count; i++)
-                        {
-                            await OS_JobTemplateAppService.TasksRepository.DeleteAsync(x => x.TaskTemplateId == toDeleteTasks[i]);
-                        }
-
-                        OS_JobFunctionTemplate_Dto[] jobFunctions = jobTemplate_Dto.JobFunctionTemplates.ToArray();
-                        int[] curJobFunctionsIds = curJobTemplate.JobFunctionTemplates != null && curJobTemplate.JobFunctionTemplates.Count > 0 ? curJobTemplate.JobFunctionTemplates.Select(x => x.FunctionTemplate.Id).ToArray() : new int[0];
-                        List<int> toDeleteFunctions = new List<int>();
-                        for (int i = 0; i < curJobFunctionsIds.Length; i++)
-                        {
-                            OS_JobFunctionTemplate curJobFunction = curJobTemplate.JobFunctionTemplates.First(x => x.FunctionTemplateId == curJobFunctionsIds[i]);
-                            if (!jobFunctions.Any(x => x.FunctionTemplate.Id == curJobFunctionsIds[i]))
-                            {
-                                curJobTemplate.JobFunctionTemplates.Remove(curJobTemplate.JobFunctionTemplates.First(x => x.FunctionTemplateId == curJobFunctionsIds[i]));
-                                toDeleteFunctions.Add(curJobFunctionsIds[i]);
-                            }
-                        }
-                        for (int i = 0; i < jobFunctions.Length; i++)
-                        {
-                            if (!curJobTemplate.JobFunctionTemplates.Any(x => x.FunctionTemplateId == jobFunctions[i].FunctionTemplate.Id))
-                            {
-                                curJobTemplate.JobFunctionTemplates.Add(new OS_JobFunctionTemplate() { FunctionTemplateId = jobFunctions[i].FunctionTemplate.Id });
-                            }
-                            else
-                            {
-                                var _jobFunction = curJobTemplate.JobFunctionTemplates.First(x => x.FunctionTemplateId == jobFunctions[i].FunctionTemplate.Id);
-                                //_jobLoc.JobValidityStart = posJobs[i].JobValidityStart;
-                                //_jobLoc.JobValidityEnd = posJobs[i].JobValidityEnd;
-                                //_jobLoc.Name = posJobs[i].Name;
-
-                                //curJob.JobFunctionTemplates.Remove(curJob.JobFunctionTemplates.First(x => x.JobTemplateId == _jobLoc.JobTemplateId));
-                                await OS_JobTemplateAppService.FunctionsRepository.UpdateAsync(_jobFunction);
-                            }
-                        }
-                        for (int i = 0; i < toDeleteFunctions.Count; i++)
-                        {
-                            await OS_JobTemplateAppService.FunctionsRepository.DeleteAsync(x => x.FunctionTemplateId == toDeleteFunctions[i]);
-                        }
-
-
-                        OS_JobSkillTemplate_Dto[] jobSkills = jobTemplate_Dto.JobSkillTemplates.ToArray();
-                        int[] curJobSkillsIds = curJobTemplate.JobSkillTemplates != null && curJobTemplate.JobSkillTemplates.Count > 0 ? curJobTemplate.JobSkillTemplates.Select(x => x.SkillTemplate.Id).ToArray() : new int[0];
+                        OS_FunctionSkillTemplate_Dto[] functionSkills = functionTemplate_Dto.FunctionSkillTemplates.ToArray();
+                        int[] curFunctionSkillsIds = curFunctionTemplate.FunctionSkillTemplates != null && curFunctionTemplate.FunctionSkillTemplates.Count > 0 ? curFunctionTemplate.FunctionSkillTemplates.Select(x => x.SkillTemplate.Id).ToArray() : new int[0];
                         List<int> toDeleteSkills = new List<int>();
-                        for (int i = 0; i < curJobSkillsIds.Length; i++)
+                        for (int i = 0; i < curFunctionSkillsIds.Length; i++)
                         {
-                            OS_JobSkillTemplate curJobSkill = curJobTemplate.JobSkillTemplates.First(x => x.SkillTemplateId == curJobSkillsIds[i]);
-                            if (!jobSkills.Any(x => x.SkillTemplate.Id == curJobSkillsIds[i] && x.CreationTime == curJobSkill.CreationTime))
+                            OS_FunctionSkillTemplate curFunctionSkill = curFunctionTemplate.FunctionSkillTemplates.First(x => x.SkillTemplate.Id == curFunctionSkillsIds[i]);
+                            if (!functionSkills.Any(x => x.SkillTemplate.Id == curFunctionSkillsIds[i]))
                             {
-                                curJobTemplate.JobSkillTemplates.Remove(curJobTemplate.JobSkillTemplates.First(x => x.SkillTemplateId == curJobSkillsIds[i]));
-                                toDeleteSkills.Add(curJobSkillsIds[i]);
+                                curFunctionTemplate.FunctionSkillTemplates.Remove(curFunctionTemplate.FunctionSkillTemplates.First(x => x.SkillTemplate.Id == curFunctionSkillsIds[i]));
+                                toDeleteSkills.Add(curFunctionSkillsIds[i]);
                             }
                         }
-                        for (int i = 0; i < jobSkills.Length; i++)
+                        for (int i = 0; i < functionSkills.Length; i++)
                         {
-                            if (!curJobTemplate.JobSkillTemplates.Any(x => x.SkillTemplateId == jobSkills[i].SkillTemplate.Id))
+                            if (!curFunctionTemplate.FunctionSkillTemplates.Any(x => x.SkillTemplateId == functionSkills[i].SkillTemplate.Id))
                             {
-                                curJobTemplate.JobSkillTemplates.Add(new OS_JobSkillTemplate() { SkillTemplateId = jobSkills[i].SkillTemplate.Id });
+                                curFunctionTemplate.FunctionSkillTemplates.Add(new OS_FunctionSkillTemplate() { SkillTemplateId = functionSkills[i].SkillTemplate.Id });
                             }
                             else
                             {
-                                var _jobSkill = curJobTemplate.JobSkillTemplates.First(x => x.SkillTemplateId == jobSkills[i].SkillTemplate.Id);
-                                //_jobLoc.JobValidityStart = posJobs[i].JobValidityStart;
-                                //_jobLoc.JobValidityEnd = posJobs[i].JobValidityEnd;
-                                //_jobLoc.Name = posJobs[i].Name;
+                                var _functionSkill = curFunctionTemplate.FunctionSkillTemplates.First(x => x.SkillTemplateId == functionSkills[i].SkillTemplate.Id);
+                                //_functionLoc.FunctionValidityStart = posFunctions[i].FunctionValidityStart;
+                                //_functionLoc.FunctionValidityEnd = posFunctions[i].FunctionValidityEnd;
+                                //_functionLoc.Name = posFunctions[i].Name;
 
-                                //curJob.JobSkillTemplates.Remove(curJob.JobSkillTemplates.First(x => x.JobTemplateId == _jobLoc.JobTemplateId));
-                                await OS_JobTemplateAppService.SkillsRepository.UpdateAsync(_jobSkill);
+                                //curFunction.FunctionSkillTemplates.Remove(curFunction.FunctionSkillTemplates.First(x => x.FunctionTemplateId == _functionLoc.FunctionTemplateId));
+                                await OS_FunctionTemplateAppService.SkillsRepository.UpdateAsync(_functionSkill);
                             }
                         }
                         for (int i = 0; i < toDeleteSkills.Count; i++)
                         {
-                            await OS_JobTemplateAppService.SkillsRepository.DeleteAsync(x => x.SkillTemplateId == toDeleteSkills[i]);
+                            await OS_FunctionTemplateAppService.SkillsRepository.DeleteAsync(x => x.SkillTemplateId == toDeleteSkills[i]);
                         }
 
-                        OS_JobAcademiaTemplate_Dto[] jobAcademia = jobTemplate_Dto.JobAcademiaTemplates.ToArray();
-                        int[] curJobAcademiaIds = curJobTemplate.JobAcademiaTemplates != null && curJobTemplate.JobAcademiaTemplates.Count > 0 ? curJobTemplate.JobAcademiaTemplates.Select(x => x.AcademiaTemplateId).ToArray() : new int[0];
+                        OS_FunctionAcademiaTemplate_Dto[] functionAcademia = functionTemplate_Dto.FunctionAcademiaTemplates.ToArray();
+                        int[] curFunctionAcademiaIds = curFunctionTemplate.FunctionAcademiaTemplates != null && curFunctionTemplate.FunctionAcademiaTemplates.Count > 0 ? curFunctionTemplate.FunctionAcademiaTemplates.Select(x => x.AcademiaTemplate.Id).ToArray() : new int[0];
                         List<int> toDeleteAcademia = new List<int>();
-                        for (int i = 0; i < curJobAcademiaIds.Length; i++)
+                        for (int i = 0; i < curFunctionAcademiaIds.Length; i++)
                         {
-                            OS_JobAcademiaTemplate curJobAcademia = curJobTemplate.JobAcademiaTemplates.First(x => x.AcademiaTemplateId == curJobAcademiaIds[i]);
-                            if (!jobAcademia.Any(x => x.AcademiaTemplate.Id == curJobAcademiaIds[i]))
+                            OS_FunctionAcademiaTemplate curFunctionAcademia = curFunctionTemplate.FunctionAcademiaTemplates.First(x => x.AcademiaTemplate.Id == curFunctionAcademiaIds[i]);
+                            if (!functionAcademia.Any(x => x.AcademiaTemplate.Id == curFunctionAcademiaIds[i]))
                             {
-                                curJobTemplate.JobAcademiaTemplates.Remove(curJobTemplate.JobAcademiaTemplates.First(x => x.AcademiaTemplateId == curJobAcademiaIds[i]));
-                                toDeleteSkills.Add(curJobAcademiaIds[i]);
+                                curFunctionTemplate.FunctionAcademiaTemplates.Remove(curFunctionTemplate.FunctionAcademiaTemplates.First(x => x.AcademiaTemplate.Id == curFunctionAcademiaIds[i]));
+                                toDeleteSkills.Add(curFunctionAcademiaIds[i]);
                             }
                         }
-                        for (int i = 0; i < jobAcademia.Length; i++)
+                        for (int i = 0; i < functionAcademia.Length; i++)
                         {
-                            if (!curJobTemplate.JobAcademiaTemplates.Any(x => x.AcademiaTemplateId == jobAcademia[i].AcademiaTemplate.Id))
+                            if (!curFunctionTemplate.FunctionAcademiaTemplates.Any(x => x.AcademiaTemplateId == functionAcademia[i].AcademiaTemplate.Id))
                             {
-                                curJobTemplate.JobAcademiaTemplates.Add(new OS_JobAcademiaTemplate() { AcademiaTemplateId = jobAcademia[i].AcademiaTemplate.Id });
+                                curFunctionTemplate.FunctionAcademiaTemplates.Add(new OS_FunctionAcademiaTemplate() { AcademiaTemplateId = functionAcademia[i].AcademiaTemplate.Id });
                             }
                             else
                             {
-                                var _jobAcademia = curJobTemplate.JobAcademiaTemplates.First(x => x.AcademiaTemplateId == jobAcademia[i].AcademiaTemplate.Id);
-                                //_jobLoc.JobValidityStart = posJobs[i].JobValidityStart;
-                                //_jobLoc.JobValidityEnd = posJobs[i].JobValidityEnd;
-                                //_jobLoc.Name = posJobs[i].Name;
+                                var _functionAcademia = curFunctionTemplate.FunctionAcademiaTemplates.First(x => x.AcademiaTemplateId == functionAcademia[i].AcademiaTemplate.Id);
+                                //_functionLoc.FunctionValidityStart = posFunctions[i].FunctionValidityStart;
+                                //_functionLoc.FunctionValidityEnd = posFunctions[i].FunctionValidityEnd;
+                                //_functionLoc.Name = posFunctions[i].Name;
 
-                                //curJob.JobAcademiaTemplates.Remove(curJob.JobAcademiaTemplates.First(x => x.JobTemplateId == _jobLoc.JobTemplateId));
-                                await OS_JobTemplateAppService.AcademiaRepository.UpdateAsync(_jobAcademia);
+                                //curFunction.FunctionAcademiaTemplates.Remove(curFunction.FunctionAcademiaTemplates.First(x => x.FunctionTemplateId == _functionLoc.FunctionTemplateId));
+                                await OS_FunctionTemplateAppService.AcademiaRepository.UpdateAsync(_functionAcademia);
                             }
                         }
                         for (int i = 0; i < toDeleteAcademia.Count; i++)
                         {
-                            await OS_JobTemplateAppService.AcademiaRepository.DeleteAsync(x => x.AcademiaTemplateId == toDeleteAcademia[i]);
+                            await OS_FunctionTemplateAppService.AcademiaRepository.DeleteAsync(x => x.AcademiaTemplateId == toDeleteAcademia[i]);
                         }
                         #endregion
 
-                        OS_JobTemplate_Dto updated = ObjectMapper.Map<OS_JobTemplate, OS_JobTemplate_Dto>(await OS_JobTemplateAppService.Repository.UpdateAsync(curJobTemplate));
-                        updated.JobTaskTemplates = ObjectMapper.Map<List<OS_JobTaskTemplate>, List<OS_JobTaskTemplate_Dto>>(curJobTemplate.JobTaskTemplates.ToList());
-                        updated.JobFunctionTemplates = ObjectMapper.Map<List<OS_JobFunctionTemplate>, List<OS_JobFunctionTemplate_Dto>>(curJobTemplate.JobFunctionTemplates.ToList());
-                        updated.JobSkillTemplates = ObjectMapper.Map<List<OS_JobSkillTemplate>, List<OS_JobSkillTemplate_Dto>>(curJobTemplate.JobSkillTemplates.ToList());
-                        updated.JobAcademiaTemplates = ObjectMapper.Map<List<OS_JobAcademiaTemplate>, List<OS_JobAcademiaTemplate_Dto>>(curJobTemplate.JobAcademiaTemplates.ToList());
-                        updated.CompensationMatrix = await OS_JobTemplateAppService.GetCompensationMatrixAsync(updated.CompensationMatrixId);
+                        OS_FunctionTemplate_Dto updated = ObjectMapper.Map<OS_FunctionTemplate, OS_FunctionTemplate_Dto>(await OS_FunctionTemplateAppService.Repository.UpdateAsync(curFunctionTemplate));
+                        updated.FunctionSkillTemplates = ObjectMapper.Map<List<OS_FunctionSkillTemplate>, List<OS_FunctionSkillTemplate_Dto>>(curFunctionTemplate.FunctionSkillTemplates.ToList());
+                        updated.FunctionAcademiaTemplates = ObjectMapper.Map<List<OS_FunctionAcademiaTemplate>, List<OS_FunctionAcademiaTemplate_Dto>>(curFunctionTemplate.FunctionAcademiaTemplates.ToList());
+                        updated.CompensationMatrix = await OS_FunctionTemplateAppService.GetCompensationMatrixAsync(updated.CompensationMatrixId);
 
                         return StatusCode(200, updated);
                     }
                     else
                     {
-                        jobTemplate_Dto.Id = 0;
-                        if (jobTemplate_Dto.JobTaskTemplates != null)
-                            jobTemplate_Dto.JobTaskTemplates.ForEach(x => { x.Id = 0; x.TaskTemplateId = x.TaskTemplate.Id; x.TaskTemplate = null; });
-                        if (jobTemplate_Dto.JobFunctionTemplates != null)
-                            jobTemplate_Dto.JobFunctionTemplates.ForEach(x => { x.Id = 0; x.FunctionTemplateId = x.FunctionTemplate.Id; x.FunctionTemplate = null; });
-                        if (jobTemplate_Dto.JobSkillTemplates != null)
-                            jobTemplate_Dto.JobSkillTemplates.ForEach(x => { x.Id = 0; x.SkillTemplateId = x.SkillTemplate.Id; x.SkillTemplate = null; });
-                        if (jobTemplate_Dto.JobAcademiaTemplates != null)
-                            jobTemplate_Dto.JobAcademiaTemplates.ForEach(x => { x.Id = 0; x.AcademiaTemplateId = x.AcademiaTemplate.Id; x.AcademiaTemplate = null; });
-                        jobTemplate_Dto.CompensationMatrix = null;
+                        functionTemplate_Dto.Id = 0; 
+                        if (functionTemplate_Dto.FunctionSkillTemplates != null)
+                            functionTemplate_Dto.FunctionSkillTemplates.ForEach(x => { x.Id = 0; x.SkillTemplateId = x.SkillTemplate.Id; x.SkillTemplate = null; });
+                        if (functionTemplate_Dto.FunctionAcademiaTemplates != null)
+                            functionTemplate_Dto.FunctionAcademiaTemplates.ForEach(x => { x.Id = 0; x.AcademiaTemplateId = x.AcademiaTemplate.Id; x.AcademiaTemplate = null; });
+                        functionTemplate_Dto.CompensationMatrix = null;
 
-                        OS_JobTemplate_Dto added = await OS_JobTemplateAppService.CreateAsync(jobTemplate_Dto);
+                        OS_FunctionTemplate_Dto added = await OS_FunctionTemplateAppService.CreateAsync(functionTemplate_Dto);
 
                         if (AuditingManager.Current != null)
                         {
@@ -384,7 +309,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                             entityChangeInfo.EntityTenantId = added.TenantId;
                             entityChangeInfo.ChangeTime = DateTime.Now;
                             entityChangeInfo.ChangeType = EntityChangeType.Created;
-                            entityChangeInfo.EntityTypeFullName = typeof(OS_JobTemplate).FullName;
+                            entityChangeInfo.EntityTypeFullName = typeof(OS_FunctionTemplate).FullName;
 
                             AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
                         }
@@ -400,16 +325,16 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
 
             return StatusCode(500);
         }
-        public async Task<IActionResult> OnDeleteJobTemplate()
+        public async Task<IActionResult> OnDeleteFunctionTemplate()
         {
-            List<OS_JobTemplate_Dto> entitites = JsonSerializer.Deserialize<List<OS_JobTemplate_Dto>>(Request.Form["jobs"]);
+            List<OS_FunctionTemplate_Dto> entitites = JsonSerializer.Deserialize<List<OS_FunctionTemplate_Dto>>(Request.Form["functions"]);
             try
             {
                 for (int i = 0; i < entitites.Count; i++)
                 {
-                    OS_JobTemplate_Dto entity = entitites[i];
-                    //await TaskTemplatesAppService.Repository.DeleteAsync(leaveRequest.);
-                    await OS_JobTemplateAppService.Repository.DeleteAsync(entity.Id);
+                    OS_FunctionTemplate_Dto entity = entitites[i];
+                    //await FunctionTemplatesAppService.Repository.DeleteAsync(leaveRequest.);
+                    await OS_FunctionTemplateAppService.Repository.DeleteAsync(entity.Id);
 
                     if (AuditingManager.Current != null)
                     {
@@ -418,7 +343,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         entityChangeInfo.EntityTenantId = entity.TenantId;
                         entityChangeInfo.ChangeTime = DateTime.Now;
                         entityChangeInfo.ChangeType = EntityChangeType.Deleted;
-                        entityChangeInfo.EntityTypeFullName = typeof(OS_JobTemplate).FullName;
+                        entityChangeInfo.EntityTypeFullName = typeof(OS_FunctionTemplate).FullName;
 
                         AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
                     }
@@ -431,7 +356,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
             }
         }
 
-        //public async Task<IActionResult> OnPostJobQualificationTemplate()
+        //public async Task<IActionResult> OnPostFunctionQualificationTemplate()
         //{
 
         //    if (ModelState.IsValid)
@@ -440,32 +365,32 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
         //        {
         //            var FormData = Request.Form;
 
-        //            OS_JobQualificationTemplate_Dto jobQualificationTemplate_Dto = JsonSerializer.Deserialize<OS_JobQualificationTemplate_Dto>(FormData["info"]);
+        //            OS_FunctionQualificationTemplate_Dto functionQualificationTemplate_Dto = JsonSerializer.Deserialize<OS_FunctionQualificationTemplate_Dto>(FormData["info"]);
 
-        //            bool IsEditing = jobQualificationTemplate_Dto.Id > 0;
+        //            bool IsEditing = functionQualificationTemplate_Dto.Id > 0;
         //            if (IsEditing)
         //            {
-        //                OS_JobQualificationTemplate curJobQualificationTemplate = await OS_JobTemplateAppService.QualificationsRepository.GetAsync(jobQualificationTemplate_Dto.Id);
+        //                OS_FunctionQualificationTemplate curFunctionQualificationTemplate = await OS_FunctionTemplateAppService.QualificationsRepository.GetAsync(functionQualificationTemplate_Dto.Id);
 
         //                if (AuditingManager.Current != null)
         //                {
         //                    EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
 
-        //                    entityChangeInfo.EntityId = jobQualificationTemplate_Dto.Id.ToString();
-        //                    entityChangeInfo.EntityTenantId = jobQualificationTemplate_Dto.TenantId;
+        //                    entityChangeInfo.EntityId = functionQualificationTemplate_Dto.Id.ToString();
+        //                    entityChangeInfo.EntityTenantId = functionQualificationTemplate_Dto.TenantId;
         //                    entityChangeInfo.ChangeTime = DateTime.Now;
         //                    entityChangeInfo.ChangeType = EntityChangeType.Updated;
-        //                    entityChangeInfo.EntityTypeFullName = typeof(OS_JobQualificationTemplate).FullName;
+        //                    entityChangeInfo.EntityTypeFullName = typeof(OS_FunctionQualificationTemplate).FullName;
 
         //                    entityChangeInfo.PropertyChanges = new List<EntityPropertyChangeInfo>();
         //                    List<EntityPropertyChangeInfo> entityPropertyChanges = new List<EntityPropertyChangeInfo>();
-        //                    var auditProps = typeof(OS_JobQualificationTemplate).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+        //                    var auditProps = typeof(OS_FunctionQualificationTemplate).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
 
-        //                    OS_JobQualificationTemplate mappedInput = ObjectMapper.Map<OS_JobQualificationTemplate_Dto, OS_JobQualificationTemplate>(jobQualificationTemplate_Dto);
+        //                    OS_FunctionQualificationTemplate mappedInput = ObjectMapper.Map<OS_FunctionQualificationTemplate_Dto, OS_FunctionQualificationTemplate>(functionQualificationTemplate_Dto);
         //                    foreach (var prop in auditProps)
         //                    {
         //                        EntityPropertyChangeInfo propertyChange = new EntityPropertyChangeInfo();
-        //                        object origVal = prop.GetValue(curJobQualificationTemplate);
+        //                        object origVal = prop.GetValue(curFunctionQualificationTemplate);
         //                        propertyChange.OriginalValue = origVal == null ? "" : origVal.ToString();
         //                        object newVal = prop.GetValue(mappedInput);
         //                        propertyChange.NewValue = newVal == null ? "" : newVal.ToString();
@@ -480,9 +405,9 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
         //                                string valuePropName = prop.Name.TrimEnd('d', 'I');
         //                                propertyChange.PropertyName = valuePropName;
 
-        //                                var valueProp = typeof(OS_JobQualificationTemplate).GetProperty(valuePropName);
+        //                                var valueProp = typeof(OS_FunctionQualificationTemplate).GetProperty(valuePropName);
 
-        //                                DictionaryValue _origValObj = (DictionaryValue)valueProp.GetValue(jobQualificationTemplate_Dto);
+        //                                DictionaryValue _origValObj = (DictionaryValue)valueProp.GetValue(functionQualificationTemplate_Dto);
         //                                if (_origValObj == null) _origValObj = await DictionaryValuesRepo.GetAsync((Guid)origVal);
         //                                string _origVal = _origValObj.Value;
         //                                propertyChange.OriginalValue = origVal == null ? "" : _origVal;
@@ -505,21 +430,20 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
         //                    AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
         //                }
 
-        //                curJobQualificationTemplate.DegreeId = jobQualificationTemplate_Dto.DegreeId;
-        //                curJobQualificationTemplate.InstituteId = jobQualificationTemplate_Dto.InstituteId;
-        //                curJobQualificationTemplate.PeriodStartDate = jobQualificationTemplate_Dto.PeriodStartDate;
-        //                curJobQualificationTemplate.PeriodEndDate = jobQualificationTemplate_Dto.PeriodEndDate;
+        //                curFunctionQualificationTemplate.DegreeId = functionQualificationTemplate_Dto.DegreeId;
+        //                curFunctionQualificationTemplate.InstituteId = functionQualificationTemplate_Dto.InstituteId;
+        //                curFunctionQualificationTemplate.PeriodStartDate = functionQualificationTemplate_Dto.PeriodStartDate;
+        //                curFunctionQualificationTemplate.PeriodEndDate = functionQualificationTemplate_Dto.PeriodEndDate;
 
-        //                OS_JobQualificationTemplate_Dto updated = ObjectMapper.Map<OS_JobQualificationTemplate, OS_JobQualificationTemplate_Dto>(await OS_JobTemplateAppService.QualificationsRepository.UpdateAsync(curJobQualificationTemplate));
-        //                updated = ObjectMapper.Map<OS_JobQualificationTemplate, OS_JobQualificationTemplate_Dto>(await OS_JobTemplateAppService.QualificationsRepository.GetAsync(updated.Id));
+        //                OS_FunctionQualificationTemplate_Dto updated = ObjectMapper.Map<OS_FunctionQualificationTemplate, OS_FunctionQualificationTemplate_Dto>(await OS_FunctionTemplateAppService.QualificationsRepository.UpdateAsync(curFunctionQualificationTemplate));
 
         //                return StatusCode(200, updated);
         //            }
         //            else
         //            {
-        //                jobQualificationTemplate_Dto.Id = 0;
+        //                functionQualificationTemplate_Dto.Id = 0;
 
-        //                OS_JobQualificationTemplate_Dto added = await OS_JobTemplateAppService.AddQualificationTemplate(jobQualificationTemplate_Dto);
+        //                OS_FunctionQualificationTemplate_Dto added = await OS_FunctionTemplateAppService.AddQualificationTemplate(functionQualificationTemplate_Dto);
 
         //                if (AuditingManager.Current != null)
         //                {
@@ -528,13 +452,12 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
         //                    entityChangeInfo.EntityTenantId = added.TenantId;
         //                    entityChangeInfo.ChangeTime = DateTime.Now;
         //                    entityChangeInfo.ChangeType = EntityChangeType.Created;
-        //                    entityChangeInfo.EntityTypeFullName = typeof(OS_JobQualificationTemplate).FullName;
+        //                    entityChangeInfo.EntityTypeFullName = typeof(OS_FunctionQualificationTemplate).FullName;
 
         //                    AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
         //                }
 
-        //                added = ObjectMapper.Map<OS_JobQualificationTemplate, OS_JobQualificationTemplate_Dto>(await OS_JobTemplateAppService.QualificationsRepository.GetAsync(added.Id));
-
+        //                added = ObjectMapper.Map<OS_FunctionQualificationTemplate, OS_FunctionQualificationTemplate_Dto>(await OS_FunctionTemplateAppService.QualificationsRepository.GetAsync(added.Id));
         //                return StatusCode(200, added);
         //            }
         //        }
@@ -546,16 +469,16 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
 
         //    return StatusCode(500);
         //}
-        //public async Task<IActionResult> OnDeleteJobQualificationTemplate()
+        //public async Task<IActionResult> OnDeleteFunctionQualificationTemplate()
         //{
-        //    List<OS_JobQualificationTemplate_Dto> entitites = JsonSerializer.Deserialize<List<OS_JobQualificationTemplate_Dto>>(Request.Form["qualifications"]);
+        //    List<OS_FunctionQualificationTemplate_Dto> entitites = JsonSerializer.Deserialize<List<OS_FunctionQualificationTemplate_Dto>>(Request.Form["qualifications"]);
         //    try
         //    {
         //        for (int i = 0; i < entitites.Count; i++)
         //        {
-        //            OS_JobQualificationTemplate_Dto entity = entitites[i];
-        //            //await JobQualificationTemplatesAppService.Repository.DeleteAsync(leaveRequest.);
-        //            await OS_JobTemplateAppService.QualificationsRepository.DeleteAsync(entity.Id);
+        //            OS_FunctionQualificationTemplate_Dto entity = entitites[i];
+        //            //await FunctionQualificationTemplatesAppService.Repository.DeleteAsync(leaveRequest.);
+        //            await OS_FunctionTemplateAppService.QualificationsRepository.DeleteAsync(entity.Id);
 
         //            if (AuditingManager.Current != null)
         //            {
@@ -564,7 +487,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
         //                entityChangeInfo.EntityTenantId = entity.TenantId;
         //                entityChangeInfo.ChangeTime = DateTime.Now;
         //                entityChangeInfo.ChangeType = EntityChangeType.Deleted;
-        //                entityChangeInfo.EntityTypeFullName = typeof(OS_JobQualificationTemplate).FullName;
+        //                entityChangeInfo.EntityTypeFullName = typeof(OS_FunctionQualificationTemplate).FullName;
 
         //                AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
         //            }
@@ -576,6 +499,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
         //        return StatusCode(500);
         //    }
         //}
+
 
         public dynamic GetDataAuditTrailModel()
         {
@@ -674,7 +598,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
             List<dynamic> tertiaryDS = new List<dynamic>();
             var departmentLogs = AuditLogsRepo.WithDetails().Where(x => x.Url == HttpContext.Request.Path.Value && x.EntityChanges != null && x.EntityChanges.Count > 0).ToList();
 
-            List<OS_JobTemplate_Dto> Entities = await OS_JobTemplateAppService.GetAllJobTemplatesAsync();
+            List<OS_FunctionTemplate_Dto> Entities = await OS_FunctionTemplateAppService.GetAllFunctionTemplatesAsync();
             TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
 
             for (int i = 0; i < departmentLogs.Count; i++)
@@ -690,7 +614,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                     changeRow.AuditLogId = entityChange.Id;
                     changeRow.EntityChangeId = entityChange.Id;
 
-                    OS_JobTemplate_Dto department = Entities.First(x => x.Id.ToString() == entityChange.EntityId);
+                    OS_FunctionTemplate_Dto department = Entities.First(x => x.Id.ToString() == entityChange.EntityId);
                     changeRow.Id = department.Id;
                     changeRow.Name = department.Name;
                     changeRow.Date = entityChange.ChangeTime.ToShortDateString();

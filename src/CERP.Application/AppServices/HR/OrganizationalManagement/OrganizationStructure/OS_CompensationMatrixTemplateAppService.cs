@@ -15,9 +15,9 @@ using Volo.Abp.Domain.Repositories;
 
 namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
 {
-    public class CompensationMatrixTemplateAppService : CrudAppService<OS_CompensationMatrixTemplate, OS_CompensationMatrixTemplate_Dto, int, PagedAndSortedResultRequestDto, OS_CompensationMatrixTemplate_Dto, OS_CompensationMatrixTemplate_Dto>
+    public class OS_CompensationMatrixTemplateAppService : CrudAppService<OS_CompensationMatrixTemplate, OS_CompensationMatrixTemplate_Dto, int, PagedAndSortedResultRequestDto, OS_CompensationMatrixTemplate_Dto, OS_CompensationMatrixTemplate_Dto>
     {
-        public CompensationMatrixTemplateAppService(IRepository<OS_CompensationMatrixTemplate, int> repository /*IRepository<OS_DepartmentCompensationMatrixTemplate, int> departmentCompensationMatrixTemplateRepo,*/) : base(repository)
+        public OS_CompensationMatrixTemplateAppService(IRepository<OS_CompensationMatrixTemplate, int> repository /*IRepository<OS_DepartmentCompensationMatrixTemplate, int> departmentCompensationMatrixTemplateRepo,*/) : base(repository)
         {
             Repository = repository;
         }
