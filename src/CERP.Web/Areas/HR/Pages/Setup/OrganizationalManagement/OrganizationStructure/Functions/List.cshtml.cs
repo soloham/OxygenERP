@@ -207,6 +207,8 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curFunctionTemplate.Name = functionTemplate_Dto.Name;
                         curFunctionTemplate.NameLocalized = functionTemplate_Dto.NameLocalized;
                         curFunctionTemplate.Code = functionTemplate_Dto.Code;
+                        curFunctionTemplate.ReviewPeriod = functionTemplate_Dto.ReviewPeriod;
+                        curFunctionTemplate.ReviewPeriodDays = functionTemplate_Dto.ReviewPeriodDays;
                         curFunctionTemplate.ValidityFromDate = functionTemplate_Dto.ValidityFromDate;
                         curFunctionTemplate.ValidityToDate = functionTemplate_Dto.ValidityToDate;
                         curFunctionTemplate.Description = functionTemplate_Dto.Description;

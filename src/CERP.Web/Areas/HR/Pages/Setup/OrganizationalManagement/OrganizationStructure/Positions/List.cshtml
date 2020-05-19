@@ -46,6 +46,9 @@
     List<OS_PositionLevel> positionLevels = Enum.GetValues(typeof(OS_PositionLevel)).Cast<OS_PositionLevel>().ToList();
 
     List<DictionaryValue> costCenters = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.CostCenter).OrderBy(x => x.Key).ToList();
+
+    List<OS_PositionHiringType> hiringTypes = Enum.GetValues(typeof(OS_PositionHiringType)).Cast<OS_PositionHiringType>().ToList();
+    List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Cast<OS_ReviewPeriod>().ToList();
 }
 @section styles {
     @if ((bool)ViewData["IsEditing"])
@@ -79,6 +82,7 @@
                 enableCollapsibleOptGroups: true
             };
             $('#positionJobs').multiselect(options);
+            $('#reviewPeriod').multiselect(options);
             $('#positionTasks').multiselect(options);
             //$('#positionDepartmentId').multiselect(options);
 
@@ -281,25 +285,16 @@
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Jobs:</label>
-                                <select id="positionJobs" multiple="multiple" name="Jobs" class="form-control">
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Tasks:</label>
-                                <select id="positionTasks" multiple="multiple" name="Tasks" class="form-control">
-                                </select>
-                            </div>
+                        <div class="form-group">
+                            <label class="margin-bottom-5 control-label">Jobs:</label>
+                            <select id="positionJobs" multiple="multiple" name="Jobs" class="form-control">
+                            </select>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-3 col-12">
                         <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Department / Sub Department:</label>
-                            <select id="positionDepartmentId" name="DepartmentTemplateId" class="form-control" required>
+                            <label class="margin-bottom-5 control-label">Tasks:</label>
+                            <select id="positionTasks" multiple="multiple" name="Tasks" class="form-control">
                             </select>
                         </div>
                     </div>
@@ -316,27 +311,63 @@
                             </select>
                         </div>
                     </div>
+                    <div class="col-lg-3 col-md-6 col-sm-2 col-12">
+                        <div id="reviewPeriodTypeField" class="col-sm-12">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Review Period:</label>
+                                <select id="reviewPeriod" name="ReviewPeriod" onchange="
+                                            if (typeof $('option:selected', '#reviewPeriod').attr('data-value') !== 'undefined' && $('option:selected', '#reviewPeriod').attr('data-value').includes('Day')) {
+                                                $('#reviewPeriodTypeField').removeClass('col-sm-12');
+                                                $('#reviewPeriodTypeField').addClass('col-sm-6');
+                                                setTimeout(function () {
+                                                    $('#reviewPeriodDaysField').slideDown(0);
+                                                }, 520);
+                                            } else {
+                                                $('#reviewPeriodDaysField').slideUp(0);
+                                                $('#reviewPeriodTypeField').removeClass('col-sm-6');
+                                                $('#reviewPeriodTypeField').addClass('col-sm-12');
+                                            }
+                                        " class="form-control" required>
+                                    @for (int i = 0; i < reviewPeriods.Count; i++)
+                                    {
+                                        <option value="@((int)reviewPeriods[i])" data-value="@EnumExtensions.GetDescription(reviewPeriods[i])">@EnumExtensions.GetDescription(reviewPeriods[i])</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Period Days:</label>
+                                <input type="number" min="1" id="reviewPeriodDays" name="ReviewPeriodDays" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                         <div class="form-group">
-                            <label class="control-label m-b-5 ">Activation Date:</label>
-                            <input type="date" id="activationDate" name="ActivationDate" class="text-left form-control inline pull-left" required>
+                            <label class="control-label m-b-5 ">Valid From:</label>
+                            <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                        <div class="col-sm-6" style="padding-right:0">
-                            <div class="form-group">
-                                <label class="control-label m-b-5 ">Valid From:</label>
-                                <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
-                            </div>
+                        <div class="form-group">
+                            <label class="control-label m-b-5 ">Valid To:</label>
+                            <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
                         </div>
-                        <div class="col-sm-6" style="padding-left:0">
-                            <div class="form-group">
-                                <label class="control-label m-b-5 ">Valid To:</label>
-                                <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
-                            </div>
+                    </div>      
+                </div>
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label class="margin-bottom-5 control-label">Hiring Type:</label>
+                            <select id="hiringType" name="HiringType" class="form-control">
+                                @for (int i = 0; i < hiringTypes.Count; i++)
+                                {
+                                    <option value="@hiringTypes[i]">@EnumExtensions.GetDescription(hiringTypes[i])</option>
+                                }
+                            </select>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5 control-label">Cost Center:</label>
                             <select id="costCenterId" name="CostCenterId" class="form-control">
@@ -344,6 +375,13 @@
                                 {
                                     <option value="@costCenters[i].Id" data-value="@costCenters[i].Value">@costCenters[i].Value</option>
                                 }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-4 col-12">
+                        <div class="form-group">
+                            <label class="margin-bottom-5 control-label">Department / Sub Department:</label>
+                            <select id="positionDepartmentId" name="DepartmentTemplateId" class="form-control" required>
                             </select>
                         </div>
                     </div>
@@ -374,7 +412,8 @@
                     <e-grid-column field="costCenter.value" headerText="Cost Center" textAlign="Center"></e-grid-column>
                     <e-grid-column field="levelDescription" headerText="Level" textAlign="Center"></e-grid-column>
                     <e-grid-column field="departmentTemplate.name" headerText="Department" textAlign="Center"></e-grid-column>
-                    <e-grid-column field="activationDate" headerText="Activation Date" type="date" format="yMd" , allowEditing="true" editType="datepicker" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="hiringTypeDescription" headerText="Hiring Type" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="reviewPeriodDescription" headerText="Review period" textAlign="Center"></e-grid-column>
                     <e-grid-column headerText="Validity" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityFromDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "From", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityToDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "To", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }

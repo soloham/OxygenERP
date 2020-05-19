@@ -238,6 +238,8 @@ namespace CERP.EntityFrameworkCore
                                                         .ThenInclude(p => p.FunctionTemplate)
                                                        .Include(p => p.JobTaskTemplates)
                                                         .ThenInclude(p => p.TaskTemplate)
+                                                       .Include(p => p.JobWorkshiftTemplates)
+                                                        .ThenInclude(p => p.Workshift)
                                                        .Include(p => p.CompensationMatrix);
                 });
                 options.Entity<OS_JobTaskTemplate>(opt =>
@@ -271,6 +273,11 @@ namespace CERP.EntityFrameworkCore
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.AcademiaTemplate)
                                                        .ThenInclude(p => p.AcademiaCertificateSubType);
+                });
+                options.Entity<OS_JobWorkshiftTemplate>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.Workshift)
+                                                        .ThenInclude(p => p.DeductionMethod);
                 });
 
                 options.Entity<OS_AcademiaTemplate>(opt =>
@@ -338,7 +345,7 @@ namespace CERP.EntityFrameworkCore
 
                 options.Entity<WorkShift>(opt =>
                 {
-                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.Employees).ThenInclude(p => p.Position);
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.DeductionMethod);
                 });
                 options.Entity<Document>(opt =>
                 {

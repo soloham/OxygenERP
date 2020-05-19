@@ -125,7 +125,7 @@
                             if (isEditingWorkshift) {
                                 curWorkshiftEditRow.id = data.id;
                                 curWorkshiftEditRow.workshiftTitle = data.workshiftTitle;
-                                curWorkshiftEditRow.department = data.department;
+                                //curWorkshiftEditRow.department = data.department;
                                 curWorkshiftEditRow.deductionMethod = data.deductionMethod;
                                 curWorkshiftEditRow.startHour = data.startHour;
                                 curWorkshiftEditRow.endHour = data.endHour;
@@ -460,23 +460,7 @@
             <hr />
             <form id="newWorkshiftForm" method="post" data-toggle="validator">
                 <div class="row">
-                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                        @*<div class="col-sm-3" style="padding:0">
-                        <div class="form-group">
-                            <label class="control-label m-b-5">Code:</label>
-                            <input type = "number" id="phoneKey" name="PhoneKey" style="width:100% !important" class="form-control inline pull-left">
-                        </div>
-                    </div>*@
-                        <div class="col-sm-12" style="padding:0">
-                            <div class="form-group">
-                                <label class="control-label m-b-5 ">Department:</label>
-                                <select id="departmentId" name="Department.Id" class="form-control" @*multiple="multiple"*@ required>
-                                    
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                         @*<div class="col-sm-3" style="padding:0">
                         <div class="form-group">
                             <label class="control-label m-b-5">Code:</label>
@@ -490,7 +474,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                         @*<div class="col-sm-3" style="padding:0">
                         <div class="form-group">
                             <label class="control-label m-b-5">Code:</label>
@@ -510,7 +494,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                         @*<div class="col-sm-3" style="padding:0">
                         <div class="form-group">
                             <label class="control-label m-b-5">Code:</label>
@@ -771,7 +755,7 @@
                 $('#startHour').val(params.startHour);
                 $('#endHour').val(params.endHour);
                 try {
-                    $('#departmentId').val(params.department.id);
+                    //$('#departmentId').val(params.department.id);
                     $('#deductionMethodId').val(params.deductionMethod.id);
                 }
                 catch {
@@ -807,7 +791,7 @@
             $('#addWorkshiftSecTitle').html('Create New Workshift');
 
             setTimeout(function () {
-                $('#departmentId').val('');
+                //$('#departmentId').val('');
                 $('#workshiftTitle').val('');
                 $('#startHour').val('');
                 $('#endHour').val('');

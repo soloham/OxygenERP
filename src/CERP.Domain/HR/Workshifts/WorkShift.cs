@@ -25,14 +25,14 @@ namespace CERP.HR.Workshifts
         public bool isFRI { get; set; }
         public bool isSAT { get; set; }
 
-        [ForeignKey("DepartmentId")]
-        public Department Department { get; set; }
-        public Guid? DepartmentId { get; set; }
+        //[ForeignKey("DepartmentId")]
+        //public Department Department { get; set; }
+        //public Guid? DepartmentId { get; set; }
         
         [ForeignKey("DeductionMethodId")]
         public DeductionMethod DeductionMethod { get; set; }
         public int? DeductionMethodId { get; set; }
 
-        public ICollection<Employees.Employee> Employees { get; set; }
+        //public ICollection<Employees.Employee> Employees { get; set; }
     }
 }

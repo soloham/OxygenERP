@@ -32,6 +32,13 @@ namespace CERP.HR.Setup.OrganizationalManagement.OrganizationStructure
         [Description("4")]
         Four
     }
+    public enum OS_PositionHiringType
+    {
+        [Description("Immediate")]
+        Immediate,
+        [Description("Post Approval")]
+        PostApproval
+    }
     public enum OS_SubDepartmentRelationshipType
     {
         [Description("Reporting To")]
@@ -44,12 +51,10 @@ namespace CERP.HR.Setup.OrganizationalManagement.OrganizationStructure
 
     public enum OS_SkillAquisitionType
     {
-        [Description("Reporting To")]
-        ReportingTo,
-        [Description("Isolated")]
-        Isolated,
-        [Description("Assistant")]
-        Assistant
+        [Description("Internal")]
+        Internal,
+        [Description("External")]
+        External
     }
     public enum OS_SkillType
     {
@@ -62,30 +67,38 @@ namespace CERP.HR.Setup.OrganizationalManagement.OrganizationStructure
     }
     public enum OS_SkillUpdatePeriod
     {
-        [Description("Reporting To")]
-        ReportingTo,
-        [Description("Isolated")]
-        Isolated,
-        [Description("Assistant")]
-        Assistant
+        [Description("Quaterly")]
+        Quaterly,
+        [Description("Half Yearly")]
+        HalfYearly,
+        [Description("Yearly")]
+        Yearly
+    }
+
+    public enum OS_ReviewPeriod
+    {
+        [Description("Quaterly")]
+        Quaterly,
+        [Description("Half Yearly")]
+        HalfYearly,
+        [Description("Yearly")]
+        Yearly,
+        [Description("Days")]
+        Days
     }
 
     public enum OS_AcademicType
     {
-        [Description("Reporting To")]
-        ReportingTo,
-        [Description("Isolated")]
-        Isolated,
-        [Description("Assistant")]
-        Assistant
+        [Description("Internal")]
+        Internal,
+        [Description("External")]
+        External
     }
     public enum OS_AcademiaCertificateType
     {
-        [Description("Reporting To")]
+        [Description("Training")]
         ReportingTo,
-        [Description("Isolated")]
-        Isolated,
-        [Description("Assistant")]
-        Assistant
+        [Description("Education")]
+        Isolated
     }
 }

@@ -39,9 +39,11 @@
 
     List<OS_AcademicType> academicType = Enum.GetValues(typeof(OS_AcademicType)).Cast<OS_AcademicType>().ToList();
     List<OS_AcademiaCertificateType> academicCertificateTypes = Enum.GetValues(typeof(OS_AcademiaCertificateType)).Cast<OS_AcademiaCertificateType>().ToList();
-    
+
     List<DictionaryValue> degrees = Model.DictionaryValuesRepo.Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Degree).ToList();
     List<DictionaryValue> institues = Model.DictionaryValuesRepo.Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.AcademicInstitution).ToList();
+
+    List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Cast<OS_ReviewPeriod>().ToList();
 }
 
 @section styles {
@@ -74,6 +76,7 @@
                 includeResetDivider: true,
                 enableCollapsibleOptGroups: true
             };
+            $('#reviewPeriod').multiselect(options);
             $('#compensationMatrixId').multiselect(options);
 
             let gridObj = $("#AcademiaGrid")[0].ej2_instances[0];
@@ -279,7 +282,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                         <div class="col-md-12 col-sm-12" style="padding: 0">
                             <div class="form-group">
                                 <label class="control-label m-b-5 "></label>
@@ -291,13 +294,44 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="control-label m-b-5 ">Passout Year:</label>
                             <input type="number" min="1900" maxlength="4" max="@DateTime.Now.Year" id="passoutYear" name="PassoutYear" class="text-left form-control inline pull-left" required>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                    <div class="col-lg-3 col-md-6 col-sm-2 col-12">
+                        <div id="reviewPeriodTypeField" class="col-sm-12">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Review Period:</label>
+                                <select id="reviewPeriod" name="ReviewPeriod" onchange="
+                                            if (typeof $('option:selected', '#reviewPeriod').attr('data-value') !== 'undefined' && $('option:selected', '#reviewPeriod').attr('data-value').includes('Day')) {
+                                                $('#reviewPeriodTypeField').removeClass('col-sm-12');
+                                                $('#reviewPeriodTypeField').addClass('col-sm-6');
+                                                setTimeout(function () {
+                                                    $('#reviewPeriodDaysField').slideDown(0);
+                                                }, 520);
+                                            } else {
+                                                $('#reviewPeriodDaysField').slideUp(0);
+                                                $('#reviewPeriodTypeField').removeClass('col-sm-6');
+                                                $('#reviewPeriodTypeField').addClass('col-sm-12');
+                                            }
+                                        " class="form-control" required>
+                                    @for (int i = 0; i < reviewPeriods.Count; i++)
+                                    {
+                                        <option value="@((int)reviewPeriods[i])" data-value="@EnumExtensions.GetDescription(reviewPeriods[i])">@EnumExtensions.GetDescription(reviewPeriods[i])</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Period Days:</label>
+                                <input type="number" min="1" id="reviewPeriodDays" name="ReviewPeriodDays" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5 control-label">Compensation Matrix:</label>
                             <select id="compensationMatrixId" name="CompensationMatrixId" class="form-control">
@@ -335,6 +369,7 @@
                     <e-grid-column field="academiaCertificateSubType.value" headerText="Sub Type" textAlign="Center"></e-grid-column>
                     <e-grid-column field="compensationMatrix.name" headerText="Compensation Matrix" textAlign="Center"></e-grid-column>
                     <e-grid-column field="passoutYear" headerText="Passout Year" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="reviewPeriodDescription" headerText="Review period" textAlign="Center"></e-grid-column>
 
                     <e-grid-column headerText="Actions" textAlign="Center" commands="academiaCommands"></e-grid-column>
                 </e-grid-columns>
@@ -504,7 +539,7 @@
                 $('#academicType').multiselect('select', params.academicType);
                 $('#academicCertificateType').multiselect('select', params.academicCertificateType);
                 $('#academicCertificateSubType').multiselect('select', params.academicCertificateSubType);
-                $('#instituteId').val(params.instituteId);
+                $('#instituteId').val(params.instituteId);  
 
                 $('#compensationMatrixId').multiselect('select', params.compensationMatrixTemplateId);
             });

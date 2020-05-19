@@ -214,6 +214,8 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curSkillTemplate.SkillSubType = null;
                         curSkillTemplate.SkillSubTypeId = skillTemplate_Dto.SkillSubTypeId;
                         curSkillTemplate.SkillUpdatePeriod = skillTemplate_Dto.SkillUpdatePeriod;
+                        curSkillTemplate.ReviewPeriod = skillTemplate_Dto.ReviewPeriod;
+                        curSkillTemplate.ReviewPeriodDays = skillTemplate_Dto.ReviewPeriodDays;
                         curSkillTemplate.CompensationMatrix = null;
                         curSkillTemplate.CompensationMatrixId = skillTemplate_Dto.CompensationMatrixId;
 

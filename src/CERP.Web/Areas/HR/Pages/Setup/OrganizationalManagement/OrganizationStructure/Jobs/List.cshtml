@@ -41,6 +41,8 @@
     jobPositionsCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
     jobPositionsCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
     jobPositionsCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
+
+    List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Cast<OS_ReviewPeriod>().ToList();
 }
 
 @section styles {
@@ -65,6 +67,7 @@
         let tasks = []
         let skills = []
         let academia = []
+        let workshifts = []
         let compensationMatrices = []
         $(document).ready(function () {
             let options = {
@@ -76,10 +79,12 @@
                 includeResetDivider: true,
                 enableCollapsibleOptGroups: true
             };
+            $('#reviewPeriod').multiselect(options);
             $('#tasksIds').multiselect(options);
             $('#functionsIds').multiselect(options);
             $('#skillsIds').multiselect(options);
             $('#academiaIds').multiselect(options);
+            $('#workshiftsIds').multiselect(options);
             $('#compensationMatrixId').multiselect(options);
 
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_TaskTemplate.getList({}).done(function (data) {
@@ -121,6 +126,16 @@
                     dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
                 }
                 $('#academiaIds').multiselect('dataprovider', dataMS);
+            });
+            cERP.appServices.hR.workShiftService.workshift.getList({}).done(function (data) {
+                workshifts = data.items;
+
+                let dataMS = [];
+                for (let i = 0; i < data.items.length; i++) {
+                    let item = data.items[i];
+                    dataMS.push({ label: `${item.title}`, value: item.id, data: item });
+                }
+                $('#workshiftsIds').multiselect('dataprovider', dataMS);
             });
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_CompensationMatrixTemplate.getList({}).done(function (data) {
                 compensationMatrices = data.items;
@@ -221,6 +236,18 @@
                             toAdd.jobTemplateId = curJobsEditRow.id;
                         }
                         params.jobAcademiaTemplates.push(toAdd);
+                    }
+                    let selectedWorkShifts = $('#workshiftsIds').val();
+                    console.log(selectedWorkShifts);
+                    let selectedWorkShiftsTemplates = [];
+                    params.jobWorkShiftTemplates = [];
+                    for (var i = 0; i < selectedWorkShifts.length; i++) {
+                        selectedWorkShiftsTemplates.push(workshifts.filter(x => x.id == selectedWorkShifts[i])[0]);
+                        let toAdd = { workshift: selectedWorkShiftsTemplates[i] };
+                        if (isEditingJobs) {
+                            toAdd.jobTemplateId = curJobsEditRow.id;
+                        }
+                        params.jobWorkShiftTemplates.push(toAdd);
                     }
 
                     let formData = new FormData();
@@ -383,7 +410,7 @@
         <form id="jobsForm" onkeydown="return event.key != 'Enter';" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
             <div id="jobSpecificForm">
                 <div class="row">
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                         <div class="col-md-6 col-sm-6" style="padding:0">
                             <div class="form-group">
                                 <label class="control-label m-b-5 ">Title:</label>
@@ -397,36 +424,38 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5 control-label">Job Code:</label>
                             <input type="text" id="jobCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5 control-label">Job Description:</label>
                             <input type="text" id="jobDescription" name="Description" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                         </div>
                     </div>
-                </div>
-                <div class="row">
                     <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5 control-label">Max Positions:</label>
                             <input type="number" min="1" id="maxJobPositions" name="MaxJobPositions" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                         </div>
                     </div>
+                </div>
+                <div class="row">
                     <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label class="control-label m-b-5 ">Valid From:</label>
-                            <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-12" style="padding: 0">
+                            <div class="form-group">
+                                <label class="control-label m-b-5 ">Valid From:</label>
+                                <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label class="control-label m-b-5 ">Valid To:</label>
-                            <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-12" style="padding: 0">
+                            <div class="form-group">
+                                <label class="control-label m-b-5 ">Valid To:</label>
+                                <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
+                            </div>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-3 col-12">
@@ -434,6 +463,44 @@
                             <label class="margin-bottom-5 control-label">Compensation Matrix:</label>
                             <select id="compensationMatrixId" name="CompensationMatrixId" class="form-control" required>
                             </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                        <div class="form-group">
+                            <label class="margin-bottom-5 control-label">Workshifts:</label>
+                            <select id="workshiftsIds" name="WorkshiftsIds" multiple="multiple" class="form-control" required>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-2 col-12">
+                        <div id="reviewPeriodTypeField" class="col-sm-12">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Review Period:</label>
+                                <select id="reviewPeriod" name="ReviewPeriod" onchange="
+                                            if (typeof $('option:selected', '#reviewPeriod').attr('data-value') !== 'undefined' && $('option:selected', '#reviewPeriod').attr('data-value').includes('Day')) {
+                                                $('#reviewPeriodTypeField').removeClass('col-sm-12');
+                                                $('#reviewPeriodTypeField').addClass('col-sm-6');
+                                                setTimeout(function () {
+                                                    $('#reviewPeriodDaysField').slideDown(0);
+                                                }, 520);
+                                            } else {
+                                                $('#reviewPeriodDaysField').slideUp(0);
+                                                $('#reviewPeriodTypeField').removeClass('col-sm-6');
+                                                $('#reviewPeriodTypeField').addClass('col-sm-12');
+                                            }
+                                        " class="form-control" required>
+                                    @for (int i = 0; i < reviewPeriods.Count; i++)
+                                    {
+                                        <option value="@((int)reviewPeriods[i])" data-value="@EnumExtensions.GetDescription(reviewPeriods[i])">@EnumExtensions.GetDescription(reviewPeriods[i])</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Period Days:</label>
+                                <input type="number" min="1" id="reviewPeriodDays" name="ReviewPeriodDays" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -492,7 +559,9 @@
                     <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
                     <e-grid-column field="description" headerText="Description" allowEditing="true" textAlign="Center"></e-grid-column>
                     <e-grid-column field="compensationMatrix.name" headerText="Compensation Matrix" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="workshift.title" headerText="Workshift" textAlign="Center"></e-grid-column>
                     <e-grid-column field="maxJobPositions" headerText="Max Positions" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="reviewPeriodDescription" headerText="Review period" textAlign="Center"></e-grid-column>
                     <e-grid-column headerText="Validity" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityFromDate", Type="date", Format="E, MMMM d, y", AllowEditing=true, EditType="datepicker", HeaderText = "From", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityToDate", Type="date", Format="E, MMMM d, y", AllowEditing=true, EditType="datepicker", HeaderText = "To", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
@@ -662,13 +731,14 @@
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_JobTemplate.getJobTemplate(params.id).done(function (data) {
                 console.log(data);
 
-                $('#tasksIds').multiselect('select', params.jobTaskTemplates.map(function (item) { return item.taskTemplateId }));
-                $('#functionsIds').multiselect('select', params.jobFunctionTemplates.map(function (item) { return item.functionTemplateId }));
+                $('#tasksIds').multiselect('select', data.jobTaskTemplates.map(function (item) { return item.taskTemplateId }));
+                $('#functionsIds').multiselect('select', data.jobFunctionTemplates.map(function (item) { return item.functionTemplateId }));
                 
-                $('#skillsIds').multiselect('select', params.jobSkillTemplates.map(function (item) { return item.skillTemplateId }));
-                $('#academiaIds').multiselect('select', params.jobAcademiaTemplates.map(function (item) { return item.academiaTemplateId }));
+                $('#skillsIds').multiselect('select', data.jobSkillTemplates.map(function (item) { return item.skillTemplateId }));
+                $('#academiaIds').multiselect('select', data.jobAcademiaTemplates.map(function (item) { return item.academiaTemplateId }));
+                $('#workshiftsIds').multiselect('select', data.jobWorkshiftTemplates.map(function (item) { return item.workshiftId }));
 
-                $('#compensationMatrixId').multiselect('select', params.compensationMatrixTemplateId);
+                $('#compensationMatrixId').multiselect('select', data.compensationMatrixTemplateId);
             });
         }
         else if (args.commandColumn.type == "Copy") {

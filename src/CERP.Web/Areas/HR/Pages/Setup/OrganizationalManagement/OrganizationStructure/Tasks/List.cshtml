@@ -44,6 +44,8 @@
 
     List<DictionaryValue> degrees = Model.DictionaryValuesRepo.Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.Degree).ToList();
     List<DictionaryValue> institues = Model.DictionaryValuesRepo.Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.AcademicInstitution).ToList();
+
+    List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Cast<OS_ReviewPeriod>().ToList();
 }
 
 @section styles {
@@ -79,6 +81,7 @@
             };
             $('#skillsIds').multiselect(options);
             $('#academiaIds').multiselect(options);
+            $('#reviewPeriod').multiselect(options);
             $('#compensationMatrixId').multiselect(options);
 
             let gridObj = $("#TasksGrid")[0].ej2_instances[0];
@@ -256,7 +259,7 @@
         <form id="tasksForm" onkeydown="return event.key != 'Enter';" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
             <div id="taskSpecificForm">
                 <div class="row">
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                    <div class="col-lg-2 col-md-2 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5 control-label">Task Code:</label>
                             <input type="text" id="taskCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
@@ -276,23 +279,54 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                    <div class="col-lg-2 col-md-2 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5 control-label">Task Description:</label>
                             <input type="text" id="taskDescription" name="Description" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="col-sm-6" style="padding-right:0">
+                    <div class="col-lg-2 col-md-2 col-sm-6 col-12">
+                        <div class="col-sm-6" style="padding:0">
                             <div class="form-group">
                                 <label class="control-label m-b-5 ">Valid From:</label>
                                 <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
                             </div>
                         </div>
-                        <div class="col-sm-6" style="padding-left:0">
+                        <div class="col-sm-6" style="padding:0">
                             <div class="form-group">
                                 <label class="control-label m-b-5 ">Valid To:</label>
                                 <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-3 col-12">
+                        <div id="reviewPeriodTypeField" class="col-sm-12" style="padding:0">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Review Period:</label>
+                                <select id="reviewPeriod" name="ReviewPeriod" onchange="
+                                            if (typeof $('option:selected', '#reviewPeriod').attr('data-value') !== 'undefined' && $('option:selected', '#reviewPeriod').attr('data-value').includes('Day')) {
+                                                $('#reviewPeriodTypeField').removeClass('col-sm-12');
+                                                $('#reviewPeriodTypeField').addClass('col-sm-6');
+                                                setTimeout(function () {
+                                                    $('#reviewPeriodDaysField').slideDown(0);
+                                                }, 520);
+                                            } else {
+                                                $('#reviewPeriodDaysField').slideUp(0);
+                                                $('#reviewPeriodTypeField').removeClass('col-sm-6');
+                                                $('#reviewPeriodTypeField').addClass('col-sm-12');
+                                            }
+                                        " class="form-control" required>
+                                    @for (int i = 0; i < reviewPeriods.Count; i++)
+                                    {
+                                        <option value="@((int)reviewPeriods[i])" data-value="@EnumExtensions.GetDescription(reviewPeriods[i])">@EnumExtensions.GetDescription(reviewPeriods[i])</option>
+                                    }
+                                </select>
+                            </div> 
+                        </div>
+                        <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none; padding:0">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Period Days:</label>
+                                <input type="number" min="1" id="reviewPeriodDays" name="ReviewPeriodDays" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                             </div>
                         </div>
                     </div>
@@ -368,6 +402,7 @@
                     <e-grid-column field="description" headerText="Description" allowEditing="true" textAlign="Center"></e-grid-column>
                     <e-grid-column field="doesKPI" headerText="Perform KPI" displayAsCheckBox="true" editType="booleanedit" allowEditing="true" textAlign="Center"></e-grid-column>
                     <e-grid-column field="workflowLinkability" headerText="Workflow Linkability" displayAsCheckBox="true" editType="booleanedit" allowEditing="true" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="reviewPeriodDescription" headerText="Review period" textAlign="Center"></e-grid-column>
                     <e-grid-column headerText="Validity" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityFromDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "From", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityToDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "To", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
@@ -554,7 +589,6 @@
         }
 
         setTimeout(function () { gridObj.hideSpinner() }, 200);
-        setTimeout(function () { qualGrid.hideSpinner() }, 200);
     }
     function taskActionComplete(args) {
         let gridObj = document.getElementById("TasksGrid").ej2_instances[0];

@@ -14,7 +14,7 @@
     bool IsEditing = (bool)ViewData["IsEditing"];
 
     ViewData["Title"] = L["CompensationMatrices"].Name;
-    ViewData["IconClass"] = "fas fa-compensationMatrices";
+    ViewData["IconClass"] = "fas fa-grid-vertical";
     ViewData["HeaderTitle"] = L["CompensationMatrices"].Name.ToUpper();
     ViewData["SubTitle"] = $"{L["ListOf"]} {L["CompensationMatrices"]}";
     ViewData["Area"] = "Setup";
@@ -36,6 +36,8 @@
     compensationMatrixCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
     compensationMatrixCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
     compensationMatrixCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
+
+    List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Cast<OS_ReviewPeriod>().ToList();
 }
 
 @section styles {
@@ -71,6 +73,7 @@
             };
             $('#skillsIds').multiselect(options);
             $('#academiaIds').multiselect(options);
+            $('#reviewPeriod').multiselect(options);
             $('#compensationMatrixId').multiselect(options);
 
             let gridObj = $("#CompensationMatricesGrid")[0].ej2_instances[0];
@@ -221,13 +224,13 @@
         <form id="compensationMatricesForm" onkeydown="return event.key != 'Enter';" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
             <div id="compensationMatrixSpecificForm">
                 <div class="row">
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                    <div class="col-lg-2 col-md-2 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5 control-label">Code:</label>
                             <input type="text" id="compensationMatrixCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                    <div class="col-lg-2 col-md-2 col-sm-6 col-12">
                         <div class="col-sm-6" style="padding:0">
                             <div class="form-group">
                                 <label class="control-label m-b-5 ">Title:</label>
@@ -241,13 +244,13 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                    <div class="col-lg-2 col-md-2 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5 control-label">Description:</label>
                             <input type="text" id="compensationMatrixDescription" name="Description" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                    <div class="col-lg-2 col-md-2 col-sm-6 col-12">
                         <div class="col-sm-6" style="padding-right:0">
                             <div class="form-group">
                                 <label class="control-label m-b-5 ">Valid From:</label>
@@ -258,6 +261,37 @@
                             <div class="form-group">
                                 <label class="control-label m-b-5 ">Valid To:</label>
                                 <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-2 col-12">
+                        <div id="reviewPeriodTypeField" class="col-sm-12">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Review Period:</label>
+                                <select id="reviewPeriod" name="ReviewPeriod" onchange="
+                                            if (typeof $('option:selected', '#reviewPeriod').attr('data-value') !== 'undefined' && $('option:selected', '#reviewPeriod').attr('data-value').includes('Day')) {
+                                                $('#reviewPeriodTypeField').removeClass('col-sm-12');
+                                                $('#reviewPeriodTypeField').addClass('col-sm-6');
+                                                setTimeout(function () {
+                                                    $('#reviewPeriodDaysField').slideDown(0);
+                                                }, 520);
+                                            } else {
+                                                $('#reviewPeriodDaysField').slideUp(0);
+                                                $('#reviewPeriodTypeField').removeClass('col-sm-6');
+                                                $('#reviewPeriodTypeField').addClass('col-sm-12');
+                                            }
+                                        " class="form-control" required>
+                                    @for (int i = 0; i < reviewPeriods.Count; i++)
+                                    {
+                                        <option value="@((int)reviewPeriods[i])" data-value="@EnumExtensions.GetDescription(reviewPeriods[i])">@EnumExtensions.GetDescription(reviewPeriods[i])</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Period Days:</label>
+                                <input type="number" min="1" id="reviewPeriodDays" name="ReviewPeriodDays" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                             </div>
                         </div>
                     </div>
@@ -275,11 +309,11 @@
                                           allowPaging="true" allowResizing="true">
 
                                     <e-grid-columns>
-                                        <e-grid-column allowEditing="true" editType="number" type="number" format="N3" field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
-                                        <e-grid-column allowEditing="true" editType="number" type="number" format="N3" field="rating" headerText="Rating" textAlign="Center"></e-grid-column>
-                                        <e-grid-column allowEditing="true" editType="number" type="number" format="N3" field="bottomThird" headerText="Bottom Third" textAlign="Center"></e-grid-column>
-                                        <e-grid-column allowEditing="true" editType="number" type="number" format="N3" field="middleThird" headerText="Middle Third" textAlign="Center"></e-grid-column>
-                                        <e-grid-column allowEditing="true" editType="number" type="number" format="N3" field="topThird" headerText="Top Third" textAlign="Center"></e-grid-column>
+                                        <e-grid-column allowEditing="true" editType="number" type="number" format="N0" field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                        <e-grid-column allowEditing="true" editType="number" type="number" format="N2" field="rating" headerText="Rating" textAlign="Center"></e-grid-column>
+                                        <e-grid-column allowEditing="true" editType="number" type="number" format="N2" field="bottomThird" headerText="Bottom Third" textAlign="Center"></e-grid-column>
+                                        <e-grid-column allowEditing="true" editType="number" type="number" format="N2" field="middleThird" headerText="Middle Third" textAlign="Center"></e-grid-column>
+                                        <e-grid-column allowEditing="true" editType="number" type="number" format="N2" field="topThird" headerText="Top Third" textAlign="Center"></e-grid-column>
                                         @*<e-grid-column headerText="Actions" textAlign="Center" commands="compensationMatricesCommands"></e-grid-column>*@
                                     </e-grid-columns>
 
@@ -316,6 +350,7 @@
                     }'></e-grid-column>
                     <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
                     <e-grid-column field="description" headerText="Description" allowEditing="true" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="reviewPeriodDescription" headerText="Review period" textAlign="Center"></e-grid-column>
                     <e-grid-column headerText="Validity" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityFromDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "From", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityToDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "To", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }

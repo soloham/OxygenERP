@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200519060702_HR_OM_OS_ReviewPeriod_Workshift")]
+    partial class HR_OM_OS_ReviewPeriod_Workshift
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2166,9 +2168,6 @@ namespace CERP.Migrations
                     b.Property<int>("ReviewPeriod")
                         .HasColumnType("int");
 
-                    b.Property<int>("ReviewPeriodDays")
-                        .HasColumnType("int");
-
                     b.Property<Guid?>("TenantId")
                         .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
@@ -2228,9 +2227,6 @@ namespace CERP.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReviewPeriod")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReviewPeriodDays")
                         .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")
@@ -2339,9 +2335,6 @@ namespace CERP.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReviewPeriod")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReviewPeriodDays")
                         .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")
@@ -2494,9 +2487,6 @@ namespace CERP.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReviewPeriod")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReviewPeriodDays")
                         .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")
@@ -2737,9 +2727,6 @@ namespace CERP.Migrations
                     b.Property<int>("ReviewPeriod")
                         .HasColumnType("int");
 
-                    b.Property<int>("ReviewPeriodDays")
-                        .HasColumnType("int");
-
                     b.Property<Guid?>("TenantId")
                         .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
@@ -2920,9 +2907,6 @@ namespace CERP.Migrations
                         .HasColumnName("ExtraProperties")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("HiringType")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("datetime2");
 
@@ -2942,9 +2926,6 @@ namespace CERP.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReviewPeriod")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReviewPeriodDays")
                         .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")
@@ -3013,9 +2994,6 @@ namespace CERP.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReviewPeriod")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReviewPeriodDays")
                         .HasColumnType("int");
 
                     b.Property<int>("SkillAquisitionType")
@@ -3176,9 +3154,6 @@ namespace CERP.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReviewPeriod")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReviewPeriodDays")
                         .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")
@@ -3616,6 +3591,9 @@ namespace CERP.Migrations
                         .HasColumnName("DeletionTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("DepartmentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("EndHour")
                         .HasColumnType("int");
 
@@ -3672,6 +3650,8 @@ namespace CERP.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DeductionMethodId");
+
+                    b.HasIndex("DepartmentId");
 
                     b.ToTable("WorkShifts","HR");
                 });
@@ -6788,9 +6768,9 @@ namespace CERP.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("CERP.HR.Workshifts.WorkShift", "WorkShift")
-                        .WithMany()
+                        .WithMany("Employees")
                         .HasForeignKey("WorkShiftId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -7300,6 +7280,11 @@ namespace CERP.Migrations
                     b.HasOne("CERP.HR.Workshifts.DeductionMethod", "DeductionMethod")
                         .WithMany("WorkShifts")
                         .HasForeignKey("DeductionMethodId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CERP.Setup.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

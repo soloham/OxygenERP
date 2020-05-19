@@ -38,6 +38,10 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
 
         [CustomAudited]
         public OS_SkillUpdatePeriod SkillUpdatePeriod { get; set; }
+        [CustomAudited]
+        public OS_ReviewPeriod ReviewPeriod { get; set; }
+        [CustomAudited]
+        public int ReviewPeriodDays { get; set; }
 
         public virtual OS_CompensationMatrixTemplate CompensationMatrix { get; set; }
         [CustomAudited]

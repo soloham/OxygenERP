@@ -54,7 +54,6 @@ function areaHeaderBtnClick(e) {
 
     if (isCollapsed) {
         ClearForm(form);
-        console.log('cleared');
         $(btnSec).slideUp(200);
         $(form).slideDown(200);
         setTimeout(function () { $(btn).html('<i class="fa fa-arrow-up p-r-5"></i> Cancel') }, 200)
@@ -535,11 +534,11 @@ function ClearForm(form) {
             form[0][i].value = '';
         else if (type == 'select-one') {
             try {
-                let melm = $('#' + form[0][i].id);
-                if ($(melm).parent().id.includes('multiselect')) {
-                    console.log(melm.id);
-                    melm.multiselect('refresh');
-                }
+                //let melm = $('#' + form[0][i].id);
+                //if ($(melm).parent().id.includes('multiselect')) {
+                //    console.log(melm.id);
+                //    melm.multiselect('refresh');
+                //}
             } catch (e) {
 
             }

@@ -212,6 +212,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curDepartmentTemplate.Code = departmentTemplate_Dto.Code;
                         curDepartmentTemplate.CostCenter = null;
                         curDepartmentTemplate.CostCenterId = departmentTemplate_Dto.CostCenterId;
+                        curDepartmentTemplate.ReviewPeriod = departmentTemplate_Dto.ReviewPeriod;
                         curDepartmentTemplate.ValidityFromDate = departmentTemplate_Dto.ValidityFromDate;
                         curDepartmentTemplate.ValidityToDate = departmentTemplate_Dto.ValidityToDate;
 

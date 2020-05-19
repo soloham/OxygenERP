@@ -226,6 +226,8 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curPositionTemplate.DepartmentTemplateId = positionTemplate_Dto.DepartmentTemplateId;
                         curPositionTemplate.CostCenter = null;
                         curPositionTemplate.CostCenterId = positionTemplate_Dto.CostCenterId;
+                        curPositionTemplate.ReviewPeriod = positionTemplate_Dto.ReviewPeriod;
+                        curPositionTemplate.HiringType = positionTemplate_Dto.HiringType;
                         curPositionTemplate.ValidityFromDate = positionTemplate_Dto.ValidityFromDate;
                         curPositionTemplate.ValidityToDate = positionTemplate_Dto.ValidityToDate;
                         curPositionTemplate.ActivationDate = positionTemplate_Dto.ActivationDate;

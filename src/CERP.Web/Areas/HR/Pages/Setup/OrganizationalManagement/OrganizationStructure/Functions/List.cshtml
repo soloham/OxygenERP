@@ -14,7 +14,7 @@
     bool IsEditing = (bool)ViewData["IsEditing"];
 
     ViewData["Title"] = L["Functions"].Name;
-    ViewData["IconClass"] = "fas fa-functions";
+    ViewData["IconClass"] = "fas fa-tasks";
     ViewData["HeaderTitle"] = L["Functions"].Name.ToUpper();
     ViewData["SubTitle"] = $"{L["ListOf"]} {L["Functions"]}";
     ViewData["Area"] = "Setup";
@@ -40,7 +40,9 @@
     List<object> functionPositionsCommands = new List<object>();
     functionPositionsCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
     functionPositionsCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
-    functionPositionsCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
+    functionPositionsCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } }); 
+    
+    List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Cast<OS_ReviewPeriod>().ToList();
 }
 
 @section styles {
@@ -76,6 +78,7 @@
             };
             $('#skillsIds').multiselect(options);
             $('#academiaIds').multiselect(options);
+            $('#reviewPeriod').multiselect(options);
             $('#compensationMatrixId').multiselect(options);
 
             let gridObj = $("#FunctionsGrid")[0].ej2_instances[0];
@@ -327,6 +330,37 @@
                             </select>
                         </div>
                     </div>
+                    <div class="col-lg-3 col-md-6 col-sm-2 col-12">
+                        <div id="reviewPeriodTypeField" class="col-sm-12">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Review Period:</label>
+                                <select id="reviewPeriod" name="ReviewPeriod" onchange="
+                                            if (typeof $('option:selected', '#reviewPeriod').attr('data-value') !== 'undefined' && $('option:selected', '#reviewPeriod').attr('data-value').includes('Day')) {
+                                                $('#reviewPeriodTypeField').removeClass('col-sm-12');
+                                                $('#reviewPeriodTypeField').addClass('col-sm-6');
+                                                setTimeout(function () {
+                                                    $('#reviewPeriodDaysField').slideDown(0);
+                                                }, 520);
+                                            } else {
+                                                $('#reviewPeriodDaysField').slideUp(0);
+                                                $('#reviewPeriodTypeField').removeClass('col-sm-6');
+                                                $('#reviewPeriodTypeField').addClass('col-sm-12');
+                                            }
+                                        " class="form-control" required>
+                                    @for (int i = 0; i < reviewPeriods.Count; i++)
+                                    {
+                                        <option value="@((int)reviewPeriods[i])" data-value="@EnumExtensions.GetDescription(reviewPeriods[i])">@EnumExtensions.GetDescription(reviewPeriods[i])</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Period Days:</label>
+                                <input type="number" min="1" id="reviewPeriodDays" name="ReviewPeriodDays" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12">
@@ -354,6 +388,7 @@
                     <e-grid-column field="description" headerText="Description" allowEditing="true" textAlign="Center"></e-grid-column>
                     <e-grid-column field="doesKPI" headerText="Perform KPI" displayAsCheckBox="true" editType="booleanedit" allowEditing="true" textAlign="Center"></e-grid-column>
                     <e-grid-column field="compensationMatrix.name" headerText="Compensation Matrix" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="reviewPeriodDescription" headerText="Review period" textAlign="Center"></e-grid-column>
                     <e-grid-column headerText="Validity" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityFromDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "From", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityToDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "To", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
@@ -537,7 +572,6 @@
         }
 
         setTimeout(function () { gridObj.hideSpinner() }, 200);
-        setTimeout(function () { qualGrid.hideSpinner() }, 200);
     }
     function functionActionComplete(args) {
         let gridObj = document.getElementById("FunctionsGrid").ej2_instances[0];

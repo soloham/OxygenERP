@@ -1,7 +1,9 @@
-﻿using CERP.Base;
+﻿using CERP.App.Helpers;
+using CERP.Base;
 using CERP.FM;
 using CERP.HR.Employees;
 using CERP.HR.OrganizationalManagement.OrganizationStructure;
+using CERP.HR.Setup.OrganizationalManagement.OrganizationStructure;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -27,6 +29,10 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public DateTime ValidityFromDate { get; set; }
         public DateTime ValidityToDate { get; set; }
 
+        public string ReviewPeriodDescription { get => EnumExtensions.GetDescription(ReviewPeriod); set => ReviewPeriod = EnumExtensions.GetValueFromDescription<OS_ReviewPeriod>(value); }
+        public OS_ReviewPeriod ReviewPeriod { get; set; }
+        public int ReviewPeriodDays { get; set; }
+
         public virtual OS_CompensationMatrixTemplate_Dto CompensationMatrix { get; set; }
         public int CompensationMatrixId { get; set; }
 
@@ -37,6 +43,8 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
 
         public virtual List<OS_JobSkillTemplate_Dto> JobSkillTemplates { get; set; }
         public virtual List<OS_JobAcademiaTemplate_Dto> JobAcademiaTemplates { get; set; }
+
+        public virtual List<OS_JobWorkshiftTemplate_Dto> JobWorkshiftTemplates { get; set; }
     }
     public class OS_JobTaskTemplate_Dto : AuditedEntityTenantDto<int>
     {

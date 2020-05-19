@@ -207,6 +207,8 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curJobTemplate.Name = jobTemplate_Dto.Name;
                         curJobTemplate.NameLocalized = jobTemplate_Dto.NameLocalized;
                         curJobTemplate.Code = jobTemplate_Dto.Code;
+                        curJobTemplate.ReviewPeriod = jobTemplate_Dto.ReviewPeriod;
+                        curJobTemplate.ReviewPeriodDays = jobTemplate_Dto.ReviewPeriodDays;
                         curJobTemplate.ValidityFromDate = jobTemplate_Dto.ValidityFromDate;
                         curJobTemplate.ValidityToDate = jobTemplate_Dto.ValidityToDate;
                         curJobTemplate.Description = jobTemplate_Dto.Description;
@@ -215,6 +217,40 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curJobTemplate.CompensationMatrixId = jobTemplate_Dto.CompensationMatrixId;
 
                         #region Child Entities
+                        OS_JobWorkshiftTemplate_Dto[] jobWorkshifts = jobTemplate_Dto.JobWorkshiftTemplates.ToArray();
+                        int[] curJobWorkshiftsIds = curJobTemplate.JobWorkshiftTemplates != null && curJobTemplate.JobWorkshiftTemplates.Count > 0 ? curJobTemplate.JobWorkshiftTemplates.Select(x => x.Workshift.Id).ToArray() : new int[0];
+                        List<int> toDeleteWorkshifts = new List<int>();
+                        for (int i = 0; i < curJobWorkshiftsIds.Length; i++)
+                        {
+                            OS_JobWorkshiftTemplate curJobWorkshift = curJobTemplate.JobWorkshiftTemplates.First(x => x.WorkshiftId == curJobWorkshiftsIds[i]);
+                            if (!jobWorkshifts.Any(x => x.Workshift.Id == curJobWorkshiftsIds[i]))
+                            {
+                                curJobTemplate.JobWorkshiftTemplates.Remove(curJobTemplate.JobWorkshiftTemplates.First(x => x.WorkshiftId == curJobWorkshiftsIds[i]));
+                                toDeleteWorkshifts.Add(curJobWorkshiftsIds[i]);
+                            }
+                        }
+                        for (int i = 0; i < jobWorkshifts.Length; i++)
+                        {
+                            if (!curJobTemplate.JobWorkshiftTemplates.Any(x => x.WorkshiftId == jobWorkshifts[i].Workshift.Id))
+                            {
+                                curJobTemplate.JobWorkshiftTemplates.Add(new OS_JobWorkshiftTemplate() { WorkshiftId = jobWorkshifts[i].Workshift.Id });
+                            }
+                            else
+                            {
+                                var _jobWorkshift = curJobTemplate.JobWorkshiftTemplates.First(x => x.WorkshiftId == jobWorkshifts[i].Workshift.Id);
+                                //_jobLoc.JobValidityStart = posJobs[i].JobValidityStart;
+                                //_jobLoc.JobValidityEnd = posJobs[i].JobValidityEnd;
+                                //_jobLoc.Name = posJobs[i].Name;
+
+                                //curJob.JobWorkshiftTemplates.Remove(curJob.JobWorkshiftTemplates.First(x => x.JobTemplateId == _jobLoc.JobTemplateId));
+                                await OS_JobTemplateAppService.WorkshiftsRepository.UpdateAsync(_jobWorkshift);
+                            }
+                        }
+                        for (int i = 0; i < toDeleteWorkshifts.Count; i++)
+                        {
+                            await OS_JobTemplateAppService.WorkshiftsRepository.DeleteAsync(x => x.WorkshiftId == toDeleteWorkshifts[i]);
+                        }
+                        
                         OS_JobTaskTemplate_Dto[] jobTasks = jobTemplate_Dto.JobTaskTemplates.ToArray();
                         int[] curJobTasksIds = curJobTemplate.JobTaskTemplates != null && curJobTemplate.JobTaskTemplates.Count > 0 ? curJobTemplate.JobTaskTemplates.Select(x => x.TaskTemplate.Id).ToArray() : new int[0];
                         List<int> toDeleteTasks = new List<int>();

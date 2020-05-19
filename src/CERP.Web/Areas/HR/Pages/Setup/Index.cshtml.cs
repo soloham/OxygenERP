@@ -329,7 +329,7 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                     {
                         WorkShift workShift = WorkShiftsAppService.Repository.First(x => x.Id == generalInfo.Id);
                         workShift.Title = generalInfo.Title;
-                        workShift.DepartmentId = generalInfo.DepartmentId.HasValue ? generalInfo.DepartmentId.Value : Guid.Empty;
+                        //workShift.DepartmentId = generalInfo.DepartmentId.HasValue ? generalInfo.DepartmentId.Value : Guid.Empty;
                         workShift.DeductionMethodId = generalInfo.DeductionMethodId;
                         workShift.isSUN = generalInfo.isSUN;
                         workShift.isMON = generalInfo.isMON;
@@ -342,14 +342,14 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                         workShift.EndHour = generalInfo.EndHour;
 
                         WorkShift workShiftAdded = await WorkShiftsAppService.Repository.UpdateAsync(workShift);
-                        WorkShift_Dto workShiftDto = ObjectMapper.Map<WorkShift, WorkShift_Dto>(WorkShiftsAppService.Repository.WithDetails(x => x.Department, x => x.DeductionMethod).First(x => x.Id == workShiftAdded.Id));
+                        WorkShift_Dto workShiftDto = ObjectMapper.Map<WorkShift, WorkShift_Dto>(WorkShiftsAppService.Repository.WithDetails(x => x.DeductionMethod).First(x => x.Id == workShiftAdded.Id));
                         return new JsonResult(workShiftDto);
                     }
                     else
                     {
                         WorkShift_Dto workShift = new WorkShift_Dto();
                         workShift.Title = generalInfo.Title;
-                        workShift.DepartmentId = generalInfo.DepartmentId.HasValue ? generalInfo.DepartmentId.Value : Guid.Empty;
+                        //workShift.DepartmentId = generalInfo.DepartmentId.HasValue ? generalInfo.DepartmentId.Value : Guid.Empty;
                         workShift.DeductionMethodId = generalInfo.DeductionMethodId;
                         workShift.isSUN = generalInfo.isSUN;
                         workShift.isMON = generalInfo.isMON;
@@ -362,7 +362,7 @@ namespace CERP.Web.Areas.HR.Pages.Setup
                         workShift.EndHour = generalInfo.EndHour;
                         
                         WorkShift_Dto workShiftAdded = await WorkShiftsAppService.CreateAsync(workShift);
-                        WorkShift_Dto workShiftDto = ObjectMapper.Map<WorkShift, WorkShift_Dto>(WorkShiftsAppService.Repository.WithDetails(x => x.Department).First(x => x.Id == workShiftAdded.Id));
+                        WorkShift_Dto workShiftDto = ObjectMapper.Map<WorkShift, WorkShift_Dto>(WorkShiftsAppService.Repository.WithDetails().First(x => x.Id == workShiftAdded.Id));
                         return new JsonResult(workShiftDto);
                     }
                 }
@@ -907,7 +907,7 @@ namespace CERP.Web.Areas.HR.Pages.Setup
 
             public void Initialize()
             {
-                DepartmentId = Department.Id;
+                //DepartmentId = Department.Id;
                 DeductionMethodId = DeductionMethod.Id;
             }
 

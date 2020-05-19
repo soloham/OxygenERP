@@ -46,8 +46,8 @@ namespace CERP.App
                             Title = "Morning",
                             StartHour = 0900,
                             EndHour = 1700,
-                            Department = curDepartments.First(x => x.Name == "Admin"),
-                            DepartmentId = curDepartments.First(x => x.Name == "Admin").Id,
+                            //Department = curDepartments.First(x => x.Name == "Admin"),
+                            //DepartmentId = curDepartments.First(x => x.Name == "Admin").Id,
                             TenantId = context.TenantId
                         };
 

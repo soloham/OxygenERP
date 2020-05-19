@@ -211,6 +211,8 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curTaskTemplate.ValidityToDate = taskTemplate_Dto.ValidityToDate;
                         curTaskTemplate.Description = taskTemplate_Dto.Description;
                         curTaskTemplate.DoesKPI = taskTemplate_Dto.DoesKPI;
+                        curTaskTemplate.ReviewPeriod = taskTemplate_Dto.ReviewPeriod;
+                        curTaskTemplate.ReviewPeriodDays = taskTemplate_Dto.ReviewPeriodDays;
                         curTaskTemplate.WorkflowLinkability = taskTemplate_Dto.WorkflowLinkability;
                         curTaskTemplate.CompensationMatrix = null;
                         curTaskTemplate.CompensationMatrixId = taskTemplate_Dto.CompensationMatrixId;

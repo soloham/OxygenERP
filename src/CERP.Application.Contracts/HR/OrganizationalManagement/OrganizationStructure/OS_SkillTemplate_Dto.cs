@@ -37,6 +37,10 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
 
         public bool DoesKPI { get; set; }
 
+        public string ReviewPeriodDescription { get => EnumExtensions.GetDescription(ReviewPeriod); set => ReviewPeriod = EnumExtensions.GetValueFromDescription<OS_ReviewPeriod>(value); }
+        public OS_ReviewPeriod ReviewPeriod { get; set; }
+        public int ReviewPeriodDays { get; set; }
+
         public string SkillUpdatePeriodDescription { get => EnumExtensions.GetDescription(SkillUpdatePeriod); set => SkillUpdatePeriod = EnumExtensions.GetValueFromDescription<OS_SkillUpdatePeriod>(value); }
         public OS_SkillUpdatePeriod SkillUpdatePeriod { get; set; }
 

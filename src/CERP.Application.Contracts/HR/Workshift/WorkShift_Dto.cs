@@ -27,12 +27,12 @@ namespace CERP.HR.Workshift.DTOs
         public bool isFRI { get; set; }
         public bool isSAT { get; set; }
 
-        public Department_Dto Department { get; set; }
-        public Guid? DepartmentId { get; set; }
+        //public Department_Dto Department { get; set; }
+        //public Guid? DepartmentId { get; set; }
 
         public DeductionMethod_Dto DeductionMethod { get; set; }
         public int DeductionMethodId { get; set; }
 
-        public ICollection<Employee_Dto> Employees { get; set; }
+        //public ICollection<Employee_Dto> Employees { get; set; }
     }
 }

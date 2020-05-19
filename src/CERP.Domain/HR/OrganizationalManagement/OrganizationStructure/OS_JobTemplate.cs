@@ -2,6 +2,7 @@
 using CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructure;
 using CERP.Attributes;
 using CERP.Base;
+using CERP.HR.Setup.OrganizationalManagement.OrganizationStructure;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -37,6 +38,11 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         [CustomAudited]
         public int CompensationMatrixId { get; set; }
 
+        [CustomAudited]
+        public OS_ReviewPeriod ReviewPeriod { get; set; }
+        [CustomAudited]
+        public int ReviewPeriodDays { get; set; }
+
         //public virtual ICollection<OS_JobQualificationTemplate> JobQualificationTemplates { get; set; }
 
         public virtual ICollection<OS_JobTaskTemplate> JobTaskTemplates { get; set; }
@@ -44,6 +50,8 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
 
         public virtual ICollection<OS_JobSkillTemplate> JobSkillTemplates { get; set; }
         public virtual ICollection<OS_JobAcademiaTemplate> JobAcademiaTemplates { get; set; }
+
+        public virtual ICollection<OS_JobWorkshiftTemplate> JobWorkshiftTemplates { get; set; }
     }
 
     public class OS_JobTaskTemplate : AuditedAggregateTenantRoot<int>

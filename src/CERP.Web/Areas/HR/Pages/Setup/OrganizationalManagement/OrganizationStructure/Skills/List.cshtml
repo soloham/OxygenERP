@@ -14,7 +14,7 @@
     bool IsEditing = (bool)ViewData["IsEditing"];
 
     ViewData["Title"] = L["Skills"].Name;
-    ViewData["IconClass"] = "fas fa-functions";
+    ViewData["IconClass"] = "fas fa-check-circle";
     ViewData["HeaderTitle"] = L["Skills"].Name.ToUpper();
     ViewData["SubTitle"] = $"{L["ListOf"]} {L["Skills"]}";
     ViewData["Area"] = "Setup";
@@ -40,8 +40,10 @@
     List<OS_SkillAquisitionType> skillAquisitions = Enum.GetValues(typeof(OS_SkillAquisitionType)).Cast<OS_SkillAquisitionType>().ToList();
     List<OS_SkillType> skillTypes = Enum.GetValues(typeof(OS_SkillType)).Cast<OS_SkillType>().ToList();
     List<OS_SkillUpdatePeriod> updatePeriods = Enum.GetValues(typeof(OS_SkillUpdatePeriod)).Cast<OS_SkillUpdatePeriod>().ToList();
-    
+
     List<DictionaryValue> institues = Model.DictionaryValuesRepo.Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.AcademicInstitution).ToList();
+
+    List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Cast<OS_ReviewPeriod>().ToList();
 }
 
 @section styles {
@@ -75,6 +77,7 @@
                 includeResetDivider: true,
                 enableCollapsibleOptGroups: true
             };
+            $('#reviewPeriod').multiselect(options);
             $('#compensationMatrixId').multiselect(options);
 
             let gridObj = $("#SkillsGrid")[0].ej2_instances[0];
@@ -280,14 +283,47 @@
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Update Period:</label>
-                            <select id="updatePeriod" name="SkillUpdatePeriod" class="form-control" required>
-                                @for (int i = 0; i < updatePeriods.Count; i++)
-                                {
-                                    <option value="@((int)updatePeriods[i])">@EnumExtensions.GetDescription(updatePeriods[i])</option>
-                                }
-                            </select>
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-12" style="padding:0">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Update Period:</label>
+                                <select id="updatePeriod" name="SkillUpdatePeriod" class="form-control" required>
+                                    @for (int i = 0; i < updatePeriods.Count; i++)
+                                    {
+                                        <option value="@((int)updatePeriods[i])">@EnumExtensions.GetDescription(updatePeriods[i])</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div id="reviewPeriodTypeField" class="col-sm-12">
+                                <div class="form-group">
+                                    <label class="margin-bottom-5 control-label">Review Period:</label>
+                                    <select id="reviewPeriod" name="ReviewPeriod" onchange="
+                                            if (typeof $('option:selected', '#reviewPeriod').attr('data-value') !== 'undefined' && $('option:selected', '#reviewPeriod').attr('data-value').includes('Day')) {
+                                                $('#reviewPeriodTypeField').removeClass('col-sm-12');
+                                                $('#reviewPeriodTypeField').addClass('col-sm-6');
+                                                setTimeout(function () {
+                                                    $('#reviewPeriodDaysField').slideDown(0);
+                                                }, 520);
+                                            } else {
+                                                $('#reviewPeriodDaysField').slideUp(0);
+                                                $('#reviewPeriodTypeField').removeClass('col-sm-6');
+                                                $('#reviewPeriodTypeField').addClass('col-sm-12');
+                                            }
+                                        " class="form-control" required>
+                                        @for (int i = 0; i < reviewPeriods.Count; i++)
+                                        {
+                                            <option value="@((int)reviewPeriods[i])" data-value="@EnumExtensions.GetDescription(reviewPeriods[i])">@EnumExtensions.GetDescription(reviewPeriods[i])</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none">
+                                <div class="form-group">
+                                    <label class="margin-bottom-5 control-label">Period Days:</label>
+                                    <input type="number" min="1" id="reviewPeriodDays" name="ReviewPeriodDays" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-3 col-12">
@@ -328,6 +364,7 @@
                     <e-grid-column field="skillSubType.value" headerText="Sub Type" textAlign="Center"></e-grid-column>
                     <e-grid-column field="skillUpdatePeriodDescription" headerText="Update Period" textAlign="Center"></e-grid-column>
                     <e-grid-column field="compensationMatrix.name" headerText="Compensation Matrix" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="reviewPeriodDescription" headerText="Review period" textAlign="Center"></e-grid-column>
 
                     <e-grid-column headerText="Actions" textAlign="Center" commands="skillsCommands"></e-grid-column>
                 </e-grid-columns>

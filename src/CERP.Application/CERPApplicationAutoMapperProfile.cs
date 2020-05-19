@@ -175,6 +175,8 @@ namespace CERP
             CreateMap<OS_JobSkillTemplate_Dto, OS_JobSkillTemplate>();
             CreateMap<OS_JobAcademiaTemplate, OS_JobAcademiaTemplate_Dto>();
             CreateMap<OS_JobAcademiaTemplate_Dto, OS_JobAcademiaTemplate>();
+            CreateMap<OS_JobWorkshiftTemplate, OS_JobWorkshiftTemplate_Dto>();
+            CreateMap<OS_JobWorkshiftTemplate_Dto, OS_JobWorkshiftTemplate>();
 
             CreateMap<OS_TaskTemplate, OS_TaskTemplate_Dto>();
             CreateMap<OS_TaskTemplate_Dto, OS_TaskTemplate>();
@@ -201,8 +203,8 @@ namespace CERP
             #endregion
             #endregion
 
-            CreateMap<WorkShift, WorkShift_Dto>().ForMember(d => d.Employees, opt => opt.Ignore());
-            CreateMap<WorkShift_Dto, WorkShift>().ForMember(d => d.Employees, opt => opt.Ignore());
+            CreateMap<WorkShift, WorkShift_Dto>();
+            CreateMap<WorkShift_Dto, WorkShift>();
 
             CreateMap<DeductionMethod, DeductionMethod_Dto>().ForMember(d => d.WorkShifts, opt => opt.Ignore());
             CreateMap<DeductionMethod_Dto, DeductionMethod>();

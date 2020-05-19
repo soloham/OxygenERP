@@ -17,7 +17,7 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
 {
     public class OS_JobTemplateAppService : CrudAppService<OS_JobTemplate, OS_JobTemplate_Dto, int, PagedAndSortedResultRequestDto, OS_JobTemplate_Dto, OS_JobTemplate_Dto>
     {
-        public OS_JobTemplateAppService(IRepository<OS_JobTemplate, int> repository, IRepository<OS_JobTaskTemplate, int> tasksRepository, IRepository<OS_JobFunctionTemplate, int> functionsRepository, IRepository<OS_JobSkillTemplate, int> skillsRepository, IRepository<OS_JobAcademiaTemplate, int> academiaRepository, IRepository<OS_CompensationMatrixTemplate, int> compensationMatrixRepository) : base(repository)
+        public OS_JobTemplateAppService(IRepository<OS_JobTemplate, int> repository, IRepository<OS_JobTaskTemplate, int> tasksRepository, IRepository<OS_JobFunctionTemplate, int> functionsRepository, IRepository<OS_JobSkillTemplate, int> skillsRepository, IRepository<OS_JobAcademiaTemplate, int> academiaRepository, IRepository<OS_CompensationMatrixTemplate, int> compensationMatrixRepository, IRepository<OS_JobWorkshiftTemplate, int> workshiftsRepository) : base(repository)
         {
             Repository = repository;
             TasksRepository = tasksRepository;
@@ -25,6 +25,7 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
             SkillsRepository = skillsRepository;
             AcademiaRepository = academiaRepository;
             CompensationMatrixRepository = compensationMatrixRepository;
+            WorkshiftsRepository = workshiftsRepository;
         }
 
         public IRepository<OS_JobTemplate, int> Repository { get; }
@@ -33,6 +34,7 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
         public IRepository<OS_JobSkillTemplate, int> SkillsRepository { get; }
         public IRepository<OS_JobAcademiaTemplate, int> AcademiaRepository { get; }
         public IRepository<OS_CompensationMatrixTemplate, int> CompensationMatrixRepository { get; }
+        public IRepository<OS_JobWorkshiftTemplate, int> WorkshiftsRepository { get; set; }
 
         public async Task<List<OS_JobTemplate_Dto>> GetAllJobTemplatesAsync()
         {

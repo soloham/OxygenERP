@@ -89,6 +89,7 @@ namespace CERP.EntityFrameworkCore
         public DbSet<OS_JobFunctionTemplate> OS_JobFunctionTemplates { get; set; }
         public DbSet<OS_JobSkillTemplate> OS_JobSkillTemplates { get; set; }
         public DbSet<OS_JobAcademiaTemplate> OS_JobAcademiaTemplates { get; set; }
+        public DbSet<OS_JobWorkshiftTemplate> OS_JobWorkshiftTemplates { get; set; }
 
         public DbSet<OS_TaskTemplate> OS_TaskTemplates { get; set; }
         //public DbSet<OS_TaskQualificationTemplate> OS_TaskQualificationTemplates { get; set; }

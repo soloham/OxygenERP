@@ -28,12 +28,19 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
 
         public int MaxPositionsPerDepartment { get; set; }
 
+        public string HiringTypeDescription { get => EnumExtensions.GetDescription(HiringType); set => HiringType = EnumExtensions.GetValueFromDescription<OS_PositionHiringType>(value); }
+        public OS_PositionHiringType HiringType { get; set; }
+        public int ReviewPeriodDays { get; set; }
+
         public DictionaryValue_Dto CostCenter { get; set; }
         public Guid CostCenterId { get; set; }
 
         public DateTime ActivationDate { get; set; }
         public DateTime ValidityFromDate { get; set; }
         public DateTime ValidityToDate { get; set; }
+
+        public string ReviewPeriodDescription { get => EnumExtensions.GetDescription(ReviewPeriod); set => ReviewPeriod = EnumExtensions.GetValueFromDescription<OS_ReviewPeriod>(value); }
+        public OS_ReviewPeriod ReviewPeriod { get; set; }
 
         public OS_DepartmentTemplate_Dto DepartmentTemplate { get; set; }
         public int DepartmentTemplateId { get; set; }

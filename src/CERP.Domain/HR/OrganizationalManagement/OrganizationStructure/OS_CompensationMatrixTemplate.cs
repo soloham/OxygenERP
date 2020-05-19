@@ -1,5 +1,6 @@
 ﻿using CERP.Attributes;
 using CERP.Base;
+using CERP.HR.Setup.OrganizationalManagement.OrganizationStructure;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -30,6 +31,11 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public DateTime ValidityFromDate { get; set; }
         [CustomAudited]
         public DateTime ValidityToDate { get; set; }
+
+        [CustomAudited]
+        public OS_ReviewPeriod ReviewPeriod { get; set; }
+        [CustomAudited]
+        public int ReviewPeriodDays { get; set; }
 
     }
 }

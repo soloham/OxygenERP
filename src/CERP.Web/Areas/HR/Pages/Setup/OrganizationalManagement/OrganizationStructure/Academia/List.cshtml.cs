@@ -209,6 +209,8 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curAcademiaTemplate.Code = academiaTemplate_Dto.Code;
                         curAcademiaTemplate.Description = academiaTemplate_Dto.Description;
                         curAcademiaTemplate.DoesKPI = academiaTemplate_Dto.DoesKPI;
+                        curAcademiaTemplate.ReviewPeriod = academiaTemplate_Dto.ReviewPeriod;
+                        curAcademiaTemplate.ReviewPeriodDays = academiaTemplate_Dto.ReviewPeriodDays;
                         curAcademiaTemplate.PassoutYear = academiaTemplate_Dto.PassoutYear;
                         curAcademiaTemplate.AcademicType = academiaTemplate_Dto.AcademicType;
                         curAcademiaTemplate.AcademiaCertificateType = academiaTemplate_Dto.AcademiaCertificateType;

@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200519061753_HR_Setup_Workshift_RemovedDepartment")]
+    partial class HR_Setup_Workshift_RemovedDepartment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2166,9 +2168,6 @@ namespace CERP.Migrations
                     b.Property<int>("ReviewPeriod")
                         .HasColumnType("int");
 
-                    b.Property<int>("ReviewPeriodDays")
-                        .HasColumnType("int");
-
                     b.Property<Guid?>("TenantId")
                         .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
@@ -2228,9 +2227,6 @@ namespace CERP.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReviewPeriod")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReviewPeriodDays")
                         .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")
@@ -2339,9 +2335,6 @@ namespace CERP.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReviewPeriod")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReviewPeriodDays")
                         .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")
@@ -2494,9 +2487,6 @@ namespace CERP.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReviewPeriod")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReviewPeriodDays")
                         .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")
@@ -2737,9 +2727,6 @@ namespace CERP.Migrations
                     b.Property<int>("ReviewPeriod")
                         .HasColumnType("int");
 
-                    b.Property<int>("ReviewPeriodDays")
-                        .HasColumnType("int");
-
                     b.Property<Guid?>("TenantId")
                         .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
@@ -2920,9 +2907,6 @@ namespace CERP.Migrations
                         .HasColumnName("ExtraProperties")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("HiringType")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("datetime2");
 
@@ -2942,9 +2926,6 @@ namespace CERP.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReviewPeriod")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReviewPeriodDays")
                         .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")
@@ -3013,9 +2994,6 @@ namespace CERP.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReviewPeriod")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReviewPeriodDays")
                         .HasColumnType("int");
 
                     b.Property<int>("SkillAquisitionType")
@@ -3176,9 +3154,6 @@ namespace CERP.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReviewPeriod")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReviewPeriodDays")
                         .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")

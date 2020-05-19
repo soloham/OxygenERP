@@ -207,6 +207,8 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curCompensationMatrixTemplate.Name = compensationMatrixTemplate_Dto.Name;
                         curCompensationMatrixTemplate.NameLocalized = compensationMatrixTemplate_Dto.NameLocalized;
                         curCompensationMatrixTemplate.Code = compensationMatrixTemplate_Dto.Code;
+                        curCompensationMatrixTemplate.ReviewPeriod = compensationMatrixTemplate_Dto.ReviewPeriod;
+                        curCompensationMatrixTemplate.ReviewPeriodDays = compensationMatrixTemplate_Dto.ReviewPeriodDays;
                         curCompensationMatrixTemplate.ValidityFromDate = compensationMatrixTemplate_Dto.ValidityFromDate;
                         curCompensationMatrixTemplate.ValidityToDate = compensationMatrixTemplate_Dto.ValidityToDate;
                         curCompensationMatrixTemplate.Description = compensationMatrixTemplate_Dto.Description;

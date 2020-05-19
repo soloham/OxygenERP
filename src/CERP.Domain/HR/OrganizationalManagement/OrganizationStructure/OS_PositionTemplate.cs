@@ -44,6 +44,14 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public DateTime ValidityToDate { get; set; }
 
         [CustomAudited]
+        public OS_ReviewPeriod ReviewPeriod { get; set; }
+        [CustomAudited]
+        public int ReviewPeriodDays { get; set; }
+
+        [CustomAudited]
+        public OS_PositionHiringType HiringType { get; set; }
+
+        [CustomAudited]
         public OS_DepartmentTemplate DepartmentTemplate { get; set; }
         [CustomAudited]
         public int DepartmentTemplateId { get; set; }
