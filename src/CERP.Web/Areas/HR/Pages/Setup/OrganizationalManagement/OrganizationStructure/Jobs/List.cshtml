@@ -7,6 +7,7 @@
 @inject IHtmlLocalizer<CERPResource> L
 @inject Volo.Abp.Json.IJsonSerializer JsonSerializer
 @using CERP.App.Helpers;
+@using Syncfusion.EJ2.Navigations;
 
 @model CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure.Pages.Jobs.ListModel
 @{
@@ -43,6 +44,9 @@
     jobPositionsCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
 
     List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Cast<OS_ReviewPeriod>().ToList();
+
+    List<object> referenceCommands = new List<object>();
+    referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
 }
 
 @section styles {
@@ -69,6 +73,171 @@
         let academia = []
         let workshifts = []
         let compensationMatrices = []
+
+
+        let tasksGrid;
+        function populateTaskTemplates() {
+            try {
+                tasks = tasks.filter(function (y) {
+                    return tasksGrid.dataSource.filter(function (x) { return x.id == y.id }).length == 0
+                });
+            } catch (e) {
+
+            }
+
+            let dataMS = [];
+            for (let i = 0; i < tasks.length; i++) {
+                let item = tasks[i];
+                dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+            }
+            $('#tasksIds').multiselect('dataprovider', dataMS);
+            console.log(dataMS);
+        }
+        function loadTaskTemplates() {
+            $('#tasksLoader').slideDown(100);
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_TaskTemplate.getList({}).done(function (data) {
+                $('#tasksLoader').slideUp(100);
+                tasks = data.items;
+                populateTaskTemplates();
+            });
+        }
+
+        let functionsGrid;
+        function populateFunctionTemplates() {
+            try {
+                functions = functions.filter(function (y) {
+                    return functionsGrid.dataSource.filter(function (x) { return x.id == y.id }).length == 0
+                });
+            } catch (e) {
+
+            }
+
+            let dataMS = [];
+            for (let i = 0; i < functions.length; i++) {
+                let item = functions[i];
+                dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+            }
+            $('#functionsIds').multiselect('dataprovider', dataMS);
+            console.log(dataMS);
+        }
+        function loadFunctionTemplates() {
+            $('#functionsLoader').slideDown(100);
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_FunctionTemplate.getList({}).done(function (data) {
+                $('#functionsLoader').slideUp(100);
+                functions = data.items;
+                populateFunctionTemplates();
+            });
+        }
+
+        let workshiftsGrid;
+        function populateWorkshiftTemplates() {
+            try {
+                workshifts = workshifts.filter(function (y) {
+                    return workshiftsGrid.dataSource.filter(function (x) { return x.id == y.id }).length == 0
+                });
+            } catch (e) {
+
+            }
+
+            let dataMS = [];
+            for (let i = 0; i < workshifts.length; i++) {
+                let item = workshifts[i];
+                dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+            }
+            $('#workshiftsIds').multiselect('dataprovider', dataMS);
+            console.log(dataMS);
+        }
+        function loadWorkshiftTemplates() {
+            $('#workshiftsLoader').slideDown(100);
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_WorkshiftTemplate.getList({}).done(function (data) {
+                $('#workshiftsLoader').slideUp(100);
+                workshifts = data.items;
+                populateWorkshiftTemplates();
+            });
+        }
+
+        let skillsGrid;
+        function populateSkillTemplates() {
+            try {
+                skills = skills.filter(function (y) {
+                    return skillsGrid.dataSource.filter(function (x) { return x.id == y.id }).length == 0
+                });
+            } catch (e) {
+
+            }
+
+            let dataMS = [];
+            for (let i = 0; i < skills.length; i++) {
+                let item = skills[i];
+                dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+            }
+            $('#skillsIds').multiselect('dataprovider', dataMS);
+            console.log(dataMS);
+        }
+        function loadSkillTemplates() {
+            $('#skillsLoader').slideDown(100);
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_SkillTemplate.getList({}).done(function (data) {
+                $('#skillsLoader').slideUp(100);
+                skills = data.items;
+                populateSkillTemplates();
+            });
+        }
+
+
+        let academiaGrid;
+        function populateAcademiaTemplates() {
+            try {
+                academia = academia.filter(function (y) {
+                    return academiaGrid.dataSource.filter(function (x) { return x.id == y.id }).length == 0
+                });
+            } catch (e) {
+
+            }
+
+            let dataMS = [];
+            for (let i = 0; i < academia.length; i++) {
+                let item = academia[i];
+                dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+            }
+            $('#academiaIds').multiselect('dataprovider', dataMS);
+        }
+        function loadAcademiaTemplates() {
+            $('#academiaLoader').slideDown(100);
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_AcademiaTemplate.getList({}).done(function (data) {
+                $('#academiaLoader').slideUp(100);
+                academia = data.items;
+                populateAcademiaTemplates();
+
+            });
+        }
+
+
+        let compensationMatrixGrid;
+        function populateCompensationMatrixTemplates() {
+            try {
+                compensationMatrices = compensationMatrices.filter(function (y) {
+                    return compensationMatrixGrid.dataSource.filter(function (x) { return x.id == y.id }).length == 0
+                });
+            } catch (e) {
+
+            }
+
+            let dataMS = [];
+            for (let i = 0; i < compensationMatrices.length; i++) {
+                let item = compensationMatrices[i];
+                dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+            }
+            $('#compensationMatrixId').multiselect('dataprovider', dataMS);
+        }
+        function loadCompensationMatrixTemplates() {
+            $('#compensationMatricesLoader').slideDown(100);
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_CompensationMatrixTemplate.getList({}).done(function (data) {
+                $('#compensationMatricesLoader').slideUp(100);
+                compensationMatrices = data.items;
+                populateCompensationMatrixTemplates();
+            });
+        }
+
         $(document).ready(function () {
             let options = {
                 buttonWidth: '100%',
@@ -80,63 +249,14 @@
                 enableCollapsibleOptGroups: true
             };
             $('#reviewPeriod').multiselect(options);
-            $('#tasksIds').multiselect(options);
             $('#functionsIds').multiselect(options);
+            $('#tasksIds').multiselect(options);
             $('#skillsIds').multiselect(options);
             $('#academiaIds').multiselect(options);
             $('#workshiftsIds').multiselect(options);
             $('#compensationMatrixId').multiselect(options);
 
-            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_TaskTemplate.getList({}).done(function (data) {
-                tasks = data.items;
 
-                let dataMS = [];
-                for (let i = 0; i < data.items.length; i++) {
-                    let item = data.items[i];
-                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
-                }
-                $('#tasksIds').multiselect('dataprovider', dataMS);
-            });
-            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_FunctionTemplate.getList({}).done(function (data) {
-                functions = data.items;
-
-                let dataMS = [];
-                for (let i = 0; i < data.items.length; i++) {
-                    let item = data.items[i];
-                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
-                }
-                $('#functionsIds').multiselect('dataprovider', dataMS);
-            });
-            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_SkillTemplate.getList({}).done(function (data) {
-                skills = data.items;
-
-                let dataMS = [];
-                for (let i = 0; i < data.items.length; i++) {
-                    let item = data.items[i];
-                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
-                }
-                $('#skillsIds').multiselect('dataprovider', dataMS);
-            });
-            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_AcademiaTemplate.getList({}).done(function (data) {
-                academia = data.items;
-
-                let dataMS = [];
-                for (let i = 0; i < data.items.length; i++) {
-                    let item = data.items[i];
-                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
-                }
-                $('#academiaIds').multiselect('dataprovider', dataMS);
-            });
-            cERP.appServices.hR.workShiftService.workshift.getList({}).done(function (data) {
-                workshifts = data.items;
-
-                let dataMS = [];
-                for (let i = 0; i < data.items.length; i++) {
-                    let item = data.items[i];
-                    dataMS.push({ label: `${item.title}`, value: item.id, data: item });
-                }
-                $('#workshiftsIds').multiselect('dataprovider', dataMS);
-            });
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_CompensationMatrixTemplate.getList({}).done(function (data) {
                 compensationMatrices = data.items;
 
@@ -146,6 +266,101 @@
                     dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
                 }
                 $('#compensationMatrixId').multiselect('dataprovider', dataMS);
+            });
+
+            $('#addFunctionBtn').on('click', function () {
+                loadFunctionTemplates();
+            });
+            functionsGrid = $('#FunctionReferenceGrid')[0].ej2_instances[0];
+            $('#submitFunctionBtn').on('click', function () {
+                let selectedFunctions = $('#functionsIds').val();
+                for (var i = 0; i < selectedFunctions.length; i++) {
+                    let _function = functions.filter(function (x) { return x.id == selectedFunctions[i] })[0];
+                    functionsGrid.dataSource.push(_function);
+                    functionsGrid.refresh();
+                }
+                populateFunctionTemplates();
+            });
+
+            $('#addTaskBtn').on('click', function () {
+                loadTaskTemplates();
+            });
+            tasksGrid = $('#TaskReferenceGrid')[0].ej2_instances[0];
+            $('#submitTaskBtn').on('click', function () {
+                let selectedTasks = $('#tasksIds').val();
+                for (var i = 0; i < selectedTasks.length; i++) {
+                    let _function = tasks.filter(function (x) { return x.id == selectedTasks[i] })[0];
+                    tasksGrid.dataSource.push(_function);
+                    tasksGrid.refresh();
+                }
+                populateTaskTemplates();
+            });
+
+            $('#addWorkshiftBtn').on('click', function () {
+                loadWorkshiftTemplates();
+            });
+            workshiftsGrid = $('#WorkshiftReferenceGrid')[0].ej2_instances[0];
+            $('#submitWorkshiftBtn').on('click', function () {
+                let selectedWorkshifts = $('#workshiftsIds').val();
+                for (var i = 0; i < selectedWorkshifts.length; i++) {
+                    let workshift = workshifts.filter(function (x) { return x.id == selectedWorkshifts[i] })[0];
+                    workshiftsGrid.dataSource.push(workshift);
+                    workshiftsGrid.refresh();
+                }
+                populateWorkshiftTemplates();
+            });
+
+            $('#addSkillBtn').on('click', function () {
+                loadSkillTemplates();
+            });
+            skillsGrid = $('#SkillReferenceGrid')[0].ej2_instances[0];
+            $('#submitSkillBtn').on('click', function () {
+                let selectedSkills = $('#skillsIds').val();
+                for (var i = 0; i < selectedSkills.length; i++) {
+                    let skill = skills.filter(function (x) { return x.id == selectedSkills[i] })[0];
+                    skillsGrid.dataSource.push(skill);
+                    skillsGrid.refresh();
+                }
+                populateSkillTemplates();
+            });
+
+            $('#addAcademiaBtn').on('click', function () {
+                loadAcademiaTemplates();
+            });
+            academiaGrid = $('#AcademiaReferenceGrid')[0].ej2_instances[0];
+            $('#submitAcademiaBtn').on('click', function () {
+                let selectedAcademia = $('#academiaIds').val();
+                for (var i = 0; i < selectedAcademia.length; i++) {
+                    let curAcademia = academia.filter(function (x) { return x.id == selectedAcademia[i] })[0];
+                    academiaGrid.dataSource.push(curAcademia);
+                    academiaGrid.refresh();
+                }
+                populateAcademiaTemplates();
+            });
+
+            $('#addCompensationMatrixBtn').on('click', function () {
+                loadCompensationMatrixTemplates();
+            });
+            compensationMatrixGrid = $('#CompensationMatrixReferenceGrid')[0].ej2_instances[0];
+            $('#submitCompensationMatrixBtn').on('click', function () {
+                let selectedCompensationMatrix = $('#compensationMatrixId').val();
+                for (var i = 0; i < selectedCompensationMatrix.length; i++) {
+                    let compensationMatrix = compensationMatrices.filter(function (x) { return x.id == selectedCompensationMatrix[i] })[0];
+                    compensationMatrixGrid.dataSource.push(compensationMatrix);
+                    compensationMatrixGrid.refresh();
+                }
+                populateCompensationMatrixTemplates();
+            });
+
+            cERP.appServices.hR.workShiftService.workshift.getList({}).done(function (data) {
+                workshifts = data.items;
+
+                let dataMS = [];
+                for (let i = 0; i < data.items.length; i++) {
+                    let item = data.items[i];
+                    dataMS.push({ label: `${item.title}`, value: item.id, data: item });
+                }
+                $('#workshiftsIds').multiselect('dataprovider', dataMS);
             });
 
             let gridObj = $("#JobsGrid")[0].ej2_instances[0];
@@ -161,6 +376,9 @@
 
             $('#addJobsBtn').on('click', function () {
                 isEditingJobs = false;
+
+                let tabs = $('#jobSpecificFormTabs')[0].ej2_instances[0];
+                tabs.properties.items[6].visible = false;
 
                 $('#submitJobBtn').val('Create Job');
             });
@@ -192,66 +410,56 @@
                         //cERP.appServices.hR.leaveRequestTemplates.update()
                     }
 
-                    let selectedTasks = $('#tasksIds').val();
-                    console.log(selectedTasks);
-                    let selectedTasksTemplates = [];
-                    params.jobTaskTemplates = [];
-                    for (var i = 0; i < selectedTasks.length; i++) {
-                        selectedTasksTemplates.push(tasks.filter(x => x.id == selectedTasks[i])[0]);
-                        let toAdd = { taskTemplate: selectedTasksTemplates[i] };
-                        if (isEditingJobs) {
-                            toAdd.jobTemplateId = curJobsEditRow.id;
-                        }
-                        params.jobTaskTemplates.push(toAdd);
-                    }
-                    let selectedFunctions = $('#functionsIds').val();
-                    console.log(selectedFunctions);
-                    let selectedFunctionsTemplates = [];
+
+                    let selectedFunctions = functionsGrid.dataSource.map(function (item) { return { functionTemplate: item } });;
                     params.jobFunctionTemplates = [];
                     for (var i = 0; i < selectedFunctions.length; i++) {
-                        selectedFunctionsTemplates.push(functions.filter(x => x.id == selectedFunctions[i])[0]);
-                        let toAdd = { functionTemplate: selectedFunctionsTemplates[i] };
+                        let toAdd = selectedFunctions[i]
                         if (isEditingJobs) {
                             toAdd.jobTemplateId = curJobsEditRow.id;
                         }
                         params.jobFunctionTemplates.push(toAdd);
                     }
 
-                    let selectedSkills = $('#skillsIds').val();
-                    console.log(selectedSkills);
-                    let selectedSkillsTemplates = [];
+                    let selectedTasks = tasksGrid.dataSource.map(function (item) { return { taskTemplate: item } });;
+                    params.jobTaskTemplates = [];
+                    for (var i = 0; i < selectedTasks.length; i++) {
+                        let toAdd = selectedTasks[i]
+                        if (isEditingJobs) {
+                            toAdd.jobTemplateId = curJobsEditRow.id;
+                        }
+                        params.jobTaskTemplates.push(toAdd);
+                    }
+
+                    let selectedSkills = skillsGrid.dataSource.map(function (item) { return { skillTemplate: item } });;
                     params.jobSkillTemplates = [];
                     for (var i = 0; i < selectedSkills.length; i++) {
-                        selectedSkillsTemplates.push(skills.filter(x => x.id == selectedSkills[i])[0]);
-                        let toAdd = { skillTemplate: selectedSkillsTemplates[i] };
+                        let toAdd = selectedSkills[i]
                         if (isEditingJobs) {
                             toAdd.jobTemplateId = curJobsEditRow.id;
                         }
                         params.jobSkillTemplates.push(toAdd);
                     }
-                    let selectedAcademia = $('#academiaIds').val();
+
+                    let selectedWorkshifts = workshiftsGrid.dataSource.map(function (item) { return { workshift: item } });;
+                    params.jobWorkshiftTemplates = [];
+                    for (var i = 0; i < selectedWorkshifts.length; i++) {
+                        let toAdd = selectedWorkshifts[i]
+                        if (isEditingJobs) {
+                            toAdd.jobTemplateId = curJobsEditRow.id;
+                        }
+                        params.jobWorkshiftTemplates.push(toAdd);
+                    }
+
+                    let selectedAcademia = academiaGrid.dataSource.map(function (item) { return { academiaTemplate: item } });;
                     console.log(selectedAcademia);
-                    let selectedAcademiaTemplates = [];
                     params.jobAcademiaTemplates = [];
                     for (var i = 0; i < selectedAcademia.length; i++) {
-                        selectedAcademiaTemplates.push(academia.filter(x => x.id == selectedAcademia[i])[0]);
-                        let toAdd = { academiaTemplate: selectedAcademiaTemplates[i] };
+                        let toAdd = selectedAcademia[i]
                         if (isEditingJobs) {
                             toAdd.jobTemplateId = curJobsEditRow.id;
                         }
                         params.jobAcademiaTemplates.push(toAdd);
-                    }
-                    let selectedWorkShifts = $('#workshiftsIds').val();
-                    console.log(selectedWorkShifts);
-                    let selectedWorkShiftsTemplates = [];
-                    params.jobWorkShiftTemplates = [];
-                    for (var i = 0; i < selectedWorkShifts.length; i++) {
-                        selectedWorkShiftsTemplates.push(workshifts.filter(x => x.id == selectedWorkShifts[i])[0]);
-                        let toAdd = { workshift: selectedWorkShiftsTemplates[i] };
-                        if (isEditingJobs) {
-                            toAdd.jobTemplateId = curJobsEditRow.id;
-                        }
-                        params.jobWorkShiftTemplates.push(toAdd);
                     }
 
                     let formData = new FormData();
@@ -307,91 +515,6 @@
                     Swal.hideLoading();
                 }
             });
-
-            $('#submitQualificationBtn').on('click', function (e) {
-                e.preventDefault();
-                if (ValidateForm('qualificationsForm')) {
-                    qualificationsObj.showSpinner();
-                    Swal.showLoading();
-
-                    let form = [];
-                    let qualificationDetails = $('#qualificationsForm').find("textarea, input, select").serializeArray();
-                    form = form.concat(qualificationDetails);
-
-                    let params = objectifyForm(form);
-
-                    let id = 0;
-                    if (qualificationsObj.dataSource.length > 0)
-                        id = qualificationsObj.dataSource[qualificationsObj.dataSource.length - 1].id;
-
-                    params.isEditing = isEditingQualifications;
-                    if (isEditingJobs)
-                        params.jobTemplateId = curJobsEditRow.id;
-
-                    if (isEditingQualifications) {
-                        params.id = curQualificationsEditRow.id;
-
-                        //cERP.appServices.hR.leaveRequestTemplates.update()
-                    }
-                    else {
-
-                        //cERP.appServices.hR.leaveRequestTemplates.update()
-                    }
-
-                    let formData = new FormData();
-                    formData.append("info", JSON.stringify(params));
-                    let xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
-                    formData.append("__RequestVerificationToken", xhrToken);
-                    console.log(params);
-
-                    $.ajax({
-                        url: "?handler=JobQualificationTemplate",
-                        async: true,
-                        type: "POST",
-                        data: formData,
-                        contentType: false,
-                        processData: false,
-                        success: function (data) {
-                            Swal.hideLoading();
-                            console.log(data);
-                            if (isEditingQualifications) {
-                                qualificationsObj.refresh(); // refresh the Grid.
-
-                                swal.fire("Success", "Qualification has successfully been updated", "success");
-
-                                for (let i = 0; i < qualificationsObj.dataSource.length; i++) {
-                                    if (qualificationsObj.dataSource[i].id == data.id) {
-                                        qualificationsObj.dataSource[i] = data;
-                                    }
-                                }
-                                qualificationsObj.refresh();
-                            }
-                            else {
-                                qualificationsObj.dataSource.push(data);
-
-                                qualificationsObj.refresh(); // refresh the Grid.
-
-                                swal.fire("Success", "Qualification has successfully been added", "success");
-                            }
-                            qualificationsObj.hideSpinner();
-                        },
-                        error: function (err) {
-                            Swal.hideLoading();
-                            if (isEditingQualifications)
-                                swal.fire("Failed", "Qualification couldn't be updated, please fix all errors and try again.", "error");
-                            else
-                                swal.fire("Failed", "Qualification couldn't be added, please fix all errors and try again.", "error");
-
-                            console.log(err);
-                            qualificationsObj.hideSpinner();
-                        }
-                    });
-                }
-                else {
-                    Swal.close();
-                    Swal.hideLoading();
-                }
-            });
         });
     </script>
 }
@@ -413,128 +536,453 @@
         </div>
         <form id="jobsForm" onkeydown="return event.key != 'Enter';" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
             <div id="jobSpecificForm">
-                <div class="row">
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="col-md-6 col-sm-6" style="padding:0">
-                            <div class="form-group">
-                                <label class="control-label m-b-5 ">Title:</label>
-                                <input type="text" id="jobTitle" name="Name" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                <ejs-tab id="jobSpecificFormTabs" animation="ViewBag.animation" height="250px">
+                    <e-tab-tabitems>
+                        <e-tab-tabitem header="@(new TabHeader { Text = "General" })" content="#generalTab"></e-tab-tabitem>
+                        <e-tab-tabitem header="@(new TabHeader { Text = "Skills" })" content="#skillsTab"></e-tab-tabitem>
+                        <e-tab-tabitem header="@(new TabHeader { Text = "Academia" })" content="#academiaTab"></e-tab-tabitem>
+                        <e-tab-tabitem header="@(new TabHeader { Text = "Workshifts" })" content="#workshiftsTab"></e-tab-tabitem>
+                        <e-tab-tabitem header="@(new TabHeader { Text = "Functions" })" content="#functionsTab"></e-tab-tabitem>
+                        <e-tab-tabitem header="@(new TabHeader { Text = "Tasks" })" content="#tasksTab"></e-tab-tabitem>
+                        <e-tab-tabitem header="@(new TabHeader { Text = "References" })" visible="false" content="#referencesTab"></e-tab-tabitem>
+                    </e-tab-tabitems>
+                </ejs-tab>
+                <div id="generalTab" class="areaForm">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                            <div class="col-md-6 col-sm-6" style="padding:0">
+                                <div class="form-group">
+                                    <label class="control-label m-b-5 ">Title:</label>
+                                    <input type="text" id="jobTitle" name="Name" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-6" style="padding:0">
+                                <div class="form-group">
+                                    <label class="control-label m-b-5 ">Title (In Arabic):</label>
+                                    <input type="text" id="jobTitleLocalized" name="NameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6 col-sm-6" style="padding:0">
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                             <div class="form-group">
-                                <label class="control-label m-b-5 ">Title (In Arabic):</label>
-                                <input type="text" id="jobTitleLocalized" name="NameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                <label class="margin-bottom-5 control-label">Job Code:</label>
+                                <input type="text" id="jobCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Job Code:</label>
-                            <input type="text" id="jobCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Job Description:</label>
-                            <input type="text" id="jobDescription" name="Description" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Max Positions:</label>
-                            <input type="number" min="1" id="maxJobPositions" name="MaxJobPositions" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="col-lg-6 col-md-6 col-sm-6 col-12" style="padding: 0">
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                             <div class="form-group">
-                                <label class="control-label m-b-5 ">Valid From:</label>
-                                <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
+                                <label class="margin-bottom-5 control-label">Job Description:</label>
+                                <input type="text" id="jobDescription" name="Description" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                             </div>
                         </div>
-                        <div class="col-lg-6 col-md-6 col-sm-6 col-12" style="padding: 0">
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                             <div class="form-group">
-                                <label class="control-label m-b-5 ">Valid To:</label>
-                                <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
+                                <label class="margin-bottom-5 control-label">Max Positions:</label>
+                                <input type="number" min="1" id="maxJobPositions" name="MaxJobPositions" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Compensation Matrix:</label>
-                            <select id="compensationMatrixId" name="CompensationMatrixId" class="form-control" required>
-                            </select>
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-12" style="padding: 0">
+                                <div class="form-group">
+                                    <label class="control-label m-b-5 ">Valid From:</label>
+                                    <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-12" style="padding: 0">
+                                <div class="form-group">
+                                    <label class="control-label m-b-5 ">Valid To:</label>
+                                    <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Workshifts:</label>
-                            <select id="workshiftsIds" name="WorkshiftsIds" multiple="multiple" class="form-control" required>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 col-sm-2 col-12">
-                        <div id="reviewPeriodTypeField" class="col-sm-12" style="padding:0">
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-12">
                             <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Review Period:</label>
-                                <select id="reviewPeriod" name="ReviewPeriod" onchange="
-                                            if (typeof $('option:selected', '#reviewPeriod').attr('data-value') !== 'undefined' && $('option:selected', '#reviewPeriod').attr('data-value').includes('Day')) {
-                                                $('#reviewPeriodTypeField').removeClass('col-sm-12');
-                                                $('#reviewPeriodTypeField').addClass('col-sm-6');
-                                                setTimeout(function () {
-                                                    $('#reviewPeriodDaysField').slideDown(0);
-                                                }, 520);
-                                            } else {
-                                                $('#reviewPeriodDaysField').slideUp(0);
-                                                $('#reviewPeriodTypeField').removeClass('col-sm-6');
-                                                $('#reviewPeriodTypeField').addClass('col-sm-12');
-                                            }
-                                        " class="form-control" required>
-                                    @for (int i = 0; i < reviewPeriods.Count; i++)
-                                    {
-                                        <option value="@((int)reviewPeriods[i])" data-value="@EnumExtensions.GetDescription(reviewPeriods[i])">@EnumExtensions.GetDescription(reviewPeriods[i])</option>
-                                    }
+                                <label class="margin-bottom-5 control-label">Compensation Matrix:</label>
+                                <select id="compensationMatrixId" name="CompensationMatrixId" class="form-control" required>
                                 </select>
                             </div>
                         </div>
-                        <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none; padding:0">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Period Days:</label>
-                                <input type="number" min="0" id="reviewPeriodDays" name="ReviewPeriodDays" value="0" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                        <div class="col-lg-3 col-md-6 col-sm-2 col-12">
+                            <div id="reviewPeriodTypeField" class="col-sm-12" style="padding:0">
+                                <div class="form-group">
+                                    <label class="margin-bottom-5 control-label">Review Period:</label>
+                                    <select id="reviewPeriod" name="ReviewPeriod" onchange="
+                                                if (typeof $('option:selected', '#reviewPeriod').attr('data-value') !== 'undefined' && $('option:selected', '#reviewPeriod').attr('data-value').includes('Day')) {
+                                                    $('#reviewPeriodTypeField').removeClass('col-sm-12');
+                                                    $('#reviewPeriodTypeField').addClass('col-sm-6');
+                                                    setTimeout(function () {
+                                                        $('#reviewPeriodDaysField').slideDown(0);
+                                                    }, 520);
+                                                } else {
+                                                    $('#reviewPeriodDaysField').slideUp(0);
+                                                    $('#reviewPeriodTypeField').removeClass('col-sm-6');
+                                                    $('#reviewPeriodTypeField').addClass('col-sm-12');
+                                                }
+                                            " class="form-control" required>
+                                        @for (int i = 0; i < reviewPeriods.Count; i++)
+                                        {
+                                            <option value="@((int)reviewPeriods[i])" data-value="@EnumExtensions.GetDescription(reviewPeriods[i])">@EnumExtensions.GetDescription(reviewPeriods[i])</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none; padding:0">
+                                <div class="form-group">
+                                    <label class="margin-bottom-5 control-label">Period Days:</label>
+                                    <input type="number" min="0" id="reviewPeriodDays" name="ReviewPeriodDays" value="0" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Skills:</label>
-                            <select id="skillsIds" name="SkillsIds" multiple="multiple" class="form-control" required>
-                            </select>
+                <div id="tasksTab" class="areaForm" style="display:none">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="panel-body p-t-0" style="">
+                                <div class="areaHeader" style="display:flex;">
+                                    <div id="tasksLoader" class="pull-left loader-inline" style="display:none"></div>
+                                    <div class="areaHeaderTitle">
+                                        <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Tasks</span>
+                                    </div>
+                                    <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                        <a id="addTaskBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                                    </div>
+                                </div>
+                                <div role="form" id="tasksForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                                    <div class="row">
+                                        <div class="col-lg-9 col-md-9 col-sm-9 col-12">
+                                            <div class="form-group">
+                                                <label class="margin-bottom-5 control-label">Tasks:</label>
+                                                <select id="tasksIds" name="TasksIds" multiple="multiple" class="form-control">
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                            <label class="control-label m-b-5 "></label>
+                                            <button id="submitTaskBtn" type="button" class="btn btn-success btn-block">Add Task(s)</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="tasksCS" class="control-section">
+                                    <ejs-grid id="TaskReferenceGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                              allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                              allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                              toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" actionBegin="referenceActionBegin" actionComplete="referenceActionComplete"
+                                              allowPaging="true" allowResizing="true">
+
+                                        <e-grid-columns>
+                                            <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                            <e-grid-column field="name" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="code" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                            <e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>
+                                        </e-grid-columns>
+
+                                        <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                        <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                        <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                    </ejs-grid>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Academia:</label>
-                            <select id="academiaIds" name="AcademiaIds" multiple="multiple" class="form-control" required>
-                            </select>
+                </div>
+                <div id="functionsTab" class="areaForm" style="display:none">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="panel-body p-t-0" style="">
+                                <div class="areaHeader" style="display:flex;">
+                                    <div id="functionsLoader" class="pull-left loader-inline" style="display:none"></div>
+                                    <div class="areaHeaderTitle">
+                                        <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Functions</span>
+                                    </div>
+                                    <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                        <a id="addFunctionBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                                    </div>
+                                </div>
+                                <div role="form" id="functionsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                                    <div class="row">
+                                        <div class="col-lg-9 col-md-9 col-sm-9 col-12">
+                                            <div class="form-group">
+                                                <label class="margin-bottom-5 control-label">Functions:</label>
+                                                <select id="functionsIds" name="FunctionsIds" multiple="multiple" class="form-control">
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                            <label class="control-label m-b-5 "></label>
+                                            <button id="submitFunctionBtn" type="button" class="btn btn-success btn-block">Add Function(s)</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="functionsCS" class="control-section">
+                                    <ejs-grid id="FunctionReferenceGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                              allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                              allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                              toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" actionBegin="referenceActionBegin" actionComplete="referenceActionComplete"
+                                              allowPaging="true" allowResizing="true">
+
+                                        <e-grid-columns>
+                                            <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                            <e-grid-column field="name" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="code" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                            <e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>
+                                        </e-grid-columns>
+
+                                        <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                        <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                        <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                    </ejs-grid>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Tasks:</label>
-                            <select id="tasksIds" name="TasksIds" multiple="multiple" class="form-control" required>
-                            </select>
+                </div>
+                <div id="skillsTab" class="areaForm" style="display:none">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="panel-body p-t-0" style="">
+                                <div class="areaHeader" style="display:flex;">
+                                    <div id="skillsLoader" class="pull-left loader-inline" style="display:none"></div>
+                                    <div class="areaHeaderTitle">
+                                        <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Skills</span>
+                                    </div>
+                                    <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                        <a id="addSkillBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                                    </div>
+                                </div>
+                                <div role="form" id="skillsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                                    <div class="row">
+                                        <div class="col-lg-9 col-md-9 col-sm-9 col-12">
+                                            <div class="form-group">
+                                                <label class="margin-bottom-5 control-label">Skills:</label>
+                                                <select id="skillsIds" name="SkillsIds" multiple="multiple" class="form-control">
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                            <label class="control-label m-b-5 "></label>
+                                            <button id="submitSkillBtn" type="button" class="btn btn-success btn-block">Add Skill(s)</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="skillsCS" class="control-section">
+                                    <ejs-grid id="SkillReferenceGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                              allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                              allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                              toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" actionBegin="referenceActionBegin" actionComplete="referenceActionComplete"
+                                              allowPaging="true" allowResizing="true">
+
+                                        <e-grid-columns>
+                                            <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                            <e-grid-column field="name" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="code" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                            <e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>
+                                        </e-grid-columns>
+
+                                        <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                        <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                        <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                    </ejs-grid>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Functions:</label>
-                            <select id="functionsIds" name="FunctionsIds" multiple="multiple" class="form-control" required>
-                            </select>
+                </div>
+                <div id="workshiftsTab" class="areaForm" style="display:none">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="panel-body p-t-0" style="">
+                                <div class="areaHeader" style="display:flex;">
+                                    <div id="workshiftsLoader" class="pull-left loader-inline" style="display:none"></div>
+                                    <div class="areaHeaderTitle">
+                                        <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Workshifts</span>
+                                    </div>
+                                    <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                        <a id="addWorkshiftBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                                    </div>
+                                </div>
+                                <div role="form" id="workshiftsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                                    <div class="row">
+                                        <div class="col-lg-9 col-md-9 col-sm-9 col-12">
+                                            <div class="form-group">
+                                                <label class="margin-bottom-5 control-label">Workshifts:</label>
+                                                <select id="workshiftsIds" name="WorkshiftsIds" multiple="multiple" class="form-control">
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                            <label class="control-label m-b-5 "></label>
+                                            <button id="submitWorkshiftBtn" type="button" class="btn btn-success btn-block">Add Workshift(s)</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="workshiftsCS" class="control-section">
+                                    <ejs-grid id="WorkshiftReferenceGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                              allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                              allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                              toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" actionBegin="referenceActionBegin" actionComplete="referenceActionComplete"
+                                              allowPaging="true" allowResizing="true">
+
+                                        <e-grid-columns>
+                                            <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                            <e-grid-column field="title" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="startHour" allowEditing="false" headerText="Start Hour" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="endHour" allowEditing="false" headerText="End Hour" textAlign="Center"></e-grid-column>
+                                            <e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>
+                                        </e-grid-columns>
+
+                                        <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                        <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                        <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                    </ejs-grid>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="academiaTab" class="areaForm" style="display:none">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="panel-body p-t-0" style="">
+                                <div class="areaHeader" style="display:flex;">
+                                    <div id="academiaLoader" class="pull-left loader-inline" style="display:none"></div>
+                                    <div class="areaHeaderTitle">
+                                        <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Academia</span>
+                                    </div>
+                                    <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                        <a id="addAcademiaBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                                    </div>
+                                </div>
+                                <div role="form" id="academiaForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                                    <div class="row">
+                                        <div class="col-lg-9 col-md-9 col-sm-9 col-12">
+                                            <div class="form-group">
+                                                <label class="margin-bottom-5 control-label">Academia:</label>
+                                                <select id="academiaIds" name="AcademiaIds" multiple="multiple" class="form-control">
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                            <label class="control-label m-b-5 "></label>
+                                            <button id="submitAcademiaBtn" type="button" class="btn btn-success btn-block">Add Academia(s)</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="academiaCS" class="control-section">
+                                    <ejs-grid id="AcademiaReferenceGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                              allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                              allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                              toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" actionBegin="referenceActionBegin" actionComplete="referenceActionComplete"
+                                              allowPaging="true" allowResizing="true">
+
+                                        <e-grid-columns>
+                                            <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                            <e-grid-column field="name" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="code" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                            <e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>
+                                        </e-grid-columns>
+
+                                        <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                        <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                        <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                    </ejs-grid>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="compensationMatrixTab" class="areaForm" style="display:none">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="panel-body p-t-0" style="">
+                                <div class="areaHeader" style="display:flex;">
+                                    <div id="compensationMatricesLoader" class="pull-left loader-inline" style="display:none"></div>
+                                    <div class="areaHeaderTitle">
+                                        <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Compensation Matrices</span>
+                                    </div>
+                                    <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                        <a id="addCompensationMatrixBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                                    </div>
+                                </div>
+                                <div role="form" id="compensationMatricesForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                                    <div class="row">
+                                        <div class="col-lg-9 col-md-9 col-sm-9 col-12">
+                                            <div class="form-group">
+                                                <label class="margin-bottom-5 control-label">Compensation Matrices:</label>
+                                                <select id="compensationMatrixId" name="CompensationMatrixId" multiple="multiple" class="form-control">
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                            <label class="control-label m-b-5 "></label>
+                                            <button id="submitCompensationMatrixBtn" type="button" class="btn btn-success btn-block">Add Compensation Matrices</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="compensationMatricesCS" class="control-section">
+                                    <ejs-grid id="CompensationMatrixReferenceGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                              allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                              allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                              toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" actionBegin="referenceActionBegin" actionComplete="referenceActionComplete"
+                                              allowPaging="true" allowResizing="true">
+
+                                        <e-grid-columns>
+                                            <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                            <e-grid-column field="name" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="code" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                            <e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>
+                                        </e-grid-columns>
+
+                                        <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                        <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                        <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                    </ejs-grid>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="referencesTab" class="areaForm" style="display:none">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="panel-body p-t-0" style="">
+                                <div id="referencesCS" class="control-section">
+                                    <ejs-grid id="ReferenceReferenceGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                              allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                              allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                              toolbar="@initialToolBar" toolbarClick="defaultToolbarClick"
+                                              allowPaging="true" allowResizing="true">
+
+                                        <e-grid-columns>
+                                            <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                            <e-grid-column field="type" allowEditing="false" headerText="Type" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="name" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="code" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                            <e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>
+                                        </e-grid-columns>
+
+                                        <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                        <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                        <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                    </ejs-grid>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -550,7 +998,7 @@
             <ejs-grid id="JobsGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="commandClick"
                       showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
                       hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="jobActionBegin" actionComplete="jobActionComplete"
-                      allowSorting="true" allowMultiSorting="true" gridLines="Both" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                      allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
                       toolbarClick="toolbarClick" toolbar="@initialToolBar"
                       allowPaging="true" allowResizing="true">
 
@@ -633,7 +1081,7 @@
             }
         }
         if (args.item.id === 'showActions') {
-            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Audit Trail", tooltipText: "View Audit Trail", prefixIcon: "e-custom-audit-trail", id: "toggleaudittrail" },  { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Audit Trail", tooltipText: "View Audit Trail", prefixIcon: "e-custom-audit-trail", id: "toggleaudittrail" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
             gridObj.refresh();
         }
         if (args.item.id === 'hideActions') {
@@ -738,14 +1186,48 @@
                 console.log(data);
                 $('#jobsLoader').slideUp(100);
 
-                $('#tasksIds').multiselect('select', data.jobTaskTemplates.map(function (item) { return item.taskTemplateId }));
-                $('#functionsIds').multiselect('select', data.jobFunctionTemplates.map(function (item) { return item.functionTemplateId }));
-                
-                $('#skillsIds').multiselect('select', data.jobSkillTemplates.map(function (item) { return item.skillTemplateId }));
-                $('#academiaIds').multiselect('select', data.jobAcademiaTemplates.map(function (item) { return item.academiaTemplateId }));
-                $('#workshiftsIds').multiselect('select', data.jobWorkshiftTemplates.map(function (item) { return item.workshiftId }));
 
-                $('#compensationMatrixId').multiselect('select', data.compensationMatrixTemplateId);
+                tasksGrid.dataSource = [];
+                tasksGrid.dataSource = params.jobTaskTemplates.map(function (item) { return item.taskTemplate });
+                tasksGrid.refresh();
+
+                functionsGrid.dataSource = [];
+                functionsGrid.dataSource = params.jobFunctionTemplates.map(function (item) { return item.functionTemplate });
+                functionsGrid.refresh();
+
+                workshiftsGrid.dataSource = [];
+                workshiftsGrid.dataSource = params.jobWorkshiftTemplates.map(function (item) { return item.workshift });
+                workshiftsGrid.refresh();
+
+                skillsGrid.dataSource = [];
+                skillsGrid.dataSource = params.jobSkillTemplates.map(function (item) { return item.skillTemplate });
+                skillsGrid.refresh();
+
+                academiaGrid.dataSource = [];
+                academiaGrid.dataSource = params.jobAcademiaTemplates.map(function (item) { return item.academiaTemplate });
+                academiaGrid.refresh();
+
+                compensationMatrixGrid.dataSource = [];
+                compensationMatrixGrid.dataSource.push(params.compensationMatrix);
+                compensationMatrixGrid.refresh();
+
+                //$('#functionsIds').multiselect('select', data.jobTaskTemplates.map(function (item) { return item.functionTemplateId }));
+                //$('#functionsIds').multiselect('select', data.jobFunctionTemplates.map(function (item) { return item.functionTemplateId }));
+
+                //$('#skillsIds').multiselect('select', data.jobSkillTemplates.map(function (item) { return item.skillTemplateId }));
+                //$('#academiaIds').multiselect('select', data.jobAcademiaTemplates.map(function (item) { return item.academiaTemplateId }));
+                //$('#workshiftsIds').multiselect('select', data.jobWorkshiftTemplates.map(function (item) { return item.workshiftId }));
+
+                //$('#compensationMatrixId').multiselect('select', data.compensationMatrixTemplateId);
+            });
+            let tabs = $('#jobSpecificFormTabs')[0].ej2_instances[0];
+            tabs.properties.items[6].visible = true;
+            cERP.appServices.hR.organizationalManagement.organizationStructure.JobTemplate.getAllReferences(params.id).done(function (data) {
+                let refGrid = $('#ReferenceReferenceGrid')[0].ej2_instances[0];
+                refGrid.dataSource = data;
+                refGrid.refresh();
+
+                setTimeout(function () { refGrid.hideSpinner() }, 200);
             });
         }
         else if (args.commandColumn.type == "Copy") {
@@ -856,5 +1338,25 @@
         }
     }
 
+    function referenceActionComplete(args) {
+        if (args.requestType == "delete") {
+            populateWorkshiftTemplates();
+            populateFunctionTemplates();
+            populateTaskTemplates();
+            populateSkillTemplates();
+            populateAcademiaTemplates();
+            populateCompensationMatrixTemplates();
+        }
+    }
+    function referenceActionBegin(args) {
+        if (args.requestType == "delete") {
+            populateWorkshiftTemplates();
+            populateFunctionTemplates();
+            populateTaskTemplates();
+            populateSkillTemplates();
+            populateAcademiaTemplates();
+            populateCompensationMatrixTemplates();
+        }
+    }
 </script>
 

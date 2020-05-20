@@ -304,11 +304,8 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         #endregion
 
                         OS_PositionTemplate_Dto updated = ObjectMapper.Map<OS_PositionTemplate, OS_PositionTemplate_Dto>(await OS_PositionTemplateAppService.Repository.UpdateAsync(curPositionTemplate));
-                        updated.CostCenter = ObjectMapper.Map<DictionaryValue, DictionaryValue_Dto>(await DictionaryValuesRepo.GetAsync(updated.CostCenterId));
-                        updated.PositionJobTemplates = ObjectMapper.Map<List<OS_PositionJobTemplate>, List<OS_PositionJobTemplate_Dto>>(curPositionTemplate.PositionJobTemplates.ToList());
-                        updated.PositionTaskTemplates = ObjectMapper.Map<List<OS_PositionTaskTemplate>, List<OS_PositionTaskTemplate_Dto>>(curPositionTemplate.PositionTaskTemplates.ToList());
-                        updated.DepartmentTemplate = await OS_DepartmentTemplateAppService.GetDepartmentTemplateAsync(updated.DepartmentTemplateId);
-
+                        updated = ObjectMapper.Map<OS_PositionTemplate, OS_PositionTemplate_Dto>(await OS_PositionTemplateAppService.Repository.GetAsync(updated.Id));
+                   
                         return StatusCode(200, updated);
                     }
                     else

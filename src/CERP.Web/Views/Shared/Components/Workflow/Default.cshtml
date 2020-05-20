@@ -149,7 +149,7 @@
                   dataBound="dataBoundResponsive" actionComplete="@(Model.Id)_customFormFields_actionComplete"
                   allowExcelExport="true" height="60%" allowPdfExport="true"
                   hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" showColumnChooser="false"
-                  allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                  allowSorting="true" allowMultiSorting="true" gridLines="Horizontal"
                   toolbar='new List<object>() { "Delete", "Search" }'
                   allowPaging="true" allowResizing="true">
 
@@ -266,7 +266,7 @@
                                           dataBound="dataBoundResponsive" commandClick="@(Model.Id)_approvalRoute_viewInfo_commandClick" actionBegin="@(Model.Id)_approvalRoute_viewInfo_actionBegin"
                                           allowExcelExport="true" height="100%" allowPdfExport="true" actionComplete="@(Model.Id)_approvalRoute_viewInfo_actionComplete"
                                           hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" showColumnChooser="false"
-                                          allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal"
                                           toolbarClick="@(Model.Id)_approvalRoute_viewInfo_toolbarClick" toolbar='new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" } }'
                                           allowPaging="true" allowResizing="true">
 
@@ -578,7 +578,7 @@
                                 <ejs-grid id="@(Model.Id)_notificationsGrid" dataSource="@Model.GetNotificationsAsDS()" enableAutoFill="true" columns="@Model.GetNotificationsGridColumns()"
                                           dataBound="dataBoundResponsive" allowExcelExport="true" height="100%" allowPdfExport="true"
                                           hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" showColumnChooser="false"
-                                          allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal"
                                           allowPaging="true" allowResizing="true">
 
                                     <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
@@ -591,7 +591,7 @@
                                 <ejs-grid id="@(Model.Id)_apActionsGrid" dataSource="@Model.GetAPActionsAsDS()" enableAutoFill="true" columns="@Model.GetAPActionsGridColumns()"
                                           dataBound="dataBoundResponsive" allowExcelExport="true" height="100%" allowPdfExport="true"
                                           hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" showColumnChooser="false"
-                                          allowSorting="true" allowMultiSorting="true" gridLines="Both"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal"
                                           allowPaging="true" allowResizing="true">
 
                                     <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>

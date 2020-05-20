@@ -390,11 +390,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         #endregion
 
                         OS_JobTemplate_Dto updated = ObjectMapper.Map<OS_JobTemplate, OS_JobTemplate_Dto>(await OS_JobTemplateAppService.Repository.UpdateAsync(curJobTemplate));
-                        updated.JobTaskTemplates = ObjectMapper.Map<List<OS_JobTaskTemplate>, List<OS_JobTaskTemplate_Dto>>(curJobTemplate.JobTaskTemplates.ToList());
-                        updated.JobFunctionTemplates = ObjectMapper.Map<List<OS_JobFunctionTemplate>, List<OS_JobFunctionTemplate_Dto>>(curJobTemplate.JobFunctionTemplates.ToList());
-                        updated.JobSkillTemplates = ObjectMapper.Map<List<OS_JobSkillTemplate>, List<OS_JobSkillTemplate_Dto>>(curJobTemplate.JobSkillTemplates.ToList());
-                        updated.JobAcademiaTemplates = ObjectMapper.Map<List<OS_JobAcademiaTemplate>, List<OS_JobAcademiaTemplate_Dto>>(curJobTemplate.JobAcademiaTemplates.ToList());
-                        updated.CompensationMatrix = await OS_JobTemplateAppService.GetCompensationMatrixAsync(updated.CompensationMatrixId);
+                        updated = ObjectMapper.Map<OS_JobTemplate, OS_JobTemplate_Dto>(await OS_JobTemplateAppService.Repository.GetAsync(updated.Id));
 
                         return StatusCode(200, updated);
                     }

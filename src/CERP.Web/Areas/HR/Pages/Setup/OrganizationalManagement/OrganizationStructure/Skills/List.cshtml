@@ -7,6 +7,7 @@
 @inject IHtmlLocalizer<CERPResource> L
 @inject Volo.Abp.Json.IJsonSerializer JsonSerializer
 @using CERP.App.Helpers;
+@using Syncfusion.EJ2.Navigations;
 
 @model CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure.Pages.Skills.ListModel
 @{
@@ -44,6 +45,9 @@
     List<DictionaryValue> institues = Model.DictionaryValuesRepo.Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.AcademicInstitution).ToList();
 
     List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Cast<OS_ReviewPeriod>().ToList();
+
+    List<object> referenceCommands = new List<object>();
+    referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
 }
 
 @section styles {
@@ -108,6 +112,9 @@
 
             $('#addSkillsBtn').on('click', function () {
                 isEditingSkills = false;
+
+                let tabs = $('#skillSpecificFormTabs')[0].ej2_instances[0];
+                tabs.properties.items[1].visible = false;
 
                 $('#submitSkillBtn').val('Create Skill');
             });
@@ -215,131 +222,169 @@
         </div>
         <form id="skillsForm" onkeydown="return event.key != 'Enter';" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
             <div id="skillSpecificForm">
-                <div class="row">
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Skill Code:</label>
-                            <input type="text" id="skillCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="col-sm-6" style="padding:0">
+                <ejs-tab id="skillSpecificFormTabs" animation="ViewBag.animation" height="250px">
+                    <e-tab-tabitems>
+                        <e-tab-tabitem header="@(new TabHeader { Text = "General" })" content="#generalTab"></e-tab-tabitem>
+                        <e-tab-tabitem header="@(new TabHeader { Text = "References" })" visible="false" content="#referencesTab"></e-tab-tabitem>
+                    </e-tab-tabitems>
+                </ejs-tab>
+                <div id="generalTab" class="areaForm">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                             <div class="form-group">
-                                <label class="control-label m-b-5 ">Title:</label>
-                                <input type="text" id="skillTitle" name="Name" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                <label class="margin-bottom-5 control-label">Skill Code:</label>
+                                <input type="text" id="skillCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                             </div>
                         </div>
-                        <div class="col-sm-6" style="padding:0">
-                            <div class="form-group">
-                                <label class="control-label m-b-5 ">Title (In Arabic):</label>
-                                <input type="text" id="skillTitleLocalized" name="NameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                            <div class="col-sm-6" style="padding:0">
+                                <div class="form-group">
+                                    <label class="control-label m-b-5 ">Title:</label>
+                                    <input type="text" id="skillTitle" name="Name" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Skill Description:</label>
-                            <input type="text" id="skillDescription" name="Description" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Aquisition:</label>
-                            <select id="skillAquisition" name="SkillAquisitionType" class="form-control" required>
-                                @for (int i = 0; i < skillAquisitions.Count; i++)
-                                {
-                                    <option value="@((int)skillAquisitions[i])">@EnumExtensions.GetDescription(skillAquisitions[i])</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="col-lg-6 col-md-6 col-sm-6 col-12" style="padding: 0">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Type:</label>
-                                <select id="skillType" name="SkillType" class="form-control" required>
-                                    @for (int i = 0; i < skillTypes.Count; i++)
-                                    {
-                                        <option value="@((int)skillTypes[i])">@EnumExtensions.GetDescription(skillTypes[i])</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-sm-6 col-12" style="padding: 0">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Sub Type:</label>
-                                <select id="skillSubType" name="SkillSubTypeId" class="form-control" required>
-                                    @for (int i = 0; i < institues.Count; i++)
-                                    {
-                                        <option value="@institues[i].Id" data-value="@institues[i].Value">@institues[i].Value</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="col-md-12 col-sm-12" style="padding: 0">
-                            <div class="form-group">
-                                <label class="control-label m-b-5 "></label>
-                                <div class="btn-group" data-toggle="buttons" style="width: 100%">
-                                    <label class="btn btn-default" style="width: 100%">
-                                        <input type="checkbox" id="doesKPI" name="DoesKPI" autocomplete="off" style="width: 100%"> Perform KPI
-                                    </label>
+                            <div class="col-sm-6" style="padding:0">
+                                <div class="form-group">
+                                    <label class="control-label m-b-5 ">Title (In Arabic):</label>
+                                    <input type="text" id="skillTitleLocalized" name="NameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                        <div class="col-lg-6 col-md-6 col-sm-6 col-12" style="padding:0">
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                             <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Update Period:</label>
-                                <select id="updatePeriod" name="SkillUpdatePeriod" class="form-control" required>
-                                    @for (int i = 0; i < updatePeriods.Count; i++)
+                                <label class="margin-bottom-5 control-label">Skill Description:</label>
+                                <input type="text" id="skillDescription" name="Description" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Aquisition:</label>
+                                <select id="skillAquisition" name="SkillAquisitionType" class="form-control" required>
+                                    @for (int i = 0; i < skillAquisitions.Count; i++)
                                     {
-                                        <option value="@((int)updatePeriods[i])">@EnumExtensions.GetDescription(updatePeriods[i])</option>
+                                        <option value="@((int)skillAquisitions[i])">@EnumExtensions.GetDescription(skillAquisitions[i])</option>
                                     }
                                 </select>
                             </div>
                         </div>
-                        <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                            <div id="reviewPeriodTypeField" class="col-sm-12" style="padding:0">
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-12" style="padding: 0">
                                 <div class="form-group">
-                                    <label class="margin-bottom-5 control-label">Review Period:</label>
-                                    <select id="reviewPeriod" name="ReviewPeriod" onchange="
-                                            if (typeof $('option:selected', '#reviewPeriod').attr('data-value') !== 'undefined' && $('option:selected', '#reviewPeriod').attr('data-value').includes('Day')) {
-                                                $('#reviewPeriodTypeField').removeClass('col-sm-12');
-                                                $('#reviewPeriodTypeField').addClass('col-sm-6');
-                                                setTimeout(function () {
-                                                    $('#reviewPeriodDaysField').slideDown(0);
-                                                }, 520);
-                                            } else {
-                                                $('#reviewPeriodDaysField').slideUp(0);
-                                                $('#reviewPeriodTypeField').removeClass('col-sm-6');
-                                                $('#reviewPeriodTypeField').addClass('col-sm-12');
-                                            }
-                                        " class="form-control" required>
-                                        @for (int i = 0; i < reviewPeriods.Count; i++)
+                                    <label class="margin-bottom-5 control-label">Type:</label>
+                                    <select id="skillType" name="SkillType" class="form-control" required>
+                                        @for (int i = 0; i < skillTypes.Count; i++)
                                         {
-                                            <option value="@((int)reviewPeriods[i])" data-value="@EnumExtensions.GetDescription(reviewPeriods[i])">@EnumExtensions.GetDescription(reviewPeriods[i])</option>
+                                            <option value="@((int)skillTypes[i])">@EnumExtensions.GetDescription(skillTypes[i])</option>
                                         }
                                     </select>
                                 </div>
                             </div>
-                            <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none; padding:0">
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-12" style="padding: 0">
                                 <div class="form-group">
-                                    <label class="margin-bottom-5 control-label">Period Days:</label>
-                                    <input type="number" min="0" id="reviewPeriodDays" name="ReviewPeriodDays" value="0" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                    <label class="margin-bottom-5 control-label">Sub Type:</label>
+                                    <select id="skillSubType" name="SkillSubTypeId" class="form-control" required>
+                                        @for (int i = 0; i < institues.Count; i++)
+                                        {
+                                            <option value="@institues[i].Id" data-value="@institues[i].Value">@institues[i].Value</option>
+                                        }
+                                    </select>
                                 </div>
                             </div>
                         </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                            <div class="col-md-12 col-sm-12" style="padding: 0">
+                                <div class="form-group">
+                                    <label class="control-label m-b-5 "></label>
+                                    <div class="btn-group" data-toggle="buttons" style="width: 100%">
+                                        <label class="btn btn-default" style="width: 100%">
+                                            <input type="checkbox" id="doesKPI" name="DoesKPI" autocomplete="off" style="width: 100%"> Perform KPI
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-12" style="padding:0">
+                                <div class="form-group">
+                                    <label class="margin-bottom-5 control-label">Update Period:</label>
+                                    <select id="updatePeriod" name="SkillUpdatePeriod" class="form-control" required>
+                                        @for (int i = 0; i < updatePeriods.Count; i++)
+                                        {
+                                            <option value="@((int)updatePeriods[i])">@EnumExtensions.GetDescription(updatePeriods[i])</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                                <div id="reviewPeriodTypeField" class="col-sm-12" style="padding:0">
+                                    <div class="form-group">
+                                        <label class="margin-bottom-5 control-label">Review Period:</label>
+                                        <select id="reviewPeriod" name="ReviewPeriod" onchange="
+                                                if (typeof $('option:selected', '#reviewPeriod').attr('data-value') !== 'undefined' && $('option:selected', '#reviewPeriod').attr('data-value').includes('Day')) {
+                                                    $('#reviewPeriodTypeField').removeClass('col-sm-12');
+                                                    $('#reviewPeriodTypeField').addClass('col-sm-6');
+                                                    setTimeout(function () {
+                                                        $('#reviewPeriodDaysField').slideDown(0);
+                                                    }, 520);
+                                                } else {
+                                                    $('#reviewPeriodDaysField').slideUp(0);
+                                                    $('#reviewPeriodTypeField').removeClass('col-sm-6');
+                                                    $('#reviewPeriodTypeField').addClass('col-sm-12');
+                                                }
+                                            " class="form-control" required>
+                                            @for (int i = 0; i < reviewPeriods.Count; i++)
+                                            {
+                                                <option value="@((int)reviewPeriods[i])" data-value="@EnumExtensions.GetDescription(reviewPeriods[i])">@EnumExtensions.GetDescription(reviewPeriods[i])</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none; padding:0">
+                                    <div class="form-group">
+                                        <label class="margin-bottom-5 control-label">Period Days:</label>
+                                        <input type="number" min="0" id="reviewPeriodDays" name="ReviewPeriodDays" value="0" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Compensation Matrix:</label>
+                                <select id="compensationMatrixId" name="CompensationMatrixId" class="form-control" required>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Compensation Matrix:</label>
-                            <select id="compensationMatrixId" name="CompensationMatrixId" class="form-control" required>
-                            </select>
+                </div>
+                <div id="referencesTab" class="areaForm" style="display:none">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="panel-body p-t-0" style="">
+                                <div id="referencesCS" class="control-section">
+                                    <ejs-grid id="ReferenceReferenceGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                              allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                              allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                              toolbar="@initialToolBar" toolbarClick="defaultToolbarClick"
+                                              allowPaging="true" allowResizing="true">
+
+                                        <e-grid-columns>
+                                            <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                            <e-grid-column field="type" allowEditing="false" headerText="Type" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="name" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="code" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                            <e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>
+                                        </e-grid-columns>
+
+                                        <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                        <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                        <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                    </ejs-grid>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -355,7 +400,7 @@
             <ejs-grid id="SkillsGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="commandClick"
                       showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
                       hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="skillActionBegin" actionComplete="skillActionComplete"
-                      allowSorting="true" allowMultiSorting="true" gridLines="Both" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                      allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
                       toolbarClick="toolbarClick" toolbar="@initialToolBar"
                       allowPaging="true" allowResizing="true">
 
@@ -444,7 +489,7 @@
             }
         }
         if (args.item.id === 'showActions') {
-            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Audit Trail", tooltipText: "View Audit Trail", prefixIcon: "e-custom-audit-trail", id: "toggleaudittrail" },  { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Audit Trail", tooltipText: "View Audit Trail", prefixIcon: "e-custom-audit-trail", id: "toggleaudittrail" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
             gridObj.refresh();
         }
         if (args.item.id === 'hideActions') {
@@ -536,8 +581,7 @@
 
             FillFormByObject(params, $('#skillsForm'));
             $('#skillsLoader').slideDown(100);
-            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_SkillTemplate.get(params.id).done(function (data)
-            {
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_SkillTemplate.get(params.id).done(function (data) {
                 $('#skillsLoader').slideUp(100);
 
                 $('#skillAquisition').multiselect('select', params.skillAquisition);
@@ -550,6 +594,17 @@
                 $('#updatePeriod').multiselect('select', params.updatePeriod);
 
                 $('#compensationMatrixId').multiselect('select', params.compensationMatrixTemplateId);
+            });
+            let tabs = $('#skillSpecificFormTabs')[0].ej2_instances[0];
+            tabs.properties.items[1].visible = true;
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_SkillTemplate.getAllReferences(params.id).done(function (data)
+            {
+
+                let refGrid = $('#ReferenceReferenceGrid')[0].ej2_instances[0];
+                refGrid.dataSource = data;
+                refGrid.refresh();
+
+                setTimeout(function () { refGrid.hideSpinner() }, 200);
             });
         }
         else if (args.commandColumn.type == "Copy") {

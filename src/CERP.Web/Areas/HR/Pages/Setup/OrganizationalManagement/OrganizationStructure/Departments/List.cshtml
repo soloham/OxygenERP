@@ -7,6 +7,7 @@
 @inject IHtmlLocalizer<CERPResource> L
 @inject Volo.Abp.Json.IJsonSerializer JsonSerializer
 @using CERP.App.Helpers;
+@using Syncfusion.EJ2.Navigations;
 
 @model CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure.Pages.Departments.ListModel
 @{
@@ -52,14 +53,14 @@
     List<string> subDepartmentRelationshipTypeDescs = new List<string>();
     subDepartmentRelationshipTypes.ForEach(x => subDepartmentRelationshipTypeDescs.Add(EnumExtensions.GetDescription(x)));
 
-    var positionEdit = new {@@params = new Syncfusion.EJ2.DropDowns.DropDownList() { CssClass = "moduleTypeDropDown", BeforeOpen = "loadPositionStatusesDropdown", DataSource = positionStatusesDescs, Query = "new ej.data.Query()", AllowFiltering = true }};
+    var positionEdit = new
+    {@@params = new Syncfusion.EJ2.DropDowns.DropDownList() { CssClass = "moduleTypeDropDown", BeforeOpen = "loadPositionStatusesDropdown", DataSource = positionStatusesDescs, Query = "new ej.data.Query()", AllowFiltering = true }
+};
 List<DictionaryValue> costCenters = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.CostCenter).OrderBy(x => x.Key).ToList(); ;
 
 
 List<object> positionsCommands = new List<object>();
-positionsCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
 positionsCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
-positionsCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
 
 List<OS_PositionLevel> positionLevels = Enum.GetValues(typeof(OS_PositionLevel)).Cast<OS_PositionLevel>().ToList();
 
@@ -459,15 +460,15 @@ List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Ca
             </div>
         </div>
         <form id="departmentsForm" onkeydown="return event.key != 'Enter';" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
-            <ejs-accordion id="departmentFormAccordion">
-                <e-accordion-accordionitems>
-                    <e-accordion-accordionitem expanded="true" header="General Details" content="#generalFieldsInfo"></e-accordion-accordionitem>
-                    <e-accordion-accordionitem header="Sub Departments" content="#subDepartmentsInfo"></e-accordion-accordionitem>
-                    <e-accordion-accordionitem header="Positions" content="#positionsInfo"></e-accordion-accordionitem>
-                </e-accordion-accordionitems>
-            </ejs-accordion>
+            <ejs-tab id="departmentFormTab" animation="ViewBag.animation" height="250px">
+                <e-tab-tabitems>
+                    <e-tab-tabitem header="@(new TabHeader { Text = "General" })" content="#generalFieldsInfo"></e-tab-tabitem>
+                    <e-tab-tabitem header="@(new TabHeader { Text = "Sub Departments" })" content="#subDepartmentsInfo"></e-tab-tabitem>
+                    <e-tab-tabitem header="@(new TabHeader { Text = "Positions" })" content="#positionsInfo"></e-tab-tabitem>
+                </e-tab-tabitems>
+            </ejs-tab>
 
-            <div id="generalFieldsInfo" style="display:none">
+            <div id="generalFieldsInfo" class="areaForm" style="display:none">
                 <div id="departmentSpecificForm">
                     <div class="row">
                         <div class="col-lg-3 col-md-3 col-sm-3 col-12">
@@ -491,12 +492,12 @@ List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Ca
                             </div>
                         </div>
                         @*<div class="col-lg-3 col-md-3 col-sm-3 col-12">
-            <div class="form-group">
-                <label class="margin-bottom-5 control-label">Department Head:</label>
-                <select id="depHeadId" name="DepartmentHeadId" class="form-control">
-                </select>
-            </div>
-        </div>*@
+                        <div class="form-group">
+                            <label class="margin-bottom-5 control-label">Department Head:</label>
+                            <select id="depHeadId" name="DepartmentHeadId" class="form-control">
+                            </select>
+                        </div>
+                    </div>*@
                         <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                             <div class="col-sm-6" style="padding:0">
                                 <div class="form-group">
@@ -558,118 +559,118 @@ List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Ca
                     </div>
                 </div>
             </div>
-            <div id="positionsInfo" style="display:none">
+            <div id="positionsInfo" class="areaForm" style="display:none;">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="panel-body p-t-0" style="padding:0;">
+                        <div class="panel-body p-t-0" style="">
                             @*<div class="areaHeader" style="display:flex;">
-                                <div id="positionsLoader" class="pull-left loader-inline" style="display:none"></div>
-                                <div class="areaHeaderTitle">
-                                    <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Positions</span>
-                                    <span id="" class="areaHeaderTitleInNode menu-text"> > </span>
-                                    <span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>
+                            <div id="positionsLoader" class="pull-left loader-inline" style="display:none"></div>
+                            <div class="areaHeaderTitle">
+                                <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Positions</span>
+                                <span id="" class="areaHeaderTitleInNode menu-text"> > </span>
+                                <span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>
+                            </div>
+                            <h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>
+                            <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                <div class="clearfix margin-15"></div>
+                                <a id="addPositionsBtn" onclick="areaHeaderBtnClick(event); isEditingPositions = false;" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                            </div>
+                        </div>
+                        <div role="form" id="positionsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                            <div id="positionSpecificForm">
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                        <div class="col-sm-6" style="padding:0">
+                                            <div class="form-group">
+                                                <label class="control-label m-b-5 ">Title:</label>
+                                                <input type="text" id="positionTitle" name="Name"  value = "@(empInfo!=null? empInfo.EMAIL : "")" class="form-control " required>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6" style="padding:0">
+                                            <div class="form-group">
+                                                <label class="control-label m-b-5 ">Title (In Arabic):</label>
+                                                <input type="text" id="positionTitleLocalized" name="NameLocalized"  value = "@(empInfo!=null? empInfo.EMAIL : "")" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                        <div class="form-group">
+                                            <label class="margin-bottom-5 control-label">Position Code:</label>
+                                            <input type="text" id="positionCode" name="Code"  value = "@(empInfo!=null? empInfo.EMAIL : "")" class="form-control" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                        <div class="form-group">
+                                            <label class="margin-bottom-5 control-label">Jobs:</label>
+                                            <select id="positionJobs" multiple="multiple" name="Jobs" class="form-control">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                        <div class="form-group">
+                                            <label class="margin-bottom-5 control-label">Tasks:</label>
+                                            <select id="positionTasks" multiple="multiple" name="Tasks" class="form-control">
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
-                                <h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>
-                                <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
-                                    <div class="clearfix margin-15"></div>
-                                    <a id="addPositionsBtn" onclick="areaHeaderBtnClick(event); isEditingPositions = false;" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            <label class="margin-bottom-5 control-label">Level:</label>
+                                            <select id="positionLevel" name="Level" class="form-control">
+                                                @for (int i = 0; i < positionLevels.Count; i++)
+                                                {
+                                                    <option value="@((int)positionLevels[i])">@EnumExtensions.GetDescription(positionLevels[i])</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            <label class="control-label m-b-5 ">Activation Date:</label>
+                                            <input type="date" id="positionActivationDate" name="ActivationDate" class="text-left form-control inline pull-left" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                        <div class="col-sm-6" style="padding:0">
+                                            <div class="form-group">
+                                                <label class="control-label m-b-5 ">Valid From:</label>
+                                                <input type="date" id="positionValidityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6" style="padding:0">
+                                            <div class="form-group">
+                                                <label class="control-label m-b-5 ">Valid To:</label>
+                                                <input type="date" id="positionValidityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            <label class="margin-bottom-5 control-label">Cost Center:</label>
+                                            <select id="positionCostCenterId" name="CostCenterId" class="form-control">
+                                                @for (int i = 0; i < costCenters.Count; i++)
+                                                {
+                                                    <option value="@costCenters[i].Id" data-value="@costCenters[i].Value">@costCenters[i].Value</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div role="form" id="positionsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
-                                <div id="positionSpecificForm">
-                                    <div class="row">
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                                            <div class="col-sm-6" style="padding:0">
-                                                <div class="form-group">
-                                                    <label class="control-label m-b-5 ">Title:</label>
-                                                    <input type="text" id="positionTitle" name="Name"  value = "@(empInfo!=null? empInfo.EMAIL : "")" class="form-control " required>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-6" style="padding:0">
-                                                <div class="form-group">
-                                                    <label class="control-label m-b-5 ">Title (In Arabic):</label>
-                                                    <input type="text" id="positionTitleLocalized" name="NameLocalized"  value = "@(empInfo!=null? empInfo.EMAIL : "")" class="form-control">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                                            <div class="form-group">
-                                                <label class="margin-bottom-5 control-label">Position Code:</label>
-                                                <input type="text" id="positionCode" name="Code"  value = "@(empInfo!=null? empInfo.EMAIL : "")" class="form-control" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                                            <div class="form-group">
-                                                <label class="margin-bottom-5 control-label">Jobs:</label>
-                                                <select id="positionJobs" multiple="multiple" name="Jobs" class="form-control">
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                                            <div class="form-group">
-                                                <label class="margin-bottom-5 control-label">Tasks:</label>
-                                                <select id="positionTasks" multiple="multiple" name="Tasks" class="form-control">
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                            <div class="form-group">
-                                                <label class="margin-bottom-5 control-label">Level:</label>
-                                                <select id="positionLevel" name="Level" class="form-control">
-                                                    @for (int i = 0; i < positionLevels.Count; i++)
-                                                    {
-                                                        <option value="@((int)positionLevels[i])">@EnumExtensions.GetDescription(positionLevels[i])</option>
-                                                    }
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                            <div class="form-group">
-                                                <label class="control-label m-b-5 ">Activation Date:</label>
-                                                <input type="date" id="positionActivationDate" name="ActivationDate" class="text-left form-control inline pull-left" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                            <div class="col-sm-6" style="padding:0">
-                                                <div class="form-group">
-                                                    <label class="control-label m-b-5 ">Valid From:</label>
-                                                    <input type="date" id="positionValidityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-6" style="padding:0">
-                                                <div class="form-group">
-                                                    <label class="control-label m-b-5 ">Valid To:</label>
-                                                    <input type="date" id="positionValidityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                            <div class="form-group">
-                                                <label class="margin-bottom-5 control-label">Cost Center:</label>
-                                                <select id="positionCostCenterId" name="CostCenterId" class="form-control">
-                                                    @for (int i = 0; i < costCenters.Count; i++)
-                                                    {
-                                                        <option value="@costCenters[i].Id" data-value="@costCenters[i].Value">@costCenters[i].Value</option>
-                                                    }
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
+                            <hr />
+                            <div class="row m-t-20">
+                                <div class="col-lg-12">
+                                    <input id="submitPositionBtn" type="button" class="btn btn-success btn-block" value="Create Position" required />
                                 </div>
-                                <hr />
-                                <div class="row m-t-20">
-                                    <div class="col-lg-12">
-                                        <input id="submitPositionBtn" type="button" class="btn btn-success btn-block" value="Create Position" required />
-                                    </div>
-                                </div>
-                            </div>*@
+                            </div>
+                        </div>*@
                             <div id="positionsCS" class="control-section">
                                 <ejs-grid id="PositionsGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="positionCommandClick"
                                           showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
                                           hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="positionActionBegin" actionComplete="positionActionComplete"
-                                          allowSorting="true" allowMultiSorting="true" gridLines="Both" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
                                           toolbarClick="defaultToolbarClick" toolbar="@initialToolBar"
                                           allowPaging="true" allowResizing="true">
 
@@ -681,8 +682,8 @@ List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Ca
                         }'></e-grid-column>
                                         <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
                                         <e-grid-column field="costCenter.value" headerText="Cost Center" textAlign="Center"></e-grid-column>
-                                        <e-grid-column field="levelDescription" headerText="Level" textAlign="Center"></e-grid-column>
-                                        <e-grid-column field="activationDate" headerText="Activation Date" type="date" format="yMd" , allowEditing="true" editType="datepicker" textAlign="Center"></e-grid-column>
+                                        @*<e-grid-column field="levelDescription" headerText="Level" textAlign="Center"></e-grid-column>*@
+                                        @*<e-grid-column field="activationDate" headerText="Activation Date" type="date" format="yMd" , allowEditing="true" editType="datepicker" textAlign="Center"></e-grid-column>*@
                                         <e-grid-column headerText="Validity" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
                             new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityFromDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "From", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
                             new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityToDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "To", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
@@ -701,10 +702,10 @@ List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Ca
                     </div>
                 </div>
             </div>
-            <div id="subDepartmentsInfo" style="display:none">
+            <div id="subDepartmentsInfo" class="areaForm" style="display:none;">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="panel-body p-t-0" style="padding:0;">
+                        <div class="panel-body p-t-0" style="">
                             <div class="areaHeader" style="display:flex;">
                                 <div id="subDepartmentsLoader" class="pull-left loader-inline" style="display:none"></div>
                                 <div class="areaHeaderTitle">
@@ -754,7 +755,7 @@ List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Ca
                                 <ejs-grid id="SubDepartmentsGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
                                           allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
                                           hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
-                                          allowSorting="true" allowMultiSorting="true" gridLines="Both" dataSource="new List<dynamic>()"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
                                           toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" commandClick="subDepartmentsCommandClick" actionBegin="subDepartmentsActionBegin" actionComplete="subDepartmentsActionComplete"
                                           allowPaging="true" allowResizing="true">
 
@@ -778,7 +779,8 @@ List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Ca
                     </div>
                 </div>
             </div>
-            <div class="row m-t-20">
+
+            <div class="row">
                 <div class="col-lg-12">
                     <input id="submitDepartmentBtn" type="button" class="btn btn-success btn-block" value="Create Department" required />
                 </div>
@@ -788,7 +790,7 @@ List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Ca
             <ejs-grid id="DepartmentsGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="commandClick"
                       showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
                       hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="departmentActionBegin" actionComplete="departmentActionComplete"
-                      allowSorting="true" allowMultiSorting="true" gridLines="Both" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                      allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
                       toolbarClick="toolbarClick" toolbar="@initialToolBar"
                       allowPaging="true" allowResizing="true" dataSource="new List<dynamic>()">
 

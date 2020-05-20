@@ -288,9 +288,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         #endregion
 
                         OS_TaskTemplate_Dto updated = ObjectMapper.Map<OS_TaskTemplate, OS_TaskTemplate_Dto>(await OS_TaskTemplateAppService.Repository.UpdateAsync(curTaskTemplate));
-                        updated.TaskSkillTemplates = ObjectMapper.Map<List<OS_TaskSkillTemplate>, List<OS_TaskSkillTemplate_Dto>>(curTaskTemplate.TaskSkillTemplates.ToList());
-                        updated.TaskAcademiaTemplates = ObjectMapper.Map<List<OS_TaskAcademiaTemplate>, List<OS_TaskAcademiaTemplate_Dto>>(curTaskTemplate.TaskAcademiaTemplates.ToList());
-                        updated.CompensationMatrix = await OS_TaskTemplateAppService.GetCompensationMatrixAsync(updated.CompensationMatrixId);
+                        updated = ObjectMapper.Map<OS_TaskTemplate, OS_TaskTemplate_Dto>(await OS_TaskTemplateAppService.Repository.GetAsync(updated.Id));
 
                         return StatusCode(200, updated);
                     }

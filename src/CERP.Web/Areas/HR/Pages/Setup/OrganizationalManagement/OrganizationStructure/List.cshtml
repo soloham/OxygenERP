@@ -7,6 +7,7 @@
 @inject IHtmlLocalizer<CERPResource> L
 @inject Volo.Abp.Json.IJsonSerializer JsonSerializer
 @using CERP.App.Helpers;
+@using EJ2CoreSampleBrowser.Models;
 
 @model CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure.Pages.OrganizationStructures.ListModel
 @{
@@ -39,9 +40,11 @@
 
     @*var positionEdit = new {@@params = new Syncfusion.EJ2.DropDowns.DropDownList() { CssClass = "moduleTypeDropDown", BeforeOpen = "loadPositionStatusesDropdown", DataSource = positionStatusesDescs, Query = "new ej.data.Query()", AllowFiltering = true }};*@
 
-    List<OS_PositionLevel> positionLevels = Enum.GetValues(typeof(OS_PositionLevel)).Cast<OS_PositionLevel>().ToList();
+List<OS_PositionLevel> positionLevels = Enum.GetValues(typeof(OS_PositionLevel)).Cast<OS_PositionLevel>().ToList();
 
-    List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Cast<OS_ReviewPeriod>().ToList();
+List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Cast<OS_ReviewPeriod>().ToList();
+
+var order = TreeData.GetDefaultData();
 }
 @section styles {
     @if ((bool)ViewData["IsEditing"])
@@ -288,12 +291,12 @@
                             </div>
                         </div>
                         @*<div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">OrganizationStructure Head:</label>
-                            <select id="depHeadId" name="OrganizationStructureHeadId" class="form-control">
-                            </select>
-                        </div>
-                    </div>*@
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">OrganizationStructure Head:</label>
+                                <select id="depHeadId" name="OrganizationStructureHeadId" class="form-control">
+                                </select>
+                            </div>
+                        </div>*@
                         <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                             <div class="col-sm-6" style="padding:0">
                                 <div class="form-group">
@@ -313,9 +316,9 @@
                                 <label class="margin-bottom-5 control-label">Cost Center:</label>
                                 <select id="costCenterId" name="CostCenterId" class="form-control">
                                     @*@for (int i = 0; i < costCenters.Count; i++)
-                                {
-                                    <option value="@costCenters[i].Id" data-value="@costCenters[i].Value">@costCenters[i].Value</option>
-                                }*@
+                                    {
+                                        <option value="@costCenters[i].Id" data-value="@costCenters[i].Value">@costCenters[i].Value</option>
+                                    }*@
                                 </select>
                             </div>
                         </div>
@@ -357,16 +360,16 @@
             </div>
 
             <div id="structureInfo" style="display:none">
-                @{
+                @*@{
                     var dict = new Dictionary<string, object>();
                     dict.Add("number", true);
                     dict.Add("min", 0);
                     var editparams = new { @@params = new { format = "n" } };
                 }
-                <ejs-treegrid id="StructureTreeGrid" height="400" childMapping="Children" 
-                              treeColumnIndex="1" gridLines="Both" allowRowDragAndDrop="true" 
+                <ejs-treegrid id="StructureTreeGrid" dataSource="order" height="400" childMapping="Children"
+                              treeColumnIndex="1" gridLines="Horizontal" allowRowDragAndDrop="true"
                               toolbar="@(new List<string>() { "Add", "Delete", "Update", "Cancel" })">
-                    <e-treegrid-editsettings allowAdding="true" allowEditing="true" allowDeleting="true" newRowPosition="Below"></e-treegrid-editsettings>
+                    <e-treegrid-editsettings  allowAdding="true" allowEditing="true" allowDeleting="true" newRowPosition="Below"></e-treegrid-editsettings>
                     <e-treegrid-columns>
                         <e-treegrid-column field="id" headerText="" visible="true" isPrimaryKey="true" textAlign="Center"></e-treegrid-column>
                         <e-treegrid-column field="name" headerText="Name" validationRules="@(new { required=true, number=false})" editType="stringedit" textAlign="Center"></e-treegrid-column>
@@ -375,7 +378,8 @@
                         <e-treegrid-column field="validityStartDate" allowEditing="true" headerText="Start Date" validationRules="@(new { date=true})" editType="datepickeredit" textAlign="Center" format="yMd" type="date"></e-treegrid-column>
                         <e-treegrid-column field="validityEndDate" allowEditing="true" headerText="End Date" validationRules="@(dict)" editType="datepickeredit" format="yMd" type="date" textAlign="Center" edit="editparams"></e-treegrid-column>
                     </e-treegrid-columns>
-                </ejs-treegrid>
+                </ejs-treegrid>*@
+
             </div>
 
             <div class="row m-t-20">
@@ -388,7 +392,7 @@
             <ejs-grid id="OrganizationStructuresGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="commandClick"
                       showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
                       hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="organizationStructureActionBegin" actionComplete="organizationStructureActionComplete"
-                      allowSorting="true" allowMultiSorting="true" gridLines="Both" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                      allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
                       toolbarClick="toolbarClick" toolbar="@initialToolBar"
                       allowPaging="true" allowResizing="true" dataSource="new List<dynamic>()">
 
@@ -418,6 +422,18 @@
                 <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
             </ejs-grid>
         </div>
+        <ejs-treegrid id="TreeGrid" dataSource="order" height="380" childMapping="Children" treeColumnIndex="1" allowRowDragAndDrop="true">
+            <e-treegrid-selectionsettings type="Multiple"></e-treegrid-selectionsettings>
+            <e-treegrid-columns>
+                <e-treegrid-column field="TaskId" headerText="Task ID" textAlign="Right" width="95"></e-treegrid-column>
+                <e-treegrid-column field="TaskName" headerText="Task Name" width="220"></e-treegrid-column>
+                <e-treegrid-column field="StartDate" headerText="Start Date" textAlign="Right" format="yMd" type="date" width="115"></e-treegrid-column>
+                <e-treegrid-column field="EndDate" headerText="End Date" textAlign="Right" format="yMd" type="date" width="115"></e-treegrid-column>
+                <e-treegrid-column field="Duration" headerText="Duration" textAlign="Right" width="100"></e-treegrid-column>
+                <e-treegrid-column field="Progress" headerText="Progress" textAlign="Right" width="105"></e-treegrid-column>
+                <e-treegrid-column field="Priority" headerText="Priority" width="100"></e-treegrid-column>
+            </e-treegrid-columns>
+        </ejs-treegrid>
         <div id="auditTrail" style="display:none;">
             <partial name="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />
         </div>
