@@ -384,6 +384,14 @@ namespace CERP.EntityFrameworkCore
             #region HR
             #region Organizational Management
             #region Organization Structure
+            builder.Entity<OS_OrganizationStructureTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+            });
             builder.Entity<OS_DepartmentTemplate>(b =>
             {
                 b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}DepartmentTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);

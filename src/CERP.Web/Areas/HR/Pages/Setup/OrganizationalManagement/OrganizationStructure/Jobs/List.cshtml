@@ -149,7 +149,11 @@
             });
 
             let gridObj = $("#JobsGrid")[0].ej2_instances[0];
+            gridObj.showSpinner();
+            $('#jobsLoader').slideDown(100);
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_JobTemplate.getAllJobTemplates().done(function (data) {
+                gridObj.hideSpinner();
+                $('#jobsLoader').slideUp(100);
                 gridObj.dataSource = data;
                 gridObj.refresh();
                 setTimeout(function () { gridObj.hideSpinner() }, 200);
@@ -473,7 +477,7 @@
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6 col-sm-2 col-12">
-                        <div id="reviewPeriodTypeField" class="col-sm-12">
+                        <div id="reviewPeriodTypeField" class="col-sm-12" style="padding:0">
                             <div class="form-group">
                                 <label class="margin-bottom-5 control-label">Review Period:</label>
                                 <select id="reviewPeriod" name="ReviewPeriod" onchange="
@@ -496,10 +500,10 @@
                                 </select>
                             </div>
                         </div>
-                        <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none">
+                        <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none; padding:0">
                             <div class="form-group">
                                 <label class="margin-bottom-5 control-label">Period Days:</label>
-                                <input type="number" min="1" id="reviewPeriodDays" name="ReviewPeriodDays" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                <input type="number" min="0" id="reviewPeriodDays" name="ReviewPeriodDays" value="0" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                             </div>
                         </div>
                     </div>
@@ -559,7 +563,7 @@
                     <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
                     <e-grid-column field="description" headerText="Description" allowEditing="true" textAlign="Center"></e-grid-column>
                     <e-grid-column field="compensationMatrix.name" headerText="Compensation Matrix" textAlign="Center"></e-grid-column>
-                    <e-grid-column field="workshift.title" headerText="Workshift" textAlign="Center"></e-grid-column>
+                    @*<e-grid-column field="workshift.title" headerText="Workshift" textAlign="Center"></e-grid-column>*@
                     <e-grid-column field="maxJobPositions" headerText="Max Positions" textAlign="Center"></e-grid-column>
                     <e-grid-column field="reviewPeriodDescription" headerText="Review period" textAlign="Center"></e-grid-column>
                     <e-grid-column headerText="Validity" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
@@ -719,6 +723,8 @@
             let params = args.rowData;
             curJobsEditRow = params;
 
+            $('#jobsLoader').slideDown(100);
+
             toggleAreaFormBtn('jobsForm', false);
 
             setTimeout(function () {
@@ -730,6 +736,7 @@
 
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_JobTemplate.getJobTemplate(params.id).done(function (data) {
                 console.log(data);
+                $('#jobsLoader').slideUp(100);
 
                 $('#tasksIds').multiselect('select', data.jobTaskTemplates.map(function (item) { return item.taskTemplateId }));
                 $('#functionsIds').multiselect('select', data.jobFunctionTemplates.map(function (item) { return item.functionTemplateId }));

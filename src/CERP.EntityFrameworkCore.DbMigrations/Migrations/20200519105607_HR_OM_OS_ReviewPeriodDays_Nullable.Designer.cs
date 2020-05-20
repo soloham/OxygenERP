@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200519105607_HR_OM_OS_ReviewPeriodDays_Nullable")]
+    partial class HR_OM_OS_ReviewPeriodDays_Nullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2798,70 +2800,6 @@ namespace CERP.Migrations
                     b.HasIndex("WorkshiftId");
 
                     b.ToTable("JobWorkshiftTemplates","HR.OrganizationalManagement.OrganizationStructure");
-                });
-
-            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Code")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnName("ConcurrencyStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnName("ExtraProperties")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NameLocalized")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ReviewPeriod")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ReviewPeriodDays")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StructureStatus")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("ValidityFromDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ValidityToDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("OrganizationStructureTemplates","HR.OrganizationalManagement.OrganizationStructure");
                 });
 
             modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_PositionJobTemplate", b =>

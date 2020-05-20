@@ -231,6 +231,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         skillTemplate_Dto.CompensationMatrix = null;
 
                         OS_SkillTemplate_Dto added = await OS_SkillTemplateAppService.CreateAsync(skillTemplate_Dto);
+                        added = await OS_SkillTemplateAppService.GetAsync(added.Id);
 
                         if (AuditingManager.Current != null)
                         {

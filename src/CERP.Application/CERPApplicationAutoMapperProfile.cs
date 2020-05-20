@@ -151,6 +151,9 @@ namespace CERP
             #region HR
             #region Organizational Management
             #region Organization Structure
+            CreateMap<OS_OrganizationStructureTemplate, OS_OrganizationStructureTemplate_Dto>();
+            CreateMap<OS_OrganizationStructureTemplate_Dto, OS_OrganizationStructureTemplate>();
+
             CreateMap<OS_DepartmentTemplate, OS_DepartmentTemplate_Dto>();
             CreateMap<OS_DepartmentTemplate_Dto, OS_DepartmentTemplate>();
             CreateMap<OS_DepartmentSubDepartmentTemplate, OS_DepartmentSubDepartmentTemplate_Dto>();

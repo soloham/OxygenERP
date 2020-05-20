@@ -234,6 +234,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         academiaTemplate_Dto.CompensationMatrix = null;
 
                         OS_AcademiaTemplate_Dto added = await OS_AcademiaTemplateAppService.CreateAsync(academiaTemplate_Dto);
+                        added = await OS_AcademiaTemplateAppService.GetAsync(added.Id);
 
                         if (AuditingManager.Current != null)
                         {

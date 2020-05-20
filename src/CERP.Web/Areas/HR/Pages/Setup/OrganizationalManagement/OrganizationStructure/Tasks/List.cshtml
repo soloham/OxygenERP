@@ -85,7 +85,11 @@
             $('#compensationMatrixId').multiselect(options);
 
             let gridObj = $("#TasksGrid")[0].ej2_instances[0];
+            gridObj.showSpinner();
+            $('#tasksLoader').slideDown(100);
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_TaskTemplate.getAllTaskTemplates().done(function (data) {
+                gridObj.hideSpinner();
+                $('#tasksLoader').slideUp(100);
                 gridObj.dataSource = data;
                 setTimeout(function () { gridObj.hideSpinner() }, 200);
             });
@@ -326,7 +330,7 @@
                         <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none; padding:0">
                             <div class="form-group">
                                 <label class="margin-bottom-5 control-label">Period Days:</label>
-                                <input type="number" min="1" id="reviewPeriodDays" name="ReviewPeriodDays" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                <input type="number" min="0" id="reviewPeriodDays" name="ReviewPeriodDays" value="0" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                             </div>
                         </div>
                     </div>
@@ -403,6 +407,7 @@
                     <e-grid-column field="doesKPI" headerText="Perform KPI" displayAsCheckBox="true" editType="booleanedit" allowEditing="true" textAlign="Center"></e-grid-column>
                     <e-grid-column field="workflowLinkability" headerText="Workflow Linkability" displayAsCheckBox="true" editType="booleanedit" allowEditing="true" textAlign="Center"></e-grid-column>
                     <e-grid-column field="reviewPeriodDescription" headerText="Review period" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="compensationMatrix.name" headerText="Compensation Matrix" textAlign="Center"></e-grid-column>
                     <e-grid-column headerText="Validity" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityFromDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "From", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityToDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "To", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
@@ -568,9 +573,12 @@
             }, 200);
 
             FillFormByObject(params, $('#tasksForm'));
+            $('#tasksLoader').slideDown(100);
 
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_TaskTemplate.getTaskTemplate(params.id).done(function (data)
             {
+                $('#tasksLoader').slideUp(100);
+
                 $('#doesKPI').parent().removeClass('active');
                 if (params.doesKPI)
                     $('#doesKPI').parent().addClass('active');

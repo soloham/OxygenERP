@@ -304,6 +304,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         taskTemplate_Dto.CompensationMatrix = null;
 
                         OS_TaskTemplate_Dto added = await OS_TaskTemplateAppService.CreateAsync(taskTemplate_Dto);
+                        added = await OS_TaskTemplateAppService.GetAsync(added.Id);
 
                         if (AuditingManager.Current != null)
                         {

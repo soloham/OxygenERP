@@ -409,9 +409,12 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                             jobTemplate_Dto.JobSkillTemplates.ForEach(x => { x.Id = 0; x.SkillTemplateId = x.SkillTemplate.Id; x.SkillTemplate = null; });
                         if (jobTemplate_Dto.JobAcademiaTemplates != null)
                             jobTemplate_Dto.JobAcademiaTemplates.ForEach(x => { x.Id = 0; x.AcademiaTemplateId = x.AcademiaTemplate.Id; x.AcademiaTemplate = null; });
+                        if (jobTemplate_Dto.JobWorkshiftTemplates != null)
+                            jobTemplate_Dto.JobWorkshiftTemplates.ForEach(x => { x.Id = 0; x.WorkshiftId = x.Workshift.Id; x.Workshift = null; });
                         jobTemplate_Dto.CompensationMatrix = null;
 
                         OS_JobTemplate_Dto added = await OS_JobTemplateAppService.CreateAsync(jobTemplate_Dto);
+                        added = await OS_JobTemplateAppService.GetAsync(added.Id);
 
                         if (AuditingManager.Current != null)
                         {

@@ -1,11 +1,10 @@
 {
     "components": [
-        "accordion",
         "query-builder",
-        "tab",
         "diagram",
         "grid",
-        "treegrid"
+        "schedule",
+        "symbol-palette"
     ],
     "minified": "true",
     "injectables": {
@@ -52,31 +51,31 @@
             "BlazorAction",
             "InfiniteScroll"
         ],
-        "treegrid": [
-            "Filter",
-            "Page",
-            "Sort",
-            "Reorder",
-            "Toolbar",
-            "Aggregate",
+        "schedule": [
+            "Day",
+            "Week",
+            "WorkWeek",
+            "Month",
+            "Agenda",
+            "MonthAgenda",
+            "TimelineViews",
+            "TimelineMonth",
+            "TimelineYear",
             "Resize",
-            "ColumnMenu",
+            "DragAndDrop",
             "ExcelExport",
-            "PdfExport",
-            "CommandColumn",
-            "ContextMenu",
-            "Edit",
-            "Selection",
-            "VirtualScroll",
-            "DetailRow",
-            "RowDD",
-            "Freeze"
+            "ICalendarExport",
+            "ICalendarImport",
+            "Print"
+        ],
+        "symbol-palette": [
+            "BpmnDiagrams"
         ]
     },
     "themes": [
         "fabric"
     ],
-    "version": "18.1.52",
+    "version": "18.1.42",
     "name": "ej2-bundle",
     "isMinified": true
 }

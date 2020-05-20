@@ -82,7 +82,11 @@
             $('#compensationMatrixId').multiselect(options);
 
             let gridObj = $("#FunctionsGrid")[0].ej2_instances[0];
+            gridObj.showSpinner();
+            $('#functionsLoader').slideDown(100);
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_FunctionTemplate.getAllFunctionTemplates().done(function (data) {
+                gridObj.hideSpinner();
+                $('#functionsLoader').slideUp(100);
                 gridObj.dataSource = data;
                 setTimeout(function () { gridObj.hideSpinner() }, 200);
             });
@@ -282,13 +286,13 @@
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="col-sm-6" style="padding-right:0">
+                        <div class="col-sm-6" style="padding:0">
                             <div class="form-group">
                                 <label class="control-label m-b-5 ">Valid From:</label>
                                 <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
                             </div>
                         </div>
-                        <div class="col-sm-6" style="padding-left:0">
+                        <div class="col-sm-6" style="padding:0">
                             <div class="form-group">
                                 <label class="control-label m-b-5 ">Valid To:</label>
                                 <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
@@ -310,17 +314,19 @@
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Skills:</label>
-                            <select id="skillsIds" name="SkillsIds" multiple="multiple" class="form-control" required>
-                            </select>
+                        <div class="col-lg-6 col-md-6 col-sm-3 col-12" style="padding:0">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Skills:</label>
+                                <select id="skillsIds" name="SkillsIds" multiple="multiple" class="form-control" required>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Academia:</label>
-                            <select id="academiaIds" name="AcademiaIds" multiple="multiple" class="form-control" required>
-                            </select>
+                        <div class="col-lg-6 col-md-6 col-sm-3 col-12" style="padding:0"> 
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Academia:</label>
+                                <select id="academiaIds" name="AcademiaIds" multiple="multiple" class="form-control" required>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-3 col-12">
@@ -331,7 +337,7 @@
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6 col-sm-2 col-12">
-                        <div id="reviewPeriodTypeField" class="col-sm-12">
+                        <div id="reviewPeriodTypeField" class="col-sm-12" style="padding:0">
                             <div class="form-group">
                                 <label class="margin-bottom-5 control-label">Review Period:</label>
                                 <select id="reviewPeriod" name="ReviewPeriod" onchange="
@@ -354,10 +360,10 @@
                                 </select>
                             </div>
                         </div>
-                        <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none">
+                        <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none; padding:0">
                             <div class="form-group">
                                 <label class="margin-bottom-5 control-label">Period Days:</label>
-                                <input type="number" min="1" id="reviewPeriodDays" name="ReviewPeriodDays" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                <input type="number" min="0" id="reviewPeriodDays" name="ReviewPeriodDays" value="0" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                             </div>
                         </div>
                     </div>
@@ -554,9 +560,12 @@
             }, 200);
 
             FillFormByObject(params, $('#functionsForm'));
+            $('#functionsLoader').slideDown(100);
 
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_FunctionTemplate.getFunctionTemplate(params.id).done(function (data)
             {
+                $('#functionsLoader').slideUp(100);
+
                 $('#doesKPI').parent().removeClass('active');
                 if (params.doesKPI)
                     $('#doesKPI').parent().addClass('active');

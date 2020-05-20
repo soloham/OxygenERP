@@ -78,10 +78,19 @@
                 enableCollapsibleOptGroups: true
             };
             $('#reviewPeriod').multiselect(options);
+            $('#updatePeriod').multiselect(options);
+            $('#skillAquisition').multiselect(options);
+            $('#skillType').multiselect(options);
+            $('#skillSubType').multiselect(options);
             $('#compensationMatrixId').multiselect(options);
 
             let gridObj = $("#SkillsGrid")[0].ej2_instances[0];
+            gridObj.showSpinner();
+            $('#skillsLoader').slideDown(100);
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_SkillTemplate.getAllSkillTemplates().done(function (data) {
+                $('#skillsLoader').slideUp(100);
+                gridObj.hideSpinner();
+
                 gridObj.dataSource = data;
                 setTimeout(function () { gridObj.hideSpinner() }, 200);
             });
@@ -295,7 +304,7 @@
                             </div>
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                            <div id="reviewPeriodTypeField" class="col-sm-12">
+                            <div id="reviewPeriodTypeField" class="col-sm-12" style="padding:0">
                                 <div class="form-group">
                                     <label class="margin-bottom-5 control-label">Review Period:</label>
                                     <select id="reviewPeriod" name="ReviewPeriod" onchange="
@@ -318,10 +327,10 @@
                                     </select>
                                 </div>
                             </div>
-                            <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none">
+                            <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none; padding:0">
                                 <div class="form-group">
                                     <label class="margin-bottom-5 control-label">Period Days:</label>
-                                    <input type="number" min="1" id="reviewPeriodDays" name="ReviewPeriodDays" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                    <input type="number" min="0" id="reviewPeriodDays" name="ReviewPeriodDays" value="0" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -526,8 +535,11 @@
             }, 200);
 
             FillFormByObject(params, $('#skillsForm'));
-            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_SkillTemplate.getSkillTemplate(params.id).done(function (data)
+            $('#skillsLoader').slideDown(100);
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_SkillTemplate.get(params.id).done(function (data)
             {
+                $('#skillsLoader').slideUp(100);
+
                 $('#skillAquisition').multiselect('select', params.skillAquisition);
                 $('#skillType').multiselect('select', params.skillType);
                 $('#skillSubType').multiselect('select', params.skillSubType);

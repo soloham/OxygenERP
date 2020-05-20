@@ -215,7 +215,8 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curCompensationMatrixTemplate.CompensationMatrixData = compensationMatrixTemplate_Dto.CompensationMatrixData;
 
                         OS_CompensationMatrixTemplate_Dto updated = ObjectMapper.Map<OS_CompensationMatrixTemplate, OS_CompensationMatrixTemplate_Dto>(await OS_CompensationMatrixTemplateAppService.Repository.UpdateAsync(curCompensationMatrixTemplate));
-                        
+                        updated = await OS_CompensationMatrixTemplateAppService.GetAsync(updated.Id);
+
                         return StatusCode(200, updated);
                     }
                     else
@@ -223,6 +224,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         compensationMatrixTemplate_Dto.Id = 0; 
                         
                         OS_CompensationMatrixTemplate_Dto added = await OS_CompensationMatrixTemplateAppService.CreateAsync(compensationMatrixTemplate_Dto);
+                        added = await OS_CompensationMatrixTemplateAppService.GetAsync(added.Id);
 
                         if (AuditingManager.Current != null)
                         {

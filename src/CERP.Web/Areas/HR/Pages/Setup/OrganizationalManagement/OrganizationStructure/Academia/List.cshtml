@@ -77,10 +77,16 @@
                 enableCollapsibleOptGroups: true
             };
             $('#reviewPeriod').multiselect(options);
+            $('#academicType').multiselect(options);
+            $('#academicCertificateType').multiselect(options);
             $('#compensationMatrixId').multiselect(options);
 
             let gridObj = $("#AcademiaGrid")[0].ej2_instances[0];
+            gridObj.showSpinner();
+            $('#academiaLoader').slideDown(100);
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_AcademiaTemplate.getAllAcademiaTemplates().done(function (data) {
+                gridObj.hideSpinner();
+                $('#academiaLoader').slideUp(100);
                 academia = data;
                 gridObj.dataSource = data;
                 setTimeout(function () { gridObj.hideSpinner() }, 200);
@@ -261,7 +267,7 @@
                     <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5 control-label">Certificate Type:</label>
-                            <select id="academicCertificateType" name="AcademiaType" class="form-control" required>
+                            <select id="academicCertificateType" name="academiaCertificateType" class="form-control" required>
                                 @for (int i = 0; i < academicCertificateTypes.Count; i++)
                                 {
                                     <option value="@((int)academicCertificateTypes[i])">@EnumExtensions.GetDescription(academicCertificateTypes[i])</option>
@@ -301,7 +307,7 @@
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6 col-sm-2 col-12">
-                        <div id="reviewPeriodTypeField" class="col-sm-12">
+                        <div id="reviewPeriodTypeField" class="col-sm-12" style="padding:0">
                             <div class="form-group">
                                 <label class="margin-bottom-5 control-label">Review Period:</label>
                                 <select id="reviewPeriod" name="ReviewPeriod" onchange="
@@ -324,10 +330,10 @@
                                 </select>
                             </div>
                         </div>
-                        <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none">
+                        <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none; padding:0">
                             <div class="form-group">
                                 <label class="margin-bottom-5 control-label">Period Days:</label>
-                                <input type="number" min="1" id="reviewPeriodDays" name="ReviewPeriodDays" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                <input type="number" min="0" id="reviewPeriodDays" name="ReviewPeriodDays" value="0" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                             </div>
                         </div>
                     </div>
@@ -534,7 +540,7 @@
             }, 200);
 
             FillFormByObject(params, $('#academiaForm'));
-            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_AcademiaTemplate.getAcademiaTemplate(params.id).done(function (data)
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_AcademiaTemplate.get(params.id).done(function (data)
             {
                 $('#academicType').multiselect('select', params.academicType);
                 $('#academicCertificateType').multiselect('select', params.academicCertificateType);
@@ -549,7 +555,6 @@
         }
 
         setTimeout(function () { gridObj.hideSpinner() }, 200);
-        setTimeout(function () { qualGrid.hideSpinner() }, 200);
     }
     function academiaActionComplete(args) {
         let gridObj = document.getElementById("AcademiaGrid").ej2_instances[0];

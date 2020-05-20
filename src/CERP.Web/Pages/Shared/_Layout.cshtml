@@ -735,52 +735,69 @@
                                         <ul class="sidebar-submenu sidebar-submenu-simple collapse" style="padding-left: 31px">
                                             <li class="menu-subtitle">Organization Structure</li>
                                             <li class="">
-                                                <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/OrganizationStructure/CompensationMatrices/List">
+                                                <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/OrganizationStructure/List">
                                                     <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
-                                                    <span class="menu-text">Compensation Matrices</span>
+                                                    <span class="menu-text">List</span>
                                                 </a>
                                             </li>
-                                            <li class="">
-                                                <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/OrganizationStructure/Academia/List">
-                                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
-                                                    <span class="menu-text">Academia</span>
+                                            <li class="with-sub">
+                                                <a href="#" aria-haspopup="true">
+                                                    @*<span class="menu-icon">
+                                                        <i class="zmdi zmdi-arrow"></i>
+                                                    </span>*@
+                                                    <span class="menu-text">Essentials</span>
                                                 </a>
-                                            </li>
-                                            <li class="">
-                                                <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/OrganizationStructure/Skills/List">
-                                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
-                                                    <span class="menu-text">Skills</span>
-                                                </a>
-                                            </li>
-                                            <li class="">
-                                                <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/OrganizationStructure/Functions/List">
-                                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
-                                                    <span class="menu-text">Functions</span>
-                                                </a>
-                                            </li>
-                                            <li class="">
-                                                <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/OrganizationStructure/Tasks/List">
-                                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
-                                                    <span class="menu-text">Tasks</span>
-                                                </a>
-                                            </li>
-                                            <li class="">
-                                                <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/OrganizationStructure/Jobs/List">
-                                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
-                                                    <span class="menu-text">Jobs</span>
-                                                </a>
-                                            </li>
-                                            <li class="">
-                                                <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/OrganizationStructure/Positions/List">
-                                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
-                                                    <span class="menu-text">Positions</span>
-                                                </a>
-                                            </li>
-                                            <li class="">
-                                                <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/OrganizationStructure/Departments/List">
-                                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
-                                                    <span class="menu-text">Departments</span>
-                                                </a>
+                                                <ul class="sidebar-submenu sidebar-submenu-simple collapse" style="padding-left: 31px">
+                                                    <li class="menu-subtitle">Essentials</li>
+                                                    <li class="">
+                                                        <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/OrganizationStructure/CompensationMatrices/List">
+                                                            <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                                            <span class="menu-text">Compensation Matrices</span>
+                                                        </a>
+                                                    </li>
+                                                    <li class="">
+                                                        <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/OrganizationStructure/Academia/List">
+                                                            <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                                            <span class="menu-text">Academia</span>
+                                                        </a>
+                                                    </li>
+                                                    <li class="">
+                                                        <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/OrganizationStructure/Skills/List">
+                                                            <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                                            <span class="menu-text">Skills</span>
+                                                        </a>
+                                                    </li>
+                                                    <li class="">
+                                                        <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/OrganizationStructure/Functions/List">
+                                                            <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                                            <span class="menu-text">Functions</span>
+                                                        </a>
+                                                    </li>
+                                                    <li class="">
+                                                        <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/OrganizationStructure/Tasks/List">
+                                                            <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                                            <span class="menu-text">Tasks</span>
+                                                        </a>
+                                                    </li>
+                                                    <li class="">
+                                                        <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/OrganizationStructure/Jobs/List">
+                                                            <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                                            <span class="menu-text">Jobs</span>
+                                                        </a>
+                                                    </li>
+                                                    <li class="">
+                                                        <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/OrganizationStructure/Positions/List">
+                                                            <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                                            <span class="menu-text">Positions</span>
+                                                        </a>
+                                                    </li>
+                                                    <li class="">
+                                                        <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/OrganizationStructure/Departments/List">
+                                                            <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                                            <span class="menu-text">Departments</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
                                             </li>
                                         </ul>
                                     </li>

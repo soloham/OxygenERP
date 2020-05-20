@@ -467,11 +467,29 @@ function ValidateForm(formId) {
 
 function FillFormByObject(obj, form) {
     let props = Object.keys(obj);
+    let formObjs = $(`#${form[0].id} :input`);
+    for (var i = 0; i < formObjs.length; i++) {
+        let elm = formObjs[i];
+        let type = elm.type;
+        let propName = props.filter(function (x) { return x.toLowerCase() == elm.name.toLowerCase(); });
+        if (type == 'select-multiple') {
+            let melm = $('#' + elm.id);
+            if ($(melm).parent()[0].id.includes('multiselect') || $(melm).parent()[0].className.includes('multiselect')) {
+                console.log(elm.name);
+                $(melm).multiselect('deselectAll', false);
+                $(melm).multiselect('refresh');
+                $(melm).multiselect('select', obj[propName]);
+                $(melm).change();
+            }
+        }
+    }
     for (var i = 0; i < form[0].length; i++) {
         let elm = form[0][i];
         let type = elm.type;
         let propName = props.filter(function (x) { return x.toLowerCase() == elm.name.toLowerCase(); });
         if (propName != '') {
+            console.log(type);
+
             if (type == 'date') {
                 let val = new Date(obj[propName]);
                 let month = ('0' + (val.getMonth()+1)).slice(-2);
@@ -480,6 +498,25 @@ function FillFormByObject(obj, form) {
                 console.log(dateVal.toString());
                 elm.value = dateVal.toString();
                 console.log(elm.value);
+            }
+            else if (type == 'select-one') {
+                let melm = $('#' + elm.id);
+                if ($(melm).parent()[0].id.includes('multiselect') || $(melm).parent()[0].className.includes('multiselect')) {
+                    $(melm).multiselect('deselectAll', false);
+                    $(melm).multiselect('refresh');
+                    $(melm).multiselect('select', obj[propName]);
+                    $(melm).change();
+                }
+            }
+            else if (type == 'select-multiple') {
+                let melm = $('#' + elm.id);
+                if ($(melm).parent()[0].id.includes('multiselect') || $(melm).parent()[0].className.includes('multiselect')) {
+                    console.log(elm.name);
+                    $(melm).multiselect('deselectAll', false);
+                    $(melm).multiselect('refresh');
+                    $(melm).multiselect('select', obj[propName]);
+                    $(melm).change();
+                }
             }
             else
                 elm.value = obj[propName];
@@ -508,6 +545,7 @@ function FillDivFormByObject(obj, elements) {
     }
 }
 function ClearForm(form) {
+
     if (typeof form[0].length === 'undefined') {
         let selection = `#${form[0].id} :input`;
         ClearDivForm($(selection));
@@ -533,12 +571,24 @@ function ClearForm(form) {
         if (type != 'submit' && type != 'button' && type != 'select-one' && type != 'select-multiple' && type != 'checkbox')
             form[0][i].value = '';
         else if (type == 'select-one') {
+            return;
             try {
-                //let melm = $('#' + form[0][i].id);
-                //if ($(melm).parent().id.includes('multiselect')) {
-                //    console.log(melm.id);
-                //    melm.multiselect('refresh');
-                //}
+                let melm = $('#' + form[0][i].id);
+                if ($(melm).parent()[0].id.includes('multiselect') || $(melm).parent()[0].className.includes('multiselect')) {
+                    $(melm).multiselect('deselectAll', false);
+                    $(melm).multiselect('refresh');
+                }
+            } catch (e) {
+
+            }
+        }
+        else if (type == 'select-multiple') {
+            try {
+                let melm = $('#' + form[0][i].id);
+                if ($(melm).parent()[0].id.includes('multiselect') || $(melm).parent()[0].className.includes('multiselect')) {
+                    $(melm).multiselect('deselectAll', false);
+                    $(melm).multiselect('refresh');
+                }
             } catch (e) {
 
             }

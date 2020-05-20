@@ -5,6 +5,14 @@ using System.Text;
 
 namespace CERP.HR.Setup.OrganizationalManagement.OrganizationStructure
 {
+    public enum OS_StructureStatus
+    {
+        [Description("Active")]
+        Active,
+        [Description("Inactive")]
+        Inactive
+    }
+
     public enum OS_DepartmentStatus
     {
         [Description("Active")]
@@ -97,8 +105,8 @@ namespace CERP.HR.Setup.OrganizationalManagement.OrganizationStructure
     public enum OS_AcademiaCertificateType
     {
         [Description("Training")]
-        ReportingTo,
+        Training,
         [Description("Education")]
-        Isolated
+        Education
     }
 }

@@ -121,7 +121,11 @@
             });
 
             let gridObj = $("#PositionsGrid")[0].ej2_instances[0];
+            gridObj.showSpinner();
+            $('#positionsLoader').slideDown(100);
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_PositionTemplate.getAllPositionTemplates().done(function (data) {
+                gridObj.hideSpinner();
+                $('#positionsLoader').slideUp(100);
                 positions = data;
                 console.log(positions);
                 gridObj.dataSource = data;
@@ -285,22 +289,55 @@
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Jobs:</label>
-                            <select id="positionJobs" multiple="multiple" name="Jobs" class="form-control">
-                            </select>
+                        <div class="col-sm-6" style="padding:0">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Jobs:</label>
+                                <select id="positionJobs" multiple="multiple" name="Jobs" class="form-control">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6" style="padding:0">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Tasks:</label>
+                                <select id="positionTasks" multiple="multiple" name="Tasks" class="form-control">
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Tasks:</label>
-                            <select id="positionTasks" multiple="multiple" name="Tasks" class="form-control">
-                            </select>
+                        <div id="reviewPeriodTypeField" class="col-sm-12" style="padding:0">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Review Period:</label>
+                                <select id="reviewPeriod" name="ReviewPeriod" onchange="
+                                        if (typeof $('option:selected', '#reviewPeriod').attr('data-value') !== 'undefined' && $('option:selected', '#reviewPeriod').attr('data-value').includes('Day')) {
+                                            $('#reviewPeriodTypeField').removeClass('col-sm-12');
+                                            $('#reviewPeriodTypeField').addClass('col-sm-6');
+                                            setTimeout(function () {
+                                                $('#reviewPeriodDaysField').slideDown(0);
+                                            }, 520);
+                                        } else {
+                                            $('#reviewPeriodDaysField').slideUp(0);
+                                            $('#reviewPeriodTypeField').removeClass('col-sm-6');
+                                            $('#reviewPeriodTypeField').addClass('col-sm-12');
+                                        }
+                                    " class="form-control" required>
+                                    @for (int i = 0; i < reviewPeriods.Count; i++)
+                                    {
+                                        <option value="@((int)reviewPeriods[i])" data-value="@EnumExtensions.GetDescription(reviewPeriods[i])">@EnumExtensions.GetDescription(reviewPeriods[i])</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none; padding:0">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Period Days:</label>
+                                <input type="number" min="0" id="reviewPeriodDays" name="ReviewPeriodDays" value="0" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    @*<div class="col-lg-3 col-md-6 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5 control-label">Level:</label>
                             <select id="positionLevel" name="Level" class="form-control">
@@ -310,53 +347,23 @@
                                 }
                             </select>
                         </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 col-sm-2 col-12">
-                        <div id="reviewPeriodTypeField" class="col-sm-12">
+                    </div>*@
+                    
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                        <div class="col-sm-6" style="padding:0">
                             <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Review Period:</label>
-                                <select id="reviewPeriod" name="ReviewPeriod" onchange="
-                                            if (typeof $('option:selected', '#reviewPeriod').attr('data-value') !== 'undefined' && $('option:selected', '#reviewPeriod').attr('data-value').includes('Day')) {
-                                                $('#reviewPeriodTypeField').removeClass('col-sm-12');
-                                                $('#reviewPeriodTypeField').addClass('col-sm-6');
-                                                setTimeout(function () {
-                                                    $('#reviewPeriodDaysField').slideDown(0);
-                                                }, 520);
-                                            } else {
-                                                $('#reviewPeriodDaysField').slideUp(0);
-                                                $('#reviewPeriodTypeField').removeClass('col-sm-6');
-                                                $('#reviewPeriodTypeField').addClass('col-sm-12');
-                                            }
-                                        " class="form-control" required>
-                                    @for (int i = 0; i < reviewPeriods.Count; i++)
-                                    {
-                                        <option value="@((int)reviewPeriods[i])" data-value="@EnumExtensions.GetDescription(reviewPeriods[i])">@EnumExtensions.GetDescription(reviewPeriods[i])</option>
-                                    }
-                                </select>
+                                <label class="control-label m-b-5 ">Valid From:</label>
+                                <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
                             </div>
                         </div>
-                        <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none">
+                        <div class="col-sm-6" style="padding:0">
                             <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Period Days:</label>
-                                <input type="number" min="1" id="reviewPeriodDays" name="ReviewPeriodDays" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                <label class="control-label m-b-5 ">Valid To:</label>
+                                <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label class="control-label m-b-5 ">Valid From:</label>
-                            <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label class="control-label m-b-5 ">Valid To:</label>
-                            <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
                         </div>
                     </div>      
-                </div>
-                <div class="row">
-                    <div class="col-lg-4 col-md-6 col-sm-6 col-12">
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5 control-label">Hiring Type:</label>
                             <select id="hiringType" name="HiringType" class="form-control">
@@ -367,7 +374,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-6 col-sm-6 col-12">
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5 control-label">Cost Center:</label>
                             <select id="costCenterId" name="CostCenterId" class="form-control">
@@ -378,7 +385,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-6 col-sm-4 col-12">
+                    <div class="col-lg-3 col-md-6 col-sm-3 col-12">
                         <div class="form-group">
                             <label class="margin-bottom-5 control-label">Department / Sub Department:</label>
                             <select id="positionDepartmentId" name="DepartmentTemplateId" class="form-control" required>
@@ -579,9 +586,12 @@
             }, 200);
 
             FillFormByObject(params, $('#positionsForm'));
+            $('#positionsLoader').slideDown(100);
             //$('#positionDepartmentId').multiselect('deselectAll', false);
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_PositionTemplate.get(params.id).done(function (data) {
                 console.log(data);
+                $('#positionsLoader').slideUp(100);
+
                 let positionJobs = data.positionJobTemplates;
                 let positionTasks = data.positionTaskTemplates;
                 let jobIds = positionJobs.map(function (item) { return item.jobTemplateId });

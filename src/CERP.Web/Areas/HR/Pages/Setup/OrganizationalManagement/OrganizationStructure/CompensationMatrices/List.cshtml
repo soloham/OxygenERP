@@ -13,9 +13,9 @@
     ViewData["IsEditing"] = false;
     bool IsEditing = (bool)ViewData["IsEditing"];
 
-    ViewData["Title"] = L["CompensationMatrices"].Name;
+    ViewData["Title"] = L["CompensationMatrices"].Value;
     ViewData["IconClass"] = "fas fa-grid-vertical";
-    ViewData["HeaderTitle"] = L["CompensationMatrices"].Name.ToUpper();
+    ViewData["HeaderTitle"] = L["CompensationMatrices"].Value.ToUpper();
     ViewData["SubTitle"] = $"{L["ListOf"]} {L["CompensationMatrices"]}";
     ViewData["Area"] = "Setup";
 
@@ -76,9 +76,13 @@
             $('#reviewPeriod').multiselect(options);
             $('#compensationMatrixId').multiselect(options);
 
-            let gridObj = $("#CompensationMatricesGrid")[0].ej2_instances[0];
             let compensationMatrixObj = $("#CompensationMatrixGrid")[0].ej2_instances[0];
+            let gridObj = $("#CompensationMatricesGrid")[0].ej2_instances[0];
+            gridObj.showSpinner();
+            $('#compensationMatricesLoader').slideDown(100);
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_CompensationMatrixTemplate.getAllCompensationMatrixTemplates().done(function (data) {
+                gridObj.hideSpinner();
+                $('#compensationMatricesLoader').slideUp(100);
                 gridObj.dataSource = data;
                 setTimeout(function () { gridObj.hideSpinner() }, 200);
             });
@@ -230,7 +234,7 @@
                             <input type="text" id="compensationMatrixCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                         </div>
                     </div>
-                    <div class="col-lg-2 col-md-2 col-sm-6 col-12">
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                         <div class="col-sm-6" style="padding:0">
                             <div class="form-group">
                                 <label class="control-label m-b-5 ">Title:</label>
@@ -250,7 +254,7 @@
                             <input type="text" id="compensationMatrixDescription" name="Description" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                         </div>
                     </div>
-                    <div class="col-lg-2 col-md-2 col-sm-6 col-12">
+                    <div class="col-lg-2 col-md-6 col-sm-6 col-12">
                         <div class="col-sm-6" style="padding-right:0">
                             <div class="form-group">
                                 <label class="control-label m-b-5 ">Valid From:</label>
@@ -265,7 +269,7 @@
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6 col-sm-2 col-12">
-                        <div id="reviewPeriodTypeField" class="col-sm-12">
+                        <div id="reviewPeriodTypeField" class="col-sm-12" style="padding:0">
                             <div class="form-group">
                                 <label class="margin-bottom-5 control-label">Review Period:</label>
                                 <select id="reviewPeriod" name="ReviewPeriod" onchange="
@@ -288,10 +292,10 @@
                                 </select>
                             </div>
                         </div>
-                        <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none">
+                        <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none; padding:0">
                             <div class="form-group">
                                 <label class="margin-bottom-5 control-label">Period Days:</label>
-                                <input type="number" min="1" id="reviewPeriodDays" name="ReviewPeriodDays" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                <input type="number" min="0" id="reviewPeriodDays" name="ReviewPeriodDays" value="0" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                             </div>
                         </div>
                     </div>
@@ -309,8 +313,8 @@
                                           allowPaging="true" allowResizing="true">
 
                                     <e-grid-columns>
-                                        <e-grid-column allowEditing="true" editType="number" type="number" format="N0" field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
-                                        <e-grid-column allowEditing="true" editType="number" type="number" format="N2" field="rating" headerText="Rating" textAlign="Center"></e-grid-column>
+                                        <e-grid-column editType="number" type="number" format="N0" field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                        <e-grid-column allowEditing="true" editType="number" type="number" format="N0" field="rating" headerText="Rating" textAlign="Center"></e-grid-column>
                                         <e-grid-column allowEditing="true" editType="number" type="number" format="N2" field="bottomThird" headerText="Bottom Third" textAlign="Center"></e-grid-column>
                                         <e-grid-column allowEditing="true" editType="number" type="number" format="N2" field="middleThird" headerText="Middle Third" textAlign="Center"></e-grid-column>
                                         <e-grid-column allowEditing="true" editType="number" type="number" format="N2" field="topThird" headerText="Top Third" textAlign="Center"></e-grid-column>
@@ -326,6 +330,7 @@
                         </div>
                     </div>
                 </div>
+                <hr />
                 <div class="row">
                     <div class="col-md-12">
                         <label class="control-label m-b-5 "></label>

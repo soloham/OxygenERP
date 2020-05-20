@@ -916,3 +916,7 @@ p {
     flex-grow: 1;
     width: 100%;
 }
+
+.multiselect-container.dropdown-menu {
+    position: inherit !important;
+}

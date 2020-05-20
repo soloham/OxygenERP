@@ -46,7 +46,7 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         [CustomAudited]
         public OS_ReviewPeriod ReviewPeriod { get; set; }
         [CustomAudited]
-        public int ReviewPeriodDays { get; set; }
+        public int? ReviewPeriodDays { get; set; }
 
         [CustomAudited]
         public OS_PositionHiringType HiringType { get; set; }

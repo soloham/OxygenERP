@@ -1,5 +1,4 @@
-﻿using CERP.App;
-using CERP.Attributes;
+﻿using CERP.Attributes;
 using CERP.Base;
 using CERP.HR.Setup.OrganizationalManagement.OrganizationStructure;
 using System;
@@ -8,9 +7,9 @@ using System.Collections.Generic;
 
 namespace CERP.HR.OrganizationalManagement.OrganizationStructure
 {
-    public class OS_SkillTemplate : AuditedAggregateTenantRoot<int>
+    public class OS_OrganizationStructureTemplate : AuditedAggregateTenantRoot<int>
     {
-        public OS_SkillTemplate()
+        public OS_OrganizationStructureTemplate()
         {
         }
 
@@ -23,28 +22,20 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public string NameLocalized { get; set; }
 
         [CustomAudited]
-        public OS_SkillAquisitionType SkillAquisitionType { get; set; }
-        [CustomAudited]
-        public OS_SkillType SkillType { get; set; }
-        [CustomAudited]
-        public DictionaryValue SkillSubType { get; set; }
-        public Guid SkillSubTypeId { get; set; }
-
-        [CustomAudited]
         public string Description { get; set; }
 
         [CustomAudited]
-        public bool DoesKPI { get; set; }
+        public DateTime ValidityFromDate { get; set; }
+        [CustomAudited]
+        public DateTime ValidityToDate { get; set; }
 
         [CustomAudited]
-        public OS_SkillUpdatePeriod SkillUpdatePeriod { get; set; }
+        public OS_StructureStatus StructureStatus { get; set; }
+
         [CustomAudited]
         public OS_ReviewPeriod ReviewPeriod { get; set; }
         [CustomAudited]
         public int? ReviewPeriodDays { get; set; }
 
-        public virtual OS_CompensationMatrixTemplate CompensationMatrix { get; set; }
-        [CustomAudited]
-        public int CompensationMatrixId { get; set; }
     }
 }

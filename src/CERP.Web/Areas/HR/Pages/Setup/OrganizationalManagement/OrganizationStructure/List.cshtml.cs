@@ -22,8 +22,9 @@ using CERP.Attributes;
 using CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructure;
 using CERP.HR.OrganizationalManagement.OrganizationStructure;
 using CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure;
+using CERP.HR.Setup.OrganizationalManagement.OrganizationStructure;
 
-namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure.Pages.Functions
+namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure.Pages.OrganizationStructures
 {
     public class ListModel : CERPPageModel
     {
@@ -31,18 +32,20 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
         public IRepository<DictionaryValue, Guid> DictionaryValuesRepo { get; set; }
         public IAuditLogRepository AuditLogsRepo { get; set; }
 
-        public OS_FunctionTemplateAppService OS_FunctionTemplateAppService { get; set; }
+        public OS_OrganizationStructureTemplateAppService OS_OrganizationStructureTemplateAppService { get; set; }
+        public OS_PositionTemplateAppService OS_PositionTemplateAppService { get; set; }
 
         public IAuditingManager AuditingManager { get; set; }
         public IRepository<CustomEntityChange> CustomEntityChangesRepo { get; set; }
 
-        public ListModel(IJsonSerializer jsonSerializer, IRepository<DictionaryValue, Guid> dictionaryValuesRepo, IWebHostEnvironment webHostEnvironment, IAuditLogRepository auditLogsRepo, OS_FunctionTemplateAppService oS_FunctionTemplateAppService)
+        public ListModel(IJsonSerializer jsonSerializer, IRepository<DictionaryValue, Guid> dictionaryValuesRepo, IWebHostEnvironment webHostEnvironment, IAuditLogRepository auditLogsRepo, OS_OrganizationStructureTemplateAppService oS_OrganizationStructureTemplateAppService, OS_PositionTemplateAppService oS_PositionTemplateAppService)
         {
             JsonSerializer = jsonSerializer;
             DictionaryValuesRepo = dictionaryValuesRepo;
             this.webHostEnvironment = webHostEnvironment;
             AuditLogsRepo = auditLogsRepo;
-            OS_FunctionTemplateAppService = oS_FunctionTemplateAppService;
+            OS_OrganizationStructureTemplateAppService = oS_OrganizationStructureTemplateAppService;
+            OS_PositionTemplateAppService = oS_PositionTemplateAppService;
         }
 
         public IJsonSerializer JsonSerializer { get; set; }
@@ -52,7 +55,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
 
         }
 
-        public async Task<IActionResult> OnPostFunctionTemplate()
+        public async Task<IActionResult> OnPostOrganizationStructureTemplate()
         {
             if (ModelState.IsValid)
             {
@@ -60,32 +63,32 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                 {
                     var FormData = Request.Form;
 
-                    OS_FunctionTemplate_Dto functionTemplate_Dto = JsonSerializer.Deserialize<OS_FunctionTemplate_Dto>(FormData["info"]);
+                    OS_OrganizationStructureTemplate_Dto organizationStructureTemplate_Dto = JsonSerializer.Deserialize<OS_OrganizationStructureTemplate_Dto>(FormData["info"]);
 
-                    bool IsEditing = functionTemplate_Dto.Id > 0;
+                    bool IsEditing = organizationStructureTemplate_Dto.Id > 0;
                     if (IsEditing)
                     {
-                        OS_FunctionTemplate curFunctionTemplate = await OS_FunctionTemplateAppService.Repository.GetAsync(functionTemplate_Dto.Id);
-
+                        OS_OrganizationStructureTemplate curOrganizationStructureTemplate = await OS_OrganizationStructureTemplateAppService.Repository.GetAsync(organizationStructureTemplate_Dto.Id);
+                        
                         if (AuditingManager.Current != null)
                         {
                             EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
 
-                            entityChangeInfo.EntityId = functionTemplate_Dto.Id.ToString();
-                            entityChangeInfo.EntityTenantId = functionTemplate_Dto.TenantId;
+                            entityChangeInfo.EntityId = organizationStructureTemplate_Dto.Id.ToString();
+                            entityChangeInfo.EntityTenantId = organizationStructureTemplate_Dto.TenantId;
                             entityChangeInfo.ChangeTime = DateTime.Now;
                             entityChangeInfo.ChangeType = EntityChangeType.Updated;
-                            entityChangeInfo.EntityTypeFullName = typeof(OS_FunctionTemplate).FullName;
+                            entityChangeInfo.EntityTypeFullName = typeof(OS_OrganizationStructureTemplate).FullName;
 
                             entityChangeInfo.PropertyChanges = new List<EntityPropertyChangeInfo>();
                             List<EntityPropertyChangeInfo> entityPropertyChanges = new List<EntityPropertyChangeInfo>();
-                            var auditProps = typeof(OS_FunctionTemplate).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+                            var auditProps = typeof(OS_OrganizationStructureTemplate).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
 
-                            OS_FunctionTemplate mappedInput = ObjectMapper.Map<OS_FunctionTemplate_Dto, OS_FunctionTemplate>(functionTemplate_Dto);
+                            OS_OrganizationStructureTemplate mappedInput = ObjectMapper.Map<OS_OrganizationStructureTemplate_Dto, OS_OrganizationStructureTemplate>(organizationStructureTemplate_Dto);
                             foreach (var prop in auditProps)
                             {
                                 EntityPropertyChangeInfo propertyChange = new EntityPropertyChangeInfo();
-                                object origVal = prop.GetValue(curFunctionTemplate);
+                                object origVal = prop.GetValue(curOrganizationStructureTemplate);
                                 propertyChange.OriginalValue = origVal == null ? "" : origVal.ToString();
                                 object newVal = prop.GetValue(mappedInput);
                                 propertyChange.NewValue = newVal == null ? "" : newVal.ToString();
@@ -100,9 +103,9 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                                         string valuePropName = prop.Name.TrimEnd('d', 'I');
                                         propertyChange.PropertyName = valuePropName;
 
-                                        var valueProp = typeof(OS_FunctionTemplate).GetProperty(valuePropName);
+                                        var valueProp = typeof(OS_OrganizationStructureTemplate).GetProperty(valuePropName);
 
-                                        DictionaryValue _origValObj = (DictionaryValue)valueProp.GetValue(functionTemplate_Dto);
+                                        DictionaryValue _origValObj = (DictionaryValue)valueProp.GetValue(organizationStructureTemplate_Dto);
                                         if (_origValObj == null) _origValObj = await DictionaryValuesRepo.GetAsync((Guid)origVal);
                                         string _origVal = _origValObj.Value;
                                         propertyChange.OriginalValue = origVal == null ? "" : _origVal;
@@ -124,9 +127,9 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
 
                             #region ExtraProperties
                             //List<EmployeeExtraPropertyHistory> allExtraPropertyHistories = new List<EmployeeExtraPropertyHistory>();
-                            //if (departmentTemplate_Dto.ExtraProperties != curFunctionTemplate.ExtraProperties)
+                            //if (organizationStructureTemplate_Dto.ExtraProperties != curOrganizationStructureTemplate.ExtraProperties)
                             //{
-                            //    //GeneralInfo oldGeneralInfo = department.GetProperty<GeneralInfo>("generalInfo");
+                            //    //GeneralInfo oldGeneralInfo = organizationStructure.GetProperty<GeneralInfo>("generalInfo");
                             //    //List<EmployeeExtraPropertyHistory> physicalIdsHistory = new List<EmployeeExtraPropertyHistory>();
                             //    //var generalInfoPhysicalIdAuditProps = typeof(PhysicalID).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
                             //    //List<PhysicalId<Guid>> NewPhysicalIds = generalInfo.PhysicalIds.Where(x => !oldGeneralInfo.PhysicalIds.Any(y => y.Id == x.Id)).ToList();
@@ -204,107 +207,26 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                             AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
                         }
 
-                        curFunctionTemplate.Name = functionTemplate_Dto.Name;
-                        curFunctionTemplate.NameLocalized = functionTemplate_Dto.NameLocalized;
-                        curFunctionTemplate.Code = functionTemplate_Dto.Code;
-                        curFunctionTemplate.ReviewPeriod = functionTemplate_Dto.ReviewPeriod;
-                        curFunctionTemplate.ReviewPeriodDays = functionTemplate_Dto.ReviewPeriodDays;
-                        curFunctionTemplate.ValidityFromDate = functionTemplate_Dto.ValidityFromDate;
-                        curFunctionTemplate.ValidityToDate = functionTemplate_Dto.ValidityToDate;
-                        curFunctionTemplate.Description = functionTemplate_Dto.Description;
-                        curFunctionTemplate.DoesKPI = functionTemplate_Dto.DoesKPI;
-                        curFunctionTemplate.CompensationMatrix = null;
-                        curFunctionTemplate.CompensationMatrixId = functionTemplate_Dto.CompensationMatrixId;
+                        curOrganizationStructureTemplate.Name = organizationStructureTemplate_Dto.Name;
+                        curOrganizationStructureTemplate.NameLocalized = organizationStructureTemplate_Dto.NameLocalized;
+                        curOrganizationStructureTemplate.Code = organizationStructureTemplate_Dto.Code;
+                       
+                        curOrganizationStructureTemplate.ReviewPeriod = organizationStructureTemplate_Dto.ReviewPeriod;
+                        curOrganizationStructureTemplate.ValidityFromDate = organizationStructureTemplate_Dto.ValidityFromDate;
+                        curOrganizationStructureTemplate.ValidityToDate = organizationStructureTemplate_Dto.ValidityToDate;
 
-                        #region Child Entities
-                        OS_FunctionSkillTemplate_Dto[] functionSkills = functionTemplate_Dto.FunctionSkillTemplates.ToArray();
-                        int[] curFunctionSkillsIds = curFunctionTemplate.FunctionSkillTemplates != null && curFunctionTemplate.FunctionSkillTemplates.Count > 0 ? curFunctionTemplate.FunctionSkillTemplates.Select(x => x.SkillTemplate.Id).ToArray() : new int[0];
-                        List<int> toDeleteSkills = new List<int>();
-                        for (int i = 0; i < curFunctionSkillsIds.Length; i++)
-                        {
-                            OS_FunctionSkillTemplate curFunctionSkill = curFunctionTemplate.FunctionSkillTemplates.First(x => x.SkillTemplate.Id == curFunctionSkillsIds[i]);
-                            if (!functionSkills.Any(x => x.SkillTemplate.Id == curFunctionSkillsIds[i]))
-                            {
-                                curFunctionTemplate.FunctionSkillTemplates.Remove(curFunctionTemplate.FunctionSkillTemplates.First(x => x.SkillTemplate.Id == curFunctionSkillsIds[i]));
-                                toDeleteSkills.Add(curFunctionSkillsIds[i]);
-                            }
-                        }
-                        for (int i = 0; i < functionSkills.Length; i++)
-                        {
-                            if (!curFunctionTemplate.FunctionSkillTemplates.Any(x => x.SkillTemplateId == functionSkills[i].SkillTemplate.Id))
-                            {
-                                curFunctionTemplate.FunctionSkillTemplates.Add(new OS_FunctionSkillTemplate() { SkillTemplateId = functionSkills[i].SkillTemplate.Id });
-                            }
-                            else
-                            {
-                                var _functionSkill = curFunctionTemplate.FunctionSkillTemplates.First(x => x.SkillTemplateId == functionSkills[i].SkillTemplate.Id);
-                                //_functionLoc.FunctionValidityStart = posFunctions[i].FunctionValidityStart;
-                                //_functionLoc.FunctionValidityEnd = posFunctions[i].FunctionValidityEnd;
-                                //_functionLoc.Name = posFunctions[i].Name;
-
-                                //curFunction.FunctionSkillTemplates.Remove(curFunction.FunctionSkillTemplates.First(x => x.FunctionTemplateId == _functionLoc.FunctionTemplateId));
-                                await OS_FunctionTemplateAppService.SkillsRepository.UpdateAsync(_functionSkill);
-                            }
-                        }
-                        for (int i = 0; i < toDeleteSkills.Count; i++)
-                        {
-                            await OS_FunctionTemplateAppService.SkillsRepository.DeleteAsync(x => x.SkillTemplateId == toDeleteSkills[i]);
-                        }
-
-                        OS_FunctionAcademiaTemplate_Dto[] functionAcademia = functionTemplate_Dto.FunctionAcademiaTemplates.ToArray();
-                        int[] curFunctionAcademiaIds = curFunctionTemplate.FunctionAcademiaTemplates != null && curFunctionTemplate.FunctionAcademiaTemplates.Count > 0 ? curFunctionTemplate.FunctionAcademiaTemplates.Select(x => x.AcademiaTemplate.Id).ToArray() : new int[0];
-                        List<int> toDeleteAcademia = new List<int>();
-                        for (int i = 0; i < curFunctionAcademiaIds.Length; i++)
-                        {
-                            OS_FunctionAcademiaTemplate curFunctionAcademia = curFunctionTemplate.FunctionAcademiaTemplates.First(x => x.AcademiaTemplate.Id == curFunctionAcademiaIds[i]);
-                            if (!functionAcademia.Any(x => x.AcademiaTemplate.Id == curFunctionAcademiaIds[i]))
-                            {
-                                curFunctionTemplate.FunctionAcademiaTemplates.Remove(curFunctionTemplate.FunctionAcademiaTemplates.First(x => x.AcademiaTemplate.Id == curFunctionAcademiaIds[i]));
-                                toDeleteSkills.Add(curFunctionAcademiaIds[i]);
-                            }
-                        }
-                        for (int i = 0; i < functionAcademia.Length; i++)
-                        {
-                            if (!curFunctionTemplate.FunctionAcademiaTemplates.Any(x => x.AcademiaTemplateId == functionAcademia[i].AcademiaTemplate.Id))
-                            {
-                                curFunctionTemplate.FunctionAcademiaTemplates.Add(new OS_FunctionAcademiaTemplate() { AcademiaTemplateId = functionAcademia[i].AcademiaTemplate.Id });
-                            }
-                            else
-                            {
-                                var _functionAcademia = curFunctionTemplate.FunctionAcademiaTemplates.First(x => x.AcademiaTemplateId == functionAcademia[i].AcademiaTemplate.Id);
-                                //_functionLoc.FunctionValidityStart = posFunctions[i].FunctionValidityStart;
-                                //_functionLoc.FunctionValidityEnd = posFunctions[i].FunctionValidityEnd;
-                                //_functionLoc.Name = posFunctions[i].Name;
-
-                                //curFunction.FunctionAcademiaTemplates.Remove(curFunction.FunctionAcademiaTemplates.First(x => x.FunctionTemplateId == _functionLoc.FunctionTemplateId));
-                                await OS_FunctionTemplateAppService.AcademiaRepository.UpdateAsync(_functionAcademia);
-                            }
-                        }
-                        for (int i = 0; i < toDeleteAcademia.Count; i++)
-                        {
-                            await OS_FunctionTemplateAppService.AcademiaRepository.DeleteAsync(x => x.AcademiaTemplateId == toDeleteAcademia[i]);
-                        }
-                        #endregion
-
-                        OS_FunctionTemplate_Dto updated = ObjectMapper.Map<OS_FunctionTemplate, OS_FunctionTemplate_Dto>(await OS_FunctionTemplateAppService.Repository.UpdateAsync(curFunctionTemplate));
-                        updated.FunctionSkillTemplates = ObjectMapper.Map<List<OS_FunctionSkillTemplate>, List<OS_FunctionSkillTemplate_Dto>>(curFunctionTemplate.FunctionSkillTemplates.ToList());
-                        updated.FunctionAcademiaTemplates = ObjectMapper.Map<List<OS_FunctionAcademiaTemplate>, List<OS_FunctionAcademiaTemplate_Dto>>(curFunctionTemplate.FunctionAcademiaTemplates.ToList());
-                        updated.CompensationMatrix = await OS_FunctionTemplateAppService.GetCompensationMatrixAsync(updated.CompensationMatrixId);
-
-                        return StatusCode(200, updated);
+                        OS_OrganizationStructureTemplate_Dto updated = ObjectMapper.Map<OS_OrganizationStructureTemplate, OS_OrganizationStructureTemplate_Dto>(await OS_OrganizationStructureTemplateAppService.Repository.UpdateAsync(curOrganizationStructureTemplate));
+                        OS_OrganizationStructureTemplate_Dto updatedDto = await OS_OrganizationStructureTemplateAppService.GetOrganizationStructureTemplateAsync(updated.Id);
+                        return StatusCode(200, updatedDto);
                     }
                     else
                     {
-                        functionTemplate_Dto.Id = 0; 
-                        if (functionTemplate_Dto.FunctionSkillTemplates != null)
-                            functionTemplate_Dto.FunctionSkillTemplates.ForEach(x => { x.Id = 0; x.SkillTemplateId = x.SkillTemplate.Id; x.SkillTemplate = null; });
-                        if (functionTemplate_Dto.FunctionAcademiaTemplates != null)
-                            functionTemplate_Dto.FunctionAcademiaTemplates.ForEach(x => { x.Id = 0; x.AcademiaTemplateId = x.AcademiaTemplate.Id; x.AcademiaTemplate = null; });
-                        functionTemplate_Dto.CompensationMatrix = null;
+                        organizationStructureTemplate_Dto.Id = 0;
+                        //organizationStructureTemplate_Dto.PositionTemplates.ForEach(x => { x.Id = 0; x.Id = x.Id; });
+                        //organizationStructureTemplate_Dto.SubOrganizationStructureTemplates.ForEach(x => { x.Id = 0; x.SubOrganizationStructureTemplateId = x.SubOrganizationStructureTemplate.Id; x.SubOrganizationStructureTemplate = null; });
 
-                        OS_FunctionTemplate_Dto added = await OS_FunctionTemplateAppService.CreateAsync(functionTemplate_Dto);
-                        added = await OS_FunctionTemplateAppService.GetAsync(added.Id);
-
+                        OS_OrganizationStructureTemplate_Dto added = await OS_OrganizationStructureTemplateAppService.CreateAsync(organizationStructureTemplate_Dto);
+                        OS_OrganizationStructureTemplate_Dto addeddDto = await OS_OrganizationStructureTemplateAppService.GetOrganizationStructureTemplateAsync(added.Id);
                         if (AuditingManager.Current != null)
                         {
                             EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
@@ -312,41 +234,49 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                             entityChangeInfo.EntityTenantId = added.TenantId;
                             entityChangeInfo.ChangeTime = DateTime.Now;
                             entityChangeInfo.ChangeType = EntityChangeType.Created;
-                            entityChangeInfo.EntityTypeFullName = typeof(OS_FunctionTemplate).FullName;
+                            entityChangeInfo.EntityTypeFullName = typeof(OS_OrganizationStructureTemplate).FullName;
 
                             AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
                         }
 
-                        return StatusCode(200, added);
+                        return StatusCode(200, addeddDto);
                     }
                 }
                 catch(Exception ex)
                 {
-                    
+                    return StatusCode(500, ex);
                 }
             }
 
             return StatusCode(500);
         }
-        public async Task<IActionResult> OnDeleteFunctionTemplate()
+        public async Task<IActionResult> OnDeleteOrganizationStructureTemplate()
         {
-            List<OS_FunctionTemplate_Dto> entitites = JsonSerializer.Deserialize<List<OS_FunctionTemplate_Dto>>(Request.Form["functions"]);
+            List<OS_OrganizationStructureTemplate_Dto> organizationStructures = JsonSerializer.Deserialize<List<OS_OrganizationStructureTemplate_Dto>>(Request.Form["organizationStructures"]);
             try
             {
-                for (int i = 0; i < entitites.Count; i++)
+                for (int i = 0; i < organizationStructures.Count; i++)
                 {
-                    OS_FunctionTemplate_Dto entity = entitites[i];
-                    //await FunctionTemplatesAppService.Repository.DeleteAsync(leaveRequest.);
-                    await OS_FunctionTemplateAppService.Repository.DeleteAsync(entity.Id);
+                    OS_OrganizationStructureTemplate_Dto organizationStructure = organizationStructures[i];
+                    //await TaskTemplatesAppService.Repository.DeleteAsync(leaveRequest.);
+                    //var depSubDeps = OS_OrganizationStructureTemplateAppService.OrganizationStructureSubOrganizationStructureTemplateRepo.Where(x => x.OrganizationStructureTemplateId == organizationStructure.Id || x.SubOrganizationStructureTemplateId == organizationStructure.Id).ToList();
+                    //for (int y = 0; y < depSubDeps.Count; y++)
+                    //{
+                    //    await OS_OrganizationStructureTemplateAppService.OrganizationStructureSubOrganizationStructureTemplateRepo.DeleteAsync(depSubDeps[y]);
+                    //}
+                    //var depPoses = OS_OrganizationStructureTemplateAppService.PositionTemplateRepo.WithDetails().Where(x => x.OrganizationStructureTemplateId == organizationStructure.Id).ToList();
+                    //await Positions.ListModel.DeletePositions(depPoses, OS_PositionTemplateAppService.PositionJobsTemplateRepo, OS_PositionTemplateAppService.PositionTasksTemplateRepo, OS_PositionTemplateAppService.Repository, AuditingManager);
+
+                    await OS_OrganizationStructureTemplateAppService.Repository.DeleteAsync(organizationStructure.Id);
 
                     if (AuditingManager.Current != null)
                     {
                         EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
-                        entityChangeInfo.EntityId = entity.Id.ToString();
-                        entityChangeInfo.EntityTenantId = entity.TenantId;
+                        entityChangeInfo.EntityId = organizationStructure.Id.ToString();
+                        entityChangeInfo.EntityTenantId = organizationStructure.TenantId;
                         entityChangeInfo.ChangeTime = DateTime.Now;
                         entityChangeInfo.ChangeType = EntityChangeType.Deleted;
-                        entityChangeInfo.EntityTypeFullName = typeof(OS_FunctionTemplate).FullName;
+                        entityChangeInfo.EntityTypeFullName = typeof(OS_OrganizationStructureTemplate).FullName;
 
                         AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
                     }
@@ -358,151 +288,6 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                 return StatusCode(500);
             }
         }
-
-        //public async Task<IActionResult> OnPostFunctionQualificationTemplate()
-        //{
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            var FormData = Request.Form;
-
-        //            OS_FunctionQualificationTemplate_Dto functionQualificationTemplate_Dto = JsonSerializer.Deserialize<OS_FunctionQualificationTemplate_Dto>(FormData["info"]);
-
-        //            bool IsEditing = functionQualificationTemplate_Dto.Id > 0;
-        //            if (IsEditing)
-        //            {
-        //                OS_FunctionQualificationTemplate curFunctionQualificationTemplate = await OS_FunctionTemplateAppService.QualificationsRepository.GetAsync(functionQualificationTemplate_Dto.Id);
-
-        //                if (AuditingManager.Current != null)
-        //                {
-        //                    EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
-
-        //                    entityChangeInfo.EntityId = functionQualificationTemplate_Dto.Id.ToString();
-        //                    entityChangeInfo.EntityTenantId = functionQualificationTemplate_Dto.TenantId;
-        //                    entityChangeInfo.ChangeTime = DateTime.Now;
-        //                    entityChangeInfo.ChangeType = EntityChangeType.Updated;
-        //                    entityChangeInfo.EntityTypeFullName = typeof(OS_FunctionQualificationTemplate).FullName;
-
-        //                    entityChangeInfo.PropertyChanges = new List<EntityPropertyChangeInfo>();
-        //                    List<EntityPropertyChangeInfo> entityPropertyChanges = new List<EntityPropertyChangeInfo>();
-        //                    var auditProps = typeof(OS_FunctionQualificationTemplate).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
-
-        //                    OS_FunctionQualificationTemplate mappedInput = ObjectMapper.Map<OS_FunctionQualificationTemplate_Dto, OS_FunctionQualificationTemplate>(functionQualificationTemplate_Dto);
-        //                    foreach (var prop in auditProps)
-        //                    {
-        //                        EntityPropertyChangeInfo propertyChange = new EntityPropertyChangeInfo();
-        //                        object origVal = prop.GetValue(curFunctionQualificationTemplate);
-        //                        propertyChange.OriginalValue = origVal == null ? "" : origVal.ToString();
-        //                        object newVal = prop.GetValue(mappedInput);
-        //                        propertyChange.NewValue = newVal == null ? "" : newVal.ToString();
-        //                        if (propertyChange.OriginalValue == propertyChange.NewValue) continue;
-
-        //                        propertyChange.PropertyName = prop.Name;
-
-        //                        if (prop.Name.EndsWith("Id"))
-        //                        {
-        //                            try
-        //                            {
-        //                                string valuePropName = prop.Name.TrimEnd('d', 'I');
-        //                                propertyChange.PropertyName = valuePropName;
-
-        //                                var valueProp = typeof(OS_FunctionQualificationTemplate).GetProperty(valuePropName);
-
-        //                                DictionaryValue _origValObj = (DictionaryValue)valueProp.GetValue(functionQualificationTemplate_Dto);
-        //                                if (_origValObj == null) _origValObj = await DictionaryValuesRepo.GetAsync((Guid)origVal);
-        //                                string _origVal = _origValObj.Value;
-        //                                propertyChange.OriginalValue = origVal == null ? "" : _origVal;
-        //                                DictionaryValue _newValObj = (DictionaryValue)valueProp.GetValue(mappedInput);
-        //                                if (_newValObj == null) _newValObj = await DictionaryValuesRepo.GetAsync((Guid)newVal);
-        //                                string _newVal = _newValObj.Value;
-        //                                propertyChange.NewValue = _newValObj == null ? "" : _newVal;
-        //                            }
-        //                            catch (Exception ex)
-        //                            {
-
-        //                            }
-        //                        }
-
-        //                        propertyChange.PropertyTypeFullName = prop.Name.GetType().FullName;
-
-        //                        entityChangeInfo.PropertyChanges.Add(propertyChange);
-        //                    }
-
-        //                    AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
-        //                }
-
-        //                curFunctionQualificationTemplate.DegreeId = functionQualificationTemplate_Dto.DegreeId;
-        //                curFunctionQualificationTemplate.InstituteId = functionQualificationTemplate_Dto.InstituteId;
-        //                curFunctionQualificationTemplate.PeriodStartDate = functionQualificationTemplate_Dto.PeriodStartDate;
-        //                curFunctionQualificationTemplate.PeriodEndDate = functionQualificationTemplate_Dto.PeriodEndDate;
-
-        //                OS_FunctionQualificationTemplate_Dto updated = ObjectMapper.Map<OS_FunctionQualificationTemplate, OS_FunctionQualificationTemplate_Dto>(await OS_FunctionTemplateAppService.QualificationsRepository.UpdateAsync(curFunctionQualificationTemplate));
-
-        //                return StatusCode(200, updated);
-        //            }
-        //            else
-        //            {
-        //                functionQualificationTemplate_Dto.Id = 0;
-
-        //                OS_FunctionQualificationTemplate_Dto added = await OS_FunctionTemplateAppService.AddQualificationTemplate(functionQualificationTemplate_Dto);
-
-        //                if (AuditingManager.Current != null)
-        //                {
-        //                    EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
-        //                    entityChangeInfo.EntityId = added.Id.ToString();
-        //                    entityChangeInfo.EntityTenantId = added.TenantId;
-        //                    entityChangeInfo.ChangeTime = DateTime.Now;
-        //                    entityChangeInfo.ChangeType = EntityChangeType.Created;
-        //                    entityChangeInfo.EntityTypeFullName = typeof(OS_FunctionQualificationTemplate).FullName;
-
-        //                    AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
-        //                }
-
-        //                added = ObjectMapper.Map<OS_FunctionQualificationTemplate, OS_FunctionQualificationTemplate_Dto>(await OS_FunctionTemplateAppService.QualificationsRepository.GetAsync(added.Id));
-        //                return StatusCode(200, added);
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-
-        //        }
-        //    }
-
-        //    return StatusCode(500);
-        //}
-        //public async Task<IActionResult> OnDeleteFunctionQualificationTemplate()
-        //{
-        //    List<OS_FunctionQualificationTemplate_Dto> entitites = JsonSerializer.Deserialize<List<OS_FunctionQualificationTemplate_Dto>>(Request.Form["qualifications"]);
-        //    try
-        //    {
-        //        for (int i = 0; i < entitites.Count; i++)
-        //        {
-        //            OS_FunctionQualificationTemplate_Dto entity = entitites[i];
-        //            //await FunctionQualificationTemplatesAppService.Repository.DeleteAsync(leaveRequest.);
-        //            await OS_FunctionTemplateAppService.QualificationsRepository.DeleteAsync(entity.Id);
-
-        //            if (AuditingManager.Current != null)
-        //            {
-        //                EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
-        //                entityChangeInfo.EntityId = entity.Id.ToString();
-        //                entityChangeInfo.EntityTenantId = entity.TenantId;
-        //                entityChangeInfo.ChangeTime = DateTime.Now;
-        //                entityChangeInfo.ChangeType = EntityChangeType.Deleted;
-        //                entityChangeInfo.EntityTypeFullName = typeof(OS_FunctionQualificationTemplate).FullName;
-
-        //                AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
-        //            }
-        //        }
-        //        return StatusCode(200);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500);
-        //    }
-        //}
-
 
         public dynamic GetDataAuditTrailModel()
         {
@@ -599,14 +384,14 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
             List<dynamic> DS = new List<dynamic>();
             List<dynamic> secondaryDS = new List<dynamic>();
             List<dynamic> tertiaryDS = new List<dynamic>();
-            var departmentLogs = AuditLogsRepo.WithDetails().Where(x => x.Url == HttpContext.Request.Path.Value && x.EntityChanges != null && x.EntityChanges.Count > 0).ToList();
+            var organizationStructureLogs = AuditLogsRepo.WithDetails().Where(x => x.Url == HttpContext.Request.Path.Value && x.EntityChanges != null && x.EntityChanges.Count > 0).ToList();
 
-            List<OS_FunctionTemplate_Dto> Entities = await OS_FunctionTemplateAppService.GetAllFunctionTemplatesAsync();
+            List<OS_OrganizationStructureTemplate_Dto> Entities = await OS_OrganizationStructureTemplateAppService.GetAllOrganizationStructureTemplatesAsync();
             TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
 
-            for (int i = 0; i < departmentLogs.Count; i++)
+            for (int i = 0; i < organizationStructureLogs.Count; i++)
             {
-                AuditLog auditLog = departmentLogs[i];
+                AuditLog auditLog = organizationStructureLogs[i];
                 if (auditLog.EntityChanges == null || auditLog.EntityChanges.Count == 0) continue;
                 var entityChanges = auditLog.EntityChanges.ToList();
                 for (int j = 0; j < entityChanges.Count; j++)
@@ -617,9 +402,9 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                     changeRow.AuditLogId = entityChange.Id;
                     changeRow.EntityChangeId = entityChange.Id;
 
-                    OS_FunctionTemplate_Dto department = Entities.First(x => x.Id.ToString() == entityChange.EntityId);
-                    changeRow.Id = department.Id;
-                    changeRow.Name = department.Name;
+                    OS_OrganizationStructureTemplate_Dto organizationStructure = Entities.First(x => x.Id.ToString() == entityChange.EntityId);
+                    changeRow.Id = organizationStructure.Id;
+                    changeRow.Name = organizationStructure.Name;
                     changeRow.Date = entityChange.ChangeTime.ToShortDateString();
                     changeRow.Time = entityChange.ChangeTime.ToShortTimeString();
                     changeRow.User = auditLog.UserName;

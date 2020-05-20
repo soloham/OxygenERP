@@ -34,7 +34,7 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
 
         public string ReviewPeriodDescription { get => EnumExtensions.GetDescription(ReviewPeriod); set => ReviewPeriod = EnumExtensions.GetValueFromDescription<OS_ReviewPeriod>(value); }
         public OS_ReviewPeriod ReviewPeriod { get; set; }
-        public int ReviewPeriodDays { get; set; }
+        public int? ReviewPeriodDays { get; set; }
 
         public string GetDepartmentPositionsString { get
             {
