@@ -400,9 +400,21 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
-                b.HasOne(p => p.CostCenter).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasMany(p => p.DepartmentCostCenterTemplates).WithOne(p => p.DepartmentTemplate).OnDelete(DeleteBehavior.Cascade);
                 b.HasMany(p => p.PositionTemplates).WithOne(p => p.DepartmentTemplate).OnDelete(DeleteBehavior.Cascade);
                 b.HasMany(p => p.SubDepartmentTemplates).WithOne(p => p.DepartmentTemplate).OnDelete(DeleteBehavior.Cascade);
+            });
+            builder.Entity<OS_DepartmentCostCenterTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}DepartmentCostCenterTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.HasKey("DepartmentTemplateId", "CostCenterId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.DepartmentTemplate).WithMany(x => x.DepartmentCostCenterTemplates).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.CostCenter).WithOne().OnDelete(DeleteBehavior.NoAction);
             });
             builder.Entity<OS_DepartmentSubDepartmentTemplate>(b =>
             {
@@ -436,9 +448,22 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
-                b.HasOne(p => p.CostCenter).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasMany(p => p.PositionCostCenterTemplates).WithOne(p => p.PositionTemplate).OnDelete(DeleteBehavior.Cascade);
                 b.HasMany(p => p.PositionJobTemplates).WithOne(p => p.PositionTemplate).OnDelete(DeleteBehavior.Cascade);
                 b.HasMany(p => p.PositionTaskTemplates).WithOne(p => p.PositionTemplate).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<OS_PositionCostCenterTemplate>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}PositionCostCenterTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.HasKey("PositionTemplateId", "CostCenterId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.PositionTemplate).WithMany(x => x.PositionCostCenterTemplates).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.CostCenter).WithOne().OnDelete(DeleteBehavior.NoAction);
             });
             builder.Entity<OS_PositionJobTemplate>(b =>
             {

@@ -32,9 +32,6 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public OS_PositionHiringType HiringType { get; set; }
         public int? ReviewPeriodDays { get; set; }
 
-        public DictionaryValue_Dto CostCenter { get; set; }
-        public Guid CostCenterId { get; set; }
-
         public DateTime ActivationDate { get; set; }
         public DateTime ValidityFromDate { get; set; }
         public DateTime ValidityToDate { get; set; }
@@ -47,8 +44,18 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
 
         public List<OS_PositionJobTemplate_Dto> PositionJobTemplates { get; set; } = new List<OS_PositionJobTemplate_Dto>();
         public List<OS_PositionTaskTemplate_Dto> PositionTaskTemplates { get; set; } = new List<OS_PositionTaskTemplate_Dto>();
+        public List<OS_PositionCostCenterTemplate_Dto> PositionCostCenterTemplates { get; set; } = new List<OS_PositionCostCenterTemplate_Dto>();
     }
+    public class OS_PositionCostCenterTemplate_Dto : AuditedEntityTenantDto<int>
+    {
+        public OS_PositionTemplate_Dto PositionTemplate { get; set; }
+        public int PositionTemplateId { get; set; }
 
+        public DictionaryValue_Dto CostCenter { get; set; }
+        public Guid CostCenterId { get; set; }
+
+        public double Percentage { get; set; }
+    }
     public class OS_PositionJobTemplate_Dto : AuditedEntityTenantDto<int>
     {
         public OS_PositionTemplate_Dto PositionTemplate { get; set; }

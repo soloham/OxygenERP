@@ -80,10 +80,12 @@ namespace CERP.EntityFrameworkCore
         public DbSet<OS_DepartmentTemplate> OS_DepartmentTemplates { get; set; }
         //public DbSet<OS_DepartmentPositionTemplate> OS_DepartmentPositionTemplates { get; set; }
         public DbSet<OS_DepartmentSubDepartmentTemplate> OS_DepartmentSubDepartmentTemplates { get; set; }
+        public DbSet<OS_DepartmentCostCenterTemplate> OS_DepartmentCostCenterTemplates { get; set; }
 
         public DbSet<OS_PositionTemplate> OS_PositionTemplates { get; set; }
         public DbSet<OS_PositionJobTemplate> OS_PositionJobTemplates { get; set; }
         public DbSet<OS_PositionTaskTemplate> OS_PositionTaskTemplates { get; set; }
+        public DbSet<OS_PositionCostCenterTemplate> OS_PositionCostCenterTemplates { get; set; }
 
         public DbSet<OS_JobTemplate> OS_JobTemplates { get; set; }
         //public DbSet<OS_JobQualificationTemplate> OS_JobQualificationTemplates { get; set; }

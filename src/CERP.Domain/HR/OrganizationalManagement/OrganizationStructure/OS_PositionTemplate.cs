@@ -31,10 +31,6 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         [CustomAudited]
         public int MaxPositionsPerDepartment { get; set; }
 
-        [CustomAudited]
-        public DictionaryValue CostCenter { get; set; }
-        [CustomAudited]
-        public Guid CostCenterId { get; set; }
 
         [CustomAudited]
         public DateTime ActivationDate { get; set; }
@@ -58,6 +54,17 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
 
         public virtual ICollection<OS_PositionJobTemplate> PositionJobTemplates { get; set; }
         public virtual ICollection<OS_PositionTaskTemplate> PositionTaskTemplates { get; set; }
+        public virtual ICollection<OS_PositionCostCenterTemplate> PositionCostCenterTemplates { get; set; }
+    }
+    public class OS_PositionCostCenterTemplate : AuditedAggregateTenantRoot<int>
+    {
+        public OS_PositionTemplate PositionTemplate { get; set; }
+        public int PositionTemplateId { get; set; }
+        
+        public DictionaryValue CostCenter { get; set; }
+        public Guid CostCenterId { get; set; }
+
+        public double Percentage { get; set; }
     }
     public class OS_PositionJobTemplate : AuditedAggregateTenantRoot<int>
     {

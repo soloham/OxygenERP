@@ -7,6 +7,7 @@
 @inject IHtmlLocalizer<CERPResource> L
 @inject Volo.Abp.Json.IJsonSerializer JsonSerializer
 @using CERP.App.Helpers;
+@using Syncfusion.EJ2.Navigations;
 
 @model CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure.Pages.Academia.ListModel
 @{
@@ -44,6 +45,10 @@
     List<DictionaryValue> institues = Model.DictionaryValuesRepo.Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.AcademicInstitution).ToList();
 
     List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Cast<OS_ReviewPeriod>().ToList();
+
+    List<object> referenceCommands = new List<object>();
+    referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+
 }
 
 @section styles {
@@ -105,6 +110,9 @@
 
             $('#addAcademiaBtn').on('click', function () {
                 isEditingAcademia = false;
+
+                let tabs = $('#academiaSpecificFormTabs')[0].ej2_instances[0];
+                tabs.properties.items[1].visible = true;
 
                 $('#submitAcademiaBtn').val('Create Academia');
             });
@@ -212,136 +220,174 @@
         </div>
         <form id="academiaForm" onkeydown="return event.key != 'Enter';" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
             <div id="academiaSpecificForm">
-                <div class="row">
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Academia Code:</label>
-                            <input type="text" id="academiaCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                        <div class="col-sm-6" style="padding:0">
+                <ejs-tab id="academiaSpecificFormTabs" animation="ViewBag.animation" height="250px">
+                    <e-tab-tabitems>
+                        <e-tab-tabitem header="@(new TabHeader { Text = "General" })" content="#generalTab"></e-tab-tabitem>
+                        <e-tab-tabitem header="@(new TabHeader { Text = "References" })" visible="false" content="#referencesTab"></e-tab-tabitem>
+                    </e-tab-tabitems>
+                </ejs-tab>
+                <div id="generalTab" class="areaForm">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4 col-sm-6 col-12">
                             <div class="form-group">
-                                <label class="control-label m-b-5 ">Title:</label>
-                                <input type="text" id="academiaTitle" name="Name" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                <label class="margin-bottom-5 control-label">Academia Code:</label>
+                                <input type="text" id="academiaCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                             </div>
                         </div>
-                        <div class="col-sm-6" style="padding:0">
-                            <div class="form-group">
-                                <label class="control-label m-b-5 ">Title (In Arabic):</label>
-                                <input type="text" id="academiaTitleLocalized" name="NameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                        <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                            <div class="col-sm-6" style="padding:0">
+                                <div class="form-group">
+                                    <label class="control-label m-b-5 ">Title:</label>
+                                    <input type="text" id="academiaTitle" name="Name" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Academia Description:</label>
-                            <input type="text" id="academiaDescription" name="Description" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Institute:</label>
-                            <select id="instituteId" name="InstituteId" class="form-control" required>
-                                <option></option>
-                                @for (int i = 0; i < institues.Count; i++)
-                                {
-                                    <option value="@institues[i].Id" data-value="@institues[i].Value">@institues[i].Value</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Academic Type:</label>
-                            <select id="academicType" name="AcademicType" class="form-control" required>
-                                @for (int i = 0; i < academicType.Count; i++)
-                                {
-                                    <option value="@((int)academicType[i])">@EnumExtensions.GetDescription(academicType[i])</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Certificate Type:</label>
-                            <select id="academicCertificateType" name="academiaCertificateType" class="form-control" required>
-                                @for (int i = 0; i < academicCertificateTypes.Count; i++)
-                                {
-                                    <option value="@((int)academicCertificateTypes[i])">@EnumExtensions.GetDescription(academicCertificateTypes[i])</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Certificate Sub Type:</label>
-                            <select id="academicCertificateSubTypeId" name="AcademiaCertificateSubTypeId" class="form-control" required>
-                                @for (int i = 0; i < institues.Count; i++)
-                                {
-                                    <option value="@institues[i].Id" data-value="@institues[i].Value">@institues[i].Value</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="col-md-12 col-sm-12" style="padding: 0">
-                            <div class="form-group">
-                                <label class="control-label m-b-5 "></label>
-                                <div class="btn-group" data-toggle="buttons" style="width: 100%">
-                                    <label class="btn btn-default" style="width: 100%">
-                                        <input type="checkbox" id="doesKPI" name="DoesKPI" autocomplete="off" style="width: 100%"> Perform KPI
-                                    </label>
+                            <div class="col-sm-6" style="padding:0">
+                                <div class="form-group">
+                                    <label class="control-label m-b-5 ">Title (In Arabic):</label>
+                                    <input type="text" id="academiaTitleLocalized" name="NameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                        <div class="form-group">
-                            <label class="control-label m-b-5 ">Passout Year:</label>
-                            <input type="number" min="1900" maxlength="4" max="@DateTime.Now.Year" id="passoutYear" name="PassoutYear" class="text-left form-control inline pull-left" required>
+                        <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Academia Description:</label>
+                                <input type="text" id="academiaDescription" name="Description" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6 col-sm-2 col-12">
-                        <div id="reviewPeriodTypeField" class="col-sm-12" style="padding:0">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                             <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Review Period:</label>
-                                <select id="reviewPeriod" name="ReviewPeriod" onchange="
-                                            if (typeof $('option:selected', '#reviewPeriod').attr('data-value') !== 'undefined' && $('option:selected', '#reviewPeriod').attr('data-value').includes('Day')) {
-                                                $('#reviewPeriodTypeField').removeClass('col-sm-12');
-                                                $('#reviewPeriodTypeField').addClass('col-sm-6');
-                                                setTimeout(function () {
-                                                    $('#reviewPeriodDaysField').slideDown(0);
-                                                }, 520);
-                                            } else {
-                                                $('#reviewPeriodDaysField').slideUp(0);
-                                                $('#reviewPeriodTypeField').removeClass('col-sm-6');
-                                                $('#reviewPeriodTypeField').addClass('col-sm-12');
-                                            }
-                                        " class="form-control" required>
-                                    @for (int i = 0; i < reviewPeriods.Count; i++)
+                                <label class="margin-bottom-5 control-label">Institute:</label>
+                                <select id="instituteId" name="InstituteId" class="form-control" required>
+                                    <option></option>
+                                    @for (int i = 0; i < institues.Count; i++)
                                     {
-                                        <option value="@((int)reviewPeriods[i])" data-value="@EnumExtensions.GetDescription(reviewPeriods[i])">@EnumExtensions.GetDescription(reviewPeriods[i])</option>
+                                        <option value="@institues[i].Id" data-value="@institues[i].Value">@institues[i].Value</option>
                                     }
                                 </select>
                             </div>
                         </div>
-                        <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none; padding:0">
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
                             <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Period Days:</label>
-                                <input type="number" min="0" id="reviewPeriodDays" name="ReviewPeriodDays" value="0" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                <label class="margin-bottom-5 control-label">Academic Type:</label>
+                                <select id="academicType" name="AcademicType" class="form-control" required>
+                                    @for (int i = 0; i < academicType.Count; i++)
+                                    {
+                                        <option value="@((int)academicType[i])">@EnumExtensions.GetDescription(academicType[i])</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Certificate Type:</label>
+                                <select id="academicCertificateType" name="academiaCertificateType" class="form-control" required>
+                                    @for (int i = 0; i < academicCertificateTypes.Count; i++)
+                                    {
+                                        <option value="@((int)academicCertificateTypes[i])">@EnumExtensions.GetDescription(academicCertificateTypes[i])</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Certificate Sub Type:</label>
+                                <select id="academicCertificateSubTypeId" name="AcademiaCertificateSubTypeId" class="form-control" required>
+                                    @for (int i = 0; i < institues.Count; i++)
+                                    {
+                                        <option value="@institues[i].Id" data-value="@institues[i].Value">@institues[i].Value</option>
+                                    }
+                                </select>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Compensation Matrix:</label>
-                            <select id="compensationMatrixId" name="CompensationMatrixId" class="form-control">
-                            </select>
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                            <div class="col-md-12 col-sm-12" style="padding: 0">
+                                <div class="form-group">
+                                    <label class="control-label m-b-5 "></label>
+                                    <div class="btn-group" data-toggle="buttons" style="width: 100%">
+                                        <label class="btn btn-default" style="width: 100%">
+                                            <input type="checkbox" id="doesKPI" name="DoesKPI" autocomplete="off" style="width: 100%"> Perform KPI
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label class="control-label m-b-5 ">Passout Year:</label>
+                                <input type="number" min="1900" maxlength="4" max="@DateTime.Now.Year" id="passoutYear" name="PassoutYear" class="text-left form-control inline pull-left" required>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-2 col-12">
+                            <div id="reviewPeriodTypeField" class="col-sm-12" style="padding:0">
+                                <div class="form-group">
+                                    <label class="margin-bottom-5 control-label">Review Period:</label>
+                                    <select id="reviewPeriod" name="ReviewPeriod" onchange="
+                                                if (typeof $('option:selected', '#reviewPeriod').attr('data-value') !== 'undefined' && $('option:selected', '#reviewPeriod').attr('data-value').includes('Day')) {
+                                                    $('#reviewPeriodTypeField').removeClass('col-sm-12');
+                                                    $('#reviewPeriodTypeField').addClass('col-sm-6');
+                                                    setTimeout(function () {
+                                                        $('#reviewPeriodDaysField').slideDown(0);
+                                                    }, 520);
+                                                } else {
+                                                    $('#reviewPeriodDaysField').slideUp(0);
+                                                    $('#reviewPeriodTypeField').removeClass('col-sm-6');
+                                                    $('#reviewPeriodTypeField').addClass('col-sm-12');
+                                                }
+                                            " class="form-control" required>
+                                        @for (int i = 0; i < reviewPeriods.Count; i++)
+                                        {
+                                            <option value="@((int)reviewPeriods[i])" data-value="@EnumExtensions.GetDescription(reviewPeriods[i])">@EnumExtensions.GetDescription(reviewPeriods[i])</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none; padding:0">
+                                <div class="form-group">
+                                    <label class="margin-bottom-5 control-label">Period Days:</label>
+                                    <input type="number" min="0" id="reviewPeriodDays" name="ReviewPeriodDays" value="0" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Compensation Matrix:</label>
+                                <select id="compensationMatrixId" name="CompensationMatrixId" class="form-control">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="referencesTab" class="areaForm" style="display:none">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="panel-body p-t-0" style="">
+                                <div id="referencesCS" class="control-section">
+                                    <ejs-grid id="ReferenceReferenceGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                              allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                              allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                              toolbar="@initialToolBar" toolbarClick="defaultToolbarClick"
+                                              allowPaging="true" allowResizing="true">
+
+                                        <e-grid-columns>
+                                            <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                            <e-grid-column field="type" allowEditing="false" headerText="Type" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="name" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="code" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                            @*<e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>*@
+                                        </e-grid-columns>
+
+                                        <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                        <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                        <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                    </ejs-grid>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -446,7 +492,7 @@
             }
         }
         if (args.item.id === 'showActions') {
-            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Audit Trail", tooltipText: "View Audit Trail", prefixIcon: "e-custom-audit-trail", id: "toggleaudittrail" },  { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Audit Trail", tooltipText: "View Audit Trail", prefixIcon: "e-custom-audit-trail", id: "toggleaudittrail" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
             gridObj.refresh();
         }
         if (args.item.id === 'hideActions') {
@@ -540,14 +586,23 @@
             }, 200);
 
             FillFormByObject(params, $('#academiaForm'));
-            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_AcademiaTemplate.get(params.id).done(function (data)
-            {
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_AcademiaTemplate.get(params.id).done(function (data) {
                 $('#academicType').multiselect('select', params.academicType);
                 $('#academicCertificateType').multiselect('select', params.academicCertificateType);
                 $('#academicCertificateSubType').multiselect('select', params.academicCertificateSubType);
-                $('#instituteId').val(params.instituteId);  
+                $('#instituteId').val(params.instituteId);
 
                 $('#compensationMatrixId').multiselect('select', params.compensationMatrixTemplateId);
+            });
+
+            let tabs = $('#academiaSpecificFormTabs')[0].ej2_instances[0];
+            tabs.properties.items[1].visible = true;
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_AcademiaTemplate.getAllReferences(params.id).done(function (data) {
+                let refGrid = $('#ReferenceReferenceGrid')[0].ej2_instances[0];
+                refGrid.dataSource = data;
+                refGrid.refresh();
+
+                setTimeout(function () { refGrid.hideSpinner() }, 200);
             });
         }
         else if (args.commandColumn.type == "Copy") {
@@ -593,6 +648,21 @@
                 }
             });
             setTimeout(function () { gridObj.hideSpinner() }, 200);
+        }
+    }
+
+
+    function referenceActionComplete(args) {
+        if (args.requestType == "delete") {
+
+            populateTaskTemplates();
+            populateJobTemplates();
+        }
+    }
+    function referenceActionBegin(args) {
+        if (args.requestType == "delete") {
+            populateTaskTemplates();
+            populateJobTemplates();
         }
     }
 </script>

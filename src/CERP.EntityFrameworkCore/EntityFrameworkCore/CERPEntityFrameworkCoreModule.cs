@@ -214,7 +214,9 @@ namespace CERP.EntityFrameworkCore
                                                        .Include(p => p.PositionTemplates)
                                                        //.Include(p => p.DepartmentHead)
                                                        // .ThenInclude(p => p.PositionTemplate)
-                                                       .Include(p => p.CostCenter);
+                                                       .Include(p => p.DepartmentCostCenterTemplates)
+                                                        .ThenInclude(p => p.CostCenter);
+                                                        
                 });
                 options.Entity<OS_PositionTemplate>(opt =>
                 {
@@ -222,7 +224,8 @@ namespace CERP.EntityFrameworkCore
                                                         .ThenInclude(p => p.JobTemplate)
                                                        .Include(p => p.PositionTaskTemplates)
                                                         .ThenInclude(p => p.TaskTemplate)
-                                                       .Include(p => p.CostCenter)
+                                                       .Include(p => p.PositionCostCenterTemplates)
+                                                        .ThenInclude(p => p.CostCenter)
                                                        .Include(p => p.DepartmentTemplate);
                 });
 

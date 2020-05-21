@@ -160,6 +160,8 @@ namespace CERP
             CreateMap<OS_DepartmentSubDepartmentTemplate_Dto, OS_DepartmentSubDepartmentTemplate>();
             CreateMap<OS_DepartmentPositionTemplate, OS_DepartmentPositionTemplate_Dto>();
             CreateMap<OS_DepartmentPositionTemplate_Dto, OS_DepartmentPositionTemplate>();
+            CreateMap<OS_DepartmentCostCenterTemplate, OS_DepartmentCostCenterTemplate_Dto>();
+            CreateMap<OS_DepartmentCostCenterTemplate_Dto, OS_DepartmentCostCenterTemplate>();
 
             CreateMap<OS_PositionTemplate, OS_PositionTemplate_Dto>();
             CreateMap<OS_PositionTemplate_Dto, OS_PositionTemplate>();
@@ -167,6 +169,8 @@ namespace CERP
             CreateMap<OS_PositionJobTemplate_Dto, OS_PositionJobTemplate>();
             CreateMap<OS_PositionTaskTemplate, OS_PositionTaskTemplate_Dto>();
             CreateMap<OS_PositionTaskTemplate_Dto, OS_PositionTaskTemplate>();
+            CreateMap<OS_PositionCostCenterTemplate, OS_PositionCostCenterTemplate_Dto>();
+            CreateMap<OS_PositionCostCenterTemplate_Dto, OS_PositionCostCenterTemplate>();
 
             CreateMap<OS_JobTemplate, OS_JobTemplate_Dto>();
             CreateMap<OS_JobTemplate_Dto, OS_JobTemplate>();

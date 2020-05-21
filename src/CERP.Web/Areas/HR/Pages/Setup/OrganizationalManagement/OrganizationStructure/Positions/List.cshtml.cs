@@ -224,8 +224,6 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curPositionTemplate.Level = positionTemplate_Dto.Level;
                         curPositionTemplate.DepartmentTemplate = null;
                         curPositionTemplate.DepartmentTemplateId = positionTemplate_Dto.DepartmentTemplateId;
-                        curPositionTemplate.CostCenter = null;
-                        curPositionTemplate.CostCenterId = positionTemplate_Dto.CostCenterId;
                         curPositionTemplate.ReviewPeriod = positionTemplate_Dto.ReviewPeriod;
                         curPositionTemplate.HiringType = positionTemplate_Dto.HiringType;
                         curPositionTemplate.ValidityFromDate = positionTemplate_Dto.ValidityFromDate;
@@ -233,6 +231,36 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curPositionTemplate.ActivationDate = positionTemplate_Dto.ActivationDate;
 
                         #region Child Entities
+                        OS_PositionCostCenterTemplate_Dto[] posCostCenters = positionTemplate_Dto.PositionCostCenterTemplates.ToArray();
+                        int[] curPosCostCentersIds = curPositionTemplate.PositionCostCenterTemplates != null && curPositionTemplate.PositionCostCenterTemplates.Count > 0 ? curPositionTemplate.PositionCostCenterTemplates.Select(x => x.PositionTemplate.Id).ToArray() : new int[0];
+                        List<int> toDeleteCostCenters = new List<int>();
+                        for (int i = 0; i < curPosCostCentersIds.Length; i++)
+                        {
+                            OS_PositionCostCenterTemplate curPositionCostCenter = curPositionTemplate.PositionCostCenterTemplates.First(x => x.PositionTemplate.Id == curPosCostCentersIds[i]);
+                            if (!posCostCenters.Any(x => x.PositionTemplateId == curPosCostCentersIds[i] && x.CreationTime == curPositionCostCenter.CreationTime))
+                            {
+                                curPositionTemplate.PositionCostCenterTemplates.Remove(curPositionTemplate.PositionCostCenterTemplates.First(x => x.PositionTemplate.Id == curPosCostCentersIds[i]));
+                                toDeleteCostCenters.Add(curPosCostCentersIds[i]);
+                            }
+                        }
+                        for (int i = 0; i < posCostCenters.Length; i++)
+                        {
+                            if (!curPositionTemplate.PositionCostCenterTemplates.Any(x => x.CostCenterId == posCostCenters[i].CostCenter.Id && x.CreationTime == posCostCenters[i].CreationTime))
+                            {
+                                curPositionTemplate.PositionCostCenterTemplates.Add(new OS_PositionCostCenterTemplate() { CostCenterId = posCostCenters[i].CostCenter.Id, Percentage = posCostCenters[i].Percentage });
+                            }
+                            else
+                            {
+                                var _positionCostCenter = curPositionTemplate.PositionCostCenterTemplates.First(x => x.PositionTemplateId == posCostCenters[i].PositionTemplate.Id);
+                                //_positionLoc.PositionValidityStart = posCostCenters[i].PositionValidityStart;
+                                //_positionLoc.PositionValidityEnd = posCostCenters[i].PositionValidityEnd;
+                                //_positionLoc.Name = posCostCenters[i].Name;
+
+                                //curPosition.PositionCostCenterTemplates.Remove(curPosition.PositionCostCenterTemplates.First(x => x.PositionTemplateId == _positionLoc.PositionTemplateId));
+                                await OS_PositionTemplateAppService.PositionCostCentersTemplateRepo.UpdateAsync(_positionCostCenter);
+                            }
+                        }
+                        
                         OS_PositionJobTemplate_Dto[] posJobs = positionTemplate_Dto.PositionJobTemplates.ToArray();
                         int[] curPosJobsIds = curPositionTemplate.PositionJobTemplates != null && curPositionTemplate.PositionJobTemplates.Count > 0 ? curPositionTemplate.PositionJobTemplates.Select(x => x.PositionTemplate.Id).ToArray() : new int[0];
                         List<int> toDeleteJobs = new List<int>();
@@ -301,6 +329,10 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         {
                             await OS_PositionTemplateAppService.PositionJobsTemplateRepo.DeleteAsync(x => x.PositionTemplateId == toDeleteJobs[i]);
                         }
+                        for (int i = 0; i < toDeleteCostCenters.Count; i++)
+                        {
+                            await OS_PositionTemplateAppService.PositionCostCentersTemplateRepo.DeleteAsync(x => x.PositionTemplateId == toDeleteCostCenters[i]);
+                        }
                         #endregion
 
                         OS_PositionTemplate_Dto updated = ObjectMapper.Map<OS_PositionTemplate, OS_PositionTemplate_Dto>(await OS_PositionTemplateAppService.Repository.UpdateAsync(curPositionTemplate));
@@ -315,9 +347,10 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                             positionTemplate_Dto.PositionJobTemplates.ForEach(x => { x.Id = 0; x.JobTemplateId = x.JobTemplate.Id; x.JobTemplate = null; });
                         if(positionTemplate_Dto.PositionTaskTemplates != null)
                             positionTemplate_Dto.PositionTaskTemplates.ForEach(x => { x.Id = 0; x.TaskTemplateId = x.TaskTemplate.Id; x.TaskTemplate = null; });
+                        if(positionTemplate_Dto.PositionCostCenterTemplates != null)
+                            positionTemplate_Dto.PositionCostCenterTemplates.ForEach(x => { x.Id = 0; x.CostCenterId = x.CostCenter.Id; x.CostCenter = null; });
 
                         OS_PositionTemplate_Dto added = await OS_PositionTemplateAppService.CreateAsync(positionTemplate_Dto);
-                        added.CostCenter = ObjectMapper.Map<DictionaryValue, DictionaryValue_Dto>(await DictionaryValuesRepo.GetAsync(added.CostCenterId));
                         added.DepartmentTemplate = await OS_DepartmentTemplateAppService.GetDepartmentTemplateAsync(added.DepartmentTemplateId);
 
                         if (AuditingManager.Current != null)

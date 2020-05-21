@@ -26,9 +26,6 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         //public OS_DepartmentPositionTemplate_Dto DepartmentHead { get; set; }
         //public int DepartmentHeadId { get; set; }
 
-        public DictionaryValue_Dto CostCenter { get; set; }
-        public Guid CostCenterId { get; set; }
-
         public DateTime ValidityFromDate { get; set; }
         public DateTime ValidityToDate { get; set; }
 
@@ -93,6 +90,18 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         }
         public string GetDepartmentStructureString { get => GetDepartmentStructure(); }
         public List<OS_DepartmentSubDepartmentTemplate_Dto> SubDepartmentTemplates { get; set; } = new List<OS_DepartmentSubDepartmentTemplate_Dto>();
+        public List<OS_DepartmentCostCenterTemplate_Dto> DepartmentCostCenterTemplates { get; set; } = new List<OS_DepartmentCostCenterTemplate_Dto>();
+    }
+
+    public class OS_DepartmentCostCenterTemplate_Dto : AuditedEntityTenantDto<int>
+    {
+        public OS_DepartmentTemplate_Dto DepartmentTemplate { get; set; }
+        public int DepartmentTemplateId { get; set; }
+
+        public DictionaryValue_Dto CostCenter { get; set; }
+        public Guid CostCenterId { get; set; }
+
+        public double Percentage { get; set; }
     }
     public class OS_DepartmentPositionTemplate_Dto : AuditedEntityTenantDto<int>
     {

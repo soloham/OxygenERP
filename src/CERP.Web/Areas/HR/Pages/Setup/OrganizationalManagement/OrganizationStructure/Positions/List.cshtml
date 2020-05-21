@@ -49,8 +49,6 @@
     List<object> referenceCommands = new List<object>();
     referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
 
-    List<DictionaryValue> costCenters = Model.DictionaryValuesRepo.WithDetails().Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.CostCenter).OrderBy(x => x.Key).ToList();
-
     List<OS_PositionHiringType> hiringTypes = Enum.GetValues(typeof(OS_PositionHiringType)).Cast<OS_PositionHiringType>().ToList();
     List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Cast<OS_ReviewPeriod>().ToList();
 }
@@ -75,6 +73,7 @@
         let jobs = [];
         let tasks = [];
         let departments = [];
+        let costCenters = [];
 
         let tasksGrid;
         function populateTaskTemplates() {
@@ -130,6 +129,33 @@
             });
         }
 
+        let costCentersGrid;
+        function populateCostCenterTemplates() {
+            try {
+                costCenters = costCenters.filter(function (y) {
+                    return costCentersGrid.dataSource.filter(function (x) { return x.id == y.id }).length == 0
+                });
+            } catch (e) {
+
+            }
+
+            let dataMS = [];
+            for (let i = 0; i < costCenters.length; i++) {
+                let item = costCenters[i];
+                dataMS.push({ label: `${item.key} - ${item.value}`, value: item.id, data: item });
+            }
+            $('#costCentersIds').multiselect('dataprovider', dataMS);
+            console.log(dataMS);
+        }
+        function loadCostCenterTemplates() {
+            $('#costCentersLoader').slideDown(100);
+            cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.costCenters).done(function (data) {
+                $('#costCentersLoader').slideUp(100);
+                costCenters = data;
+                populateCostCenterTemplates();
+            });
+        }
+
 
         $(document).ready(function () {
             let options = {
@@ -143,6 +169,7 @@
             };
             $('#jobsIds').multiselect(options);
             $('#reviewPeriod').multiselect(options);
+            $('#costCentersIds').multiselect(options);
             $('#tasksIds').multiselect(options);
             //$('#positionDepartmentId').multiselect(options);
 
@@ -172,6 +199,35 @@
                     jobsGrid.refresh();
                 }
                 populateJobTemplates();
+            });
+            
+            $('#addCostCenterBtn').on('click', function () {
+                loadCostCenterTemplates();
+            });
+            costCentersGrid = $('#CostCenterReferenceGrid')[0].ej2_instances[0];
+            $('#submitCostCenterBtn').on('click', function () {
+                if (ValidateForm('costCentersForm')) {
+                    let selectedCostCenters = $('#costCentersIds').val();
+                    for (var i = 0; i < selectedCostCenters.length; i++) {
+                        let _function = costCenters.filter(function (x) { return x.id == selectedCostCenters[i] })[0];
+                        _function.percentage = parseInt($('#costCenterPercentage').val());
+
+                        let curSum = 0;
+                        for (var i = 0; i < costCentersGrid.dataSource.length; i++) {
+                            curSum += costCentersGrid.dataSource[i].percentage;
+                        }
+                        console.log(curSum);
+                        if (curSum + _function.percentage <= 100)
+                            costCentersGrid.dataSource.push(_function);
+                        else {
+                            toastr.error(`Sum of all percentages exceed 100`);
+                            costCentersGrid.hideSpinner();
+                        }
+
+                        costCentersGrid.refresh();
+                    }
+                    populateCostCenterTemplates();
+                }
             });
 
 
@@ -237,6 +293,26 @@
                         //cERP.appServices.hR.leaveRequestTemplates.update()
                     }
 
+
+                    let selectedCostCenters = costCentersGrid.dataSource.map(function (item) { return { costCenter: item, percentage: item.percentage } });;
+                    params.positionCostCenterTemplates = [];
+                    let ccSum = 0;
+                    for (var i = 0; i < selectedCostCenters.length; i++) {
+                        let toAdd = selectedCostCenters[i]
+                        if (isEditingPositions) {
+                            toAdd.positionTemplateId = curPositionsEditRow.id;
+                        }
+                        ccSum += toAdd.costCenter.percentage;
+                        params.positionCostCenterTemplates.push(toAdd);
+                    }
+                    console.log(ccSum);
+                    if (ccSum != 100) {
+                        Swal.hideLoading();
+                        swal.fire("Failed", "Sum of all cost center percentages must be 100%", "error");
+
+                        gridObj.hideSpinner();
+                        return;
+                    }
 
                     let selectedTasks = tasksGrid.dataSource.map(function (item) { return { taskTemplate: item } });;
                     params.positionTaskTemplates = [];
@@ -340,6 +416,7 @@
                         <e-tab-tabitem header="@(new TabHeader { Text = "General" })" content="#generalTab"></e-tab-tabitem>
                         <e-tab-tabitem header="@(new TabHeader { Text = "Tasks" })" content="#tasksTab"></e-tab-tabitem>
                         <e-tab-tabitem header="@(new TabHeader { Text = "Jobs" })" content="#jobsTab"></e-tab-tabitem>
+                        <e-tab-tabitem header="@(new TabHeader { Text = "Cost Centers" })" content="#costCentersTab"></e-tab-tabitem>
                         <e-tab-tabitem header="@(new TabHeader { Text = "References" })" visible="false" content="#referencesTab"></e-tab-tabitem>
                     </e-tab-tabitems>
                 </ejs-tab>
@@ -410,7 +487,7 @@
                     </div>
                 </div>*@
 
-                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                        <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                             <div class="col-sm-6" style="padding:0">
                                 <div class="form-group">
                                     <label class="control-label m-b-5 ">Valid From:</label>
@@ -424,7 +501,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                        <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                             <div class="form-group">
                                 <label class="margin-bottom-5 control-label">Hiring Type:</label>
                                 <select id="hiringType" name="HiringType" class="form-control">
@@ -435,18 +512,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Cost Center:</label>
-                                <select id="costCenterId" name="CostCenterId" class="form-control">
-                                    @for (int i = 0; i < costCenters.Count; i++)
-                                    {
-                                        <option value="@costCenters[i].Id" data-value="@costCenters[i].Value">@costCenters[i].Value</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-sm-3 col-12">
+                        <div class="col-lg-4 col-md-6 col-sm-4 col-12">
                             <div class="form-group">
                                 <label class="margin-bottom-5 control-label">Department / Sub Department:</label>
                                 <select id="positionDepartmentId" name="DepartmentTemplateId" class="form-control" required>
@@ -561,6 +627,67 @@
                         </div>
                     </div>
                 </div>
+                <div id="costCentersTab" class="areaForm" style="display:none">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="panel-body p-t-0" style="">
+                                <div class="areaHeader" style="display:flex;">
+                                    <div id="costCentersLoader" class="pull-left loader-inline" style="display:none"></div>
+                                    <div class="areaHeaderTitle">
+                                        <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Cost Centers</span>
+                                    </div>
+                                    <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                        <a id="addCostCenterBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                                    </div>
+                                </div>
+                                <div role="form" id="costCentersForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                                    <div class="row">
+                                        <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                            <div class="form-group">
+                                                <label class="margin-bottom-5 control-label">Cost Centers:</label>
+                                                <select id="costCentersIds" name="CostCentersIds" multiple="multiple" class="form-control">
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                            <div class="form-group">
+                                                <label class="margin-bottom-5 control-label">Percentage:</label>
+                                                <input type="number" min="1" max="100" value="" id="costCenterPercentage" name="Percentage" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                            <label class="control-label m-b-5 "></label>
+                                            <button id="submitCostCenterBtn" type="button" class="btn btn-success btn-block">Add Cost Center(s)</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="costCentersCS" class="control-section">
+                                    <ejs-grid id="CostCenterReferenceGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                              allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                              allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                              toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" actionBegin="referenceActionBegin" actionComplete="referenceActionComplete"
+                                              allowPaging="true" allowResizing="true">
+
+                                        <e-grid-columns>
+                                            <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                            <e-grid-column field="key" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="value" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="percentage" allowEditing="true" headerText="Percentage" textAlign="Center"></e-grid-column>
+                                            <e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>
+                                        </e-grid-columns>
+
+                                        <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                        <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                        <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                    </ejs-grid>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <div id="referencesTab" class="areaForm" style="display:none">
                     <div class="row">
                         <div class="col-md-12">
@@ -578,7 +705,7 @@
                                             <e-grid-column field="type" allowEditing="false" headerText="Type" textAlign="Center"></e-grid-column>
                                             <e-grid-column field="name" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
                                             <e-grid-column field="code" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
-                                            <e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>
+                                            @*<e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>*@
                                         </e-grid-columns>
 
                                         <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
@@ -614,7 +741,7 @@
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "nameLocalized", HeaderText = "Local", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
                     }'></e-grid-column>
                     <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
-                    <e-grid-column field="costCenter.value" headerText="Cost Center" textAlign="Center"></e-grid-column>
+                    @*<e-grid-column field="costCenter.value" headerText="Cost Center" textAlign="Center"></e-grid-column>*@
                     <e-grid-column field="departmentTemplate.name" headerText="Department" textAlign="Center"></e-grid-column>
                     <e-grid-column field="hiringTypeDescription" headerText="Hiring Type" textAlign="Center"></e-grid-column>
                     <e-grid-column field="reviewPeriodDescription" headerText="Review period" textAlign="Center"></e-grid-column>
@@ -789,6 +916,10 @@
                 console.log(data);
                 $('#positionsLoader').slideUp(100);
 
+                costCentersGrid.dataSource = [];
+                costCentersGrid.dataSource = params.positionCostCenterTemplates.map(function (item) { item.costCenter.percentage = item.percentage; return item.costCenter });
+                costCentersGrid.refresh();
+                
                 tasksGrid.dataSource = [];
                 tasksGrid.dataSource = params.positionTaskTemplates.map(function (item) { return item.taskTemplate });
                 tasksGrid.refresh();
@@ -805,7 +936,7 @@
             });
             let tabs = $('#positionSpecificFormTabs')[0].ej2_instances[0];
             tabs.properties.items[3].visible = true;
-            cERP.appServices.hR.organizationalManagement.organizationStructure.PositionTemplate.getAllReferences(params.id).done(function (data) {
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_PositionTemplate.getAllReferences(params.id).done(function (data) {
                 let refGrid = $('#ReferenceReferenceGrid')[0].ej2_instances[0];
                 refGrid.dataSource = data;
                 refGrid.refresh();
@@ -863,12 +994,14 @@
         if (args.requestType == "delete") {
           
             populateTaskTemplates();
+            populateCostCenterTemplates();
             populateJobTemplates();
         }
     }
     function referenceActionBegin(args) {
         if (args.requestType == "delete") {
             populateTaskTemplates();
+            populateCostCenterTemplates();
             populateJobTemplates();
         }
     }

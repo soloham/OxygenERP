@@ -24,12 +24,6 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         [CustomAudited]
         public string Code { get; set; }
 
-
-        [CustomAudited]
-        public DictionaryValue CostCenter { get; set; }
-        [CustomAudited]
-        public Guid CostCenterId { get; set; }
-
         [CustomAudited]
         public DateTime ValidityFromDate { get; set; }
         [CustomAudited]
@@ -42,6 +36,7 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
 
         public virtual ICollection<OS_PositionTemplate> PositionTemplates { get; set; }
         public virtual ICollection<OS_DepartmentSubDepartmentTemplate> SubDepartmentTemplates { get; set; }
+        public virtual ICollection<OS_DepartmentCostCenterTemplate> DepartmentCostCenterTemplates { get; set; }
 
         public bool ContainsDepartment(int id)
         {
@@ -50,6 +45,16 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
                 result = SubDepartmentTemplates.Any(x => x.SubDepartmentTemplate.ContainsDepartment(id));
             return result;
         }
+    }
+    public class OS_DepartmentCostCenterTemplate : AuditedAggregateTenantRoot<int>
+    {
+        public OS_DepartmentTemplate DepartmentTemplate { get; set; }
+        public int DepartmentTemplateId { get; set; }
+
+        public DictionaryValue CostCenter { get; set; }
+        public Guid CostCenterId { get; set; }
+
+        public double Percentage { get; set; }
     }
     public class OS_DepartmentPositionTemplate : AuditedAggregateTenantRoot<int>
     {

@@ -17,18 +17,21 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
 {
     public class OS_DepartmentTemplateAppService : CrudAppService<OS_DepartmentTemplate, OS_DepartmentTemplate_Dto, int, PagedAndSortedResultRequestDto, OS_DepartmentTemplate_Dto, OS_DepartmentTemplate_Dto>
     {
-        public OS_DepartmentTemplateAppService(IRepository<OS_DepartmentTemplate, int> repository, /*IRepository<OS_DepartmentPositionTemplate, int> departmentPositionTemplateRepo,*/ IRepository<OS_DepartmentSubDepartmentTemplate, int> departmentSubDepartmentTemplateRepo, IRepository<OS_PositionTemplate, int> positionTemplateRepo) : base(repository)
+        public OS_DepartmentTemplateAppService(IRepository<OS_DepartmentTemplate, int> repository, /*IRepository<OS_DepartmentPositionTemplate, int> departmentPositionTemplateRepo,*/ IRepository<OS_DepartmentSubDepartmentTemplate, int> departmentSubDepartmentTemplateRepo, IRepository<OS_PositionTemplate, int> positionTemplateRepo, IRepository<OS_DepartmentCostCenterTemplate, int> departmentCostCentersTemplateRepo) : base(repository)
         {
             Repository = repository;
             //DepartmentPositionTemplateRepo = departmentPositionTemplateRepo;
             DepartmentSubDepartmentTemplateRepo = departmentSubDepartmentTemplateRepo;
             PositionTemplateRepo = positionTemplateRepo;
+            DepartmentCostCentersTemplateRepo = departmentCostCentersTemplateRepo;
         }
 
         public IRepository<OS_DepartmentTemplate, int> Repository { get; }
         //public IRepository<OS_DepartmentPositionTemplate, int> DepartmentPositionTemplateRepo { get; set; }
         public IRepository<OS_DepartmentSubDepartmentTemplate, int> DepartmentSubDepartmentTemplateRepo { get; set; }
         public IRepository<OS_PositionTemplate, int> PositionTemplateRepo { get; set; }
+
+        public IRepository<OS_DepartmentCostCenterTemplate, int> DepartmentCostCentersTemplateRepo { get; set; }
 
         public async Task<List<OS_DepartmentTemplate_Dto>> GetAllDepartmentTemplatesAsync()
         {

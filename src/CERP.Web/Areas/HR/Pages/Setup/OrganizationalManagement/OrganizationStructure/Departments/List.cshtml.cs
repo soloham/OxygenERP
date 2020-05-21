@@ -210,11 +210,44 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curDepartmentTemplate.Name = departmentTemplate_Dto.Name;
                         curDepartmentTemplate.NameLocalized = departmentTemplate_Dto.NameLocalized;
                         curDepartmentTemplate.Code = departmentTemplate_Dto.Code;
-                        curDepartmentTemplate.CostCenter = null;
-                        curDepartmentTemplate.CostCenterId = departmentTemplate_Dto.CostCenterId;
                         curDepartmentTemplate.ReviewPeriod = departmentTemplate_Dto.ReviewPeriod;
                         curDepartmentTemplate.ValidityFromDate = departmentTemplate_Dto.ValidityFromDate;
                         curDepartmentTemplate.ValidityToDate = departmentTemplate_Dto.ValidityToDate;
+
+
+                        OS_DepartmentCostCenterTemplate_Dto[] depCostCenters = departmentTemplate_Dto.DepartmentCostCenterTemplates.ToArray();
+                        int[] curPosCostCentersIds = curDepartmentTemplate.DepartmentCostCenterTemplates != null && curDepartmentTemplate.DepartmentCostCenterTemplates.Count > 0 ? curDepartmentTemplate.DepartmentCostCenterTemplates.Select(x => x.DepartmentTemplate.Id).ToArray() : new int[0];
+                        List<int> toDeleteCostCenters = new List<int>();
+                        for (int i = 0; i < curPosCostCentersIds.Length; i++)
+                        {
+                            OS_DepartmentCostCenterTemplate curDepartmentCostCenter = curDepartmentTemplate.DepartmentCostCenterTemplates.First(x => x.DepartmentTemplate.Id == curPosCostCentersIds[i]);
+                            if (!depCostCenters.Any(x => x.DepartmentTemplateId == curPosCostCentersIds[i] && x.CreationTime == curDepartmentCostCenter.CreationTime))
+                            {
+                                curDepartmentTemplate.DepartmentCostCenterTemplates.Remove(curDepartmentTemplate.DepartmentCostCenterTemplates.First(x => x.DepartmentTemplate.Id == curPosCostCentersIds[i]));
+                                toDeleteCostCenters.Add(curPosCostCentersIds[i]);
+                            }
+                        }
+                        for (int i = 0; i < depCostCenters.Length; i++)
+                        {
+                            if (!curDepartmentTemplate.DepartmentCostCenterTemplates.Any(x => x.CostCenterId == depCostCenters[i].CostCenter.Id && x.CreationTime == depCostCenters[i].CreationTime))
+                            {
+                                curDepartmentTemplate.DepartmentCostCenterTemplates.Add(new OS_DepartmentCostCenterTemplate() { CostCenterId = depCostCenters[i].CostCenter.Id, Percentage = depCostCenters[i].Percentage });
+                            }
+                            else
+                            {
+                                var _departmentCostCenter = curDepartmentTemplate.DepartmentCostCenterTemplates.First(x => x.DepartmentTemplateId == depCostCenters[i].DepartmentTemplate.Id);
+                                //_departmentLoc.DepartmentValidityStart = posCostCenters[i].DepartmentValidityStart;
+                                //_departmentLoc.DepartmentValidityEnd = posCostCenters[i].DepartmentValidityEnd;
+                                //_departmentLoc.Name = posCostCenters[i].Name;
+
+                                //curDepartment.DepartmentCostCenterTemplates.Remove(curDepartment.DepartmentCostCenterTemplates.First(x => x.DepartmentTemplateId == _departmentLoc.DepartmentTemplateId));
+                                await OS_DepartmentTemplateAppService.DepartmentCostCentersTemplateRepo.UpdateAsync(_departmentCostCenter);
+                            }
+                        }
+                        for (int i = 0; i < toDeleteCostCenters.Count; i++)
+                        {
+                            await OS_DepartmentTemplateAppService.DepartmentCostCentersTemplateRepo.DeleteAsync(x => x.DepartmentTemplateId == toDeleteCostCenters[i]);
+                        }
 
                         OS_PositionTemplate_Dto[] depPositions = departmentTemplate_Dto.PositionTemplates.ToArray();
                         int[] curDepPositionsIds = curDepartmentTemplate.PositionTemplates != null && curDepartmentTemplate.PositionTemplates.Count > 0? curDepartmentTemplate.PositionTemplates.Select(x => x.Id).ToArray() : new int[0];
