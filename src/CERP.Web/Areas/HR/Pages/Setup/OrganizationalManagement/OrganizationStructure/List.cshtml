@@ -31,6 +31,7 @@
     var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
 
     var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
+    var initialStructureToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
     var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Audit Trail", tooltipText = "View Audit Trail", prefixIcon = "e-toggleaudittrail", id = "toggleaudittrail" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
 
     List<object> organizationStructuresCommands = new List<object>();
@@ -38,7 +39,6 @@
     organizationStructuresCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
     organizationStructuresCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
 
-    @*var positionEdit = new {@@params = new Syncfusion.EJ2.DropDowns.DropDownList() { CssClass = "moduleTypeDropDown", BeforeOpen = "loadPositionStatusesDropdown", DataSource = positionStatusesDescs, Query = "new ej.data.Query()", AllowFiltering = true }};*@
 
 List<OS_PositionLevel> positionLevels = Enum.GetValues(typeof(OS_PositionLevel)).Cast<OS_PositionLevel>().ToList();
 
@@ -66,13 +66,11 @@ var order = TreeData.GetDefaultData();
 
         let isEditingPositions = false;
         let curPositionsEditRow;
-
-        let organizationStructures = [];
-        let possibleSubOrganizationStructures = [];
+        let departments = [];
         let positions = [];
 
-        let positionJobs = [];
-        let positionTasks = [];
+        let usedDepartments = [];
+        let usedPositions = [];
         $(document).ready(function () {
             let options = {
                 buttonWidth: '100%',
@@ -83,35 +81,23 @@ var order = TreeData.GetDefaultData();
                 includeResetDivider: true,
                 enableCollapsibleOptGroups: true
             };
-            $('#depHeadId').multiselect(options);
-            $('#subOrganizationStructuresField').multiselect(options);
             $('#reviewPeriod').multiselect(options);
-
-            $('#positionJobs').multiselect(options);
-            $('#positionTasks').multiselect(options);
 
             let gridObj = $("#OrganizationStructuresGrid")[0].ej2_instances[0];
             //let positionsGrid = $("#PositionsGrid")[0].ej2_instances[0];
             //let subDGrid = $("#SubOrganizationStructuresGrid")[0].ej2_instances[0];
 
-            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_JobTemplate.getList({}).done(function (data) {
-                positionJobs = data.items;
-                let dataMS = [];
-                for (let i = 0; i < data.items.length; i++) {
-                    let item = data.items[i];
-                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_DepartmentTemplate.getAllDepartmentTemplates().done(function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    data[i].unitType = "Department";
                 }
-                $('#positionJobs').multiselect('dataprovider', dataMS);
+                departments = data;
             });
-            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_TaskTemplate.getList({}).done(function (data) {
-                positionTasks = data.items;
-                console.log(positionTasks);
-                let dataMS = [];
-                for (let i = 0; i < data.items.length; i++) {
-                    let item = data.items[i];
-                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_PositionTemplate.getAllPositionTemplates().done(function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    data[i].unitType = "Position";
                 }
-                $('#positionTasks').multiselect('dataprovider', dataMS);
+                positions = data;
             });
 
             gridObj.showSpinner();
@@ -291,12 +277,12 @@ var order = TreeData.GetDefaultData();
                             </div>
                         </div>
                         @*<div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">OrganizationStructure Head:</label>
-                                <select id="depHeadId" name="OrganizationStructureHeadId" class="form-control">
-                                </select>
-                            </div>
-                        </div>*@
+                                <div class="form-group">
+                                    <label class="margin-bottom-5 control-label">OrganizationStructure Head:</label>
+                                    <select id="depHeadId" name="OrganizationStructureHeadId" class="form-control">
+                                    </select>
+                                </div>
+                            </div>*@
                         <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                             <div class="col-sm-6" style="padding:0">
                                 <div class="form-group">
@@ -312,19 +298,6 @@ var order = TreeData.GetDefaultData();
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Cost Center:</label>
-                                <select id="costCenterId" name="CostCenterId" class="form-control">
-                                    @*@for (int i = 0; i < costCenters.Count; i++)
-                                    {
-                                        <option value="@costCenters[i].Id" data-value="@costCenters[i].Value">@costCenters[i].Value</option>
-                                    }*@
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                             <div id="reviewPeriodTypeField" class="col-sm-12" style="padding:0">
                                 <div class="form-group">
                                     <label class="margin-bottom-5 control-label">Review Period:</label>
@@ -358,28 +331,37 @@ var order = TreeData.GetDefaultData();
                     </div>
                 </div>
             </div>
-
             <div id="structureInfo" style="display:none">
-                @*@{
-                    var dict = new Dictionary<string, object>();
-                    dict.Add("number", true);
-                    dict.Add("min", 0);
-                    var editparams = new { @@params = new { format = "n" } };
-                }
-                <ejs-treegrid id="StructureTreeGrid" dataSource="order" height="400" childMapping="Children"
-                              treeColumnIndex="1" gridLines="Horizontal" allowRowDragAndDrop="true"
-                              toolbar="@(new List<string>() { "Add", "Delete", "Update", "Cancel" })">
-                    <e-treegrid-editsettings  allowAdding="true" allowEditing="true" allowDeleting="true" newRowPosition="Below"></e-treegrid-editsettings>
-                    <e-treegrid-columns>
-                        <e-treegrid-column field="id" headerText="" visible="true" isPrimaryKey="true" textAlign="Center"></e-treegrid-column>
-                        <e-treegrid-column field="name" headerText="Name" validationRules="@(new { required=true, number=false})" editType="stringedit" textAlign="Center"></e-treegrid-column>
-                        <e-treegrid-column field="nameLocalized" allowEditing="true" headerText="Local Name" validationRules="@(new { required=true, number=false})" editType="stringedit" textAlign="Center"></e-treegrid-column>
-                        <e-treegrid-column field="type" headerText="Type" allowEditing="true" textAlign="Center"></e-treegrid-column>
-                        <e-treegrid-column field="validityStartDate" allowEditing="true" headerText="Start Date" validationRules="@(new { date=true})" editType="datepickeredit" textAlign="Center" format="yMd" type="date"></e-treegrid-column>
-                        <e-treegrid-column field="validityEndDate" allowEditing="true" headerText="End Date" validationRules="@(dict)" editType="datepickeredit" format="yMd" type="date" textAlign="Center" edit="editparams"></e-treegrid-column>
-                    </e-treegrid-columns>
-                </ejs-treegrid>*@
+                <ejs-treegrid id="StructureTreeGrid" dataSource="order" height="380"
+                              toolbarClick="structureToolbarClick" toolbar="@initialStructureToolBar"
+                              childMapping="Children" treeColumnIndex="1" allowSelection="true" allowResizing="true"
+                              allowRowDragAndDrop="false" queryCellInfo="OnStructureQueryCellInfo">
+                    <e-treegrid-selectionsettings type="Multiple"></e-treegrid-selectionsettings>
+                    <e-treegrid-editsettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-treegrid-editsettings>
 
+                    @{
+                        List<string> unitTypes = new List<string>() { "Business Unit", "Division", "Department", "Position" };
+                        var typeEdit = new
+                        {
+                            @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Change = "loadTypeUnitsDropdown", CssClass = "unitTypeDropDown", BeforeOpen = "loadUnitTypesDropdown", DataSource = unitTypes, Query = "new ej.data.Query()", AllowFiltering = true }
+                        };
+                    var unitEdit = new
+                    {
+                            @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Change = "selectedTypeUnit", Fields = new Syncfusion.EJ2.DropDowns.DropDownListFieldSettings() { Text = "name", Value = "id" }, DataSource = new List<object>(), CssClass = "typeUnitDropDown", Query = "new ej.data.Query()", AllowFiltering = true }
+                    };
+
+                    }
+                    <e-treegrid-columns>
+                        <e-treegrid-column textAlign="Center" field="id" isPrimaryKey="true" headerText="Id" visible="false"></e-treegrid-column>
+                        <e-treegrid-column textAlign="Center" field="type" headerText="Type" edit="typeEdit" editType="dropdownedit"></e-treegrid-column>
+                        <e-treegrid-column textAlign="Center" field="unit" headerText="Unit Name" edit="unitEdit" editType="dropdownedit"></e-treegrid-column>
+                        <e-treegrid-column textAlign="Center" field="code" headerText="Unit Code"></e-treegrid-column>
+                        <e-treegrid-column headerText="Validity" textAlign="Center" columns='new List<Syncfusion.EJ2.TreeGrid.TreeGridColumn>() {
+                            new Syncfusion.EJ2.TreeGrid.TreeGridColumn() { Field= "validityFromDate", Type="date", Format="E, MMMM d, y", AllowEditing=true, EditType="datepicker", HeaderText = "From", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
+                            new Syncfusion.EJ2.TreeGrid.TreeGridColumn() { Field= "validityToDate", Type="date", Format="E, MMMM d, y", AllowEditing=true, EditType="datepicker", HeaderText = "To", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
+                        }'></e-treegrid-column>
+                    </e-treegrid-columns>
+                </ejs-treegrid>
             </div>
 
             <div class="row m-t-20">
@@ -402,11 +384,8 @@ var order = TreeData.GetDefaultData();
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "name", HeaderText = "English", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "nameLocalized", HeaderText = "Local", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
                     }'></e-grid-column>
-                    <e-grid-column field="getOrganizationStructureStructureString" headerText="Structure" textAlign="Center"></e-grid-column>
                     <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
-                    <e-grid-column field="getOrganizationStructurePositionsString" headerText="Positions" textAlign="Center"></e-grid-column>
                     @*<e-grid-column field="organizationStructureHead.name" headerText="Head" textAlign="Center"></e-grid-column>*@
-                    <e-grid-column field="costCenter.value" headerText="Cost Center" textAlign="Center"></e-grid-column>
                     <e-grid-column field="reviewPeriodDescription" headerText="Review period" textAlign="Center"></e-grid-column>
                     <e-grid-column headerText="Validity" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityFromDate", Type="date", Format="E, MMMM d, y", AllowEditing=true, EditType="datepicker", HeaderText = "From", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
@@ -422,18 +401,7 @@ var order = TreeData.GetDefaultData();
                 <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
             </ejs-grid>
         </div>
-        <ejs-treegrid id="TreeGrid" dataSource="order" height="380" childMapping="Children" treeColumnIndex="1" allowRowDragAndDrop="true">
-            <e-treegrid-selectionsettings type="Multiple"></e-treegrid-selectionsettings>
-            <e-treegrid-columns>
-                <e-treegrid-column field="TaskId" headerText="Task ID" textAlign="Right" width="95"></e-treegrid-column>
-                <e-treegrid-column field="TaskName" headerText="Task Name" width="220"></e-treegrid-column>
-                <e-treegrid-column field="StartDate" headerText="Start Date" textAlign="Right" format="yMd" type="date" width="115"></e-treegrid-column>
-                <e-treegrid-column field="EndDate" headerText="End Date" textAlign="Right" format="yMd" type="date" width="115"></e-treegrid-column>
-                <e-treegrid-column field="Duration" headerText="Duration" textAlign="Right" width="100"></e-treegrid-column>
-                <e-treegrid-column field="Progress" headerText="Progress" textAlign="Right" width="105"></e-treegrid-column>
-                <e-treegrid-column field="Priority" headerText="Priority" width="100"></e-treegrid-column>
-            </e-treegrid-columns>
-        </ejs-treegrid>
+
         <div id="auditTrail" style="display:none;">
             <partial name="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />
         </div>
@@ -452,10 +420,134 @@ var order = TreeData.GetDefaultData();
 </ejs-dialog>
 
 <script>
-    function loadPositionStatusesDropdown() {
+    function selectedTypeUnit() {
+        let curType = this.itemData.unitType;
+        if (curType == "Department") {
+            usedDepartments.push(this.itemData);
+        }
+    }
+    function OnStructureQueryCellInfo(args) {
+        if (args.column.field == "unit") {
+            let curType = args.data.type;
+            if (curType == "Department") {
+                for (var i = 0; i < usedDepartments.length; i++) {
+
+                    if (args.data.unit == usedDepartments[i].id) {
+                        args.cell.innerText = usedDepartments[i].name; // assign the foreignkey field value to the innertext
+                    }
+
+                }
+            }
+            else if (curType == "Position") {
+                for (var i = 0; i < usedPositions.length; i++) {
+
+                    if (args.data.unit == usedPositions[i].id) {
+                        args.cell.innerText = usedPositions[i].name; // assign the foreignkey field value to the innertext
+                    }
+
+                }
+            }
+        }
+        if (args.column.field == "code") {
+            let curType = args.data.type;
+            if (curType == "Department") {
+                for (var i = 0; i < usedDepartments.length; i++) {
+
+                    if (args.data.unit == usedDepartments[i].id) {
+                        args.cell.innerText = usedDepartments[i].code; // assign the foreignkey field value to the innertext
+                    }
+
+                }
+            }
+            else if (curType == "Position") {
+                for (var i = 0; i < usedPositions.length; i++) {
+
+                    if (args.data.unit == usedPositions[i].id) {
+                        args.cell.innerText = usedPositions[i].code; // assign the foreignkey field value to the innertext
+                    }
+
+                }
+            }
+        }
+        if (args.column.field == "validityFromDate") {
+            let curType = args.data.type;
+            if (curType == "Department") {
+                for (var i = 0; i < usedDepartments.length; i++) {
+
+                    if (args.data.unit == usedDepartments[i].id) {
+                        args.cell.innerText = usedDepartments[i].validityFromDate; // assign the foreignkey field value to the innertext
+                    }
+
+                }
+            }
+            else if (curType == "Position") {
+                for (var i = 0; i < usedPositions.length; i++) {
+
+                    if (args.data.unit == usedPositions[i].id) {
+                        args.cell.innerText = usedPositions[i].validityFromDate; // assign the foreignkey field value to the innertext
+                    }
+
+                }
+            }
+        }
+        if (args.column.field == "validityToDate") {
+            let curType = args.data.type;
+            if (curType == "Department") {
+                for (var i = 0; i < usedDepartments.length; i++) {
+
+                    if (args.data.unit == usedDepartments[i].id) {
+                        args.cell.innerText = usedDepartments[i].validityToDate; // assign the foreignkey field value to the innertext
+                    }
+
+                }
+            }
+            else if (curType == "Position") {
+                for (var i = 0; i < usedPositions.length; i++) {
+
+                    if (args.data.unit == usedPositions[i].id) {
+                        args.cell.innerText = usedPositions[i].validityToDate; // assign the foreignkey field value to the innertext
+                    }
+
+                }
+            }
+        }
+        
 
     }
 
+    function getUnusedDepartments() {
+        return departments.filter(function (x) { return usedDepartments.filter(function (y) { return y.id == x.id }).length == 0 });
+    }
+    function getUnusedPositions() {
+        return positions.filter(function (x) { return usedPositions.filter(function (y) { return y.id == x.id }).length == 0 });
+    }
+
+    function loadTypeUnitsDropdown() {
+        console.log(this);
+        let structureGrid = $('#StructureTreeGrid')[0].ej2_instances[0];
+        if (this.itemData == "Business Unit")
+        {
+            structureGrid.columns[2].edit.params.dataSource = ["TBU - I", "TBU - II"];
+        }
+        else if (this.itemData == "Division")
+        {
+            structureGrid.columns[2].edit.params.dataSource = [{name: "hello", id: 1}];
+        }
+        else if (this.itemData == "Department")
+        {
+            structureGrid.columns[2].edit.params.dataSource = getUnusedDepartments();
+        }
+        else if (this.itemData == "Position")
+        {
+            structureGrid.columns[2].edit.params.dataSource = getUnusedPositions();
+        }
+
+        console.log(structureGrid.columns[2].edit);
+        $('#StructureTreeGrid_gridcontrolunit')[0].ej2_instances[0].dataSource = structureGrid.columns[2].edit.params.dataSource;
+    }
+    function loadUnitTypesDropdown() {
+
+    }
     let isAuditTrail = false;
     function alertBtnClick() {
         let dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
@@ -683,6 +775,77 @@ var order = TreeData.GetDefaultData();
 
             return true;
         }
+    }
+
+    function structureToolbarClick(args) {
+        let gridObj = this;
+        let id = this.element.id;
+
+        if (args.item.id === `${id}_pdfexport`) {
+            gridObj.pdfExport();
+        }
+        if (args.item.id === `${id}_excelexport`) {
+            gridObj.excelExport();
+        }
+        if (args.item.id === `${id}_csvexport`) {
+            gridObj.csvExport();
+        }
+        if (this.getSelectedRecords().length > 0) {
+            let withHeader = false;
+            if (args.item.id === 'copyHeader') {
+                withHeader = true;
+            }
+            this.copy(withHeader);
+        }
+        else {
+            if (args.item.id === 'copyHeader') {
+                let dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+                dialogObj.show();
+            }
+            else if (args.item.id === 'copy') {
+                let dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+                dialogObj.show();
+            }
+        }
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, "Add", "Cancel", "Delete", "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }];
+            gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Add", "Cancel", "Delete"];
+            gridObj.showColumnChooser = true;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            let visCount = 0;
+            for (let i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (let i = 0; i < gridObj.columns.length; i++) {
+                    let col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (let i = 0; i < gridObj.columns.length; i++) {
+                    let col = gridObj.columns[i];
+                    if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+        }
+        if (args.item.id === 'toggleaudittrail') {
+
+        }
+        setTimeout(function () { gridObj.hideSpinner() }, 200);
     }
 </script>
 

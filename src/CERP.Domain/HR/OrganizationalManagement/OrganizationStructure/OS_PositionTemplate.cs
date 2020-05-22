@@ -25,8 +25,8 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         [CustomAudited]
         public string NameLocalized { get; set; }
 
-        [CustomAudited]
-        public OS_PositionLevel Level { get; set; }
+        //[CustomAudited]
+        //public OS_PositionLevel Level { get; set; }
 
         [CustomAudited]
         public int MaxPositionsPerDepartment { get; set; }

@@ -66,15 +66,15 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
 
                     OS_PositionTemplate_Dto positionTemplate_Dto = JsonSerializer.Deserialize<OS_PositionTemplate_Dto>(FormData["info"]);
 
-                    if (positionTemplate_Dto.Level == OS_PositionLevel.One)
-                    {
-                        OS_DepartmentTemplate curPositionDepTemplate = await OS_DepartmentTemplateAppService.Repository.GetAsync(positionTemplate_Dto.DepartmentTemplateId);
-                        if(curPositionDepTemplate.PositionTemplates.Any(x => x.Level == OS_PositionLevel.One && x.Id != positionTemplate_Dto.Id))
-                        {
-                            Exception ex = new Exception($"The position '{curPositionDepTemplate.PositionTemplates.First(x => x.Level == OS_PositionLevel.One).Name}' as a level '{App.Helpers.EnumExtensions.GetDescription(OS_PositionLevel.One)}' position already exists in the department '{curPositionDepTemplate.Name}'");
-                            throw ex;
-                        }
-                    }
+                    //if (positionTemplate_Dto.Level == OS_PositionLevel.One)
+                    //{
+                    //    OS_DepartmentTemplate curPositionDepTemplate = await OS_DepartmentTemplateAppService.Repository.GetAsync(positionTemplate_Dto.DepartmentTemplateId);
+                    //    if(curPositionDepTemplate.PositionTemplates.Any(x => x.Level == OS_PositionLevel.One && x.Id != positionTemplate_Dto.Id))
+                    //    {
+                    //        Exception ex = new Exception($"The position '{curPositionDepTemplate.PositionTemplates.First(x => x.Level == OS_PositionLevel.One).Name}' as a level '{App.Helpers.EnumExtensions.GetDescription(OS_PositionLevel.One)}' position already exists in the department '{curPositionDepTemplate.Name}'");
+                    //        throw ex;
+                    //    }
+                    //}
 
                     bool IsEditing = positionTemplate_Dto.Id > 0;
                     if (IsEditing)
@@ -221,7 +221,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curPositionTemplate.Name = positionTemplate_Dto.Name;
                         curPositionTemplate.NameLocalized = positionTemplate_Dto.NameLocalized;
                         curPositionTemplate.Code = positionTemplate_Dto.Code;
-                        curPositionTemplate.Level = positionTemplate_Dto.Level;
+                        //curPositionTemplate.Level = positionTemplate_Dto.Level;
                         curPositionTemplate.DepartmentTemplate = null;
                         curPositionTemplate.DepartmentTemplateId = positionTemplate_Dto.DepartmentTemplateId;
                         curPositionTemplate.ReviewPeriod = positionTemplate_Dto.ReviewPeriod;

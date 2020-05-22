@@ -23,8 +23,8 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public string Name { get; set; }
         public string NameLocalized { get; set; }
 
-        public string LevelDescription { get => EnumExtensions.GetDescription(Level); set => Level = EnumExtensions.GetValueFromDescription<OS_PositionLevel>(value); }
-        public OS_PositionLevel Level { get; set; }
+        //public string LevelDescription { get => EnumExtensions.GetDescription(Level); set => Level = EnumExtensions.GetValueFromDescription<OS_PositionLevel>(value); }
+        //public OS_PositionLevel Level { get; set; }
 
         public int MaxPositionsPerDepartment { get; set; }
 
