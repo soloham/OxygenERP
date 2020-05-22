@@ -154,6 +154,12 @@ namespace CERP
             CreateMap<OS_OrganizationStructureTemplate, OS_OrganizationStructureTemplate_Dto>();
             CreateMap<OS_OrganizationStructureTemplate_Dto, OS_OrganizationStructureTemplate>();
 
+            CreateMap<OS_DivisionTemplate, OS_DivisionTemplate_Dto>();
+            CreateMap<OS_DivisionTemplate_Dto, OS_DivisionTemplate>();
+
+            CreateMap<OS_BusinessUnitTemplate, OS_BusinessUnitTemplate_Dto>();
+            CreateMap<OS_BusinessUnitTemplate_Dto, OS_BusinessUnitTemplate>();
+            
             CreateMap<OS_DepartmentTemplate, OS_DepartmentTemplate_Dto>();
             CreateMap<OS_DepartmentTemplate_Dto, OS_DepartmentTemplate>();
             CreateMap<OS_DepartmentSubDepartmentTemplate, OS_DepartmentSubDepartmentTemplate_Dto>();

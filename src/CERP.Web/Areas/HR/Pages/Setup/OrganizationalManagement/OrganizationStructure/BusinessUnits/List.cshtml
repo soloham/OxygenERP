@@ -1,0 +1,544 @@
+﻿@page "/HR/OrganizationStructure/BusinessUnits"
+@using CERP.Localization;
+@using Microsoft.AspNetCore.Mvc.Localization;
+@using CERP.App;
+@using CERP;
+@using CERP.HR.Setup.OrganizationalManagement.OrganizationStructure;
+@inject IHtmlLocalizer<CERPResource> L
+@inject Volo.Abp.Json.IJsonSerializer JsonSerializer
+@using CERP.App.Helpers;
+@using Syncfusion.EJ2.Navigations;
+
+@model CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure.Pages.BusinessUnits.ListModel
+@{
+    ViewData["IsEditing"] = false;
+    bool IsEditing = (bool)ViewData["IsEditing"];
+
+    ViewData["Title"] = L["BusinessUnits"].Name;
+    ViewData["IconClass"] = "fas fa-check-circle";
+    ViewData["HeaderTitle"] = L["BusinessUnits"].Name.ToUpper();
+    ViewData["SubTitle"] = $"{L["ListOf"]} {L["BusinessUnits"]}";
+    ViewData["Area"] = "Setup";
+
+    ViewData["IsList"] = false;
+    ViewData["IsCreate"] = false;
+    string cNT = $"{L["Add"].Name} {L["BusinessUnit"].Name}";
+    ViewData["CreateNewText"] = cNT;
+    ViewData["CreateNewLink"] = "/BusinessUnits/BusinessUnit";
+
+    string TabPlaceholder = (bool)ViewData["IsEditing"] ? L["Area"].Name : L["Step"].Name;
+
+    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+
+    var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Audit Trail", tooltipText = "View Audit Trail", prefixIcon = "e-toggleaudittrail", id = "toggleaudittrail" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
+
+    List<object> businessUnitsCommands = new List<object>();
+    businessUnitsCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
+    businessUnitsCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+    businessUnitsCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
+
+    List<DictionaryValue> institues = Model.DictionaryValuesRepo.Where(x => x.ValueType.ValueTypeFor == ValueTypeModules.AcademicInstitution).ToList();
+
+    List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Cast<OS_ReviewPeriod>().ToList();
+
+    List<object> referenceCommands = new List<object>();
+    referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+}
+
+@section styles {
+    @if ((bool)ViewData["IsEditing"])
+    {
+        <link href="~/libs/smartwizard/dist/css/smart_wizard_theme_circles.min.css" rel="stylesheet" />
+    }
+
+    <style>
+        .customContentArea {
+            position: unset !important;
+        }
+    </style>
+}
+@section scripts {
+
+    <script>
+        var isEditingBusinessUnits = false;
+        var curBusinessUnitsEditRow;
+
+        let businessUnits = []
+        $(document).ready(function () {
+            let options = {
+                buttonWidth: '100%',
+                includeSelectAllOption: true,
+                enableFiltering: false,
+                enableClickableOptGroups: true,
+                includeResetOption: true,
+                includeResetDivider: true,
+                enableCollapsibleOptGroups: true
+            };
+
+            let gridObj = $("#BusinessUnitsGrid")[0].ej2_instances[0];
+            gridObj.showSpinner();
+            $('#businessUnitsLoader').slideDown(100);
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_BusinessUnitTemplate.getAllBusinessUnitTemplates().done(function (data) {
+                $('#businessUnitsLoader').slideUp(100);
+                gridObj.hideSpinner();
+
+                gridObj.dataSource = data;
+                setTimeout(function () { gridObj.hideSpinner() }, 200);
+            });
+
+            $('#addBusinessUnitsBtn').on('click', function () {
+                isEditingBusinessUnits = false;
+
+                let tabs = $('#businessUnitSpecificFormTabs')[0].ej2_instances[0];
+                tabs.properties.items[1].visible = false;
+
+                $('#submitBusinessUnitBtn').val('Create Business Unit');
+            });
+            $('#submitBusinessUnitBtn').on('click', function (e) {
+                e.preventDefault();
+                if (ValidateForm('businessUnitSpecificForm')) {
+                    gridObj.showSpinner();
+                    Swal.showLoading();
+
+                    let form = [];
+                    let functionDetails = $('#businessUnitSpecificForm').find("textarea, input, select").serializeArray();
+                    form = form.concat(functionDetails);
+
+                    let params = objectifyForm(form);
+
+                    let id = 0;
+                    if (gridObj.dataSource.length > 0)
+                        id = gridObj.dataSource[gridObj.dataSource.length - 1].id;
+
+                    params.isEditing = isEditingBusinessUnits;
+                    params.DoesKPI = $('#doesKPI').parent().hasClass('active');
+
+                    if (isEditingBusinessUnits) {
+                        params.id = curBusinessUnitsEditRow.id;
+
+                        //cERP.appServices.hR.leaveRequestTemplates.update()
+                    }
+                    else {
+
+                        //cERP.appServices.hR.leaveRequestTemplates.update()
+                    }
+
+                    let formData = new FormData();
+                    formData.append("info", JSON.stringify(params));
+                    let xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+                    formData.append("__RequestVerificationToken", xhrToken);
+                    console.log(params);
+
+                    $.ajax({
+                        url: "?handler=BusinessUnitTemplate",
+                        async: true,
+                        type: "POST",
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (data) {
+                            Swal.hideLoading();
+                            console.log(data);
+                            if (isEditingBusinessUnits) {
+                                gridObj.refresh(); // refresh the Grid.
+
+                                swal.fire("Success", "BusinessUnit has successfully been updated", "success");
+
+                                for (let i = 0; i < gridObj.dataSource.length; i++) {
+                                    if (gridObj.dataSource[i].id == data.id) {
+                                        gridObj.dataSource[i] = data;
+                                    }
+                                }
+                                gridObj.refresh();
+                            }
+                            else {
+                                gridObj.dataSource.push(data);
+
+                                gridObj.refresh(); // refresh the Grid.
+
+                                swal.fire("Success", "BusinessUnit has successfully been added", "success");
+                            }
+                            gridObj.hideSpinner();
+                        },
+                        error: function (err) {
+                            Swal.hideLoading();
+                            if (isEditingBusinessUnits)
+                                swal.fire("Failed", "BusinessUnit couldn't be updated, please fix all errors and try again.", "error");
+                            else
+                                swal.fire("Failed", "BusinessUnit couldn't be added, please fix all errors and try again.", "error");
+
+                            console.log(err);
+                            gridObj.hideSpinner();
+                        }
+                    });
+                }
+                else {
+                    Swal.close();
+                    Swal.hideLoading();
+                }
+            });
+        });
+    </script>
+}
+<partial name="_DefaultPageHeader" />
+<div class="site-content customContentArea">
+    <div class="control-section">
+        <div class="areaHeader" style="display:flex;">
+            <div id="businessUnitsLoader" class="pull-left loader-inline" style="display:none"></div>
+            <div class="areaHeaderTitle">
+                <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Current Business Units</span>
+                @*<span id="" class="areaHeaderTitleInNode menu-text"> > </span>*@
+                @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
+            </div>
+            @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
+            <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                @*<div class="clearfix margin-15"></div>*@
+                <a id="addBusinessUnitsBtn" onclick="areaHeaderBtnClick(event); isEditingBusinessUnits = false;" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+            </div>
+        </div>
+        <form id="businessUnitsForm" onkeydown="return event.key != 'Enter';" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+            <div id="businessUnitSpecificForm">
+                <ejs-tab id="businessUnitSpecificFormTabs" animation="ViewBag.animation" height="250px">
+                    <e-tab-tabitems>
+                        <e-tab-tabitem header="@(new TabHeader { Text = "General" })" content="#generalTab"></e-tab-tabitem>
+                        <e-tab-tabitem header="@(new TabHeader { Text = "References" })" visible="false" content="#referencesTab"></e-tab-tabitem>
+                    </e-tab-tabitems>
+                </ejs-tab>
+                <div id="generalTab" class="areaForm">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Business Unit Code:</label>
+                                <input type="text" id="businessUnitCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                            <div class="col-sm-6" style="padding:0">
+                                <div class="form-group">
+                                    <label class="control-label m-b-5 ">Title:</label>
+                                    <input type="text" id="businessUnitTitle" name="Name" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                </div>
+                            </div>
+                            <div class="col-sm-6" style="padding:0">
+                                <div class="form-group">
+                                    <label class="control-label m-b-5 ">Title (In Arabic):</label>
+                                    <input type="text" id="businessUnitTitleLocalized" name="NameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Business Unit Description:</label>
+                                <input type="text" id="businessUnitDescription" name="Description" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-12" style="padding: 0">
+                                <div class="form-group">
+                                    <label class="control-label m-b-5 ">Valid From:</label>
+                                    <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-12" style="padding: 0">
+                                <div class="form-group">
+                                    <label class="control-label m-b-5 ">Valid To:</label>
+                                    <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="referencesTab" class="areaForm" style="display:none">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="panel-body p-t-0" style="">
+                                <div id="referencesCS" class="control-section">
+                                    <ejs-grid id="ReferenceReferenceGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                              allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                              allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                              toolbar="@initialToolBar" toolbarClick="defaultToolbarClick"
+                                              allowPaging="true" allowResizing="true">
+
+                                        <e-grid-columns>
+                                            <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                            <e-grid-column field="type" allowEditing="false" headerText="Type" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="name" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="code" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                            @*<e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>*@
+                                        </e-grid-columns>
+
+                                        <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                        <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                        <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                    </ejs-grid>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label class="control-label m-b-5 "></label>
+                        <input id="submitBusinessUnitBtn" type="button" class="btn btn-success btn-block" value="Create Business Unit" required />
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div id="businessUnitsCS" class="control-section">
+            <ejs-grid id="BusinessUnitsGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="commandClick"
+                      showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                      hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="businessUnitActionBegin" actionComplete="businessUnitActionComplete"
+                      allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                      toolbarClick="toolbarClick" toolbar="@initialToolBar"
+                      allowPaging="true" allowResizing="true">
+
+                <e-grid-columns>
+                    <e-grid-column field="id" headerText="Id" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                    <e-grid-column headerText="Name" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
+                        new Syncfusion.EJ2.Grids.GridColumn() { Field= "name", HeaderText = "English", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
+                        new Syncfusion.EJ2.Grids.GridColumn() { Field= "nameLocalized", HeaderText = "Local", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
+                    }'></e-grid-column>
+                    <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="description" headerText="Description" allowEditing="true" textAlign="Center"></e-grid-column>
+                    <e-grid-column headerText="Validity" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
+                        new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityFromDate", Type="date", Format="E, MMMM d, y", AllowEditing=true, EditType="datepicker", HeaderText = "From", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
+                        new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityToDate", Type="date", Format="E, MMMM d, y", AllowEditing=true, EditType="datepicker", HeaderText = "To", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
+                    }'></e-grid-column>
+
+                    <e-grid-column headerText="Actions" textAlign="Center" commands="businessUnitsCommands"></e-grid-column>
+                </e-grid-columns>
+
+                <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
+                <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+            </ejs-grid>
+        </div>
+        <div id="auditTrail" style="display:none;">
+            @*<partial name="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+        </div>
+    </div>
+
+</div>
+<ejs-dialog id="alert_dialog" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy with Header" content="Atleast one row should be selected to copy with header">
+    <e-dialog-buttons>
+        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+    </e-dialog-buttons>
+</ejs-dialog>
+<ejs-dialog id="alert_dialog_1" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy" content="Atleast one row should be selected to copy">
+    <e-dialog-buttons>
+        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+    </e-dialog-buttons>
+</ejs-dialog>
+
+<script>
+    function loadPositionStatusesDropdown() {
+
+    }
+
+    let isAuditTrail = false;
+
+    function alertBtnClick() {
+        let dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+        let dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
+        dialogObj.hide();
+        dialogObj1.hide();
+    }
+    function toolbarClick(args) {
+        let gridObj = document.getElementById("BusinessUnitsGrid").ej2_instances[0];
+
+        if (args.item.id === 'BusinessUnitsGrid_pdfexport') {
+            gridObj.pdfExport();
+        }
+        if (args.item.id === 'BusinessUnitsGrid_excelexport') {
+            gridObj.excelExport();
+        }
+        if (args.item.id === 'BusinessUnitsGrid_csvexport') {
+            gridObj.csvExport();
+        }
+        if (this.getSelectedRecords().length > 0) {
+            let withHeader = false;
+            if (args.item.id === 'copyHeader') {
+                withHeader = true;
+            }
+            this.copy(withHeader);
+        }
+        else {
+            if (args.item.id === 'copyHeader') {
+                let dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+                dialogObj.show();
+            }
+            else if (args.item.id === 'copy') {
+                let dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+                dialogObj.show();
+            }
+        }
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Audit Trail", tooltipText: "View Audit Trail", prefixIcon: "e-custom-audit-trail", id: "toggleaudittrail" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.showColumnChooser = true;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            let visCount = 0;
+            for (let i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (let i = 0; i < gridObj.columns.length; i++) {
+                    let col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (let i = 0; i < gridObj.columns.length; i++) {
+                    let col = gridObj.columns[i];
+                    if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+        }
+        if (args.item.id === 'toggleaudittrail') {
+
+            if (!isAuditTrail) {
+                var agtGrid = $("#AuditTrailGrid")[0].ej2_instances[0];
+                gridObj.showSpinner();
+
+                $.ajax({
+                    url: '?handler=DataAuditTrail',
+                    async: true,
+                    type: "GET",
+                    data: {},
+                    success: function (data) {
+                        gridObj.hideSpinner();
+
+                        //agtGrid.childGrid.childGrid.dataSource = data.tertiaryDS;
+                        //agtGrid.childGrid.dataSource = data.secondaryDS;
+                        agtGrid.dataSource = data.ds;
+                        agtGrid.refresh();
+
+                        $(".customContentArea").css('position', 'unset');
+                        $("#auditTrail").slideDown(200);
+                    },
+                    error: function (data) {
+                        gridObj.hideSpinner();
+
+                        $(".customContentArea").css('position', 'absolute');
+                        $("#auditTrail").slideUp(200);
+
+                        swal.fire('Failed', `An error occured while generating the audit trail`, 'error');
+                    }
+                });
+
+            }
+            else {
+                $(".customContentArea").css('position', 'absolute');
+                $("#auditTrail").slideUp(200);
+            }
+
+            isAuditTrail = !isAuditTrail;
+        }
+        setTimeout(function () { gridObj.hideSpinner() }, 200);
+    }
+    function commandClick(args) {
+        let gridObj = document.getElementById("BusinessUnitsGrid").ej2_instances[0];
+        if (args.commandColumn.type == "Edit") {
+            isEditingBusinessUnits = true;
+            let params = args.rowData;
+            curBusinessUnitsEditRow = params;
+
+            toggleAreaFormBtn('businessUnitsForm', false);
+
+            setTimeout(function () {
+                $('#submitBusinessUnitBtn').val('Update BusinessUnit');
+                toggleAreaFormBtn('businessUnitsForm', true);
+            }, 200);
+
+            FillFormByObject(params, $('#businessUnitsForm'));
+            $('#businessUnitsLoader').slideDown(100);
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_BusinessUnitTemplate.get(params.id).done(function (data) {
+                $('#businessUnitsLoader').slideUp(100);
+
+                $('#businessUnitAquisition').multiselect('select', params.businessUnitAquisition);
+                $('#businessUnitType').multiselect('select', params.businessUnitType);
+                $('#businessUnitSubType').multiselect('select', params.businessUnitSubType);
+
+                $('#doesKPI').parent().removeClass('active');
+                if (params.doesKPI) $('#doesKPI').parent().addClass('active');
+
+                $('#updatePeriod').multiselect('select', params.updatePeriod);
+
+                $('#compensationMatrixId').multiselect('select', params.compensationMatrixTemplateId);
+            });
+            let tabs = $('#businessUnitSpecificFormTabs')[0].ej2_instances[0];
+            tabs.properties.items[1].visible = true;
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_BusinessUnitTemplate.getAllReferences(params.id).done(function (data)
+            {
+
+                let refGrid = $('#ReferenceReferenceGrid')[0].ej2_instances[0];
+                refGrid.dataSource = data;
+                refGrid.refresh();
+
+                setTimeout(function () { refGrid.hideSpinner() }, 200);
+            });
+        }
+        else if (args.commandColumn.type == "Copy") {
+            this.copy(false);
+        }
+
+        setTimeout(function () { gridObj.hideSpinner() }, 200);
+    }
+    function businessUnitActionComplete(args) {
+        let gridObj = document.getElementById("BusinessUnitsGrid").ej2_instances[0];
+        setTimeout(function () { gridObj.hideSpinner() }, 200)
+    }
+    function businessUnitActionBegin(args) {
+        if (args.requestType == "delete") {
+            let gridObj = document.getElementById("BusinessUnitsGrid").ej2_instances[0];
+            Swal.showLoading();
+
+            let formData = new FormData();
+            formData.append("businessUnits", JSON.stringify(args.data));
+            let xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+            formData.append("__RequestVerificationToken", xhrToken);
+
+            $.ajax({
+                url: '?handler=BusinessUnitTemplate',
+                async: true,
+                type: "DELETE",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    gridObj.hideSpinner();
+                    swal.fire("Success", "BusinessUnit(s) has successfully been deleted", "success");
+
+                    if ($('#businessUnitsForm').css('display') !== 'none') {
+                        $('#businessUnitsForm').slideUp();
+                    }
+                },
+                error: function (err) {
+                    gridObj.hideSpinner();
+                    swal.fire("Failed", "BusinessUnit(s) couldn't be deleted, please fix all errors and try again.", "error");
+
+                    console.log(err);
+                }
+            });
+            setTimeout(function () { gridObj.hideSpinner() }, 200);
+        }
+    }
+</script>
+

@@ -162,6 +162,8 @@
     <Compile Remove="Migrations\20200515123518_HR_OM_OS_TaskJob_Qualification.Designer.cs" />
     <Compile Remove="Migrations\20200519161400_GR_OM_OS_Structures_Basic.cs" />
     <Compile Remove="Migrations\20200519161400_GR_OM_OS_Structures_Basic.Designer.cs" />
+    <Compile Remove="Migrations\20200522153729_BusinessUnit_OS_OM_HR.cs" />
+    <Compile Remove="Migrations\20200522153729_BusinessUnit_OS_OM_HR.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

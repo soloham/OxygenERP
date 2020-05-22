@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200522155644_Division_OS_OM_HR")]
+    partial class Division_OS_OM_HR
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2228,11 +2230,11 @@ namespace CERP.Migrations
                         .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ValidityFromDate")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("ValidityFromDate")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("ValidityToDate")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("ValidityToDate")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -2502,11 +2504,11 @@ namespace CERP.Migrations
                         .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ValidityFromDate")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("ValidityFromDate")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("ValidityToDate")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("ValidityToDate")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
