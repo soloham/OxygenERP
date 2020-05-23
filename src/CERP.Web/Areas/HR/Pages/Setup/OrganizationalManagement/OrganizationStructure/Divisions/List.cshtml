@@ -34,6 +34,7 @@
     var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Audit Trail", tooltipText = "View Audit Trail", prefixIcon = "e-toggleaudittrail", id = "toggleaudittrail" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
 
     List<object> divisionsCommands = new List<object>();
+    divisionsCommands.Add(new { type = "View", buttonOption = new { iconCss = "e-icons e-search", cssClass = "e-flat" } });
     divisionsCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
     divisionsCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
     divisionsCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
@@ -65,6 +66,7 @@
         var curDivisionsEditRow;
 
         let divisions = []
+        let gridObj;
         $(document).ready(function () {
             let options = {
                 buttonWidth: '100%',
@@ -76,7 +78,7 @@
                 enableCollapsibleOptGroups: true
             };
 
-            let gridObj = $("#DivisionsGrid")[0].ej2_instances[0];
+            gridObj = $("#DivisionsGrid")[0].ej2_instances[0];
             gridObj.showSpinner();
             $('#divisionsLoader').slideDown(100);
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_DivisionTemplate.getAllDivisionTemplates().done(function (data) {
@@ -97,88 +99,90 @@
             });
             $('#submitDivisionBtn').on('click', function (e) {
                 e.preventDefault();
-                if (ValidateForm('divisionSpecificForm')) {
-                    gridObj.showSpinner();
-                    Swal.showLoading();
-
-                    let form = [];
-                    let functionDetails = $('#divisionSpecificForm').find("textarea, input, select").serializeArray();
-                    form = form.concat(functionDetails);
-
-                    let params = objectifyForm(form);
-
-                    let id = 0;
-                    if (gridObj.dataSource.length > 0)
-                        id = gridObj.dataSource[gridObj.dataSource.length - 1].id;
-
-                    params.isEditing = isEditingDivisions;
-                    params.DoesKPI = $('#doesKPI').parent().hasClass('active');
-
-                    if (isEditingDivisions) {
-                        params.id = curDivisionsEditRow.id;
-
-                        //cERP.appServices.hR.leaveRequestTemplates.update()
-                    }
-                    else {
-
-                        //cERP.appServices.hR.leaveRequestTemplates.update()
-                    }
-
-                    let formData = new FormData();
-                    formData.append("info", JSON.stringify(params));
-                    let xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
-                    formData.append("__RequestVerificationToken", xhrToken);
-                    console.log(params);
-
-                    $.ajax({
-                        url: "?handler=DivisionTemplate",
-                        async: true,
-                        type: "POST",
-                        data: formData,
-                        contentType: false,
-                        processData: false,
-                        success: function (data) {
-                            Swal.hideLoading();
-                            console.log(data);
-                            if (isEditingDivisions) {
-                                gridObj.refresh(); // refresh the Grid.
-
-                                swal.fire("Success", "Division has successfully been updated", "success");
-
-                                for (let i = 0; i < gridObj.dataSource.length; i++) {
-                                    if (gridObj.dataSource[i].id == data.id) {
-                                        gridObj.dataSource[i] = data;
-                                    }
-                                }
-                                gridObj.refresh();
-                            }
-                            else {
-                                gridObj.dataSource.push(data);
-
-                                gridObj.refresh(); // refresh the Grid.
-
-                                swal.fire("Success", "Division has successfully been added", "success");
-                            }
-                            gridObj.hideSpinner();
-                        },
-                        error: function (err) {
-                            Swal.hideLoading();
-                            if (isEditingDivisions)
-                                swal.fire("Failed", "Division couldn't be updated, please fix all errors and try again.", "error");
-                            else
-                                swal.fire("Failed", "Division couldn't be added, please fix all errors and try again.", "error");
-
-                            console.log(err);
-                            gridObj.hideSpinner();
-                        }
-                    });
-                }
-                else {
-                    Swal.close();
-                    Swal.hideLoading();
-                }
+                submitDivisionBtn('divisionSpecificForm');
             });
         });
+        function submitDivisionBtn(formId) {
+            if (ValidateForm(formId)) {
+                gridObj.showSpinner();
+                Swal.showLoading();
+
+                let form = [];
+                let functionDetails = $('#' + formId).find("textarea, input, select").serializeArray();
+                form = form.concat(functionDetails);
+
+                let params = objectifyForm(form);
+
+                let id = 0;
+                if (gridObj.dataSource.length > 0)
+                    id = gridObj.dataSource[gridObj.dataSource.length - 1].id;
+
+                params.isEditing = isEditingDivisions;
+
+                if (isEditingDivisions) {
+                    params.id = curDivisionsEditRow.id;
+
+                    //cERP.appServices.hR.leaveRequestTemplates.update()
+                }
+                else {
+
+                    //cERP.appServices.hR.leaveRequestTemplates.update()
+                }
+
+                let formData = new FormData();
+                formData.append("info", JSON.stringify(params));
+                let xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+                formData.append("__RequestVerificationToken", xhrToken);
+                console.log(params);
+
+                $.ajax({
+                    url: "?handler=DivisionTemplate",
+                    async: true,
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        Swal.hideLoading();
+                        console.log(data);
+                        if (isEditingDivisions) {
+                            gridObj.refresh(); // refresh the Grid.
+
+                            swal.fire("Success", "Division has successfully been updated", "success");
+
+                            for (let i = 0; i < gridObj.dataSource.length; i++) {
+                                if (gridObj.dataSource[i].id == data.id) {
+                                    gridObj.dataSource[i] = data;
+                                }
+                            }
+                            gridObj.refresh();
+                        }
+                        else {
+                            gridObj.dataSource.push(data);
+
+                            gridObj.refresh(); // refresh the Grid.
+
+                            swal.fire("Success", "Division has successfully been added", "success");
+                        }
+                        gridObj.hideSpinner();
+                    },
+                    error: function (err) {
+                        Swal.hideLoading();
+                        if (isEditingDivisions)
+                            swal.fire("Failed", "Division couldn't be updated, please fix all errors and try again.", "error");
+                        else
+                            swal.fire("Failed", "Division couldn't be added, please fix all errors and try again.", "error");
+
+                        console.log(err);
+                        gridObj.hideSpinner();
+                    }
+                });
+            }
+            else {
+                Swal.close();
+                Swal.hideLoading();
+            }
+        }
     </script>
 }
 <partial name="_DefaultPageHeader" />
@@ -205,45 +209,67 @@
                         <e-tab-tabitem header="@(new TabHeader { Text = "References" })" visible="false" content="#referencesTab"></e-tab-tabitem>
                     </e-tab-tabitems>
                 </ejs-tab>
-                <div id="generalTab" class="areaForm">
-                    <div class="row">
-                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Division Code:</label>
-                                <input type="text" id="divisionCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                <div id="generalTab">
+                    <div class="" style="padding:0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="form-group" style="padding: 15px">
+                                <div class="col-sm-4" style="">
+                                    <label class="p-t-5 control-label pull-right">Division Code:</label>
+                                </div>
+                                <div class="col-sm-8" style="">
+                                    <input type="text" id="divisionCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                            <div class="col-sm-6" style="padding:0">
-                                <div class="form-group">
-                                    <label class="control-label m-b-5 ">Title:</label>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="form-group" style="padding: 15px">
+                                <div class="col-sm-4" style="">
+                                    <label class="p-t-5 control-label pull-right ">Title:</label>
+                                </div>
+                                <div class="col-sm-8" style="">
                                     <input type="text" id="divisionTitle" name="Name" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
                                 </div>
                             </div>
-                            <div class="col-sm-6" style="padding:0">
-                                <div class="form-group">
-                                    <label class="control-label m-b-5 ">Title (In Arabic):</label>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="form-group" style="padding: 15px">
+                                <div class="col-sm-4" style="">
+                                    <label class="p-t-5 control-label pull-right ">Title (In Arabic):</label>
+                                </div>
+                                <div class="col-sm-8" style="">
                                     <input type="text" id="divisionTitleLocalized" name="NameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Division Description:</label>
-                                <input type="text" id="divisionDescription" name="Description" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-12" style="padding: 0">
-                                <div class="form-group">
-                                    <label class="control-label m-b-5 ">Valid From:</label>
-                                    <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="form-group" style="padding: 15px">
+                                <div class="col-sm-4" style="">
+                                    <label class="p-t-5 control-label pull-right">Description:</label>
+                                </div>
+                                <div class="col-sm-8" style="">
+                                    <input type="text" id="divisionDescription" name="Description" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                                 </div>
                             </div>
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-12" style="padding: 0">
-                                <div class="form-group">
-                                    <label class="control-label m-b-5 ">Valid To:</label>
-                                    <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right ">Valid From:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right ">Valid To:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -293,6 +319,7 @@
                       hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="divisionActionBegin" actionComplete="divisionActionComplete"
                       allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
                       toolbarClick="toolbarClick" toolbar="@initialToolBar"
+                      detailTemplate="#divisionSpecificTemplate" detailDataBound="detailDataBound"
                       allowPaging="true" allowResizing="true">
 
                 <e-grid-columns>
@@ -316,6 +343,172 @@
                 <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
                 <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
             </ejs-grid>
+
+
+            <script type="text/x-jsrender" id="divisionSpecificTemplate">
+                <div id="divisionSpecificTemplateForm${id}" role="form" class="col-md-12">
+                    <div class="col-md-2">
+
+                    </div>
+                    <div class="col-md-8">
+                        <div id="accordingHtml${id}" class="col-ms-4">
+
+                        </div>
+
+
+                        <div id="generalTabTemplate${id}" style="display:none">
+                            <div class="" style="padding:0">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group" style="padding: 15px">
+                                        <div class="col-sm-4" style="">
+                                            <label class="p-t-5 control-label pull-right">Division Code:</label>
+                                        </div>
+                                        <div class="col-sm-8" style="">
+                                            <input type="text" id="divisionCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group" style="padding: 15px">
+                                        <div class="col-sm-4" style="">
+                                            <label class="p-t-5 control-label pull-right ">Title:</label>
+                                        </div>
+                                        <div class="col-sm-8" style="">
+                                            <input type="text" id="divisionTitle" name="Name" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group" style="padding: 15px">
+                                        <div class="col-sm-4" style="">
+                                            <label class="p-t-5 control-label pull-right ">Title (In Arabic):</label>
+                                        </div>
+                                        <div class="col-sm-8" style="">
+                                            <input type="text" id="divisionTitleLocalized" name="NameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group" style="padding: 15px">
+                                        <div class="col-sm-4" style="">
+                                            <label class="p-t-5 control-label pull-right">Description:</label>
+                                        </div>
+                                        <div class="col-sm-8" style="">
+                                            <input type="text" id="divisionDescription" name="Description" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right ">Valid From:</label>
+                                            </div>
+                                            <div class="col-sm-8" style="">
+                                                <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right ">Valid To:</label>
+                                            </div>
+                                            <div class="col-sm-8" style="">
+                                                <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id='referencesTabTemplate${id}' style="display:none">
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="panel-body p-t-0" style="">
+                                        <div id="referencesCS${id}" class="control-section">
+                                            <div id="referencesGrid${id}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="updateDivisionBtn${id}" class="row" style="display:none">
+                            <div class="col-md-12">
+                                <label class="control-label m-b-5 "></label>
+                                <input id="submitDivisionBtn${id}" type="button" class="btn btn-success btn-block" value="Update Division" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+
+                    </div>
+                </div>
+            </script>
+            <script>
+                function detailDataBound(args) {
+                    let params = args.data;
+                    elmm = args;
+                    var accordion = new ej.navigations.Accordion({
+                        items: [
+                            { header: 'General', expanded: 'true', content: '#generalTabTemplate' + params.id },
+                            { header: 'References', content: '#referencesTabTemplate' + params.id },
+                        ]
+                    });
+                    accordion.appendTo($(args.detailElement).find('#accordingHtml' + params.id)[0]);
+
+                    var refGrid = new ej.grids.Grid({
+                        id: 'detailReferencesGrid' + params.id,
+                        columns: [
+                            { field: 'id', headerText: 'Id', textAlign: 'Center', visible: 'false', isPrimaryKey: 'true', showInColumnChooser: 'false', },
+                            { field: 'type', allowEditing: 'false', headerText: 'Type', textAlign: 'Center', },
+                            { field: 'name', allowEditing: 'false', headerText: 'Name', textAlign: 'Center', },
+                            { field: 'code', allowEditing: 'false', headerText: 'Code', textAlign: 'Center', },
+
+                        ],
+                    });
+                    refGrid.appendTo($(args.detailElement).find('#referencesGrid' + params.id)[0]);
+
+                    $('#updateDivisionBtn' + params.id).on('click', function () {
+                        submitDivisionBtn('divisionSpecificTemplateForm' + params.id);
+                    });
+
+                    fillDetailForm(params, false)
+                }
+
+                function fillDetailForm(params, isEditing) {
+                    FillDivFormByObject(params, $('#generalTabTemplate' + params.id + ' :input'));
+                    if (!isEditing) {
+                        $.each($('#generalTabTemplate' + params.id + ' :input'), function (index, value) {
+                            $(value).attr('readonly', 'readonly');
+                        });
+                        $('#updateDivisionBtn' + params.id).slideUp();
+                    }
+                    else {
+                        $.each($('#generalTabTemplate' + params.id + ' :input'), function (index, value) {
+                            $(value).removeAttr('readonly');
+                        });
+
+                        $('#updateDivisionBtn' + params.id).slideDown();
+                    }
+                    $('#divisionsLoader').slideDown(100);
+                    cERP.appServices.hR.organizationalManagement.organizationStructure.oS_DivisionTemplate.get(params.id).done(function (data) {
+                        $('#divisionsLoader').slideUp(100);
+                    });
+                    cERP.appServices.hR.organizationalManagement.organizationStructure.oS_DivisionTemplate.getAllReferences(params.id).done(function (data) {
+
+                        let refGrid = $('#referencesGrid' + params.id)[0].ej2_instances[0];
+                        refGrid.dataSource = data;
+                        refGrid.refresh();
+
+                        setTimeout(function () { refGrid.hideSpinner() }, 200);
+                    });
+                }
+            </script>
         </div>
         <div id="auditTrail" style="display:none;">
             @*<partial name="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
@@ -455,51 +648,15 @@
     }
     function commandClick(args) {
         let gridObj = document.getElementById("DivisionsGrid").ej2_instances[0];
-        if (args.commandColumn.type == "Edit") {
+        if (args.commandColumn.type == "View") {
+            isEditingDivisions = false;
+            curDivisionsEditRow = null;
+        }
+        else if (args.commandColumn.type == "Edit") {
             isEditingDivisions = true;
-            let params = args.rowData;
-            curDivisionsEditRow = params;
-
-            toggleAreaFormBtn('divisionsForm', false);
-
-            setTimeout(function () {
-                $('#submitDivisionBtn').val('Update Division');
-                toggleAreaFormBtn('divisionsForm', true);
-            }, 200);
-
-            FillFormByObject(params, $('#divisionsForm'));
-            $('#divisionsLoader').slideDown(100);
-            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_DivisionTemplate.get(params.id).done(function (data) {
-                $('#divisionsLoader').slideUp(100);
-
-                $('#divisionAquisition').multiselect('select', params.divisionAquisition);
-                $('#divisionType').multiselect('select', params.divisionType);
-                $('#divisionSubType').multiselect('select', params.divisionSubType);
-
-                $('#doesKPI').parent().removeClass('active');
-                if (params.doesKPI) $('#doesKPI').parent().addClass('active');
-
-                $('#updatePeriod').multiselect('select', params.updatePeriod);
-
-                $('#compensationMatrixId').multiselect('select', params.compensationMatrixTemplateId);
-            });
-            let tabs = $('#divisionSpecificFormTabs')[0].ej2_instances[0];
-            tabs.properties.items[1].visible = true;
-            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_DivisionTemplate.getAllReferences(params.id).done(function (data)
-            {
-
-                let refGrid = $('#ReferenceReferenceGrid')[0].ej2_instances[0];
-                refGrid.dataSource = data;
-                refGrid.refresh();
-
-                setTimeout(function () { refGrid.hideSpinner() }, 200);
-            });
+            curDivisionsEditRow = args.rowData;
         }
-        else if (args.commandColumn.type == "Copy") {
-            this.copy(false);
-        }
-
-        setTimeout(function () { gridObj.hideSpinner() }, 200);
+        newDefaultCommandClick(gridObj, args);
     }
     function divisionActionComplete(args) {
         let gridObj = document.getElementById("DivisionsGrid").ej2_instances[0];

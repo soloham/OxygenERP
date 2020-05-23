@@ -599,7 +599,9 @@ e-expand::before {
 e-collapse::before {
     content: '\e300'
 }
-
+.e-icons.e-search::before {
+    content: '\e97d';
+}
 .e-grid {
     display: flex !important;
     flex-flow: column !important;

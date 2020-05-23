@@ -40,9 +40,9 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
 
         public IRepository<OS_PositionJobTemplate, int> PositionsReferenceRepo { get; set; }
 
-        public async Task<List<OS_JobTemplate_Dto>> GetAllJobTemplatesAsync()
+        public async Task<List<OS_JobTemplate_Dto>> GetAllJobTemplatesAsync(bool withDetails = false)
         {
-            List<OS_JobTemplate_Dto> list = (await Repository.GetListAsync(true)).Select(MapToGetListOutputDto).ToList();
+            List<OS_JobTemplate_Dto> list = (await Repository.GetListAsync(withDetails)).Select(MapToGetListOutputDto).ToList();
             return list;
         }
         public async Task<OS_JobTemplate_Dto> GetJobTemplateAsync(int id)

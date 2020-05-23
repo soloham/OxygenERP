@@ -247,7 +247,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
         }
         public async Task<IActionResult> OnDeleteDivisionTemplate()
         {
-            List<OS_DivisionTemplate_Dto> entitites = JsonSerializer.Deserialize<List<OS_DivisionTemplate_Dto>>(Request.Form["businessUnits"]);
+            List<OS_DivisionTemplate_Dto> entitites = JsonSerializer.Deserialize<List<OS_DivisionTemplate_Dto>>(Request.Form["divisions"]);
             try
             {
                 for (int i = 0; i < entitites.Count; i++)

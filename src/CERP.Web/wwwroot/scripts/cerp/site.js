@@ -20,6 +20,36 @@ Array.prototype.removeIf = function (callback) {
         }
     }
 };
+function newDefaultCommandClick(gridObj, args) {
+    if (args.commandColumn.type == "View") {
+        let params = args.rowData;
+        console.log(params);
+        //gridObj.detailRowModule.collapseAll();
+        console.log(args.rowData.id);
+        let rI = gridObj.getRowsObject().filter(function (x) { return typeof x.data !== 'undefined' && x.data.id == params.id })[0].index; /*params.id - 1*/;
+        console.log(rI);
+        gridObj.detailRowModule.expand(rI);
+
+        fillDetailForm(params, false);
+    }
+    if (args.commandColumn.type == "Edit") {
+        let params = args.rowData;
+        console.log(params);
+        //gridObj.detailRowModule.collapseAll();
+        console.log(args.rowData.id);
+        let rI = gridObj.getRowsObject().filter(function (x) { return typeof x.data !== 'undefined' && x.data.id == params.id })[0].index; /*params.id - 1*/;
+        console.log(rI);
+        gridObj.detailRowModule.expand(rI);
+
+        fillDetailForm(params, true);
+    }
+    else if (args.commandColumn.type == "Copy") {
+        this.copy(false);
+    }
+
+    setTimeout(function () { gridObj.hideSpinner() }, 200);
+
+}
 function toggleAreaFormBtn(formId, state)
 {
     var btn = $($('#' + formId).prev().find('.areaHeaderBtn'));

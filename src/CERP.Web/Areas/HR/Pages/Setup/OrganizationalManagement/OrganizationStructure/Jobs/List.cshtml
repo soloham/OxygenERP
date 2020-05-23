@@ -1010,7 +1010,7 @@
                     }'></e-grid-column>
                     <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
                     <e-grid-column field="description" headerText="Description" allowEditing="true" textAlign="Center"></e-grid-column>
-                    <e-grid-column field="compensationMatrix.name" headerText="Compensation Matrix" textAlign="Center"></e-grid-column>
+                    @*<e-grid-column field="compensationMatrix.name" headerText="Compensation Matrix" textAlign="Center"></e-grid-column>*@
                     @*<e-grid-column field="workshift.title" headerText="Workshift" textAlign="Center"></e-grid-column>*@
                     <e-grid-column field="maxJobPositions" headerText="Max Positions" textAlign="Center"></e-grid-column>
                     <e-grid-column field="reviewPeriodDescription" headerText="Review period" textAlign="Center"></e-grid-column>
@@ -1188,27 +1188,27 @@
 
 
                 tasksGrid.dataSource = [];
-                tasksGrid.dataSource = params.jobTaskTemplates.map(function (item) { return item.taskTemplate });
+                tasksGrid.dataSource = data.jobTaskTemplates.map(function (item) { return item.taskTemplate });
                 tasksGrid.refresh();
 
                 functionsGrid.dataSource = [];
-                functionsGrid.dataSource = params.jobFunctionTemplates.map(function (item) { return item.functionTemplate });
+                functionsGrid.dataSource = data.jobFunctionTemplates.map(function (item) { return item.functionTemplate });
                 functionsGrid.refresh();
 
                 workshiftsGrid.dataSource = [];
-                workshiftsGrid.dataSource = params.jobWorkshiftTemplates.map(function (item) { return item.workshift });
+                workshiftsGrid.dataSource = data.jobWorkshiftTemplates.map(function (item) { return item.workshift });
                 workshiftsGrid.refresh();
 
                 skillsGrid.dataSource = [];
-                skillsGrid.dataSource = params.jobSkillTemplates.map(function (item) { return item.skillTemplate });
+                skillsGrid.dataSource = data.jobSkillTemplates.map(function (item) { return item.skillTemplate });
                 skillsGrid.refresh();
 
                 academiaGrid.dataSource = [];
-                academiaGrid.dataSource = params.jobAcademiaTemplates.map(function (item) { return item.academiaTemplate });
+                academiaGrid.dataSource = data.jobAcademiaTemplates.map(function (item) { return item.academiaTemplate });
                 academiaGrid.refresh();
 
                 compensationMatrixGrid.dataSource = [];
-                compensationMatrixGrid.dataSource.push(params.compensationMatrix);
+                compensationMatrixGrid.dataSource.push(data.compensationMatrix);
                 compensationMatrixGrid.refresh();
 
                 //$('#functionsIds').multiselect('select', data.jobTaskTemplates.map(function (item) { return item.functionTemplateId }));
