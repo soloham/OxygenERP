@@ -8,6 +8,7 @@
 @inject Volo.Abp.Json.IJsonSerializer JsonSerializer
 @using CERP.App.Helpers;
 @using EJ2CoreSampleBrowser.Models;
+@using Syncfusion.EJ2.Navigations;
 
 @model CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure.Pages.OrganizationStructures.ListModel
 @{
@@ -34,17 +35,25 @@
     var initialStructureToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
     var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Audit Trail", tooltipText = "View Audit Trail", prefixIcon = "e-toggleaudittrail", id = "toggleaudittrail" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
 
+    List<object> osTreeCommands = new List<object>();
+    osTreeCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
+    osTreeCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+    osTreeCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
+
     List<object> organizationStructuresCommands = new List<object>();
     organizationStructuresCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
     organizationStructuresCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
     organizationStructuresCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
 
 
-List<OS_PositionLevel> positionLevels = Enum.GetValues(typeof(OS_PositionLevel)).Cast<OS_PositionLevel>().ToList();
+    List<OS_PositionLevel> positionLevels = Enum.GetValues(typeof(OS_PositionLevel)).Cast<OS_PositionLevel>().ToList();
 
-List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Cast<OS_ReviewPeriod>().ToList();
+    List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Cast<OS_ReviewPeriod>().ToList();
 
-var order = TreeData.GetDefaultData();
+    //var order = TreeData.GetDefaultData();
+
+    List<object> referenceCommands = new List<object>();
+    referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
 }
 @section styles {
     @if ((bool)ViewData["IsEditing"])
@@ -66,11 +75,75 @@ var order = TreeData.GetDefaultData();
 
         let isEditingPositions = false;
         let curPositionsEditRow;
+
+        let isEditingUnit = false;
+        let curUnitEditRow;
+
         let departments = [];
         let positions = [];
+        let businessUnits = [];
+        let divisions = [];
 
+        let buCostCenters = [];
+        let buPositions = [];
+
+        let buCostCentersGrid;
+        function populateCostCenterTemplates() {
+            try {
+                buCostCenters = buCostCenters.filter(function (y) {
+                    return buCostCentersGrid.dataSource.filter(function (x) { return x.id == y.id }).length == 0
+                });
+            } catch (e) {
+
+            }
+
+            let dataMS = [];
+            for (let i = 0; i < buCostCenters.length; i++) {
+                let item = buCostCenters[i];
+                dataMS.push({ label: `${item.key} - ${item.value}`, value: item.id, data: item });
+            }
+            $('#buCostCentersIds').multiselect('dataprovider', dataMS);
+            console.log(dataMS);
+        }
+        function loadCostCenterTemplates() {
+            $('#buCostCentersLoader').slideDown(100);
+            cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.costCenters).done(function (data) {
+                $('#buCostCentersLoader').slideUp(100);
+                buCostCenters = data;
+                populateCostCenterTemplates();
+            });
+        }
+
+        let buPositionsGrid;
+        function populatePositionTemplates() {
+            try {
+                buPositions = buPositions.filter(function (y) {
+                    return buPositionsGrid.dataSource.filter(function (x) { return x.id == y.id }).length == 0
+                });
+            } catch (e) {
+
+            }
+
+            let dataMS = [];
+            for (let i = 0; i < buPositions.length; i++) {
+                let item = buPositions[i];
+                dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+            }
+            $('#buPositionsIds').multiselect('dataprovider', dataMS);
+            console.log(dataMS);
+        }
+        function loadPositionTemplates() {
+            $('#buPositionsLoader').slideDown(100);
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_PositionTemplate.getAllPositionTemplates().done(function (data) {
+                $('#buPositionsLoader').slideUp(100);
+                buPositions = data;
+                populatePositionTemplates();
+            });
+        }
+
+        let usedBusinessUnits = [];
+        let usedDivisions = [];
         let usedDepartments = [];
-        let usedPositions = [];
         $(document).ready(function () {
             let options = {
                 buttonWidth: '100%',
@@ -82,10 +155,71 @@ var order = TreeData.GetDefaultData();
                 enableCollapsibleOptGroups: true
             };
             $('#reviewPeriod').multiselect(options);
+            $('#buCostCentersIds').multiselect(options);
+            $('#buPositionsIds').multiselect(options);
 
             let gridObj = $("#OrganizationStructuresGrid")[0].ej2_instances[0];
+            let structureTGrid = $("#StructureTreeGrid")[0].ej2_instances[0];
             //let positionsGrid = $("#PositionsGrid")[0].ej2_instances[0];
             //let subDGrid = $("#SubOrganizationStructuresGrid")[0].ej2_instances[0];
+            $('#addBUCostCenterBtn').on('click', function () {
+                loadCostCenterTemplates();
+            });
+            buCostCentersGrid = $('#BUCostCenterReferenceGrid')[0].ej2_instances[0];
+            $('#submitBUCostCenterBtn').on('click', function () {
+                if (ValidateForm('buCostCentersForm')) {
+                    let selectedCostCenters = $('#buCostCentersIds').val();
+                    for (var i = 0; i < selectedCostCenters.length; i++) {
+                        let _function = buCostCenters.filter(function (x) { return x.id == selectedCostCenters[i] })[0];
+                        _function.percentage = parseInt($('#buCostCenterPercentage').val());
+
+                        let curSum = 0;
+                        for (var i = 0; i < buCostCentersGrid.dataSource.length; i++) {
+                            curSum += buCostCentersGrid.dataSource[i].percentage;
+                        }
+                        console.log(curSum);
+                        if (curSum + _function.percentage <= 100)
+                            buCostCentersGrid.dataSource.push(_function);
+                        else {
+                            toastr.error(`Sum of all percentages exceed 100`);
+                            buCostCentersGrid.hideSpinner();
+                        }
+
+                        buCostCentersGrid.refresh();
+                    }
+                    populateCostCenterTemplates();
+                }
+            });
+
+            $('#addBUPositionBtn').on('click', function () {
+                loadPositionTemplates();
+            });
+            buPositionsGrid = $('#BUPositionReferenceGrid')[0].ej2_instances[0];
+            $('#submitBUPositionBtn').on('click', function () {
+                if (ValidateForm('buPositionsForm')) {
+                    let selectedPositions = $('#buPositionsIds').val();
+                    for (var i = 0; i < selectedPositions.length; i++) {
+                        let _function = buPositions.filter(function (x) { return x.id == selectedPositions[i] })[0];
+                        _function.percentage = parseInt($('#buPositionPercentage').val());
+
+                        let curSum = 0;
+                        for (var i = 0; i < buPositionsGrid.dataSource.length; i++) {
+                            curSum += buPositionsGrid.dataSource[i].percentage;
+                        }
+                        console.log(curSum);
+                        if (curSum + _function.percentage <= 100)
+                            buPositionsGrid.dataSource.push(_function);
+                        else {
+                            toastr.error(`Sum of all percentages exceed 100`);
+                            buPositionsGrid.hideSpinner();
+                        }
+
+                        buPositionsGrid.refresh();
+                    }
+                    populatePositionTemplates();
+                }
+            });
+
 
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_DepartmentTemplate.getAllDepartmentTemplates().done(function (data) {
                 for (var i = 0; i < data.length; i++) {
@@ -98,6 +232,18 @@ var order = TreeData.GetDefaultData();
                     data[i].unitType = "Position";
                 }
                 positions = data;
+            });
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_DivisionTemplate.getAllDivisionTemplates().done(function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    data[i].unitType = "Division";
+                }
+                divisions = data;
+            });
+            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_BusinessUnitTemplate.getAllBusinessUnitTemplates().done(function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    data[i].unitType = "Business Unit";
+                }
+                businessUnits = data;
             });
 
             gridObj.showSpinner();
@@ -121,6 +267,70 @@ var order = TreeData.GetDefaultData();
                 $('#subOrganizationStructuresField').change();
             });
 
+            $('#saveUnitDetailsBtn').on('click', function () {
+                console.log(curUnitEditRow);
+                switch (curUnitEditRow.type) {
+                    case "Business Unit":
+                        if (ValidateForm('businessUnitForm')) {
+                            structureTGrid.showSpinner();
+
+                            let form = [];
+                            let details = $('#businessUnitForm').find("textarea, input, select").serializeArray();
+                            form = form.concat(details);
+
+                            let params = objectifyForm(form);
+                            curUnitEditRow.unitDetails = params;
+                            console.log(params);
+                            console.log(curUnitEditRow);
+
+                            structureTGrid.hideSpinner();
+
+                            toastr.info(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} has been updated`);
+                        }
+                        else {
+                            toastr.error(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} could not be updated`);
+                        }
+                        break;
+                    case "Division":
+                        if (ValidateForm('divisionForm')) {
+                            structureTGrid.showSpinner();
+
+                            let form = [];
+                            let details = $('#divisionForm').find("textarea, input, select").serializeArray();
+                            form = form.concat(details);
+
+                            let params = objectifyForm(form);
+                            curUnitEditRow.unitDetails = params;
+
+                            structureTGrid.hideSpinner();
+
+                            toastr.info(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} has been updated`);
+                        }
+                        else {
+                            toastr.error(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} could not be updated`);
+                        }
+                        break;
+                    case "Department":
+                        if (ValidateForm('departmentForm')) {
+                            structureTGrid.showSpinner();
+
+                            let form = [];
+                            let details = $('#departmentForm').find("textarea, input, select").serializeArray();
+                            form = form.concat(details);
+
+                            let params = objectifyForm(form);
+                            curUnitEditRow.unitDetails = params;
+
+                            structureTGrid.hideSpinner();
+
+                            toastr.info(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} has been updated`);
+                        }
+                        else {
+                            toastr.error(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} could not be updated`);
+                        }
+                        break;
+                }
+            });
             $('#addOrganizationStructuresBtn').on('click', function () {
                 isEditingOrganizationStructures = false;
 
@@ -332,38 +542,280 @@ var order = TreeData.GetDefaultData();
                 </div>
             </div>
             <div id="structureInfo" style="display:none">
-                <ejs-treegrid id="StructureTreeGrid" dataSource="order" height="380"
-                              toolbarClick="structureToolbarClick" toolbar="@initialStructureToolBar"
-                              childMapping="Children" treeColumnIndex="1" allowSelection="true" allowResizing="true"
-                              allowRowDragAndDrop="false" queryCellInfo="OnStructureQueryCellInfo">
-                    <e-treegrid-selectionsettings type="Multiple"></e-treegrid-selectionsettings>
-                    <e-treegrid-editsettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-treegrid-editsettings>
+                <ejs-tab id="OSSpecificFormTabs" animation="ViewBag.animation">
+                    <e-tab-tabitems>
+                        <e-tab-tabitem header="@(new TabHeader { Text = "Organization Structure" })" content="#orgStructureTab"></e-tab-tabitem>
+                        <e-tab-tabitem header="@(new TabHeader { Text = "Position Management" })" content="#posManagementTab"></e-tab-tabitem>
+                    </e-tab-tabitems>
+                </ejs-tab>
+                <div id="orgStructureTab" class="areaForm" style="display:none;">
+                    <div id="osFormsHeader" style="display:none">
+                        <div class="areaHeader" style="display:flex;">
+                            <div id="organizationStructuresLoader" class="pull-left loader-inline" style="display:none"></div>
+                            <div class="areaHeaderTitle">
+                                <span id="areaHeadertitle" class="areaHeaderTitleNode menu-text"></span>
+                                <span id="" class="areaHeaderTitleInNode menu-text"> > </span>
+                                <span id="areaHeaderValue" class="areaHeaderTitleNode menu-text"></span>
+                            </div>
+                            <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                @*<div class="clearfix margin-15"></div>*@
+                                <a id="saveUnitDetailsBtn" onclick="areaHeaderBtnClick(event); isEditingUnit = false;" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-save fa-fw"></i> Save Unit</a>
+                            </div>
+                            @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
+                        </div>
+                    </div>
+                    <div id="businessUnitForm" role="form" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                        <ejs-tab id="businessUnitFormTabs" animation="ViewBag.animation">
+                            <e-tab-tabitems>
+                                <e-tab-tabitem header="@(new TabHeader { Text = "General" })" content="#generalBUDetailsTab"></e-tab-tabitem>
+                                <e-tab-tabitem header="@(new TabHeader { Text = "Cost Centers" })" content="#BUCostCentersTab"></e-tab-tabitem>
+                                <e-tab-tabitem header="@(new TabHeader { Text = "Associations" })" content="#BUAssociationsTab"></e-tab-tabitem>
+                            </e-tab-tabitems>
+                        </ejs-tab>
+                        <div id="generalBUDetailsTab" class="areaForm">
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label class="margin-bottom-5 control-label">Head of BU:</label>
+                                        <select id="buHead" name="HeadOfBUId" class="form-control" required>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label class="control-label m-b-5 ">Location:</label>
+                                        <select id="buLocation" name="BULocationId" class="form-control" required>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label class="margin-bottom-5 control-label">Paygroup:</label>
+                                        <select id="buPayroup" name="BUPaygroupId" class="form-control" required>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="BUCostCentersTab" class="areaForm" style="display:none">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="panel-body p-t-0" style="">
+                                        <div class="areaHeader" style="display:flex;">
+                                            <div id="buCostCentersLoader" class="pull-left loader-inline" style="display:none"></div>
+                                            <div class="areaHeaderTitle">
+                                                <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Cost Centers</span>
+                                            </div>
+                                            <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                                <a id="addBUCostCenterBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                                            </div>
+                                        </div>
+                                        <div role="form" id="buCostCentersForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                                    <div class="form-group">
+                                                        <label class="margin-bottom-5 control-label">Cost Centers:</label>
+                                                        <select id="buCostCentersIds" name="CostCentersIds" multiple="multiple" class="form-control">
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                                    <div class="form-group">
+                                                        <label class="margin-bottom-5 control-label">Percentage:</label>
+                                                        <input type="number" min="1" max="100" value="" id="buCostCenterPercentage" name="Percentage" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                                    <label class="control-label m-b-5 "></label>
+                                                    <button id="submitBUCostCenterBtn" type="button" class="btn btn-success btn-block">Add Cost Center(s)</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="buCostCentersCS" class="control-section">
+                                            <ejs-grid id="BUCostCenterReferenceGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                                      allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                                      hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                                      allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                                      toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" actionBegin="referenceActionBegin" actionComplete="referenceActionComplete"
+                                                      allowPaging="true" allowResizing="true">
 
-                    @{
-                        List<string> unitTypes = new List<string>() { "Business Unit", "Division", "Department", "Position" };
-                        var typeEdit = new
-                        {
-                            @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Change = "loadTypeUnitsDropdown", CssClass = "unitTypeDropDown", BeforeOpen = "loadUnitTypesDropdown", DataSource = unitTypes, Query = "new ej.data.Query()", AllowFiltering = true }
+                                                <e-grid-columns>
+                                                    <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                                    <e-grid-column field="key" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                                    <e-grid-column field="value" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                                    <e-grid-column field="percentage" allowEditing="true" headerText="Percentage" textAlign="Center"></e-grid-column>
+                                                    <e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>
+                                                </e-grid-columns>
+
+                                                <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                                <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                                <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                                <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                            </ejs-grid>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="BUAssociationsTab" class="areaForm" style="display:none">
+                            <ejs-accordion id="buAssociationsFormAccordion">
+                                <e-accordion-accordionitems>
+                                    <e-accordion-accordionitem expanded="true" header="Positions" content="#buPosAssociations"></e-accordion-accordionitem>
+                                    <e-accordion-accordionitem header="Companies" content="#buCompsAssociations"></e-accordion-accordionitem>
+                                    <e-accordion-accordionitem header="Divisions" content="#buDivisionsAssociations"></e-accordion-accordionitem>
+                                </e-accordion-accordionitems>
+                            </ejs-accordion>
+
+                            <div id="buPosAssociations" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="panel-body p-t-0" style="">
+                                            <div class="areaHeader" style="display:flex;">
+                                                <div id="buPositionsLoader" class="pull-left loader-inline" style="display:none"></div>
+                                                <div class="areaHeaderTitle">
+                                                    <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Positions</span>
+                                                </div>
+                                                <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                                    <a id="addBUPositionBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                                                </div>
+                                            </div>
+                                            <div role="form" id="buPositionsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                                                <div class="row">
+                                                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                                        <div class="form-group">
+                                                            <label class="margin-bottom-5 control-label">Positions:</label>
+                                                            <select id="buPositionsIds" name="PositionsIds" multiple="multiple" class="form-control">
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                                        <div class="form-group">
+                                                            <label class="margin-bottom-5 control-label">Percentage:</label>
+                                                            <input type="number" min="1" max="100" value="" id="buPositionPercentage" name="Percentage" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                                        <label class="control-label m-b-5 "></label>
+                                                        <button id="submitBUPositionBtn" type="button" class="btn btn-success btn-block">Add Position(s)</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="buPositionsCS" class="control-section">
+                                                <ejs-grid id="BUPositionReferenceGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                                          allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                                          toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" actionBegin="referenceActionBegin" actionComplete="referenceActionComplete"
+                                                          allowPaging="true" allowResizing="true">
+
+                                                    <e-grid-columns>
+                                                        <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                                        <e-grid-column field="code" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                                        <e-grid-column field="name" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                                        <e-grid-column field="percentage" allowEditing="true" headerText="Percentage" textAlign="Center"></e-grid-column>
+                                                        <e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>
+                                                    </e-grid-columns>
+
+                                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                                </ejs-grid>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="buCompsAssociations" style="display: none;">
+                            </div>
+                            <div id="buDivisionsAssociations" style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+                    <div id="divisionForm" role="form" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                        <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Head of Division:</label>
+                                <select id="divHead" name="HeadOfDivisionId" class="form-control" required>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label class="control-label m-b-5 ">Location:</label>
+                                <select id="divLocation" name="DivisionLocationId" class="form-control" required>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Paygroup:</label>
+                                <select id="divPayroup" name="DivisionPaygroupId" class="form-control" required>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="departmentForm" role="form" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                        <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Head of Department:</label>
+                                <select id="depHead" name="HeadOfDepartmentId" class="form-control" required>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label class="control-label m-b-5 ">Location:</label>
+                                <select id="depLocation" name="DepartmentLocationId" class="form-control" required>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Paygroup:</label>
+                                <select id="depPayroup" name="DepartmentPaygroupId" class="form-control" required>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <ejs-treegrid id="StructureTreeGrid" dataSource="new List<dynamic>()" load="structureLoad" height="380px" rowSelected="structureTreeRowSelected"
+                                  toolbarClick="structureToolbarClick" toolbar="@initialStructureToolBar" queryCellInfo="OnStructureQueryCellInfo"
+                                  actionBegin="structureTreeActionBegin" actionComplete="structureTreeActionComplete"
+                                  idMapping="id" parentIdMapping="parentId" childMapping="Children" treeColumnIndex="1" allowSelection="true" allowResizing="true"
+                                  allowRowDragAndDrop="false" rowDeselected="structureTreeRowDeselected">
+                        <e-treegrid-selectionsettings type="Multiple"></e-treegrid-selectionsettings>
+                        <e-treegrid-editsettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-treegrid-editsettings>
+
+                        @{
+                            List<string> unitTypes = new List<string>() { "Business Unit", "Division", "Department" };
+                            var typeEdit = new
+                            {
+@@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Change = "loadTypeUnitsDropdown", CssClass = "unitTypeDropDown", BeforeOpen = "loadUnitTypesDropdown", DataSource = unitTypes, Query = "new ej.data.Query()", AllowFiltering = true }
                         };
-                    var unitEdit = new
-                    {
-                            @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Change = "selectedTypeUnit", Fields = new Syncfusion.EJ2.DropDowns.DropDownListFieldSettings() { Text = "name", Value = "id" }, DataSource = new List<object>(), CssClass = "typeUnitDropDown", Query = "new ej.data.Query()", AllowFiltering = true }
-                    };
+                        var unitEdit = new
+                        {
+@@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Change = "selectedTypeUnit", Fields = new Syncfusion.EJ2.DropDowns.DropDownListFieldSettings() { Text = "name", Value = "id" }, DataSource = new List<object>(), CssClass = "typeUnitDropDown", Query = "new ej.data.Query()", AllowFiltering = true }
+                        };
 
-                    }
-                    <e-treegrid-columns>
-                        <e-treegrid-column textAlign="Center" field="id" isPrimaryKey="true" headerText="Id" visible="false"></e-treegrid-column>
-                        <e-treegrid-column textAlign="Center" field="type" headerText="Type" edit="typeEdit" editType="dropdownedit"></e-treegrid-column>
-                        <e-treegrid-column textAlign="Center" field="unit" headerText="Unit Name" edit="unitEdit" editType="dropdownedit"></e-treegrid-column>
-                        <e-treegrid-column textAlign="Center" field="code" headerText="Unit Code"></e-treegrid-column>
-                        <e-treegrid-column headerText="Validity" textAlign="Center" columns='new List<Syncfusion.EJ2.TreeGrid.TreeGridColumn>() {
-                            new Syncfusion.EJ2.TreeGrid.TreeGridColumn() { Field= "validityFromDate", Type="date", Format="E, MMMM d, y", AllowEditing=true, EditType="datepicker", HeaderText = "From", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
-                            new Syncfusion.EJ2.TreeGrid.TreeGridColumn() { Field= "validityToDate", Type="date", Format="E, MMMM d, y", AllowEditing=true, EditType="datepicker", HeaderText = "To", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
+                        }
+                        <e-treegrid-columns>
+                            <e-treegrid-column textAlign="Center" field="id" isPrimaryKey="true" headerText="Id" visible="false"></e-treegrid-column>
+                            <e-treegrid-column validationRules="@(new { required=true})" textAlign="Center" field="type" headerText="Type" edit="typeEdit" editType="dropdownedit"></e-treegrid-column>
+                            <e-treegrid-column validationRules="@(new { required=true})" textAlign="Center" field="_unit.name" headerText="Unit Name" edit="unitEdit" editType="dropdownedit"></e-treegrid-column>
+                            <e-treegrid-column textAlign="Center" field="_unit.code" headerText="Unit Code" allowEditing="false"></e-treegrid-column>
+                            <e-treegrid-column headerText="Validity" textAlign="Center" columns='new List<Syncfusion.EJ2.TreeGrid.TreeGridColumn>() {
+                            new Syncfusion.EJ2.TreeGrid.TreeGridColumn() { Field= "_unit.validityFromDate", Type="date", Format="E, MMMM d, y", AllowEditing=false, EditType="datepicker", HeaderText = "From", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
+                            new Syncfusion.EJ2.TreeGrid.TreeGridColumn() { Field= "_unit.validityToDate", Type="date", Format="E, MMMM d, y", AllowEditing=false, EditType="datepicker", HeaderText = "To", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
                         }'></e-treegrid-column>
-                    </e-treegrid-columns>
-                </ejs-treegrid>
-            </div>
+                            <e-treegrid-column headerText="Actions" textAlign="Center" commands="osTreeCommands"></e-treegrid-column>
 
+                        </e-treegrid-columns>
+                    </ejs-treegrid>
+                </div>
+                <div id="posManagementTab" class="areaForm" style="display:none">
+
+                </div>
+            </div>
             <div class="row m-t-20">
                 <div class="col-lg-12">
                     <input id="submitOrganizationStructureBtn" type="button" class="btn btn-success btn-block" value="Create Organization Structure" required />
@@ -420,130 +872,296 @@ var order = TreeData.GetDefaultData();
 </ejs-dialog>
 
 <script>
+    let curSelectedRow;
+    function structureLoad() {
+        this.columns[5].commands[0].buttonOption.click = function (args) {     //click event for custom command button
+            var treeGrid = document.getElementById('StructureTreeGrid').ej2_instances[0];  // treegrid instance
+            var rowObj = treeGrid.grid.getRowObjectFromUID(ej.base.closest(args.target, '.e-row').getAttribute('data-uid'));
+            let unitType = rowObj.data.type;
+            $('#osFormsHeader').slideUp(100);
+            setTimeout(function () {
+                $('#osFormsHeader').slideDown(100);
+                console.log(rowObj.data);
+                $('#osFormsHeader').find('#areaHeaderValue').text(rowObj.data._unit.name);
+            }, 100);
+
+            isEditingUnit = true;
+            curUnitEditRow = rowObj.data;
+            switch (unitType) {
+                case "Business Unit":
+                    $('#osFormsHeader').find('#areaHeadertitle').text('Business Unit');
+
+                    if (curUnitEditRow.unitDetails)
+                        FillFormByObject(curUnitEditRow.unitDetails, $('#businessUnitForm'));
+
+                    $('#businessUnitForm').slideDown();
+                    $('#divisionForm').slideUp();
+                    $('#departmentForm').slideUp();
+                    break;
+                case "Division":
+                    $('#osFormsHeader').find('#areaHeadertitle').text('Division');
+
+                    if (curUnitEditRow.unitDetails)
+                        FillFormByObject(curUnitEditRow.unitDetails, $('#divisionForm'));
+
+                    $('#divisionForm').slideDown();
+                    $('#departmentForm').slideUp();
+                    $('#businessUnitForm').slideUp();
+                    break;
+                case "Department":
+                    $('#osFormsHeader').find('#areaHeadertitle').text('Department');
+
+                    if (curUnitEditRow.unitDetails)
+                        FillFormByObject(curUnitEditRow.unitDetails, $('#departmentForm'));
+
+                    $('#departmentForm').slideDown();
+                    $('#divisionForm').slideUp();
+                    $('#businessUnitForm').slideUp();
+                    break;
+            }
+        }
+    }
     function selectedTypeUnit() {
         let curType = this.itemData.unitType;
+        console.log(curType);
         if (curType == "Department") {
             usedDepartments.push(this.itemData);
         }
+        else if (curType == "Division") {
+            usedDivisions.push(this.itemData);
+        }
+        else if (curType == "Business Unit") {
+            usedBusinessUnits.push(this.itemData);
+        }
+    }
+    function getUnitLevel(type) {
+        switch (type) {
+            case "Business Unit":
+                return 0;
+            case "Division":
+                return 1;
+            case "Department":
+                return 2;
+        }
+    }
+    function structureTreeActionBegin(args) {
+        console.log(args);
+        if (args.requestType == "add") {
+            curSelectedRow = this.getSelectedRecords()[0];
+
+        }
+        else if (args.requestType == "edit") {
+            
+        }
+        else if (args.requestType == "save") {
+            let curType = args.data.type;
+            if (curType == "Department") {
+                args.data._unit = usedDepartments.filter(function (x) { return x.id == args.data._unit.name })[0];
+            }
+            else if (curType == "Division") {
+                args.data._unit = usedDivisions.filter(function (x) { return x.id == args.data._unit.name })[0];
+            }
+            else if (curType == "Business Unit") {
+                args.data._unit = usedBusinessUnits.filter(function (x) { return x.id == args.data._unit.name })[0];
+            }
+
+            args.data.id = this.dataSource.length + 1;
+            if (typeof curSelectedRow !== 'undefined') {
+                args.cancel = true;
+                if (getUnitLevel(curType) < getUnitLevel(curSelectedRow.type)) {
+
+                    this.refresh();
+                }
+                else if (getUnitLevel(curType) == getUnitLevel(curSelectedRow.type) && curSelectedRow.type != "Department") {
+                    this.refresh();
+                }
+                else
+                {
+                    args.cancel = false;
+                    args.data.parentId = curSelectedRow.id;
+
+                    this.refresh();
+                }
+            }
+
+            curSelectedRow = undefined;
+            //else
+            //    
+        }
+    }
+    function structureTreeActionComplete(args) {
+        console.log(args);
+        if (args.requestType == "add") {
+
+        }
+        else if (args.requestType == "save") {
+            let ds = rfdc()(this.dataSource);
+            this.dataSource = [];
+            this.dataSource = ds;
+            this.refresh();
+
+            curSelectedRow = undefined;
+        }
+    }
+    function structureTreeRowSelected(args) {
+        //console.log(args);
+        //curSelectedRow = args.data;
+    }
+    function structureTreeRowDeselected(args) {
+        //console.log(args);
+        //curSelectedRow = undefined;
     }
     function OnStructureQueryCellInfo(args) {
-        if (args.column.field == "unit") {
-            let curType = args.data.type;
-            if (curType == "Department") {
-                for (var i = 0; i < usedDepartments.length; i++) {
+        //if (args.column.field == "unit") {
+        //    let curType = args.data.type;
+        //    console.log(curType);
+        //    if (curType == "Department") {
+        //        for (var i = 0; i < usedDepartments.length; i++) {
 
-                    if (args.data.unit == usedDepartments[i].id) {
-                        args.cell.innerText = usedDepartments[i].name; // assign the foreignkey field value to the innertext
-                    }
+        //            if (args.data.unit == usedDepartments[i].id) {
+        //                args.cell.innerText = usedDepartments[i].name; // assign the foreignkey field value to the innertext
+        //            }
 
-                }
-            }
-            else if (curType == "Position") {
-                for (var i = 0; i < usedPositions.length; i++) {
+        //        }
+        //    }
+        //    else if (curType == "Business Unit") {
+        //        for (var i = 0; i < usedBusinessUnits.length; i++) {
 
-                    if (args.data.unit == usedPositions[i].id) {
-                        args.cell.innerText = usedPositions[i].name; // assign the foreignkey field value to the innertext
-                    }
+        //            if (args.data.unit == usedBusinessUnits[i].id) {
+        //                args.cell.innerText = usedBusinessUnits[i].name; // assign the foreignkey field value to the innertext
+        //            }
 
-                }
-            }
-        }
-        if (args.column.field == "code") {
-            let curType = args.data.type;
-            if (curType == "Department") {
-                for (var i = 0; i < usedDepartments.length; i++) {
+        //        }
+        //    }
+        //    else if (curType == "Division") {
+        //        for (var i = 0; i < usedDivisions.length; i++) {
 
-                    if (args.data.unit == usedDepartments[i].id) {
-                        args.cell.innerText = usedDepartments[i].code; // assign the foreignkey field value to the innertext
-                    }
+        //            if (args.data.unit == usedDivisions[i].id) {
+        //                args.cell.innerText = usedDivisions[i].name; // assign the foreignkey field value to the innertext
+        //            }
 
-                }
-            }
-            else if (curType == "Position") {
-                for (var i = 0; i < usedPositions.length; i++) {
+        //        }
+        //    }
+        //}
+        //if (args.column.field == "code") {
+        //    let curType = args.data.type;
+        //    if (curType == "Department") {
+        //        for (var i = 0; i < usedDepartments.length; i++) {
 
-                    if (args.data.unit == usedPositions[i].id) {
-                        args.cell.innerText = usedPositions[i].code; // assign the foreignkey field value to the innertext
-                    }
+        //            if (args.data.unit == usedDepartments[i].id) {
+        //                args.cell.innerText = usedDepartments[i].code; // assign the foreignkey field value to the innertext
+        //            }
 
-                }
-            }
-        }
-        if (args.column.field == "validityFromDate") {
-            let curType = args.data.type;
-            if (curType == "Department") {
-                for (var i = 0; i < usedDepartments.length; i++) {
+        //        }
+        //    }
+        //    else if (curType == "Business Unit") {
+        //        for (var i = 0; i < usedBusinessUnits.length; i++) {
 
-                    if (args.data.unit == usedDepartments[i].id) {
-                        args.cell.innerText = usedDepartments[i].validityFromDate; // assign the foreignkey field value to the innertext
-                    }
+        //            if (args.data.unit == usedBusinessUnits[i].id) {
+        //                args.cell.innerText = usedBusinessUnits[i].code; // assign the foreignkey field value to the innertext
+        //            }
 
-                }
-            }
-            else if (curType == "Position") {
-                for (var i = 0; i < usedPositions.length; i++) {
+        //        }
+        //    }
+        //    else if (curType == "Division") {
+        //        for (var i = 0; i < usedDivisions.length; i++) {
 
-                    if (args.data.unit == usedPositions[i].id) {
-                        args.cell.innerText = usedPositions[i].validityFromDate; // assign the foreignkey field value to the innertext
-                    }
+        //            if (args.data.unit == usedDivisions[i].id) {
+        //                args.cell.innerText = usedDivisions[i].code; // assign the foreignkey field value to the innertext
+        //            }
 
-                }
-            }
-        }
-        if (args.column.field == "validityToDate") {
-            let curType = args.data.type;
-            if (curType == "Department") {
-                for (var i = 0; i < usedDepartments.length; i++) {
+        //        }
+        //    }
+        //}
+        //if (args.column.field == "validityFromDate") {
+        //    let curType = args.data.type;
+        //    if (curType == "Department") {
+        //        for (var i = 0; i < usedDepartments.length; i++) {
 
-                    if (args.data.unit == usedDepartments[i].id) {
-                        args.cell.innerText = usedDepartments[i].validityToDate; // assign the foreignkey field value to the innertext
-                    }
+        //            if (args.data.unit == usedDepartments[i].id) {
+        //                args.cell.innerText = usedDepartments[i].validityFromDate; // assign the foreignkey field value to the innertext
+        //            }
 
-                }
-            }
-            else if (curType == "Position") {
-                for (var i = 0; i < usedPositions.length; i++) {
+        //        }
+        //    }
+        //    else if (curType == "Business Unit") {
+        //        for (var i = 0; i < usedBusinessUnits.length; i++) {
 
-                    if (args.data.unit == usedPositions[i].id) {
-                        args.cell.innerText = usedPositions[i].validityToDate; // assign the foreignkey field value to the innertext
-                    }
+        //            if (args.data.unit == usedBusinessUnits[i].id) {
+        //                args.cell.innerText = usedBusinessUnits[i].validityFromDate; // assign the foreignkey field value to the innertext
+        //            }
 
-                }
-            }
-        }
-        
+        //        }
+        //    }
+        //    else if (curType == "Division") {
+        //        for (var i = 0; i < usedDivisions.length; i++) {
+
+        //            if (args.data.unit == usedDivisions[i].id) {
+        //                args.cell.innerText = usedDivisions[i].validityFromDate; // assign the foreignkey field value to the innertext
+        //            }
+
+        //        }
+        //    }
+        //}
+        //if (args.column.field == "validityToDate") {
+        //    let curType = args.data.type;
+        //    if (curType == "Department") {
+        //        for (var i = 0; i < usedDepartments.length; i++) {
+
+        //            if (args.data.unit == usedDepartments[i].id) {
+        //                args.cell.innerText = usedDepartments[i].validityToDate; // assign the foreignkey field value to the innertext
+        //            }
+
+        //        }
+        //    }
+        //    else if (curType == "Business Unit") {
+        //        for (var i = 0; i < usedBusinessUnits.length; i++) {
+
+        //            if (args.data.unit == usedBusinessUnits[i].id) {
+        //                args.cell.innerText = usedBusinessUnits[i].validityToDate; // assign the foreignkey field value to the innertext
+        //            }
+
+        //        }
+        //    }
+        //    else if (curType == "Division") {
+        //        for (var i = 0; i < usedDivisions.length; i++) {
+
+        //            if (args.data.unit == usedDivisions[i].id) {
+        //                args.cell.innerText = usedDivisions[i].validityToDate; // assign the foreignkey field value to the innertext
+        //            }
+
+        //        }
+        //    }
+        //}
+
 
     }
 
     function getUnusedDepartments() {
         return departments.filter(function (x) { return usedDepartments.filter(function (y) { return y.id == x.id }).length == 0 });
     }
-    function getUnusedPositions() {
-        return positions.filter(function (x) { return usedPositions.filter(function (y) { return y.id == x.id }).length == 0 });
+    function getUnusedDivisions() {
+        return divisions.filter(function (x) { return usedDivisions.filter(function (y) { return y.id == x.id }).length == 0 });
+    }
+    function getUnusedBusinessUnits() {
+        return businessUnits.filter(function (x) { return usedBusinessUnits.filter(function (y) { return y.id == x.id }).length == 0 });
     }
 
     function loadTypeUnitsDropdown() {
         console.log(this);
         let structureGrid = $('#StructureTreeGrid')[0].ej2_instances[0];
-        if (this.itemData == "Business Unit")
-        {
-            structureGrid.columns[2].edit.params.dataSource = ["TBU - I", "TBU - II"];
+        if (this.itemData == "Division") {
+            structureGrid.columns[2].edit.params.dataSource = getUnusedDivisions();
         }
-        else if (this.itemData == "Division")
-        {
-            structureGrid.columns[2].edit.params.dataSource = [{name: "hello", id: 1}];
-        }
-        else if (this.itemData == "Department")
-        {
+        else if (this.itemData == "Department") {
             structureGrid.columns[2].edit.params.dataSource = getUnusedDepartments();
         }
-        else if (this.itemData == "Position")
-        {
-            structureGrid.columns[2].edit.params.dataSource = getUnusedPositions();
+        else if (this.itemData == "Business Unit") {
+            structureGrid.columns[2].edit.params.dataSource = getUnusedBusinessUnits();
         }
 
         console.log(structureGrid.columns[2].edit);
-        $('#StructureTreeGrid_gridcontrolunit')[0].ej2_instances[0].dataSource = structureGrid.columns[2].edit.params.dataSource;
+        $('#StructureTreeGrid_gridcontrol_unit___name')[0].ej2_instances[0].dataSource = structureGrid.columns[2].edit.params.dataSource;
     }
     function loadUnitTypesDropdown() {
 
@@ -586,7 +1204,7 @@ var order = TreeData.GetDefaultData();
             }
         }
         if (args.item.id === 'showActions') {
-            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Audit Trail", tooltipText: "View Audit Trail", prefixIcon: "e-custom-audit-trail", id: "toggleaudittrail" },  { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Audit Trail", tooltipText: "View Audit Trail", prefixIcon: "e-custom-audit-trail", id: "toggleaudittrail" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
             gridObj.refresh();
         }
         if (args.item.id === 'hideActions') {
@@ -703,13 +1321,13 @@ var order = TreeData.GetDefaultData();
                 $('#subOrganizationStructuresField').multiselect('dataprovider', dataMS);
                 $('#subOrganizationStructuresField').change();
 
-                for (var i = 0; i < data.positionTemplates.length; i++) {
-                    let posTemplate = data.positionTemplates[i];
-                    cERP.appServices.setup.lookup.dictionaryValue.get(data.costCenterId).done(function (d) {
-                        posTemplate.costCenter = d;
-                        positionsGrid.refresh();
-                    });
-                }
+                //for (var i = 0; i < data.positionTemplates.length; i++) {
+                //    let posTemplate = data.positionTemplates[i];
+                //    cERP.appServices.setup.lookup.dictionaryValue.get(data.costCenterId).done(function (d) {
+                //        posTemplate.costCenter = d;
+                //        positionsGrid.refresh();
+                //    });
+                //}
 
                 positionsGrid.dataSource = data.positionTemplates;
                 positionsGrid.refresh();
@@ -846,6 +1464,18 @@ var order = TreeData.GetDefaultData();
 
         }
         setTimeout(function () { gridObj.hideSpinner() }, 200);
+    }
+
+
+    function referenceActionComplete(args) {
+        if (args.requestType == "delete") {
+            populateCostCenterTemplates();
+        }
+    }
+    function referenceActionBegin(args) {
+        if (args.requestType == "delete") {
+            populateCostCenterTemplates();
+        }
     }
 </script>
 
