@@ -359,6 +359,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         departmentTemplate_Dto.Id = 0;
                         //departmentTemplate_Dto.PositionTemplates.ForEach(x => { x.Id = 0; x.Id = x.Id; });
                         departmentTemplate_Dto.SubDepartmentTemplates.ForEach(x => { x.Id = 0; x.SubDepartmentTemplateId = x.SubDepartmentTemplate.Id; x.SubDepartmentTemplate = null; });
+                        departmentTemplate_Dto.DepartmentCostCenterTemplates.ForEach(x => { x.Id = 0; x.CostCenterId = x.CostCenter.Id; x.CostCenter= null; });
 
                         OS_DepartmentTemplate_Dto added = await OS_DepartmentTemplateAppService.CreateAsync(departmentTemplate_Dto);
                         OS_DepartmentTemplate_Dto addeddDto = await OS_DepartmentTemplateAppService.GetDepartmentTemplateAsync(added.Id);

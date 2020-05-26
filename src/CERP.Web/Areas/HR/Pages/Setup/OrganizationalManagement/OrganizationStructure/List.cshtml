@@ -157,6 +157,7 @@
             $('#reviewPeriod').multiselect(options);
             $('#buCostCentersIds').multiselect(options);
             $('#buPositionsIds').multiselect(options);
+            $('#buHead').multiselect(options);
 
             let gridObj = $("#OrganizationStructuresGrid")[0].ej2_instances[0];
             let structureTGrid = $("#StructureTreeGrid")[0].ej2_instances[0];
@@ -232,6 +233,13 @@
                     data[i].unitType = "Position";
                 }
                 positions = data;
+
+                let dataMS = [];
+                for (let i = 0; i < positions.length; i++) {
+                    let item = positions[i];
+                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+                }
+                $('#buHead').multiselect('dataprovider', dataMS);
             });
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_DivisionTemplate.getAllDivisionTemplates().done(function (data) {
                 for (var i = 0; i < data.length; i++) {
@@ -267,29 +275,34 @@
                 $('#subOrganizationStructuresField').change();
             });
 
-            $('#saveUnitDetailsBtn').on('click', function () {
+            $('#submitBUUnitBtn').on('click', function () {
                 console.log(curUnitEditRow);
+                if (ValidateForm('businessUnitForm')) {
+                    structureTGrid.showSpinner();
+
+                    let form = [];
+                    let details = $('#businessUnitForm').find("textarea, input, select").serializeArray();
+                    form = form.concat(details);
+
+                    let params = objectifyForm(form);
+                    curUnitEditRow.unitDetails = params;
+
+                    curUnitEditRow.unitDetails.costCenters = rfdc()(buCostCentersGrid.dataSource);
+                    curUnitEditRow.unitDetails.associations = { positions: rfdc()(buPositionsGrid.dataSource) };
+
+                    console.log(params);
+                    console.log(curUnitEditRow);
+
+                    structureTGrid.hideSpinner();
+
+                    toastr.info(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} has been updated`);
+                }
+                else {
+                    toastr.error(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} could not be updated`);
+                }
                 switch (curUnitEditRow.type) {
                     case "Business Unit":
-                        if (ValidateForm('businessUnitForm')) {
-                            structureTGrid.showSpinner();
-
-                            let form = [];
-                            let details = $('#businessUnitForm').find("textarea, input, select").serializeArray();
-                            form = form.concat(details);
-
-                            let params = objectifyForm(form);
-                            curUnitEditRow.unitDetails = params;
-                            console.log(params);
-                            console.log(curUnitEditRow);
-
-                            structureTGrid.hideSpinner();
-
-                            toastr.info(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} has been updated`);
-                        }
-                        else {
-                            toastr.error(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} could not be updated`);
-                        }
+                        
                         break;
                     case "Division":
                         if (ValidateForm('divisionForm')) {
@@ -559,7 +572,7 @@
                             </div>
                             <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
                                 @*<div class="clearfix margin-15"></div>*@
-                                <a id="saveUnitDetailsBtn" onclick="areaHeaderBtnClick(event); isEditingUnit = false;" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-save fa-fw"></i> Save Unit</a>
+                                @*<a id="saveUnitDetailsBtn" onclick="areaHeaderBtnClick(event); isEditingUnit = false;" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-save fa-fw"></i> Save Unit</a>*@
                             </div>
                             @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
                         </div>
@@ -584,14 +597,14 @@
                                 <div class="col-lg-4 col-md-4 col-sm-6 col-12">
                                     <div class="form-group">
                                         <label class="control-label m-b-5 ">Location:</label>
-                                        <select id="buLocation" name="BULocationId" class="form-control" required>
+                                        <select id="buLocation" name="BULocationId" class="form-control">
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-6 col-12">
                                     <div class="form-group">
                                         <label class="margin-bottom-5 control-label">Paygroup:</label>
-                                        <select id="buPayroup" name="BUPaygroupId" class="form-control" required>
+                                        <select id="buPayroup" name="BUPaygroupId" class="form-control">
                                         </select>
                                     </div>
                                 </div>
@@ -731,6 +744,11 @@
                             <div id="buDivisionsAssociations" style="display: none;">
                             </div>
                         </div>
+                        <div class="row m-t-20">
+                            <div class="col-lg-12">
+                                <input id="submitBUUnitBtn" type="button" class="btn btn-success btn-block" value="Update Business Unit" required />
+                            </div>
+                        </div>
                     </div>
                     <div id="divisionForm" role="form" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
                         <div class="col-lg-4 col-md-4 col-sm-6 col-12">
@@ -778,6 +796,8 @@
                             </div>
                         </div>
                     </div>
+                    
+
                     <ejs-treegrid id="StructureTreeGrid" dataSource="new List<dynamic>()" load="structureLoad" height="380px" rowSelected="structureTreeRowSelected"
                                   toolbarClick="structureToolbarClick" toolbar="@initialStructureToolBar" queryCellInfo="OnStructureQueryCellInfo"
                                   actionBegin="structureTreeActionBegin" actionComplete="structureTreeActionComplete"
@@ -893,6 +913,17 @@
 
                     if (curUnitEditRow.unitDetails)
                         FillFormByObject(curUnitEditRow.unitDetails, $('#businessUnitForm'));
+
+                    try {
+                        buCostCentersGrid.dataSource = rfdc()(curUnitEditRow.unitDetails.costCenters);
+                        buCostCentersGrid.refresh();
+
+                        buPositionsGrid.dataSource = rfdc()(curUnitEditRow.unitDetails.associations.positions);
+                        buPositionsGrid.refresh();
+
+                    } catch (e) {
+
+                    }
 
                     $('#businessUnitForm').slideDown();
                     $('#divisionForm').slideUp();

@@ -294,25 +294,25 @@
                     }
 
 
-                    let selectedCostCenters = costCentersGrid.dataSource.map(function (item) { return { costCenter: item, percentage: item.percentage } });;
-                    params.positionCostCenterTemplates = [];
-                    let ccSum = 0;
-                    for (var i = 0; i < selectedCostCenters.length; i++) {
-                        let toAdd = selectedCostCenters[i]
-                        if (isEditingPositions) {
-                            toAdd.positionTemplateId = curPositionsEditRow.id;
-                        }
-                        ccSum += toAdd.costCenter.percentage;
-                        params.positionCostCenterTemplates.push(toAdd);
-                    }
-                    console.log(ccSum);
-                    if (ccSum != 100) {
-                        Swal.hideLoading();
-                        swal.fire("Failed", "Sum of all cost center percentages must be 100%", "error");
+                    //let selectedCostCenters = costCentersGrid.dataSource.map(function (item) { return { costCenter: item, percentage: item.percentage } });;
+                    //params.positionCostCenterTemplates = [];
+                    //let ccSum = 0;
+                    //for (var i = 0; i < selectedCostCenters.length; i++) {
+                    //    let toAdd = selectedCostCenters[i]
+                    //    if (isEditingPositions) {
+                    //        toAdd.positionTemplateId = curPositionsEditRow.id;
+                    //    }
+                    //    ccSum += toAdd.costCenter.percentage;
+                    //    params.positionCostCenterTemplates.push(toAdd);
+                    //}
+                    //console.log(ccSum);
+                    //if (ccSum != 100) {
+                    //    Swal.hideLoading();
+                    //    swal.fire("Failed", "Sum of all cost center percentages must be 100%", "error");
 
-                        gridObj.hideSpinner();
-                        return;
-                    }
+                    //    gridObj.hideSpinner();
+                    //    return;
+                    //}
 
                     let selectedTasks = tasksGrid.dataSource.map(function (item) { return { taskTemplate: item } });;
                     params.positionTaskTemplates = [];
