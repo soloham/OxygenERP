@@ -207,6 +207,55 @@ namespace CERP.EntityFrameworkCore
                 #region HR
                 #region Organizational Management
                 #region Organization Structure
+
+                options.Entity<OS_OrganizationStructureTemplate>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.OrganizationStructureTemplateBusinessUnits)
+                                                        .ThenInclude(p => p.BusinessUnitTemplate)
+                                                       .Include(p => p.OrganizationStructureTemplateBusinessUnits)
+                                                        .ThenInclude(p => p.Location)
+                                                       .Include(p => p.OrganizationStructureTemplateBusinessUnits)
+                                                        .ThenInclude(p => p.OrganizationStructureTemplateBusinessUnitPositions)
+                                                        .ThenInclude(p => p.PositionTemplate)
+
+                                                       .Include(p => p.OrganizationStructureTemplateDivisions)
+                                                        .ThenInclude(p => p.DivisionTemplate)
+                                                       .Include(p => p.OrganizationStructureTemplateDivisions)
+                                                        .ThenInclude(p => p.Location)
+                                                       .Include(p => p.OrganizationStructureTemplateDivisions)
+                                                        .ThenInclude(p => p.OrganizationStructureTemplateDivisionPositions)
+                                                        .ThenInclude(p => p.PositionTemplate)
+
+                                                       .Include(p => p.OrganizationStructureTemplateDepartments)
+                                                        .ThenInclude(p => p.DepartmentTemplate)
+                                                       .Include(p => p.OrganizationStructureTemplateDepartments)
+                                                        .ThenInclude(p => p.Location)
+                                                       .Include(p => p.OrganizationStructureTemplateDepartments)
+                                                        .ThenInclude(p => p.OrganizationStructureTemplateDepartmentPositions)
+                                                        .ThenInclude(p => p.PositionTemplate);
+                });
+                options.Entity<OS_OrganizationStructureTemplateBusinessUnits>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.BusinessUnitTemplate)
+                                                       .Include(p => p.Location)
+                                                       .Include(p => p.OrganizationStructureTemplateBusinessUnitPositions)
+                                                        .ThenInclude(p => p.PositionTemplate);
+                });
+                options.Entity<OS_OrganizationStructureTemplateDivisions>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.DivisionTemplate)
+                                                       .Include(p => p.Location)
+                                                       .Include(p => p.OrganizationStructureTemplateDivisionPositions)
+                                                        .ThenInclude(p => p.PositionTemplate);
+                });
+                options.Entity<OS_OrganizationStructureTemplateDepartments>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.DepartmentTemplate)
+                                                       .Include(p => p.Location)
+                                                       .Include(p => p.OrganizationStructureTemplateDepartmentPositions)
+                                                        .ThenInclude(p => p.PositionTemplate);
+                });
+
                 options.Entity<OS_DepartmentTemplate>(opt =>
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.SubDepartmentTemplates)

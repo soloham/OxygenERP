@@ -727,89 +727,124 @@
 
             <div id="generalFieldsInfo" style="display:none">
                 <div id="organizationStructureSpecificForm">
-                    <div class="row">
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Organization Structure Code:</label>
-                                <input type="text" id="organizationStructureCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                            <div class="col-sm-6" style="padding:0">
-                                <div class="form-group">
-                                    <label class="control-label m-b-5 ">Title:</label>
-                                    <input type="text" id="organizationStructureTitle" name="Name" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                    <div class="col-sm-2">
+
+                    </div>
+                    <div class="col-sm-8" style="padding:0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="form-group" style="padding: 15px">
+                                <div class="col-sm-4" style="">
+                                    <label class="p-t-5 control-label pull-right">Code:</label>
                                 </div>
-                            </div>
-                            <div class="col-sm-6" style="padding:0">
-                                <div class="form-group">
-                                    <label class="control-label m-b-5 ">Title (In Arabic):</label>
-                                    <input type="text" id="organizationStructureTitleLocalized" name="NameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                <div class="col-sm-8" style="">
+                                    <input type="text" id="organizationStructureCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                                 </div>
                             </div>
                         </div>
-                        @*<div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                                <div class="form-group">
-                                    <label class="margin-bottom-5 control-label">OrganizationStructure Head:</label>
-                                    <select id="depHeadId" name="OrganizationStructureHeadId" class="form-control">
-                                    </select>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="form-group" style="padding: 15px">
+                                <div class="col-sm-4" style="">
+                                    <label class="p-t-5 control-label pull-right">Title:</label>
                                 </div>
-                            </div>*@
-                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                            <div class="col-sm-6" style="padding:0">
-                                <div class="form-group">
-                                    <label class="control-label m-b-5 ">Valid From:</label>
+                                <div class="col-sm-8" style="">
+                                    <input type="text" id="organizationStructureTitle" name="Name" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="form-group" style="padding: 15px">
+                                <div class="col-sm-4" style="">
+                                    <label class="p-t-5 control-label pull-right">Title (In Arabic):</label>
+                                </div>
+                                <div class="col-sm-8" style="">
+                                    <input type="text" id="organizationStructureTitleLocalized" name="NameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="form-group" style="padding: 15px">
+                                <div class="col-sm-4" style="">
+                                    <label class="p-t-5 control-label pull-right ">Valid From:</label>
+                                </div>
+                                <div class="col-sm-8" style="">
                                     <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
                                 </div>
                             </div>
-                            <div class="col-sm-6" style="padding:0">
-                                <div class="form-group">
-                                    <label class="control-label m-b-5 ">Valid To:</label>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="form-group" style="padding: 15px">
+                                <div class="col-sm-4" style="">
+                                    <label class="p-t-5 control-label pull-right ">Valid To:</label>
+                                </div>
+                                <div class="col-sm-8" style="">
                                     <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                            <div id="reviewPeriodTypeField" class="col-sm-12" style="padding:0">
-                                <div class="form-group">
-                                    <label class="margin-bottom-5 control-label">Review Period:</label>
-                                    <select id="reviewPeriod" name="ReviewPeriod" onchange="
-                                                if (typeof $('option:selected', '#reviewPeriod').attr('data-value') !== 'undefined' && $('option:selected', '#reviewPeriod').attr('data-value').includes('Day')) {
-                                                    $('#reviewPeriodTypeField').removeClass('col-sm-12');
-                                                    $('#reviewPeriodTypeField').addClass('col-sm-6');
-                                                    setTimeout(function () {
-                                                        $('#reviewPeriodDaysField').slideDown(0);
-                                                    }, 520);
-                                                } else {
-                                                    $('#reviewPeriodDaysField').slideUp(0);
-                                                    $('#reviewPeriodTypeField').removeClass('col-sm-6');
-                                                    $('#reviewPeriodTypeField').addClass('col-sm-12');
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="form-group" style="padding: 15px">
+                                <div class="col-sm-4" style="">
+                                    <label class="p-t-5 control-label pull-right ">Review Period:</label>
+                                </div>
+                                <div class="col-sm-8" style="">
+                                    <div id="reviewPeriodTypeField" class="col-sm-12" style="padding:0">
+                                        <div class="form-group">
+                                            <select id="reviewPeriod" name="ReviewPeriod" onchange="
+                                                    if (typeof $('option:selected', '#reviewPeriod').attr('data-value') !== 'undefined' && $('option:selected', '#reviewPeriod').attr('data-value').includes('Day')) {
+                                                        $('#reviewPeriodTypeField').removeClass('col-sm-12');
+                                                        $('#reviewPeriodTypeField').addClass('col-sm-6');
+                                                        setTimeout(function () {
+                                                            $('#reviewPeriodDaysField').slideDown(0);
+                                                        }, 520);
+                                                    } else {
+                                                        $('#reviewPeriodDaysField').slideUp(0);
+                                                        $('#reviewPeriodTypeField').removeClass('col-sm-6');
+                                                        $('#reviewPeriodTypeField').addClass('col-sm-12');
+                                                    }
+                                                " class="form-control" required>
+                                                @for (int i = 0; i < reviewPeriods.Count; i++)
+                                                {
+                                                    <option value="@((int)reviewPeriods[i])" data-value="@EnumExtensions.GetDescription(reviewPeriods[i])">@EnumExtensions.GetDescription(reviewPeriods[i])</option>
                                                 }
-                                            " class="form-control" required>
-                                        @for (int i = 0; i < reviewPeriods.Count; i++)
-                                        {
-                                            <option value="@((int)reviewPeriods[i])" data-value="@EnumExtensions.GetDescription(reviewPeriods[i])">@EnumExtensions.GetDescription(reviewPeriods[i])</option>
-                                        }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none; padding:0">
+                                        <div class="form-group">
+                                            <div class="col-sm-3" style="">
+                                                <label class="margin-bottom-5 control-label">Period Days:</label>
+                                            </div>
+                                            <div class="col-sm-9" style="">
+                                                <input type="number" min="0" id="reviewPeriodDays" name="ReviewPeriodDays" value="0" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <hr />
+                            <div class="form-group" style="padding: 15px">
+                                <div class="col-sm-4" style="">
+                                    <label class="p-t-5 control-label pull-right ">Legal Entity:</label>
+                                </div>
+                                <div class="col-sm-8" style="">
+                                    <select id="structureLegalEntity" name="LegalEntityId" class="form-control" required>
                                     </select>
                                 </div>
                             </div>
-                            <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none; padding:0">
-                                <div class="form-group">
-                                    <label class="margin-bottom-5 control-label">Period Days:</label>
-                                    <input type="number" min="0" id="reviewPeriodDays" name="ReviewPeriodDays" value="0" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
-                                </div>
-                            </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Legal Entity:</label>
-                                <select id="structureLegalEntity" name="LegalEntityId" class="form-control" required>
-                                </select>
-                            </div>
-                        </div>
+                    <div class="col-sm-2">
+
                     </div>
+                    @*<div class="col-lg-3 col-md-3 col-sm-3 col-12">
+            <div class="form-group">
+                <label class="margin-bottom-5 control-label">OrganizationStructure Head:</label>
+                <select id="depHeadId" name="OrganizationStructureHeadId" class="form-control">
+                </select>
+            </div>
+        </div>*@
                 </div>
             </div>
             <div id="structureInfo" style="display:none">
@@ -845,26 +880,46 @@
                         </ejs-tab>
                         <div id="generalBUDetailsTab" class="areaForm">
                             <div class="row">
-                                <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        <label class="margin-bottom-5 control-label">Head of BU:</label>
-                                        <select id="buHead" name="HeadOfBUId" class="form-control" required>
-                                        </select>
+                                <div class="col-sm-2">
+
+                                </div>
+                                <div class="col-sm-7" style="padding:0">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right ">Head of BU:</label>
+                                            </div>
+                                            <div class="col-sm-8" style="">
+                                                <select id="buHead" name="HeadOfBUId" class="form-control" required>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right ">Location:</label>
+                                            </div>
+                                            <div class="col-sm-8" style="">
+                                                <select id="buLocationsIds" name="BULocationId" class="form-control" required>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right ">Paygroup:</label>
+                                            </div>
+                                            <div class="col-sm-8" style="">
+                                                <select id="buPayroup" name="BUPaygroupId" class="form-control" required>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        <label class="control-label m-b-5 ">Location:</label>
-                                        <select id="buLocationsIds" name="BULocationId" class="form-control">
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        <label class="margin-bottom-5 control-label">Paygroup:</label>
-                                        <select id="buPayroup" name="BUPaygroupId" class="form-control">
-                                        </select>
-                                    </div>
+                                <div class="col-sm-2">
+
                                 </div>
                             </div>
                         </div>
@@ -1018,26 +1073,46 @@
                         </ejs-tab>
                         <div id="generalDIVDetailsTab" class="areaForm">
                             <div class="row">
-                                <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        <label class="margin-bottom-5 control-label">Head of DIV:</label>
-                                        <select id="divHead" name="HeadOfDIVId" class="form-control" required>
-                                        </select>
+                                <div class="col-sm-2">
+
+                                </div>
+                                <div class="col-sm-7" style="padding:0">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right ">Head of DIV:</label>
+                                            </div>
+                                            <div class="col-sm-8" style="">
+                                                <select id="divHead" name="HeadOfDIVId" class="form-control" required>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right ">Location:</label>
+                                            </div>
+                                            <div class="col-sm-8" style="">
+                                                <select id="divLocationsIds" name="DIVLocationId" class="form-control" required>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right ">Paygroup:</label>
+                                            </div>
+                                            <div class="col-sm-8" style="">
+                                                <select id="divPayroup" name="DIVPaygroupId" class="form-control" required>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        <label class="control-label m-b-5 ">Location:</label>
-                                        <select id="divLocationsIds" name="DIVLocationId" class="form-control">
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        <label class="margin-bottom-5 control-label">Paygroup:</label>
-                                        <select id="divPayroup" name="DIVPaygroupId" class="form-control">
-                                        </select>
-                                    </div>
+                                <div class="col-sm-2">
+
                                 </div>
                             </div>
                         </div>
@@ -1177,7 +1252,7 @@
                         </div>
                         <div class="row m-t-20">
                             <div class="col-lg-12">
-                                <input id="submitDIVUnitBtn" type="button" class="btn btn-success btn-block" value="Update Business Unit" required />
+                                <input id="submitDIVUnitBtn" type="button" class="btn btn-success btn-block" value="Update Division" required />
                             </div>
                         </div>
                     </div>
@@ -1191,27 +1266,48 @@
                             </e-tab-tabitems>
                         </ejs-tab>
                         <div id="generalDEPDetailsTab" class="areaForm">
+
                             <div class="row">
-                                <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        <label class="margin-bottom-5 control-label">Head of DEP:</label>
-                                        <select id="depHead" name="HeadOfDEPId" class="form-control" required>
-                                        </select>
+                                <div class="col-sm-2">
+
+                                </div>
+                                <div class="col-sm-7" style="padding:0">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right ">Head of DIV:</label>
+                                            </div>
+                                            <div class="col-sm-8" style="">
+                                                <select id="depHead" name="HeadOfDEPId" class="form-control" required>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right ">Location:</label>
+                                            </div>
+                                            <div class="col-sm-8" style="">
+                                                <select id="depLocationsIds" name="DEPLocationId" class="form-control" required>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right ">Paygroup:</label>
+                                            </div>
+                                            <div class="col-sm-8" style="">
+                                                <select id="depPayroup" name="DEPPaygroupId" class="form-control" required>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        <label class="control-label m-b-5 ">Location:</label>
-                                        <select id="depLocationsIds" name="DEPLocationId" class="form-control">
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        <label class="margin-bottom-5 control-label">Paygroup:</label>
-                                        <select id="depPayroup" name="DEPPaygroupId" class="form-control">
-                                        </select>
-                                    </div>
+                                <div class="col-sm-2">
+
                                 </div>
                             </div>
                         </div>
@@ -1351,7 +1447,7 @@
                         </div>
                         <div class="row m-t-20">
                             <div class="col-lg-12">
-                                <input id="submitDEPUnitBtn" type="button" class="btn btn-success btn-block" value="Update Business Unit" required />
+                                <input id="submitDEPUnitBtn" type="button" class="btn btn-success btn-block" value="Update Department" required />
                             </div>
                         </div>
                     </div>

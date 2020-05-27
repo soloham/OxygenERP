@@ -213,7 +213,10 @@
                     </e-tab-tabitems>
                 </ejs-tab>
                 <div id="generalTab">
-                    <div class="" style="padding:0">
+                    <div class="col-sm-2">
+
+                    </div>
+                    <div class="col-sm-8" style="padding:0">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="form-group" style="padding: 15px">
                                 <div class="col-sm-4" style="">
@@ -255,27 +258,28 @@
                             </div>
                         </div>
                         <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                                <div class="form-group" style="padding: 15px">
-                                    <div class="col-sm-4" style="">
-                                        <label class="p-t-5 control-label pull-right ">Valid From:</label>
-                                    </div>
-                                    <div class="col-sm-8" style="">
-                                        <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
-                                    </div>
+                            <div class="form-group" style="padding: 15px">
+                                <div class="col-sm-4" style="">
+                                    <label class="p-t-5 control-label pull-right ">Valid From:</label>
                                 </div>
-                            </div>
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                                <div class="form-group" style="padding: 15px">
-                                    <div class="col-sm-4" style="">
-                                        <label class="p-t-5 control-label pull-right ">Valid To:</label>
-                                    </div>
-                                    <div class="col-sm-8" style="">
-                                        <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
-                                    </div>
+                                <div class="col-sm-8" style="">
+                                    <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
                                 </div>
                             </div>
                         </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="form-group" style="padding: 15px">
+                                <div class="col-sm-4" style="">
+                                    <label class="p-t-5 control-label pull-right ">Valid To:</label>
+                                </div>
+                                <div class="col-sm-8" style="">
+                                    <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+
                     </div>
                 </div>
                 <div id="referencesTab" style="display:none">
@@ -351,17 +355,17 @@
 
             <script type="text/x-jsrender" id="businessUnitSpecificTemplate">
                 <div id="businessUnitSpecificTemplateForm${id}" role="form" class="col-md-12">
-                    <div class="col-md-2">
-
-                    </div>
-                    <div class="col-md-8">
+                    <div class="col-md-12">
                         <div id="accordingHtml${id}" class="col-ms-4">
 
                         </div>
 
 
                         <div id="generalTabTemplate${id}" style="display:none">
-                            <div class="" style="padding:0">
+                            <div class="col-md-2">
+
+                            </div>
+                            <div class="col-md-8" style="padding:0">
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                                     <div class="form-group" style="padding: 15px">
                                         <div class="col-sm-4" style="">
@@ -403,27 +407,28 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                                        <div class="form-group" style="padding: 15px">
-                                            <div class="col-sm-4" style="">
-                                                <label class="p-t-5 control-label pull-right ">Valid From:</label>
-                                            </div>
-                                            <div class="col-sm-8" style="">
-                                                <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
-                                            </div>
+                                    <div class="form-group" style="padding: 15px">
+                                        <div class="col-sm-4" style="">
+                                            <label class="p-t-5 control-label pull-right ">Valid From:</label>
                                         </div>
-                                    </div>
-                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                                        <div class="form-group" style="padding: 15px">
-                                            <div class="col-sm-4" style="">
-                                                <label class="p-t-5 control-label pull-right ">Valid To:</label>
-                                            </div>
-                                            <div class="col-sm-8" style="">
-                                                <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
-                                            </div>
+                                        <div class="col-sm-8" style="">
+                                            <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group" style="padding: 15px">
+                                        <div class="col-sm-4" style="">
+                                            <label class="p-t-5 control-label pull-right ">Valid To:</label>
+                                        </div>
+                                        <div class="col-sm-8" style="">
+                                            <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+
                             </div>
                         </div>
                         <div id='referencesTabTemplate${id}' style="display:none">
@@ -465,10 +470,6 @@
                                 <input id="submitBusinessUnitBtn${id}" type="button" class="btn btn-success btn-block" value="Update Business Unit" required />
                             </div>
                         </div>
-                    </div>
-
-                    <div class="col-md-2">
-
                     </div>
                 </div>
             </script>
