@@ -83,15 +83,28 @@
         let positions = [];
         let businessUnits = [];
         let divisions = [];
+        let legalEntities = [];
 
         let buCostCenters = [];
         let buPositions = [];
+        let divCostCenters = [];
+        let divPositions = [];
+        let depCostCenters = [];
+        let depPositions = [];
 
         let buCostCentersGrid;
+        let divCostCentersGrid;
+        let depCostCentersGrid;
         function populateCostCenterTemplates() {
             try {
                 buCostCenters = buCostCenters.filter(function (y) {
                     return buCostCentersGrid.dataSource.filter(function (x) { return x.id == y.id }).length == 0
+                });
+                divCostCenters = divCostCenters.filter(function (y) {
+                    return divCostCentersGrid.dataSource.filter(function (x) { return x.id == y.id }).length == 0
+                });
+                depCostCenters = depCostCenters.filter(function (y) {
+                    return depCostCentersGrid.dataSource.filter(function (x) { return x.id == y.id }).length == 0
                 });
             } catch (e) {
 
@@ -103,22 +116,50 @@
                 dataMS.push({ label: `${item.key} - ${item.value}`, value: item.id, data: item });
             }
             $('#buCostCentersIds').multiselect('dataprovider', dataMS);
+
+            dataMS = [];
+            for (let i = 0; i < divCostCenters.length; i++) {
+                let item = divCostCenters[i];
+                dataMS.push({ label: `${item.key} - ${item.value}`, value: item.id, data: item });
+            }
+            $('#divCostCentersIds').multiselect('dataprovider', dataMS);
+
+            dataMS = [];
+            for (let i = 0; i < depCostCenters.length; i++) {
+                let item = depCostCenters[i];
+                dataMS.push({ label: `${item.key} - ${item.value}`, value: item.id, data: item });
+            }
+            $('#depCostCentersIds').multiselect('dataprovider', dataMS);
             console.log(dataMS);
         }
         function loadCostCenterTemplates() {
             $('#buCostCentersLoader').slideDown(100);
+            $('#divCostCentersLoader').slideDown(100);
+            $('#depCostCentersLoader').slideDown(100);
             cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.costCenters).done(function (data) {
                 $('#buCostCentersLoader').slideUp(100);
+                $('#divCostCentersLoader').slideUp(100);
+                $('#depCostCentersLoader').slideUp(100);
+                divCostCenters = data;
                 buCostCenters = data;
+                depCostCenters = data;
                 populateCostCenterTemplates();
             });
         }
 
         let buPositionsGrid;
+        let divPositionsGrid;
+        let depPositionsGrid;
         function populatePositionTemplates() {
             try {
                 buPositions = buPositions.filter(function (y) {
                     return buPositionsGrid.dataSource.filter(function (x) { return x.id == y.id }).length == 0
+                });
+                divPositions = divPositions.filter(function (y) {
+                    return divPositionsGrid.dataSource.filter(function (x) { return x.id == y.id }).length == 0
+                });
+                depPositions = depPositions.filter(function (y) {
+                    return depPositionsGrid.dataSource.filter(function (x) { return x.id == y.id }).length == 0
                 });
             } catch (e) {
 
@@ -129,15 +170,68 @@
                 let item = buPositions[i];
                 dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
             }
-            $('#buPositionsIds').multiselect('dataprovider', dataMS);
-            console.log(dataMS);
+            $('#buPositionsIds').multiselect('dataprovider', rfdc()(dataMS));
+            dataMS = [];
+            for (let i = 0; i < divPositions.length; i++) {
+                let item = divPositions[i];
+                dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+            }
+            $('#divPositionsIds').multiselect('dataprovider', rfdc()(dataMS));
+            dataMS = [];
+            for (let i = 0; i < depPositions.length; i++) {
+                let item = depPositions[i];
+                dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+            }
+            $('#depPositionsIds').multiselect('dataprovider', rfdc()(dataMS));
         }
         function loadPositionTemplates() {
             $('#buPositionsLoader').slideDown(100);
+            $('#divPositionsLoader').slideDown(100);
+            $('#depPositionsLoader').slideDown(100);
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_PositionTemplate.getAllPositionTemplates().done(function (data) {
                 $('#buPositionsLoader').slideUp(100);
+                $('#divPositionsLoader').slideUp(100);
+                $('#depPositionsLoader').slideUp(100);
                 buPositions = data;
+                divPositions = data;
+                depPositions = data;
                 populatePositionTemplates();
+            });
+        }
+
+        let buLocations;
+        let divLocations;
+        function populateLocationTemplates() {
+            //try {
+            //    buLocations = buLocations.filter(function (y) {
+            //        return buPositionsGrid.dataSource.filter(function (x) { return x.id == y.id }).length == 0
+            //    });
+            //    divLocations = divLocations.filter(function (y) {
+            //        return divPositionsGrid.dataSource.filter(function (x) { return x.id == y.id }).length == 0
+            //    });
+            //} catch (e) {
+
+            //}
+
+            let dataMS = [];
+            for (let i = 0; i < buLocations.length; i++) {
+                let item = buLocations[i];
+                dataMS.push({ label: `${item.location.locationCode} - ${item.location.locationName}`, value: item.location.id, data: item });
+            }
+            $('#buLocationsIds').multiselect('dataprovider', rfdc()(dataMS));
+            $('#divLocationsIds').multiselect('dataprovider', rfdc()(dataMS));
+            $('#depLocationsIds').multiselect('dataprovider', rfdc()(dataMS));
+        }
+        let curLegalEntity;
+        function loadLocationTemplates() {
+            console.log($('#structureLegalEntity').val());
+            curLegalEntity = legalEntities.filter(function (x) { return x.id == $('#structureLegalEntity').val() })[0];
+            console.log(curLegalEntity);
+            cERP.appServices.setup.companySetup.company.getCompanyLocations(curLegalEntity.id).done(function (data) {
+                buLocations = data;
+                divLocations = data;
+
+                populateLocationTemplates();
             });
         }
 
@@ -155,9 +249,19 @@
                 enableCollapsibleOptGroups: true
             };
             $('#reviewPeriod').multiselect(options);
+            $('#structureLegalEntity').multiselect(options);
             $('#buCostCentersIds').multiselect(options);
             $('#buPositionsIds').multiselect(options);
+            $('#buLocationsIds').multiselect(options);
             $('#buHead').multiselect(options);
+            $('#divCostCentersIds').multiselect(options);
+            $('#divPositionsIds').multiselect(options);
+            $('#divHead').multiselect(options);
+            $('#divLocationsIds').multiselect(options);
+            $('#depCostCentersIds').multiselect(options);
+            $('#depPositionsIds').multiselect(options);
+            $('#depHead').multiselect(options);
+            $('#depLocationsIds').multiselect(options);
 
             let gridObj = $("#OrganizationStructuresGrid")[0].ej2_instances[0];
             let structureTGrid = $("#StructureTreeGrid")[0].ej2_instances[0];
@@ -222,6 +326,139 @@
             });
 
 
+            $('#addDIVCostCenterBtn').on('click', function () {
+                loadCostCenterTemplates();
+            });
+            divCostCentersGrid = $('#DIVCostCenterReferenceGrid')[0].ej2_instances[0];
+            $('#submitDIVCostCenterBtn').on('click', function () {
+                if (ValidateForm('divCostCentersForm')) {
+                    let selectedCostCenters = $('#divCostCentersIds').val();
+                    for (var i = 0; i < selectedCostCenters.length; i++) {
+                        let _function = divCostCenters.filter(function (x) { return x.id == selectedCostCenters[i] })[0];
+                        _function.percentage = parseInt($('#divCostCenterPercentage').val());
+
+                        let curSum = 0;
+                        for (var i = 0; i < divCostCentersGrid.dataSource.length; i++) {
+                            curSum += divCostCentersGrid.dataSource[i].percentage;
+                        }
+                        console.log(curSum);
+                        if (curSum + _function.percentage <= 100)
+                            divCostCentersGrid.dataSource.push(_function);
+                        else {
+                            toastr.error(`Sum of all percentages exceed 100`);
+                            divCostCentersGrid.hideSpinner();
+                        }
+
+                        divCostCentersGrid.refresh();
+                    }
+                    populateCostCenterTemplates();
+                }
+            });
+
+            $('#addDIVPositionBtn').on('click', function () {
+                loadPositionTemplates();
+            });
+            divPositionsGrid = $('#DIVPositionReferenceGrid')[0].ej2_instances[0];
+            $('#submitDIVPositionBtn').on('click', function () {
+                if (ValidateForm('divPositionsForm')) {
+                    let selectedPositions = $('#divPositionsIds').val();
+                    for (var i = 0; i < selectedPositions.length; i++) {
+                        let _function = divPositions.filter(function (x) { return x.id == selectedPositions[i] })[0];
+                        _function.percentage = parseInt($('#divPositionPercentage').val());
+
+                        let curSum = 0;
+                        for (var i = 0; i < divPositionsGrid.dataSource.length; i++) {
+                            curSum += divPositionsGrid.dataSource[i].percentage;
+                        }
+                        console.log(curSum);
+                        if (curSum + _function.percentage <= 100)
+                            divPositionsGrid.dataSource.push(_function);
+                        else {
+                            toastr.error(`Sum of all percentages exceed 100`);
+                            divPositionsGrid.hideSpinner();
+                        }
+
+                        divPositionsGrid.refresh();
+                    }
+                    populatePositionTemplates();
+                }
+            });
+
+
+            $('#addDEPCostCenterBtn').on('click', function () {
+                loadCostCenterTemplates();
+            });
+            depCostCentersGrid = $('#DEPCostCenterReferenceGrid')[0].ej2_instances[0];
+            $('#submitDEPCostCenterBtn').on('click', function () {
+                if (ValidateForm('depCostCentersForm')) {
+                    let selectedCostCenters = $('#depCostCentersIds').val();
+                    for (var i = 0; i < selectedCostCenters.length; i++) {
+                        let _function = depCostCenters.filter(function (x) { return x.id == selectedCostCenters[i] })[0];
+                        _function.percentage = parseInt($('#depCostCenterPercentage').val());
+
+                        let curSum = 0;
+                        for (var i = 0; i < depCostCentersGrid.dataSource.length; i++) {
+                            curSum += depCostCentersGrid.dataSource[i].percentage;
+                        }
+                        console.log(curSum);
+                        if (curSum + _function.percentage <= 100)
+                            depCostCentersGrid.dataSource.push(_function);
+                        else {
+                            toastr.error(`Sum of all percentages exceed 100`);
+                            depCostCentersGrid.hideSpinner();
+                        }
+
+                        depCostCentersGrid.refresh();
+                    }
+                    populateCostCenterTemplates();
+                }
+            });
+
+            $('#addDEPPositionBtn').on('click', function () {
+                loadPositionTemplates();
+            });
+            depPositionsGrid = $('#DEPPositionReferenceGrid')[0].ej2_instances[0];
+            $('#submitDEPPositionBtn').on('click', function () {
+                if (ValidateForm('depPositionsForm')) {
+                    let selectedPositions = $('#depPositionsIds').val();
+                    for (var i = 0; i < selectedPositions.length; i++) {
+                        let _function = depPositions.filter(function (x) { return x.id == selectedPositions[i] })[0];
+                        _function.percentage = parseInt($('#depPositionPercentage').val());
+
+                        let curSum = 0;
+                        for (var i = 0; i < depPositionsGrid.dataSource.length; i++) {
+                            curSum += depPositionsGrid.dataSource[i].percentage;
+                        }
+                        console.log(curSum);
+                        if (curSum + _function.percentage <= 100)
+                            depPositionsGrid.dataSource.push(_function);
+                        else {
+                            toastr.error(`Sum of all percentages exceed 100`);
+                            depPositionsGrid.hideSpinner();
+                        }
+
+                        depPositionsGrid.refresh();
+                    }
+                    populatePositionTemplates();
+                }
+            });
+
+
+            $('#structureLegalEntity').on('change', function () {
+                loadLocationTemplates();
+            });
+
+            cERP.appServices.setup.companySetup.company.getAllCompanies().done(function (data) {
+                legalEntities = data;
+                let dataMS = [];
+                for (let i = 0; i < legalEntities.length; i++) {
+                    let item = legalEntities[i];
+                    dataMS.push({ label: `${item.clientID} - ${item.companyName}`, value: item.id, data: item });
+                }
+                $('#structureLegalEntity').multiselect('dataprovider', rfdc()(dataMS));
+
+                loadLocationTemplates();
+            });
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_DepartmentTemplate.getAllDepartmentTemplates().done(function (data) {
                 for (var i = 0; i < data.length; i++) {
                     data[i].unitType = "Department";
@@ -239,7 +476,9 @@
                     let item = positions[i];
                     dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
                 }
-                $('#buHead').multiselect('dataprovider', dataMS);
+                $('#buHead').multiselect('dataprovider', rfdc()(dataMS));
+                $('#divHead').multiselect('dataprovider', rfdc()(dataMS));
+                $('#depHead').multiselect('dataprovider', rfdc()(dataMS));
             });
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_DivisionTemplate.getAllDivisionTemplates().done(function (data) {
                 for (var i = 0; i < data.length; i++) {
@@ -300,50 +539,60 @@
                 else {
                     toastr.error(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} could not be updated`);
                 }
-                switch (curUnitEditRow.type) {
-                    case "Business Unit":
-                        
-                        break;
-                    case "Division":
-                        if (ValidateForm('divisionForm')) {
-                            structureTGrid.showSpinner();
+            });
+            $('#submitDIVUnitBtn').on('click', function () {
+                console.log(curUnitEditRow);
+                if (ValidateForm('divisionForm')) {
+                    structureTGrid.showSpinner();
 
-                            let form = [];
-                            let details = $('#divisionForm').find("textarea, input, select").serializeArray();
-                            form = form.concat(details);
+                    let form = [];
+                    let details = $('#divisionForm').find("textarea, input, select").serializeArray();
+                    form = form.concat(details);
 
-                            let params = objectifyForm(form);
-                            curUnitEditRow.unitDetails = params;
+                    let params = objectifyForm(form);
+                    curUnitEditRow.unitDetails = params;
 
-                            structureTGrid.hideSpinner();
+                    curUnitEditRow.unitDetails.costCenters = rfdc()(divCostCentersGrid.dataSource);
+                    curUnitEditRow.unitDetails.associations = { positions: rfdc()(divPositionsGrid.dataSource) };
 
-                            toastr.info(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} has been updated`);
-                        }
-                        else {
-                            toastr.error(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} could not be updated`);
-                        }
-                        break;
-                    case "Department":
-                        if (ValidateForm('departmentForm')) {
-                            structureTGrid.showSpinner();
+                    console.log(params);
+                    console.log(curUnitEditRow);
 
-                            let form = [];
-                            let details = $('#departmentForm').find("textarea, input, select").serializeArray();
-                            form = form.concat(details);
+                    structureTGrid.hideSpinner();
 
-                            let params = objectifyForm(form);
-                            curUnitEditRow.unitDetails = params;
-
-                            structureTGrid.hideSpinner();
-
-                            toastr.info(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} has been updated`);
-                        }
-                        else {
-                            toastr.error(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} could not be updated`);
-                        }
-                        break;
+                    toastr.info(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} has been updated`);
+                }
+                else {
+                    toastr.error(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} could not be updated`);
                 }
             });
+            $('#submitDEPUnitBtn').on('click', function () {
+                console.log(curUnitEditRow);
+                if (ValidateForm('depisionForm')) {
+                    structureTGrid.showSpinner();
+
+                    let form = [];
+                    let details = $('#departmentForm').find("textarea, input, select").serializeArray();
+                    form = form.concat(details);
+
+                    let params = objectifyForm(form);
+                    curUnitEditRow.unitDetails = params;
+
+                    curUnitEditRow.unitDetails.costCenters = rfdc()(depCostCentersGrid.dataSource);
+                    curUnitEditRow.unitDetails.associations = { positions: rfdc()(depPositionsGrid.dataSource) };
+
+                    console.log(params);
+                    console.log(curUnitEditRow);
+
+                    structureTGrid.hideSpinner();
+
+                    toastr.info(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} has been updated`);
+                }
+                else {
+                    toastr.error(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} could not be updated`);
+                }
+            });
+
             $('#addOrganizationStructuresBtn').on('click', function () {
                 isEditingOrganizationStructures = false;
 
@@ -552,6 +801,15 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="form-group">
+                                <label class="margin-bottom-5 control-label">Legal Entity:</label>
+                                <select id="structureLegalEntity" name="LegalEntityId" class="form-control" required>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="structureInfo" style="display:none">
@@ -597,7 +855,7 @@
                                 <div class="col-lg-4 col-md-4 col-sm-6 col-12">
                                     <div class="form-group">
                                         <label class="control-label m-b-5 ">Location:</label>
-                                        <select id="buLocation" name="BULocationId" class="form-control">
+                                        <select id="buLocationsIds" name="BULocationId" class="form-control">
                                         </select>
                                     </div>
                                 </div>
@@ -751,51 +1009,353 @@
                         </div>
                     </div>
                     <div id="divisionForm" role="form" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
-                        <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Head of Division:</label>
-                                <select id="divHead" name="HeadOfDivisionId" class="form-control" required>
-                                </select>
+                        <ejs-tab id="divisionFormTabs" animation="ViewBag.animation">
+                            <e-tab-tabitems>
+                                <e-tab-tabitem header="@(new TabHeader { Text = "General" })" content="#generalDIVDetailsTab"></e-tab-tabitem>
+                                <e-tab-tabitem header="@(new TabHeader { Text = "Cost Centers" })" content="#DIVCostCentersTab"></e-tab-tabitem>
+                                <e-tab-tabitem header="@(new TabHeader { Text = "Associations" })" content="#DIVAssociationsTab"></e-tab-tabitem>
+                            </e-tab-tabitems>
+                        </ejs-tab>
+                        <div id="generalDIVDetailsTab" class="areaForm">
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label class="margin-bottom-5 control-label">Head of DIV:</label>
+                                        <select id="divHead" name="HeadOfDIVId" class="form-control" required>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label class="control-label m-b-5 ">Location:</label>
+                                        <select id="divLocationsIds" name="DIVLocationId" class="form-control">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label class="margin-bottom-5 control-label">Paygroup:</label>
+                                        <select id="divPayroup" name="DIVPaygroupId" class="form-control">
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                            <div class="form-group">
-                                <label class="control-label m-b-5 ">Location:</label>
-                                <select id="divLocation" name="DivisionLocationId" class="form-control" required>
-                                </select>
+                        <div id="DIVCostCentersTab" class="areaForm" style="display:none">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="panel-body p-t-0" style="">
+                                        <div class="areaHeader" style="display:flex;">
+                                            <div id="divCostCentersLoader" class="pull-left loader-inline" style="display:none"></div>
+                                            <div class="areaHeaderTitle">
+                                                <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Cost Centers</span>
+                                            </div>
+                                            <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                                <a id="addDIVCostCenterBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                                            </div>
+                                        </div>
+                                        <div role="form" id="divCostCentersForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                                    <div class="form-group">
+                                                        <label class="margin-bottom-5 control-label">Cost Centers:</label>
+                                                        <select id="divCostCentersIds" name="CostCentersIds" multiple="multiple" class="form-control">
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                                    <div class="form-group">
+                                                        <label class="margin-bottom-5 control-label">Percentage:</label>
+                                                        <input type="number" min="1" max="100" value="" id="divCostCenterPercentage" name="Percentage" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                                    <label class="control-label m-b-5 "></label>
+                                                    <button id="submitDIVCostCenterBtn" type="button" class="btn btn-success btn-block">Add Cost Center(s)</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="divCostCentersCS" class="control-section">
+                                            <ejs-grid id="DIVCostCenterReferenceGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                                      allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                                      hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                                      allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                                      toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" actionBegin="referenceActionBegin" actionComplete="referenceActionComplete"
+                                                      allowPaging="true" allowResizing="true">
+
+                                                <e-grid-columns>
+                                                    <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                                    <e-grid-column field="key" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                                    <e-grid-column field="value" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                                    <e-grid-column field="percentage" allowEditing="true" headerText="Percentage" textAlign="Center"></e-grid-column>
+                                                    <e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>
+                                                </e-grid-columns>
+
+                                                <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                                <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                                <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                                <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                            </ejs-grid>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Paygroup:</label>
-                                <select id="divPayroup" name="DivisionPaygroupId" class="form-control" required>
-                                </select>
+                        <div id="DIVAssociationsTab" class="areaForm" style="display:none">
+                            <ejs-accordion id="divAssociationsFormAccordion">
+                                <e-accordion-accordionitems>
+                                    <e-accordion-accordionitem expanded="true" header="Positions" content="#divPosAssociations"></e-accordion-accordionitem>
+                                    <e-accordion-accordionitem header="Companies" content="#divCompsAssociations"></e-accordion-accordionitem>
+                                    <e-accordion-accordionitem header="Divisions" content="#divDivisionsAssociations"></e-accordion-accordionitem>
+                                </e-accordion-accordionitems>
+                            </ejs-accordion>
+
+                            <div id="divPosAssociations" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="panel-body p-t-0" style="">
+                                            <div class="areaHeader" style="display:flex;">
+                                                <div id="divPositionsLoader" class="pull-left loader-inline" style="display:none"></div>
+                                                <div class="areaHeaderTitle">
+                                                    <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Positions</span>
+                                                </div>
+                                                <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                                    <a id="addDIVPositionBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                                                </div>
+                                            </div>
+                                            <div role="form" id="divPositionsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                                                <div class="row">
+                                                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                                        <div class="form-group">
+                                                            <label class="margin-bottom-5 control-label">Positions:</label>
+                                                            <select id="divPositionsIds" name="PositionsIds" multiple="multiple" class="form-control">
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                                        <div class="form-group">
+                                                            <label class="margin-bottom-5 control-label">Percentage:</label>
+                                                            <input type="number" min="1" max="100" value="" id="divPositionPercentage" name="Percentage" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                                        <label class="control-label m-b-5 "></label>
+                                                        <button id="submitDIVPositionBtn" type="button" class="btn btn-success btn-block">Add Position(s)</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="divPositionsCS" class="control-section">
+                                                <ejs-grid id="DIVPositionReferenceGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                                          allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                                          toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" actionBegin="referenceActionBegin" actionComplete="referenceActionComplete"
+                                                          allowPaging="true" allowResizing="true">
+
+                                                    <e-grid-columns>
+                                                        <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                                        <e-grid-column field="code" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                                        <e-grid-column field="name" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                                        <e-grid-column field="percentage" allowEditing="true" headerText="Percentage" textAlign="Center"></e-grid-column>
+                                                        <e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>
+                                                    </e-grid-columns>
+
+                                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                                </ejs-grid>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="divCompsAssociations" style="display: none;">
+                            </div>
+                            <div id="divDivisionsAssociations" style="display: none;">
+                            </div>
+                        </div>
+                        <div class="row m-t-20">
+                            <div class="col-lg-12">
+                                <input id="submitDIVUnitBtn" type="button" class="btn btn-success btn-block" value="Update Business Unit" required />
                             </div>
                         </div>
                     </div>
+                    
                     <div id="departmentForm" role="form" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
-                        <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Head of Department:</label>
-                                <select id="depHead" name="HeadOfDepartmentId" class="form-control" required>
-                                </select>
+                        <ejs-tab id="departmentFormTabs" animation="ViewBag.animation">
+                            <e-tab-tabitems>
+                                <e-tab-tabitem header="@(new TabHeader { Text = "General" })" content="#generalDEPDetailsTab"></e-tab-tabitem>
+                                <e-tab-tabitem header="@(new TabHeader { Text = "Cost Centers" })" content="#DEPCostCentersTab"></e-tab-tabitem>
+                                <e-tab-tabitem header="@(new TabHeader { Text = "Associations" })" content="#DEPAssociationsTab"></e-tab-tabitem>
+                            </e-tab-tabitems>
+                        </ejs-tab>
+                        <div id="generalDEPDetailsTab" class="areaForm">
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label class="margin-bottom-5 control-label">Head of DEP:</label>
+                                        <select id="depHead" name="HeadOfDEPId" class="form-control" required>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label class="control-label m-b-5 ">Location:</label>
+                                        <select id="depLocationsIds" name="DEPLocationId" class="form-control">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <label class="margin-bottom-5 control-label">Paygroup:</label>
+                                        <select id="depPayroup" name="DEPPaygroupId" class="form-control">
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                            <div class="form-group">
-                                <label class="control-label m-b-5 ">Location:</label>
-                                <select id="depLocation" name="DepartmentLocationId" class="form-control" required>
-                                </select>
+                        <div id="DEPCostCentersTab" class="areaForm" style="display:none">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="panel-body p-t-0" style="">
+                                        <div class="areaHeader" style="display:flex;">
+                                            <div id="depCostCentersLoader" class="pull-left loader-inline" style="display:none"></div>
+                                            <div class="areaHeaderTitle">
+                                                <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Cost Centers</span>
+                                            </div>
+                                            <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                                <a id="addDEPCostCenterBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                                            </div>
+                                        </div>
+                                        <div role="form" id="depCostCentersForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                                    <div class="form-group">
+                                                        <label class="margin-bottom-5 control-label">Cost Centers:</label>
+                                                        <select id="depCostCentersIds" name="CostCentersIds" multiple="multiple" class="form-control">
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                                    <div class="form-group">
+                                                        <label class="margin-bottom-5 control-label">Percentage:</label>
+                                                        <input type="number" min="1" max="100" value="" id="depCostCenterPercentage" name="Percentage" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                                    <label class="control-label m-b-5 "></label>
+                                                    <button id="submitDEPCostCenterBtn" type="button" class="btn btn-success btn-block">Add Cost Center(s)</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="depCostCentersCS" class="control-section">
+                                            <ejs-grid id="DEPCostCenterReferenceGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                                      allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                                      hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                                      allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                                      toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" actionBegin="referenceActionBegin" actionComplete="referenceActionComplete"
+                                                      allowPaging="true" allowResizing="true">
+
+                                                <e-grid-columns>
+                                                    <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                                    <e-grid-column field="key" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                                    <e-grid-column field="value" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                                    <e-grid-column field="percentage" allowEditing="true" headerText="Percentage" textAlign="Center"></e-grid-column>
+                                                    <e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>
+                                                </e-grid-columns>
+
+                                                <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                                <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                                <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                                <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                            </ejs-grid>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Paygroup:</label>
-                                <select id="depPayroup" name="DepartmentPaygroupId" class="form-control" required>
-                                </select>
+                        <div id="DEPAssociationsTab" class="areaForm" style="display:none">
+                            <ejs-accordion id="depAssociationsFormAccordion">
+                                <e-accordion-accordionitems>
+                                    <e-accordion-accordionitem expanded="true" header="Positions" content="#depPosAssociations"></e-accordion-accordionitem>
+                                    <e-accordion-accordionitem header="Companies" content="#depCompsAssociations"></e-accordion-accordionitem>
+                                    <e-accordion-accordionitem header="Departments" content="#depDepartmentsAssociations"></e-accordion-accordionitem>
+                                </e-accordion-accordionitems>
+                            </ejs-accordion>
+
+                            <div id="depPosAssociations" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="panel-body p-t-0" style="">
+                                            <div class="areaHeader" style="display:flex;">
+                                                <div id="depPositionsLoader" class="pull-left loader-inline" style="display:none"></div>
+                                                <div class="areaHeaderTitle">
+                                                    <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Positions</span>
+                                                </div>
+                                                <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                                    <a id="addDEPPositionBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                                                </div>
+                                            </div>
+                                            <div role="form" id="depPositionsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                                                <div class="row">
+                                                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                                        <div class="form-group">
+                                                            <label class="margin-bottom-5 control-label">Positions:</label>
+                                                            <select id="depPositionsIds" name="PositionsIds" multiple="multiple" class="form-control">
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                                        <div class="form-group">
+                                                            <label class="margin-bottom-5 control-label">Percentage:</label>
+                                                            <input type="number" min="1" max="100" value="" id="depPositionPercentage" name="Percentage" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                                        <label class="control-label m-b-5 "></label>
+                                                        <button id="submitDEPPositionBtn" type="button" class="btn btn-success btn-block">Add Position(s)</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="depPositionsCS" class="control-section">
+                                                <ejs-grid id="DEPPositionReferenceGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                                          allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                                          toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" actionBegin="referenceActionBegin" actionComplete="referenceActionComplete"
+                                                          allowPaging="true" allowResizing="true">
+
+                                                    <e-grid-columns>
+                                                        <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                                        <e-grid-column field="code" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                                        <e-grid-column field="name" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                                        <e-grid-column field="percentage" allowEditing="true" headerText="Percentage" textAlign="Center"></e-grid-column>
+                                                        <e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>
+                                                    </e-grid-columns>
+
+                                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                                </ejs-grid>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="depCompsAssociations" style="display: none;">
+                            </div>
+                            <div id="depDepartmentsAssociations" style="display: none;">
+                            </div>
+                        </div>
+                        <div class="row m-t-20">
+                            <div class="col-lg-12">
+                                <input id="submitDEPUnitBtn" type="button" class="btn btn-success btn-block" value="Update Business Unit" required />
                             </div>
                         </div>
                     </div>
+                    
                     
 
                     <ejs-treegrid id="StructureTreeGrid" dataSource="new List<dynamic>()" load="structureLoad" height="380px" rowSelected="structureTreeRowSelected"
@@ -810,12 +1370,12 @@
                             List<string> unitTypes = new List<string>() { "Business Unit", "Division", "Department" };
                             var typeEdit = new
                             {
-@@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Change = "loadTypeUnitsDropdown", CssClass = "unitTypeDropDown", BeforeOpen = "loadUnitTypesDropdown", DataSource = unitTypes, Query = "new ej.data.Query()", AllowFiltering = true }
-                        };
-                        var unitEdit = new
-                        {
-@@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Change = "selectedTypeUnit", Fields = new Syncfusion.EJ2.DropDowns.DropDownListFieldSettings() { Text = "name", Value = "id" }, DataSource = new List<object>(), CssClass = "typeUnitDropDown", Query = "new ej.data.Query()", AllowFiltering = true }
-                        };
+                                @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Change = "loadTypeUnitsDropdown", CssClass = "unitTypeDropDown", BeforeOpen = "loadUnitTypesDropdown", DataSource = unitTypes, Query = "new ej.data.Query()", AllowFiltering = true }
+                            };
+                            var unitEdit = new
+                            {
+                                @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Change = "selectedTypeUnit", Fields = new Syncfusion.EJ2.DropDowns.DropDownListFieldSettings() { Text = "name", Value = "id" }, DataSource = new List<object>(), CssClass = "typeUnitDropDown", Query = "new ej.data.Query()", AllowFiltering = true }
+                            };
 
                         }
                         <e-treegrid-columns>
@@ -935,6 +1495,18 @@
                     if (curUnitEditRow.unitDetails)
                         FillFormByObject(curUnitEditRow.unitDetails, $('#divisionForm'));
 
+
+                    try {
+                        divCostCentersGrid.dataSource = rfdc()(curUnitEditRow.unitDetails.costCenters);
+                        divCostCentersGrid.refresh();
+
+                        divPositionsGrid.dataSource = rfdc()(curUnitEditRow.unitDetails.associations.positions);
+                        divPositionsGrid.refresh();
+
+                    } catch (e) {
+
+                    }
+
                     $('#divisionForm').slideDown();
                     $('#departmentForm').slideUp();
                     $('#businessUnitForm').slideUp();
@@ -944,6 +1516,17 @@
 
                     if (curUnitEditRow.unitDetails)
                         FillFormByObject(curUnitEditRow.unitDetails, $('#departmentForm'));
+
+                    try {
+                        depCostCentersGrid.dataSource = rfdc()(curUnitEditRow.unitDetails.costCenters);
+                        depCostCentersGrid.refresh();
+
+                        depPositionsGrid.dataSource = rfdc()(curUnitEditRow.unitDetails.associations.positions);
+                        depPositionsGrid.refresh();
+
+                    } catch (e) {
+
+                    }
 
                     $('#departmentForm').slideDown();
                     $('#divisionForm').slideUp();

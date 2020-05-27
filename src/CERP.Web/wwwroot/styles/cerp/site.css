@@ -922,3 +922,15 @@ p {
 .multiselect-container.dropdown-menu {
     position: inherit !important;
 }
+
+.e-accordion .e-acrdn-item.e-selected > .e-acrdn-panel .e-acrdn-header-content {
+    color: #333 !important;
+}
+.e-accordion .e-acrdn-item.e-select.e-selected.e-expand-state > .e-acrdn-header .e-acrdn-header-icon, .e-accordion .e-acrdn-item.e-select.e-selected.e-expand-state > .e-acrdn-header .e-acrdn-header-content, .e-accordion .e-acrdn-item.e-select.e-expand-state > .e-acrdn-header .e-acrdn-header-icon, .e-accordion .e-acrdn-item.e-select.e-expand-state > .e-acrdn-header .e-acrdn-header-content {
+    color: #333 !important;
+    font-weight: 600;
+}
+
+.e-accordion .e-acrdn-item .e-acrdn-header {
+    background: #d1ebff !important;
+}

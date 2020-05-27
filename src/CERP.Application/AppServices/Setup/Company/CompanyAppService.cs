@@ -33,5 +33,10 @@ namespace CERP.AppServices.Setup.CompanySetup
         {
             return Repository.WithDetails().Select(MapToGetListOutputDto).ToList();
         }
+
+        public List<CompanyLocation_Dto> GetCompanyLocations(Guid companyId)
+        {
+            return ObjectMapper.Map<List<CompanyLocation>, List<CompanyLocation_Dto>>(LocationsRepository.WithDetails(x => x.Location).Where(x => x.CompanyId == companyId).ToList());
+        }
     }
 }
