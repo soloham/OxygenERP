@@ -6,7 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace CERP.HR.OrganizationalManagement.OrganizationStructure
+namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructure
 {
     public class OS_TaskQualificationTemplate_Dto : AuditedEntityTenantDto<int>
     {

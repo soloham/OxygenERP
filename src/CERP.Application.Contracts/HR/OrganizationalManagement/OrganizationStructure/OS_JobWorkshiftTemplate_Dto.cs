@@ -13,15 +13,9 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public OS_JobWorkshiftTemplate_Dto()
         {
         }
-
-        [CustomAudited]
         public OS_JobTemplate_Dto JobTemplate { get; set; }
-        [CustomAudited]
         public int JobTemplateId { get; set; }
-
-        [CustomAudited]
         public WorkShift_Dto Workshift { get; set; }
-        [CustomAudited]
         public int WorkshiftId { get; set; }
     }
 }

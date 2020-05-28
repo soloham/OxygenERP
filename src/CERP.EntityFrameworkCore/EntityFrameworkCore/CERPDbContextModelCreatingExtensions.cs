@@ -9,6 +9,7 @@ using CERP.HR.Holidays;
 using CERP.HR.Leaves;
 using CERP.HR.Loans;
 using CERP.HR.OrganizationalManagement.OrganizationStructure;
+using CERP.HR.OrganizationalManagement.PayrollStructure;
 using CERP.HR.Timesheets;
 using CERP.HR.Workshifts;
 using CERP.Payroll.Payrun;
@@ -760,6 +761,64 @@ namespace CERP.EntityFrameworkCore
             builder.Entity<OS_CompensationMatrixTemplate>(b =>
             {
                 b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}CompensationMatrixTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+            });
+            #endregion
+            #region Payroll Structure
+            builder.Entity<PS_PayGroup>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_PayrollStructure_DbTablePrefix}PayGroupes", CERPConsts.HR_OM_PayrollStructure_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+            });
+            builder.Entity<PS_PayRange>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_PayrollStructure_DbTablePrefix}PayRanges", CERPConsts.HR_OM_PayrollStructure_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+            });
+            builder.Entity<PS_PayGrade>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_PayrollStructure_DbTablePrefix}PayGrades", CERPConsts.HR_OM_PayrollStructure_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.PayRange).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<PS_PayComponent>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_PayrollStructure_DbTablePrefix}PayComponents", CERPConsts.HR_OM_PayrollStructure_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.PayComponentType).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.Currency).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.PayFrequency).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<PS_PayComponentType>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_PayrollStructure_DbTablePrefix}PayComponentTypes", CERPConsts.HR_OM_PayrollStructure_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.PercentagePayComponentType).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<PS_PayFrequency>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_PayrollStructure_DbTablePrefix}PayFrequencies", CERPConsts.HR_OM_PayrollStructure_DbSchema);
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();

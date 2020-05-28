@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CERP.App;
 using CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructure;
+using CERP.ApplicationContracts.HR.OrganizationalManagement.PayrollStructure;
 using CERP.CERP.HR.Documents;
 using CERP.FM;
 using CERP.FM.COA;
@@ -18,6 +19,7 @@ using CERP.HR.Holidays;
 using CERP.HR.Leaves;
 using CERP.HR.Loans;
 using CERP.HR.OrganizationalManagement.OrganizationStructure;
+using CERP.HR.OrganizationalManagement.PayrollStructure;
 using CERP.HR.Timesheets;
 using CERP.HR.Workshift.DTOs;
 using CERP.HR.Workshifts;
@@ -224,6 +226,25 @@ namespace CERP
 
             CreateMap<OS_CompensationMatrixTemplate, OS_CompensationMatrixTemplate_Dto>();
             CreateMap<OS_CompensationMatrixTemplate_Dto, OS_CompensationMatrixTemplate>();
+            #endregion
+            #region PayrollStructure
+            CreateMap<PS_PayGroup, PS_PayGroup_Dto>();
+            CreateMap<PS_PayGroup_Dto, PS_PayGroup>();
+
+            CreateMap<PS_PayRange, PS_PayRange_Dto>();
+            CreateMap<PS_PayRange_Dto, PS_PayRange>();
+
+            CreateMap<PS_PayGrade, PS_PayGrade_Dto>();
+            CreateMap<PS_PayGrade_Dto, PS_PayGrade>();
+
+            CreateMap<PS_PayComponent, PS_PayComponent_Dto>();
+            CreateMap<PS_PayComponent_Dto, PS_PayComponent>();
+
+            CreateMap<PS_PayComponentType, PS_PayComponentType_Dto>();
+            CreateMap<PS_PayComponentType_Dto, PS_PayComponentType>();
+
+            CreateMap<PS_PayFrequency, PS_PayFrequency_Dto>();
+            CreateMap<PS_PayFrequency_Dto, PS_PayFrequency>();
             #endregion
             #endregion
             #endregion

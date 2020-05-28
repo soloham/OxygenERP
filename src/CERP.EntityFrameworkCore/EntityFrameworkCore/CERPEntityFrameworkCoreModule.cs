@@ -6,6 +6,7 @@ using CERP.HR.Holidays;
 using CERP.HR.Leaves;
 using CERP.HR.Loans;
 using CERP.HR.OrganizationalManagement.OrganizationStructure;
+using CERP.HR.OrganizationalManagement.PayrollStructure;
 using CERP.HR.Timesheets;
 using CERP.HR.Workshifts;
 using CERP.Payroll.Payrun;
@@ -391,6 +392,18 @@ namespace CERP.EntityFrameworkCore
                 //    opt.DefaultWithDetailsFunc = q => q.Include(p => p.Degree)
                 //                                       .Include(p => p.Institute);
                 //});
+                #endregion
+                #region Payroll Structure
+                options.Entity<PS_PayGrade>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.PayRange);
+                });
+                options.Entity<PS_PayComponent>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.PayComponentType)
+                                                       .Include(p => p.Currency)
+                                                       .Include(p => p.PayFrequency);
+                });
                 #endregion
                 #endregion
                 #endregion

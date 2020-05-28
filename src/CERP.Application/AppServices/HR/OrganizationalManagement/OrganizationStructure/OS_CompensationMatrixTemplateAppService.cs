@@ -1,4 +1,5 @@
-﻿using CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructure;
+﻿using CERP.ApplicationContracts.HR.OrganizationalManagement;
+using CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructure;
 using CERP.HR.EMPLOYEE.DTOs;
 using CERP.HR.OrganizationalManagement;
 using CERP.HR.OrganizationalManagement.OrganizationStructure;

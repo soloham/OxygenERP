@@ -20,6 +20,7 @@ using CERP.HR.Attendance;
 using CERP.HR.Loans;
 using CERP.HR.OrganizationalManagement.OrganizationStructure;
 using CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructure;
+using CERP.HR.OrganizationalManagement.PayrollStructure;
 
 namespace CERP.EntityFrameworkCore
 {
@@ -118,6 +119,14 @@ namespace CERP.EntityFrameworkCore
 
         public DbSet<OS_CompensationMatrixTemplate> OS_CompensationMatrixTemplates { get; set; }
         #endregion
+        #endregion
+        #region Payroll Structure
+        public DbSet<PS_PayGroup> PayGroups { get; set; }
+        public DbSet<PS_PayRange> PayRanges { get; set; }
+        public DbSet<PS_PayGrade> PayGrades { get; set; }
+        public DbSet<PS_PayComponent> PayComponents { get; set; }
+        public DbSet<PS_PayComponentType> PayComponentTypes { get; set; }
+        public DbSet<PS_PayFrequency> PayFrequencies { get; set; }
         #endregion
         #endregion
 

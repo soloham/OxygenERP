@@ -8,7 +8,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace CERP.HR.OrganizationalManagement.OrganizationStructure
+namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructure
 {
     public class OS_OrganizationStructureTemplate_Dto : AuditedEntityTenantDto<int>
     {
@@ -27,7 +27,6 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public int? ReviewPeriodDays { get; set; }
 
         public Company_Dto LegalEntity { get; set; }
-        [CustomAudited]
         public Guid LegalEntityId { get; set; }
 
 
@@ -60,10 +59,7 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
 
         public OS_OrganizationStructureTemplateBusinessUnits_Dto OrganizationStructureTemplateBusinessUnit { get; set; }
         public int OrganizationStructureTemplateBusinessUnitId { get; set; }
-
-        [CustomAudited]
         public DateTime ValidityFromDate { get; set; }
-        [CustomAudited]
         public DateTime ValidityToDate { get; set; }
     }
 
@@ -90,10 +86,7 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
 
         public OS_OrganizationStructureTemplateDivisions_Dto OrganizationStructureTemplateDivision { get; set; }
         public int OrganizationStructureTemplateDivisionId { get; set; }
-
-        [CustomAudited]
         public DateTime ValidityFromDate { get; set; }
-        [CustomAudited]
         public DateTime ValidityToDate { get; set; }
     }
 
@@ -120,10 +113,7 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
 
         public OS_OrganizationStructureTemplateDepartments_Dto OrganizationStructureTemplateDepartment { get; set; }
         public int OrganizationStructureTemplateDepartmentId { get; set; }
-
-        [CustomAudited]
         public DateTime ValidityFromDate { get; set; }
-        [CustomAudited]
         public DateTime ValidityToDate { get; set; }
     }
 }

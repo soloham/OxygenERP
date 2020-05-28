@@ -166,6 +166,8 @@
     <Compile Remove="Migrations\20200522153729_BusinessUnit_OS_OM_HR.Designer.cs" />
     <Compile Remove="Migrations\20200527134518_PositionTemplates_BusinessUnits_Divisions_Departments_OS_OM_HR_CHECK.cs" />
     <Compile Remove="Migrations\20200527134518_PositionTemplates_BusinessUnits_Divisions_Departments_OS_OM_HR_CHECK.Designer.cs" />
+    <Compile Remove="Migrations\20200528061059_PayrollStrucure.cs" />
+    <Compile Remove="Migrations\20200528061059_PayrollStrucure.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
