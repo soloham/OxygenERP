@@ -7,8 +7,8 @@
 @inject IHtmlLocalizer<CERPResource> L
 @inject Volo.Abp.Json.IJsonSerializer JsonSerializer
 @using CERP.App.Helpers;
-@using EJ2CoreSampleBrowser.Models;
 @using Syncfusion.EJ2.Navigations;
+@using Syncfusion.EJ2;
 
 @model CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure.Pages.OrganizationStructures.ListModel
 @{
@@ -164,6 +164,24 @@
             } catch (e) {
 
             }
+            let _dataMS = [];
+            for (let i = 0; i < buPositionsGrid.dataSource.length; i++) {
+                let item = buPositionsGrid.dataSource[i];
+                _dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+            }
+            $('#buHead').multiselect('dataprovider', rfdc()(_dataMS));
+            _dataMS = [];
+            for (let i = 0; i < divPositionsGrid.dataSource.length; i++) {
+                let item = buPositionsGrid.dataSource[i];
+                _dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+            }
+            $('#divHead').multiselect('dataprovider', rfdc()(_dataMS));
+            _dataMS = [];
+            for (let i = 0; i < depPositionsGrid.dataSource.length; i++) {
+                let item = buPositionsGrid.dataSource[i];
+                _dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+            }
+            $('#depHead').multiselect('dataprovider', rfdc()(_dataMS));
 
             let dataMS = [];
             for (let i = 0; i < buPositions.length; i++) {
@@ -437,8 +455,8 @@
                             depPositionsGrid.hideSpinner();
                         }
 
-                        depPositionsGrid.refresh();
                     }
+                    depPositionsGrid.refresh();
                     populatePositionTemplates();
                 }
             });
@@ -471,14 +489,14 @@
                 }
                 positions = data;
 
-                let dataMS = [];
-                for (let i = 0; i < positions.length; i++) {
-                    let item = positions[i];
-                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
-                }
-                $('#buHead').multiselect('dataprovider', rfdc()(dataMS));
-                $('#divHead').multiselect('dataprovider', rfdc()(dataMS));
-                $('#depHead').multiselect('dataprovider', rfdc()(dataMS));
+                //let dataMS = [];
+                //for (let i = 0; i < positions.length; i++) {
+                //    let item = positions[i];
+                //    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+                //}
+                //$('#buHead').multiselect('dataprovider', rfdc()(dataMS));
+                //$('#divHead').multiselect('dataprovider', rfdc()(dataMS));
+                //$('#depHead').multiselect('dataprovider', rfdc()(dataMS));
             });
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_DivisionTemplate.getAllDivisionTemplates().done(function (data) {
                 for (var i = 0; i < data.length; i++) {
@@ -848,7 +866,7 @@
                 </div>
             </div>
             <div id="structureInfo" style="display:none">
-                <ejs-tab id="OSSpecificFormTabs" animation="ViewBag.animation">
+                <ejs-tab id="OSSpecificFormTabs" animation="ViewBag.animation" selected="osSpecificTabSelected">
                     <e-tab-tabitems>
                         <e-tab-tabitem header="@(new TabHeader { Text = "Organization Structure" })" content="#orgStructureTab"></e-tab-tabitem>
                         <e-tab-tabitem header="@(new TabHeader { Text = "Position Management" })" content="#posManagementTab"></e-tab-tabitem>
@@ -1489,7 +1507,59 @@
                     </ejs-treegrid>
                 </div>
                 <div id="posManagementTab" class="areaForm" style="display:none">
-
+                    <div class="control-section">
+                        <div style="width: 100%;height: 10%">
+                            @*Initializes ToolBar control.*@
+                            <ejs-toolbar id="toolbar" clicked="posDGToolbarClick" created="posDGToolbarCreate">
+                                <e-toolbar-items>
+                                    <e-toolbar-item id="Add" tooltipText="Add" prefixIcon="e-icons e-add" text="Add"></e-toolbar-item>
+                                    <e-toolbar-item type="Separator"></e-toolbar-item>
+                                    <e-toolbar-item id="Edit" tooltipText="Edit" prefixIcon="e-icons e-update" text="Edit"></e-toolbar-item>
+                                    <e-toolbar-item type="Separator"></e-toolbar-item>
+                                    <e-toolbar-item id="Delete" tooltipText="Delete" prefixIcon="e-icons e-delete" text="Delete"></e-toolbar-item>
+                                    <e-toolbar-item type="Separator"></e-toolbar-item>
+                                </e-toolbar-items>
+                            </ejs-toolbar>
+                        </div>
+                        <div style="width: 100%;height: 80%;border-width: 0 1px 1px 1px; border-style: solid; border-color:#D7D7D7">
+                            <div id="diagram-space" class="sb-mobile-diagram">
+                                @*Initializes Diagram control.*@
+                                <ejs-diagram id="PosManagementDiagram" width="100%" height="550px" selectionChange="selectionChange" sourcePointChange="connectionChange" targetPointChange="connectionChange" getNodeDefaults='"getNodeDefaults"' getConnectorDefaults='"getConnectorDefaults"' created="diagramCreated">
+                                    <e-diagram-snapsettings constraints="None"></e-diagram-snapsettings>
+                                    <e-diagram-datasourcesettings id="id" parentId="parentId" dataSource="new DataManager() { Data = new List<object>() }"></e-diagram-datasourcesettings>
+                                    <e-diagram-layout type="HierarchicalTree" enableAnimation="true" horizontalSpacing="60" verticalSpacing="60"></e-diagram-layout>
+                                </ejs-diagram>
+                            </div>
+                            <ejs-dialog id="editDialog" width="300px" visible="false" isModal="true" showCloseIcon="true">
+                                <e-content-template>
+                                    <div class="showLabel">
+                                        @*Initialize Textbox control*@
+                                        <ejs-textbox id="Description" placeholder="Enter Description"></ejs-textbox>
+                                    </div>
+                                    <div class="showLabel" style="padding-top: 14px">
+                                        @*Initialize Textbox control*@
+                                        <ejs-textbox id="Color" placeholder="Enter Color"></ejs-textbox>
+                                    </div>
+                                    <div class="showDropdown">
+                                        @*Initialize Dropdownlist control to display an sourceNodes in diagram.*@
+                                        <ejs-dropdownlist id="SourceId" placeholder="select sourceId" created="sourceDropdownCreate" popupHeight="220px" change="sourceDropdownChange">
+                                            <e-dropdownlist-fields text="Label" value="Name"></e-dropdownlist-fields>
+                                        </ejs-dropdownlist>
+                                    </div>
+                                    <div class="showDropdown" style="padding-top: 14px">
+                                        @*Initialize Dropdownlist control to display an targetNodes in diagram.*@
+                                        <ejs-dropdownlist id="TargetId" placeholder="select targetId" created="targetDropdownCreate" popupHeight="220px" change="targetDropdownChange">
+                                            <e-dropdownlist-fields text="Label" value="Name"></e-dropdownlist-fields>
+                                        </ejs-dropdownlist>
+                                    </div>
+                                </e-content-template>
+                                <e-dialog-buttons>
+                                    @*Initialize Button control to update the node label and node color.*@
+                                    <e-dialog-dialogbutton buttonModel="@(new { content = "Update", isPrimary = true })" click="dlgButtonClick"></e-dialog-dialogbutton>
+                                </e-dialog-buttons>
+                            </ejs-dialog>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="row m-t-20">
@@ -1548,6 +1618,344 @@
 </ejs-dialog>
 
 <script>
+    function diagramCreated() {
+
+    }
+    function osSpecificTabSelected(args) {
+        console.log(args);
+        let structureTG = $('#StructureTreeGrid')[0].ej2_instances[0];
+        let posManDG = $('#PosManagementDiagram')[0].ej2_instances[0];
+        if (args.selectedIndex == 1) {
+            let ds = structureTG.dataSource;
+            if (ds) {
+                let diagramDS = [];
+                for (var i = 0; i < ds.length; i++) {
+                    let node = { id: ds[i].id, unit: ds[i]._unit };
+                    if (ds[i].parentId)
+                        node.parentId = ds[i].parentId;
+                    diagramDS.push(node);
+
+                }
+                posManDG.nodes = [];
+                posManDG.connectors = [];
+                posManDG.dataSourceSettings.dataSource.dataSource.data = diagramDS;
+                posManDG.refresh();
+            }
+            console.log(ds);
+        }
+    }
+
+    function getNodeDefaults(obj, data, diagram) {
+        //Initialize shape
+        console.log("Started");
+        console.log(obj);
+        console.log(data);
+        let unitType = obj.data.unit.unitType;
+        let widthConst = 3;
+        if (unitType == 'Business Unit') {
+            obj.annotations = [{
+                /* tslint:disable:no-string-literal */
+                content: obj.data.unit.name, margin: { top: 10, left: 10, right: 10, bottom: 10 },
+                style: { color: 'black' }
+            }];
+            obj.style = {
+                fill: '#20cde8', strokeColor: '#22b3c9', strokeWidth: 3
+            };
+            obj.shape = {
+                type: 'Basic', shape: 'Rectangle'
+            };
+            obj.width = 80 + widthConst * obj.data.unit.name.length;
+            obj.height = 60;
+        }
+        else if (unitType == 'Division')
+        {
+            obj.annotations = [{
+                /* tslint:disable:no-string-literal */
+                content: obj.data.unit.name, margin: { top: 10, left: 10, right: 10, bottom: 10 },
+                style: { color: 'black', size: 20 }
+            }];
+            obj.style = {
+                fill: '#ded11d', strokeColor: '#c7bb1c', strokeWidth: 2
+            };
+            obj.shape = {
+                type: 'Basic', shape: 'Rectangle'
+            };
+            obj.width = 65 + widthConst * obj.data.unit.name.length;
+            obj.height = 45;
+        }
+        else if (unitType == 'Department')
+        {
+            obj.annotations = [{
+                /* tslint:disable:no-string-literal */
+                content: obj.data.unit.name, margin: { top: 10, left: 10, right: 10, bottom: 10 },
+                style: { color: 'black' }
+            }];
+            obj.style = {
+                fill: '#f0b01d', strokeColor: '#d69e1c', strokeWidth: 1
+            };
+            obj.shape = {
+                type: 'Basic', shape: 'Rectangle'
+            };
+            obj.width = 60 + widthConst * obj.data.unit.name.length;
+            obj.height = 40;
+        }
+        else if (unitType == 'Position')
+        {
+            obj.annotations = [{
+                /* tslint:disable:no-string-literal */
+                content: obj.data.unit.name, margin: { top: 10, left: 10, right: 10, bottom: 10 },
+                style: { color: 'black' }
+            }];
+            obj.style = {
+                fill: '#28eb83', strokeColor: '#22c970', strokeWidth: 1
+            };
+            obj.shape = {
+                type: 'Basic', shape: 'Rectangle'
+            };
+            obj.width = 60 + widthConst * obj.data.unit.name.length;
+            obj.height = 40;
+        }
+
+        return obj;
+    }
+    function getConnectorDefaults(connector, diagram) {
+        connector.type = 'Orthogonal';
+        connector.style.fill = '#707070';
+        connector.style.strokeColor = '#707070';
+        connector.targetDecorator = {
+            style: {
+                strokeColor: '#707070',
+                fill: '#707070'
+            },
+        };
+        return connector;
+    }
+
+    var diagram;
+    var dialog;
+    var toolbarObj;
+    var sourceDropdown;
+    var targetDropdown;
+    var sourceID;
+    var targetID;
+    var nodeData = [];
+    @* custom code start *@
+    function dlgButtonClick(args) {
+        diagram = document.getElementById('PosManagementDiagram').ej2_instances[0];
+        dialog = document.getElementById("editDialog").ej2_instances[0];
+
+        var dialogHeader = dialog.header;
+
+        var description = document.getElementById("Description").value;
+        var color = document.getElementById("Color").value;
+
+        var selectedItem;
+        if (diagram.selectedItems.nodes.length > 0) {
+            selectedItem = diagram.selectedItems.nodes[0];
+        }
+        if (diagram.selectedItems.connectors.length > 0) {
+            selectedItem = diagram.selectedItems.connectors[0];
+        }
+
+        //Add new node and connector in diagram at runtime.
+        if (dialogHeader === "Add") {
+            var node = {
+                id: 'node' + ej.diagrams.randomId(), style: { fill: color },
+                data: { id: Math.floor((Math.random() * 1000)), unit: { name: description, unitType: 'Position' }, type: 'Position', parentId: selectedItem.data.id }
+            };
+            var connector = {
+                id: 'connector' + ej.diagrams.randomId(), sourceID: selectedItem.id, targetID: node.id, Id: Math.floor((Math.random() * 1000) + 100),
+            };
+            diagram.add(node);
+            diagram.add(connector);
+            diagram.doLayout();
+            //Insert newly added elements into the database.
+            //diagram.insertData();
+            //nodeData.push({ Name: node.id, Label: description });
+        }
+        else {
+            if (selectedItem instanceof ej.diagrams.Connector) {
+                //Update sourceNode and targetNode at runtime.
+                selectedItem.sourceID = sourceID ? sourceID : selectedItem.sourceID;
+                selectedItem.targetID = targetID ? targetID : selectedItem.targetID;
+                diagram.dataBind();
+                diagram.doLayout();
+            }
+            else {
+                //update an node text and node bgColor.
+                selectedItem.Description = description;
+                selectedItem.Color = color;
+                selectedItem.annotations[0].content = description;
+                selectedItem.style.fill = color;
+                diagram.dataBind();
+            }
+            //diagram.updateData();
+        }
+        dialog.hide();
+    };
+    @* custom code start *@
+        //Displays nodes name in dropdown.
+    function sourceDropdownCreate(args) {
+        var sourceDropdown = document.getElementById('SourceId').ej2_instances[0];
+        sourceDropdown.dataSource = getDataSource();
+        sourceDropdown.dataBind();
+    }
+
+    //Displays nodes name in dropdown.
+    function targetDropdownCreate(args) {
+        var targetDropdown = document.getElementById('TargetId').ej2_instances[0];
+        targetDropdown.dataSource = getDataSource();
+        targetDropdown.dataBind();
+    }
+
+    //Set an sourceId of an selected Connector.
+    function sourceDropdownChange(args) {
+        sourceID = args.value;
+    }
+
+    //Set an targetId of an selected Connector.
+    function targetDropdownChange(args) {
+        targetID = args.value;
+    }
+    function posDGToolbarCreate(args) {
+        enableToolbarItems(false);
+    }
+    @* custom code end *@
+    //Disable or Enable the toolbar items based on element selection.
+    function selectionChange(args) {
+        console.log(args);
+        if (args.state === 'Changing') {
+            toolbarObj = document.getElementById("toolbar").ej2_instances[0];
+            if (args.newValue.length > 0) {
+                if (args.newValue[0] instanceof ej.diagrams.Node) {
+                    if (args.newValue.length == 1) {
+                        if (args.newValue[0].properties.data.unit.unitType != 'Position') {
+                            toolbarObj.enableItems(document.getElementById(toolbarObj.items[0].id).parentElement, true);
+                            toolbarObj.enableItems(document.getElementById(toolbarObj.items[2].id).parentElement, false);
+                            toolbarObj.enableItems(document.getElementById(toolbarObj.items[4].id).parentElement, false);
+                        }
+                        else
+                            enableToolbarItems(true);
+                    }
+                    else
+                        enableToolbarItems(false);
+
+                }
+                else {
+                    toolbarObj.enableItems(document.getElementById(toolbarObj.items[0].id).parentElement, false);
+                    toolbarObj.enableItems(document.getElementById(toolbarObj.items[2].id).parentElement, true);
+                    toolbarObj.enableItems(document.getElementById(toolbarObj.items[4].id).parentElement, false);
+                }
+            }
+            else {
+                enableToolbarItems(false);
+            }
+        }
+    }
+    @* custom code start *@
+    //Enable or disable the toolbar items.
+    function enableToolbarItems(isEnableItem) {
+        toolbarObj = document.getElementById("toolbar").ej2_instances[0];
+        toolbarObj.enableItems(document.getElementById(toolbarObj.items[0].id).parentElement, isEnableItem);
+        toolbarObj.enableItems(document.getElementById(toolbarObj.items[2].id).parentElement, isEnableItem);
+        toolbarObj.enableItems(document.getElementById(toolbarObj.items[4].id).parentElement, isEnableItem);
+    }
+    @* custom code end *@
+    function connectionChange(args) {
+            if (args.state === 'Completed') {
+                if (!args.connector.targetID || !args.connector.sourceID) {
+                    args.cancel = true;
+                }
+            }
+        }
+
+    //Set an label for each node.
+    function setNodeTemplate(obj) {
+        obj.annotations = [{ style: { color: 'black' } }];
+        obj.annotations[0].content = obj.Description;
+        obj.style = { fill: obj.Color };
+        if (obj.Id === 1) {
+            //Restrict Delete Constraints for root node.
+            obj.constraints = ej.diagrams.NodeConstraints.Default & ~ej.diagrams.NodeConstraints.Delete;
+        }
+    }
+    @* custom code start *@
+        //Opens a dialog with textbox and dropdown control based on toolbar clicked items.
+    function posDGToolbarClick(args) {
+        diagram = document.getElementById('PosManagementDiagram').ej2_instances[0];
+        var selectedItem;
+        if (diagram.selectedItems.nodes.length > 0) {
+            selectedItem = diagram.selectedItems.nodes[0];
+        }
+        if (diagram.selectedItems.connectors.length > 0) {
+            selectedItem = diagram.selectedItems.connectors[0];
+        }
+        if (selectedItem) {
+            switch (args.item.tooltipText) {
+                case 'Add':
+                    openDialog("Add", "", "", true);
+                    break;
+                case 'Edit':
+                    if (selectedItem instanceof ej.diagrams.Connector) {
+                        var sourceNode = diagram.getObject(selectedItem.sourceID);
+                        var targetNode = diagram.getObject(selectedItem.targetID);
+                        openDialog("Edit", sourceNode.Description, targetNode.Description, false);
+                    }
+                    else {
+                        openDialog("Edit", selectedItem.Description, selectedItem.Color, true);
+                    }
+                    break;
+                case 'Delete':
+                    diagram.remove(selectedItem);
+                    diagram.doLayout();
+                    diagram.removeData();
+                    var element = { Name: selectedItem.id, Label: selectedItem.Description };
+                    var index = nodeData.indexOf(element);
+                    nodeData.splice(index, 1);
+            }
+        }
+    }
+
+    //Show or Hide the Textbox and Dropdown in dialog control
+    function hideClassElement(className, display) {
+        var i;
+        var showDropdown = document.querySelectorAll(className);
+        for (i = 0; i < showDropdown.length; i++) {
+            showDropdown[i].style.display = display;
+        }
+    }
+
+    function openDialog(title, description, color, isNode) {
+        dialog = document.getElementById("editDialog").ej2_instances[0];
+        dialog.header = title;
+        if (isNode) {
+            hideClassElement('.showDropdown', 'none');
+            hideClassElement('.showLabel', 'block');
+            document.getElementById("Description").value = description;
+            document.getElementById("Color").value = color;
+        }
+        else {
+            hideClassElement('.showDropdown', 'block');
+            hideClassElement('.showLabel', 'none');
+            document.getElementById("SourceId").value = description;
+            document.getElementById("TargetId").value = color;
+        }
+        dialog.show();
+    }
+    @* custom code end *@
+        //Returns an node text collection in diagram.
+    function getDataSource() {
+        diagram = document.getElementById('PosManagementDiagram').ej2_instances[0];
+            var i;
+            nodeData = [];
+            for (i = 0; i < diagram.nodes.length; i++) {
+                var node = diagram.nodes[i];
+                var element = { Name: node.id, Label: node.Description };
+                nodeData.push(element);
+            }
+            return nodeData;
+        }
+
     let curSelectedRow;
     function structureLoad() {
         this.columns[5].commands[0].buttonOption.click = function (args) {     //click event for custom command button
