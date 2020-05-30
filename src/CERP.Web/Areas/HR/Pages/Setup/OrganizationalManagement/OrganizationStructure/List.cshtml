@@ -542,10 +542,10 @@
                     form = form.concat(details);
 
                     let params = objectifyForm(form);
-                    curUnitEditRow.unitDetails = params;
+                    curUnitEditRow._unit.unitDetails = params;
 
-                    curUnitEditRow.unitDetails.costCenters = rfdc()(buCostCentersGrid.dataSource);
-                    curUnitEditRow.unitDetails.associations = { positions: rfdc()(buPositionsGrid.dataSource) };
+                    curUnitEditRow._unit.unitDetails.costCenters = rfdc()(buCostCentersGrid.dataSource);
+                    curUnitEditRow._unit.unitDetails.associations = { positions: rfdc()(buPositionsGrid.dataSource) };
 
                     console.log(params);
                     console.log(curUnitEditRow);
@@ -568,10 +568,10 @@
                     form = form.concat(details);
 
                     let params = objectifyForm(form);
-                    curUnitEditRow.unitDetails = params;
+                    curUnitEditRow._unit.unitDetails = params;
 
-                    curUnitEditRow.unitDetails.costCenters = rfdc()(divCostCentersGrid.dataSource);
-                    curUnitEditRow.unitDetails.associations = { positions: rfdc()(divPositionsGrid.dataSource) };
+                    curUnitEditRow._unit.unitDetails.costCenters = rfdc()(divCostCentersGrid.dataSource);
+                    curUnitEditRow._unit.unitDetails.associations = { positions: rfdc()(divPositionsGrid.dataSource) };
 
                     console.log(params);
                     console.log(curUnitEditRow);
@@ -594,10 +594,37 @@
                     form = form.concat(details);
 
                     let params = objectifyForm(form);
-                    curUnitEditRow.unitDetails = params;
+                    curUnitEditRow._unit.unitDetails = params;
 
-                    curUnitEditRow.unitDetails.costCenters = rfdc()(depCostCentersGrid.dataSource);
-                    curUnitEditRow.unitDetails.associations = { positions: rfdc()(depPositionsGrid.dataSource) };
+                    curUnitEditRow._unit.unitDetails.costCenters = rfdc()(depCostCentersGrid.dataSource);
+                    curUnitEditRow._unit.unitDetails.associations = { positions: rfdc()(depPositionsGrid.dataSource) };
+
+                    console.log(params);
+                    console.log(curUnitEditRow);
+
+                    structureTGrid.hideSpinner();
+
+                    toastr.info(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} has been updated`);
+                }
+                else {
+                    toastr.error(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} could not be updated`);
+                }
+            });
+            $('#submitPOSUnitBtn').on('click', function () {
+                console.log(curUnitEditRow);
+                if (ValidateForm('positionForm')) {
+                    structureTGrid.showSpinner();
+
+                    let form = [];
+                    let details = $('#positionForm *:not([readonly])').find("textarea, input, select").serializeArray();
+                    console.log(details);
+                    form = form.concat(details);
+
+                    let params = objectifyForm(form);
+                    curUnitEditRow._unit.unitDetails = params;
+
+                    //curUnitEditRow._unit.unitDetails.costCenters = rfdc()(depCostCentersGrid.dataSource);
+                    //curUnitEditRow._unit.unitDetails.associations = { positions: rfdc()(depPositionsGrid.dataSource) };
 
                     console.log(params);
                     console.log(curUnitEditRow);
@@ -748,13 +775,13 @@
                     <div class="col-sm-2">
 
                     </div>
-                    <div class="col-sm-8" style="padding:0">
+                    <div class="col-sm-7" style="padding:0">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="form-group" style="padding: 15px">
                                 <div class="col-sm-4" style="">
                                     <label class="p-t-5 control-label pull-right">Code:</label>
                                 </div>
-                                <div class="col-sm-8" style="">
+                                <div class="col-sm-7" style="">
                                     <input type="text" id="organizationStructureCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                                 </div>
                             </div>
@@ -764,7 +791,7 @@
                                 <div class="col-sm-4" style="">
                                     <label class="p-t-5 control-label pull-right">Title:</label>
                                 </div>
-                                <div class="col-sm-8" style="">
+                                <div class="col-sm-7" style="">
                                     <input type="text" id="organizationStructureTitle" name="Name" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                                 </div>
                             </div>
@@ -774,7 +801,7 @@
                                 <div class="col-sm-4" style="">
                                     <label class="p-t-5 control-label pull-right">Title (In Arabic):</label>
                                 </div>
-                                <div class="col-sm-8" style="">
+                                <div class="col-sm-7" style="">
                                     <input type="text" id="organizationStructureTitleLocalized" name="NameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                                 </div>
                             </div>
@@ -784,7 +811,7 @@
                                 <div class="col-sm-4" style="">
                                     <label class="p-t-5 control-label pull-right ">Valid From:</label>
                                 </div>
-                                <div class="col-sm-8" style="">
+                                <div class="col-sm-7" style="">
                                     <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
                                 </div>
                             </div>
@@ -794,7 +821,7 @@
                                 <div class="col-sm-4" style="">
                                     <label class="p-t-5 control-label pull-right ">Valid To:</label>
                                 </div>
-                                <div class="col-sm-8" style="">
+                                <div class="col-sm-7" style="">
                                     <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
                                 </div>
                             </div>
@@ -804,7 +831,7 @@
                                 <div class="col-sm-4" style="">
                                     <label class="p-t-5 control-label pull-right ">Review Period:</label>
                                 </div>
-                                <div class="col-sm-8" style="">
+                                <div class="col-sm-7" style="">
                                     <div id="reviewPeriodTypeField" class="col-sm-12" style="padding:0">
                                         <div class="form-group">
                                             <select id="reviewPeriod" name="ReviewPeriod" onchange="
@@ -846,7 +873,7 @@
                                 <div class="col-sm-4" style="">
                                     <label class="p-t-5 control-label pull-right ">Legal Entity:</label>
                                 </div>
-                                <div class="col-sm-8" style="">
+                                <div class="col-sm-7" style="">
                                     <select id="structureLegalEntity" name="LegalEntityId" class="form-control" required>
                                     </select>
                                 </div>
@@ -869,7 +896,7 @@
                 <ejs-tab id="OSSpecificFormTabs" animation="ViewBag.animation" selected="osSpecificTabSelected">
                     <e-tab-tabitems>
                         <e-tab-tabitem header="@(new TabHeader { Text = "Organization Structure" })" content="#orgStructureTab"></e-tab-tabitem>
-                        <e-tab-tabitem header="@(new TabHeader { Text = "Position Management" })" content="#posManagementTab"></e-tab-tabitem>
+                        <e-tab-tabitem header="@(new TabHeader { Text = "Overview Diagram" })" content="#diagramOverviewTab"></e-tab-tabitem>
                     </e-tab-tabitems>
                 </ejs-tab>
                 <div id="orgStructureTab" class="areaForm" style="display:none;">
@@ -907,8 +934,8 @@
                                             <div class="col-sm-4" style="">
                                                 <label class="p-t-5 control-label pull-right ">Head of BU:</label>
                                             </div>
-                                            <div class="col-sm-8" style="">
-                                                <select id="buHead" name="HeadOfBUId" class="form-control" required>
+                                            <div class="col-sm-7" style="">
+                                                <select id="buHead" name="HeadOfBUId" class="form-control">
                                                 </select>
                                             </div>
                                         </div>
@@ -918,8 +945,8 @@
                                             <div class="col-sm-4" style="">
                                                 <label class="p-t-5 control-label pull-right ">Location:</label>
                                             </div>
-                                            <div class="col-sm-8" style="">
-                                                <select id="buLocationsIds" name="BULocationId" class="form-control" required>
+                                            <div class="col-sm-7" style="">
+                                                <select id="buLocationsIds" name="BULocationId" class="form-control">
                                                 </select>
                                             </div>
                                         </div>
@@ -929,8 +956,8 @@
                                             <div class="col-sm-4" style="">
                                                 <label class="p-t-5 control-label pull-right ">Paygroup:</label>
                                             </div>
-                                            <div class="col-sm-8" style="">
-                                                <select id="buPayroup" name="BUPaygroupId" class="form-control" required>
+                                            <div class="col-sm-7" style="">
+                                                <select id="buPayroup" name="BUPaygroupId" class="form-control">
                                                 </select>
                                             </div>
                                         </div>
@@ -1100,8 +1127,8 @@
                                             <div class="col-sm-4" style="">
                                                 <label class="p-t-5 control-label pull-right ">Head of DIV:</label>
                                             </div>
-                                            <div class="col-sm-8" style="">
-                                                <select id="divHead" name="HeadOfDIVId" class="form-control" required>
+                                            <div class="col-sm-7" style="">
+                                                <select id="divHead" name="HeadOfDIVId" class="form-control">
                                                 </select>
                                             </div>
                                         </div>
@@ -1111,8 +1138,8 @@
                                             <div class="col-sm-4" style="">
                                                 <label class="p-t-5 control-label pull-right ">Location:</label>
                                             </div>
-                                            <div class="col-sm-8" style="">
-                                                <select id="divLocationsIds" name="DIVLocationId" class="form-control" required>
+                                            <div class="col-sm-7" style="">
+                                                <select id="divLocationsIds" name="DIVLocationId" class="form-control">
                                                 </select>
                                             </div>
                                         </div>
@@ -1122,8 +1149,8 @@
                                             <div class="col-sm-4" style="">
                                                 <label class="p-t-5 control-label pull-right ">Paygroup:</label>
                                             </div>
-                                            <div class="col-sm-8" style="">
-                                                <select id="divPayroup" name="DIVPaygroupId" class="form-control" required>
+                                            <div class="col-sm-7" style="">
+                                                <select id="divPayroup" name="DIVPaygroupId" class="form-control">
                                                 </select>
                                             </div>
                                         </div>
@@ -1295,7 +1322,7 @@
                                             <div class="col-sm-4" style="">
                                                 <label class="p-t-5 control-label pull-right ">Head of DIV:</label>
                                             </div>
-                                            <div class="col-sm-8" style="">
+                                            <div class="col-sm-7" style="">
                                                 <select id="depHead" name="HeadOfDEPId" class="form-control" required>
                                                 </select>
                                             </div>
@@ -1306,7 +1333,7 @@
                                             <div class="col-sm-4" style="">
                                                 <label class="p-t-5 control-label pull-right ">Location:</label>
                                             </div>
-                                            <div class="col-sm-8" style="">
+                                            <div class="col-sm-7" style="">
                                                 <select id="depLocationsIds" name="DEPLocationId" class="form-control" required>
                                                 </select>
                                             </div>
@@ -1317,7 +1344,7 @@
                                             <div class="col-sm-4" style="">
                                                 <label class="p-t-5 control-label pull-right ">Paygroup:</label>
                                             </div>
-                                            <div class="col-sm-8" style="">
+                                            <div class="col-sm-7" style="">
                                                 <select id="depPayroup" name="DEPPaygroupId" class="form-control" required>
                                                 </select>
                                             </div>
@@ -1470,6 +1497,246 @@
                         </div>
                     </div>
                     
+                    <div id="positionForm" role="form" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                        <ejs-tab id="positionFormTabs" animation="ViewBag.animation">
+                            <e-tab-tabitems>
+                                <e-tab-tabitem header="@(new TabHeader { Text = "General" })" content="#generalPOSDetailsTab"></e-tab-tabitem>
+                                <e-tab-tabitem header="@(new TabHeader { Text = "Job Details" })" content="#POSJobDetailsTab"></e-tab-tabitem>
+                                <e-tab-tabitem header="@(new TabHeader { Text = "Organization Details" })" content="#POSOrgDetailsTab"></e-tab-tabitem>
+                            </e-tab-tabitems>
+                        </ejs-tab>
+                        <div id="generalPOSDetailsTab" class="areaForm">
+
+                            <div class="row">
+                                <div class="col-sm-1">
+
+                                </div>
+                                <div class="col-sm-9" style="padding:0">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-5" style="">
+                                                <label class="p-t-5 control-label pull-right ">Type:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <select id="posType" name="PositionTypeId" class="form-control">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-5" style="">
+                                                <label class="p-t-5 control-label pull-right ">Position Code:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <input id="posCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-5" style="">
+                                                <label class="p-t-5 control-label pull-right ">Position Name:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <input id="posName" name="Name" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-5" style="">
+                                                <label class="p-t-5 control-label pull-right ">Position Local Name:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <input id="posNameLocalized" name="NameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-5" style="">
+                                                <label class="p-t-5 control-label pull-right ">Status:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <select id="posStatus" name="PositionStatusId" class="form-control">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-5" style="">
+                                                <label class="p-t-5 control-label pull-right ">Validity Start Date:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <input id="posValidityStart" name="ValidityFromDate" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-5" style="">
+                                                <label class="p-t-5 control-label pull-right ">Validity End Date:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <input id="posValidityStart" name="ValidityToDate" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-5" style="">
+                                                <label class="p-t-5 control-label pull-right ">Target FTE:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <input type="number" min="1" value="" id="posTargetFTE" name="TargetFTE" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-5" style="">
+                                                <label class="p-t-5 control-label pull-right ">Capacity Controlled:</label>
+                                            </div>
+                                            <div class="col-sm-1" style="">
+                                                <input type="checkbox" style="max-height: 20px; min-height: 20px; max-width: 20px; min-width: 20px" id="posCapControlled" name="IsCapacityControlled" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-5" style="">
+                                                <label class="p-t-5 control-label pull-right ">Multiple Incumbents Allowed:</label>
+                                            </div>
+                                            <div class="col-sm-1" style="">
+                                                <input type="checkbox" style="max-height: 20px; min-height: 20px; max-width: 20px; min-width: 20px" id="posMultipleIncumbentsAllowed" name="IsMultipleIncumbentsAllowed" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-5" style="">
+                                                <label class="p-t-5 control-label pull-right ">To Be Bired:</label>
+                                            </div>
+                                            <div class="col-sm-1" style="">
+                                                <input type="checkbox" style="max-height: 20px; min-height: 20px; max-width: 20px; min-width: 20px" id="posToBeHired" name="IsToBeHired" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-5" style="">
+                                                <label class="p-t-5 control-label pull-right ">Standard Working Hours:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <input type="number" min="1" id="posStandardWorkingHours" name="sStandardWorkingHours" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-5" style="">
+                                                <label class="p-t-5 control-label pull-right ">Pay Grade:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <select id="posPayrgrade" name="PayGradeId" class="form-control">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div id="POSJobDetailsTab" class="areaForm" style="display:none">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="panel-body p-t-0" style="">
+                                        <div class="areaHeader" style="display:flex;">
+                                            <div id="posCostCentersLoader" class="pull-left loader-inline" style="display:none"></div>
+                                            <div class="areaHeaderTitle">
+                                                <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Cost Centers</span>
+                                            </div>
+                                            <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                                <a id="addPOSCostCenterBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                                            </div>
+                                        </div>
+                                        <div role="form" id="posCostCentersForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                                    <div class="form-group">
+                                                        <label class="margin-bottom-5 control-label">Cost Centers:</label>
+                                                        <select id="posCostCentersIds" name="CostCentersIds" multiple="multiple" class="form-control">
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                                    <div class="form-group">
+                                                        <label class="margin-bottom-5 control-label">Percentage:</label>
+                                                        <input type="number" min="1" max="100" value="" id="posCostCenterPercentage" name="Percentage" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                                    <label class="control-label m-b-5 "></label>
+                                                    <button id="submitPOSCostCenterBtn" type="button" class="btn btn-success btn-block">Add Cost Center(s)</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="posCostCentersCS" class="control-section">
+                                            <ejs-grid id="POSCostCenterReferenceGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                                      allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                                      hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                                      allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                                      toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" actionBegin="referenceActionBegin" actionComplete="referenceActionComplete"
+                                                      allowPaging="true" allowResizing="true">
+
+                                                <e-grid-columns>
+                                                    <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                                    <e-grid-column field="key" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                                    <e-grid-column field="value" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                                    <e-grid-column field="percentage" allowEditing="true" headerText="Percentage" textAlign="Center"></e-grid-column>
+                                                    <e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>
+                                                </e-grid-columns>
+
+                                                <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                                <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                                <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                                <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                            </ejs-grid>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="POSOrgDetailsTab" class="areaForm" style="display:none">
+                            <ejs-accordion id="posAssociationsFormAccordion">
+                                <e-accordion-accordionitems>
+                                    <e-accordion-accordionitem expanded="true" header="Positions" content="#posPosAssociations"></e-accordion-accordionitem>
+                                    <e-accordion-accordionitem header="Companies" content="#posCompsAssociations"></e-accordion-accordionitem>
+                                    <e-accordion-accordionitem header="Positions" content="#posPositionsAssociations"></e-accordion-accordionitem>
+                                </e-accordion-accordionitems>
+                            </ejs-accordion>
+
+                            <div id="posCompsAssociations" style="display: none;">
+                            </div>
+                            <div id="posPositionsAssociations" style="display: none;">
+                            </div>
+                        </div>
+                        <div class="row m-t-20">
+                            <div class="col-lg-12">
+                                <input id="submitPOSUnitBtn" type="button" class="btn btn-success btn-block" value="Update Position" required />
+                            </div>
+                        </div>
+                    </div>
+                    
                     
 
                     <ejs-treegrid id="StructureTreeGrid" dataSource="new List<dynamic>()" load="structureLoad" height="380px" rowSelected="structureTreeRowSelected"
@@ -1481,7 +1748,7 @@
                         <e-treegrid-editsettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-treegrid-editsettings>
 
                         @{
-                            List<string> unitTypes = new List<string>() { "Business Unit", "Division", "Department" };
+                            List<string> unitTypes = new List<string>() { "Business Unit", "Division", "Department", "Position" };
                             var typeEdit = new
                             {
                                 @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Change = "loadTypeUnitsDropdown", CssClass = "unitTypeDropDown", BeforeOpen = "loadUnitTypesDropdown", DataSource = unitTypes, Query = "new ej.data.Query()", AllowFiltering = true }
@@ -1506,7 +1773,7 @@
                         </e-treegrid-columns>
                     </ejs-treegrid>
                 </div>
-                <div id="posManagementTab" class="areaForm" style="display:none">
+                <div id="diagramOverviewTab" class="areaForm" style="display:none">
                     <div class="control-section">
                         <div style="width: 100%;height: 10%">
                             @*Initializes ToolBar control.*@
@@ -1975,14 +2242,14 @@
                 case "Business Unit":
                     $('#osFormsHeader').find('#areaHeadertitle').text('Business Unit');
 
-                    if (curUnitEditRow.unitDetails)
-                        FillFormByObject(curUnitEditRow.unitDetails, $('#businessUnitForm'));
+                    if (curUnitEditRow._unit.unitDetails)
+                        FillFormByObject(curUnitEditRow._unit.unitDetails, $('#businessUnitForm'));
 
                     try {
-                        buCostCentersGrid.dataSource = rfdc()(curUnitEditRow.unitDetails.costCenters);
+                        buCostCentersGrid.dataSource = rfdc()(curUnitEditRow._unit.unitDetails.costCenters);
                         buCostCentersGrid.refresh();
 
-                        buPositionsGrid.dataSource = rfdc()(curUnitEditRow.unitDetails.associations.positions);
+                        buPositionsGrid.dataSource = rfdc()(curUnitEditRow._unit.unitDetails.associations.positions);
                         buPositionsGrid.refresh();
 
                     } catch (e) {
@@ -1992,19 +2259,20 @@
                     $('#businessUnitForm').slideDown();
                     $('#divisionForm').slideUp();
                     $('#departmentForm').slideUp();
+                    $('#positionForm').slideUp();
                     break;
                 case "Division":
                     $('#osFormsHeader').find('#areaHeadertitle').text('Division');
 
-                    if (curUnitEditRow.unitDetails)
-                        FillFormByObject(curUnitEditRow.unitDetails, $('#divisionForm'));
+                    if (curUnitEditRow._unit.unitDetails)
+                        FillFormByObject(curUnitEditRow._unit.unitDetails, $('#divisionForm'));
 
 
                     try {
-                        divCostCentersGrid.dataSource = rfdc()(curUnitEditRow.unitDetails.costCenters);
+                        divCostCentersGrid.dataSource = rfdc()(curUnitEditRow._unit.unitDetails.costCenters);
                         divCostCentersGrid.refresh();
 
-                        divPositionsGrid.dataSource = rfdc()(curUnitEditRow.unitDetails.associations.positions);
+                        divPositionsGrid.dataSource = rfdc()(curUnitEditRow._unit.unitDetails.associations.positions);
                         divPositionsGrid.refresh();
 
                     } catch (e) {
@@ -2014,18 +2282,19 @@
                     $('#divisionForm').slideDown();
                     $('#departmentForm').slideUp();
                     $('#businessUnitForm').slideUp();
+                    $('#positionForm').slideUp();
                     break;
                 case "Department":
                     $('#osFormsHeader').find('#areaHeadertitle').text('Department');
 
-                    if (curUnitEditRow.unitDetails)
-                        FillFormByObject(curUnitEditRow.unitDetails, $('#departmentForm'));
+                    if (curUnitEditRow._unit.unitDetails)
+                        FillFormByObject(curUnitEditRow._unit.unitDetails, $('#departmentForm'));
 
                     try {
-                        depCostCentersGrid.dataSource = rfdc()(curUnitEditRow.unitDetails.costCenters);
+                        depCostCentersGrid.dataSource = rfdc()(curUnitEditRow._unit.unitDetails.costCenters);
                         depCostCentersGrid.refresh();
 
-                        depPositionsGrid.dataSource = rfdc()(curUnitEditRow.unitDetails.associations.positions);
+                        depPositionsGrid.dataSource = rfdc()(curUnitEditRow._unit.unitDetails.associations.positions);
                         depPositionsGrid.refresh();
 
                     } catch (e) {
@@ -2033,6 +2302,42 @@
                     }
 
                     $('#departmentForm').slideDown();
+                    $('#divisionForm').slideUp();
+                    $('#businessUnitForm').slideUp();
+                    $('#positionForm').slideUp();
+                    break;
+                case "Position":
+                    $('#osFormsHeader').find('#areaHeadertitle').text('Position');
+
+
+                    let posVM;
+                    if (curUnitEditRow._unit) {
+                        posVM = { ...curUnitEditRow._unit };
+
+                        if (curUnitEditRow._unit.unitDetails) {
+                            posVM = { ...posVM, ...curUnitEditRow._unit.unitDetails };
+                        }
+                    }
+
+                    console.log("posVM");
+                    console.log(posVM);
+
+                    if (posVM)
+                        FillFormByObject(posVM, $('#positionForm'));
+
+                    try {
+                        depCostCentersGrid.dataSource = rfdc()(curUnitEditRow._unit.unitDetails.costCenters);
+                        depCostCentersGrid.refresh();
+
+                        depPositionsGrid.dataSource = rfdc()(curUnitEditRow._unit.unitDetails.associations.positions);
+                        depPositionsGrid.refresh();
+
+                    } catch (e) {
+
+                    }
+
+                    $('#positionForm').slideDown();
+                    $('#departmentForm').slideUp();
                     $('#divisionForm').slideUp();
                     $('#businessUnitForm').slideUp();
                     break;
@@ -2051,6 +2356,16 @@
         else if (curType == "Business Unit") {
             usedBusinessUnits.push(this.itemData);
         }
+        else if (curType == "Position") {
+            if (curSelectedRow) {
+                if (typeof curSelectedRow._unit.unitDetails.associations.usedPositions == 'undefined') {
+                    curSelectedRow._unit.unitDetails.associations.usedPositions = [this.itemData];
+                }
+                else {
+                    curSelectedRow._unit.unitDetails.associations.usedPositions.push(this.itemData);
+                }
+            }
+        }
     }
     function getUnitLevel(type) {
         switch (type) {
@@ -2060,30 +2375,23 @@
                 return 1;
             case "Department":
                 return 2;
+            case "Position":
+                return 3;
         }
     }
     function structureTreeActionBegin(args) {
         console.log(args);
         if (args.requestType == "add") {
             curSelectedRow = this.getSelectedRecords()[0];
-
+            console.log('-----');
+            console.log(curSelectedRow);
         }
         else if (args.requestType == "edit") {
             
         }
         else if (args.requestType == "save") {
             let curType = args.data.type;
-            if (curType == "Department") {
-                args.data._unit = usedDepartments.filter(function (x) { return x.id == args.data._unit.name })[0];
-            }
-            else if (curType == "Division") {
-                args.data._unit = usedDivisions.filter(function (x) { return x.id == args.data._unit.name })[0];
-            }
-            else if (curType == "Business Unit") {
-                args.data._unit = usedBusinessUnits.filter(function (x) { return x.id == args.data._unit.name })[0];
-            }
 
-            args.data.id = this.dataSource.length + 1;
             if (typeof curSelectedRow !== 'undefined') {
                 args.cancel = true;
                 if (getUnitLevel(curType) < getUnitLevel(curSelectedRow.type)) {
@@ -2102,7 +2410,24 @@
                 }
             }
 
-            curSelectedRow = undefined;
+            if (curType == "Department") {
+                args.data._unit = usedDepartments.filter(function (x) { return x.id == args.data._unit.name })[0];
+            }
+            else if (curType == "Division") {
+                args.data._unit = usedDivisions.filter(function (x) { return x.id == args.data._unit.name })[0];
+            }
+            else if (curType == "Business Unit") {
+                args.data._unit = usedBusinessUnits.filter(function (x) { return x.id == args.data._unit.name })[0];
+            }
+            else if (curType == "Position" && typeof curSelectedRow !== 'undefined') {
+                args.data._unit = curSelectedRow._unit.unitDetails.associations.usedPositions.filter(function (x) { return x.id == args.data._unit.name })[0];
+            }
+
+            args.data.id = this.dataSource.length + 1;
+
+            console.log("----");
+            console.log(curSelectedRow);
+            //curSelectedRow = undefined;
             //else
             //    
         }
@@ -2118,7 +2443,7 @@
             this.dataSource = ds;
             this.refresh();
 
-            curSelectedRow = undefined;
+            //curSelectedRow = undefined;
         }
     }
     function structureTreeRowSelected(args) {
@@ -2264,6 +2589,31 @@
     function getUnusedBusinessUnits() {
         return businessUnits.filter(function (x) { return usedBusinessUnits.filter(function (y) { return y.id == x.id }).length == 0 });
     }
+    function getUnusedPositions(unitRow) {
+        try {
+            console.log(unitRow);
+            let positions = unitRow.taskData._unit.unitDetails.associations.positions;
+            console.log(positions);
+
+            if (typeof positions !== 'undefined' && positions.length > 0 && typeof unitRow.childRecords !== 'undefined' && unitRow.childRecords.length > 0) {
+                console.log(positions);
+                positions = positions.filter(function (x) { return unitRow.childRecords.filter(function (y) { return y._unit.unitType == 'Position' && y.taskData._unit.id == x.id; }).length == 0 });
+                console.log(positions);
+            }
+            console.log(positions);
+
+            for (var i = 0; i < positions.length; i++) {
+                positions[i].unitType = 'Position';
+            }
+
+            console.log(positions);
+
+            return positions;
+        }
+        catch (ex) {
+            console.log(ex);
+        }
+    }
 
     function loadTypeUnitsDropdown() {
         console.log(this);
@@ -2276,6 +2626,9 @@
         }
         else if (this.itemData == "Business Unit") {
             structureGrid.columns[2].edit.params.dataSource = getUnusedBusinessUnits();
+        }
+        else if (this.itemData == "Position") {
+            structureGrid.columns[2].edit.params.dataSource = getUnusedPositions(curSelectedRow);
         }
 
         console.log(structureGrid.columns[2].edit);

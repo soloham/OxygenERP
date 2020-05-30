@@ -515,6 +515,10 @@ function FillFormByObject(obj, form) {
                 $(melm).change();
             }
         }
+        else if (type == 'checkbox') {
+            let melm = $('#' + elm.id);
+            $(melm)[0].checked = (obj[propName] != true || obj[propName] == false) ? obj[propName] == 'on' ? true : false : obj[propName];
+        }
     }
     for (var i = 0; i < formObjs.length; i++) {
         let elm = formObjs[i];
@@ -551,6 +555,10 @@ function FillFormByObject(obj, form) {
                     $(melm).change();
                 }
             }
+            else if (type == 'checkbox') {
+                let melm = $('#' + elm.id);
+                $(melm)[0].checked = (obj[propName] != true || obj[propName] == false) ? obj[propName] == 'on' ? true : false : obj[propName];
+            }
             else
                 elm.value = obj[propName];
         }
@@ -571,6 +579,9 @@ function FillDivFormByObject(obj, elements) {
                 console.log(dateVal.toString());
                 elm.value = dateVal.toString();
                 console.log(elm.value);
+            }
+            else if (type == 'checkbox') {
+                $(elm)[0].checked = (obj[propName] != true || obj[propName] == false) ? obj[propName] == 'on' ? true : false : obj[propName];
             }
             else
                 elm.value = obj[propName];
