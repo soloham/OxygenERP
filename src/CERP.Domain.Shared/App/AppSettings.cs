@@ -72,6 +72,16 @@ namespace CERP
         [Description("Company Document Type")]
         CompanyDocumentType,
         [Description("Cost Center")]
-        CostCenter
+        CostCenter,
+        [Description("Position Type")]
+        OrganizationPositionType,
+        [Description("Position Status")]
+        OrganizationPositionStatus,
+        [Description("Job Levels")]
+        OrganizationPositionJobLevels,
+        [Description("Job Employee Class")]
+        OrganizationPositionJobEmployeeClasses,
+        [Description("Job Contract Type")]
+        OrganizationPositionJobContractTypes
     }
 }

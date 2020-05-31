@@ -368,7 +368,13 @@ const ValueTypeModules = {
     LeaveType: 25,
     HolidayType: 26,
     LoanType: 27,
-    CompanyDocumentType: 28
+    CompanyDocumentType: 28,
+    CostCenter: 29,
+    OrganizationPositionType: 30,
+    OrganizationPositionStatus: 31,
+    OrganizationPositionJobLevels: 32,
+    OrganizationPositionJobEmployeeClasses: 33,
+    OrganizationPositionJobContractTypes: 34,
 }
 
 function SelectDepartmentPositions(departmentsElmId, positionsElmId, departmentsArr, positionsArr, isEditing, isEditingLoaded, toSelectPositions) {
@@ -498,34 +504,43 @@ function ValidateForm(formId) {
 function FillFormByObject(obj, form) {
     let props = Object.keys(obj);
     let formObjs = $(`#${form[0].id} :input`);
-    for (var i = 0; i < formObjs.length; i++) {
-        let elm = formObjs[i];
-        let type = elm.type;
-        console.log(props);
-        let propName = props.filter(function (x) { return x.toLowerCase() == elm.name.toLowerCase(); });
-        if (type == 'select-multiple') {
-            let melm = $('#' + elm.id);
-            if ($(melm).parent()[0].id.includes('multiselect') || $(melm).parent()[0].className.includes('multiselect')) {
-                console.log(propName);
-                console.log(elm.name);
-                console.log(obj[propName]);
-                $(melm).multiselect('deselectAll', false);
-                $(melm).multiselect('refresh');
-                $(melm).multiselect('select', obj[propName]);
-                $(melm).change();
+    try {
+        for (var i = 0; i < formObjs.length; i++) {
+            let elm = formObjs[i];
+            let type = elm.type;
+            let propName = props.filter(function (x) { return x.toLowerCase() == elm.name.toLowerCase(); });
+            if (type == 'select-multiple') {
+                let melm = $('#' + elm.id);
+                if ($(melm).parent()[0].id.includes('multiselect') || $(melm).parent()[0].className.includes('multiselect')) {
+                    $(melm).multiselect('deselectAll', false);
+                    $(melm).multiselect('refresh');
+                    $(melm).multiselect('select', obj[propName]);
+                    $(melm).change();
+                }
+            }
+            else if (type == 'select-one') {
+                let melm = $('#' + elm.id);
+                if ($(melm).parent()[0].id.includes('multiselect') || $(melm).parent()[0].className.includes('multiselect')) {
+                    $(melm).multiselect('deselectAll', false);
+                    $(melm).multiselect('refresh');
+                    $(melm).change();
+                }
+                else
+                    $(melm).val(obj[propName]);
+            }
+            else if (type == 'checkbox') {
+                let melm = $('#' + elm.id);
+                $(melm)[0].checked = (obj[propName] != true || obj[propName] == false) ? obj[propName] == 'on' ? true : false : obj[propName];
             }
         }
-        else if (type == 'checkbox') {
-            let melm = $('#' + elm.id);
-            $(melm)[0].checked = (obj[propName] != true || obj[propName] == false) ? obj[propName] == 'on' ? true : false : obj[propName];
-        }
+    } catch (ex) {
+
     }
     for (var i = 0; i < formObjs.length; i++) {
         let elm = formObjs[i];
         let type = elm.type;
         let propName = props.filter(function (x) { return x.toLowerCase() == elm.name.toLowerCase(); });
         if (propName != '') {
-            console.log(type);
 
             if (type == 'date') {
                 let val = new Date(obj[propName]);
@@ -538,12 +553,15 @@ function FillFormByObject(obj, form) {
             }
             else if (type == 'select-one') {
                 let melm = $('#' + elm.id);
+                console.log(melm);
                 if ($(melm).parent()[0].id.includes('multiselect') || $(melm).parent()[0].className.includes('multiselect')) {
                     $(melm).multiselect('deselectAll', false);
                     $(melm).multiselect('refresh');
                     $(melm).multiselect('select', obj[propName]);
                     $(melm).change();
                 }
+                else
+                    $(melm).val(obj[propName]);
             }
             else if (type == 'select-multiple') {
                 let melm = $('#' + elm.id);
@@ -564,6 +582,17 @@ function FillFormByObject(obj, form) {
         }
     }
 }
+function modifyObject(obj, newObj) {
+
+    Object.keys(obj).forEach(function (key) {
+        delete obj[key];
+    });
+
+    Object.keys(newObj).forEach(function (key) {
+        obj[key] = newObj[key];
+    });
+
+}
 function FillDivFormByObject(obj, elements) {
     let props = Object.keys(obj);
     for (var i = 0; i < elements.length; i++) {
@@ -582,6 +611,27 @@ function FillDivFormByObject(obj, elements) {
             }
             else if (type == 'checkbox') {
                 $(elm)[0].checked = (obj[propName] != true || obj[propName] == false) ? obj[propName] == 'on' ? true : false : obj[propName];
+            }
+            else if (type == 'select-multiple') {
+                let melm = $('#' + elm.id);
+                if ($(melm).parent()[0].id.includes('multiselect') || $(melm).parent()[0].className.includes('multiselect')) {
+                    $(melm).multiselect('deselectAll', false);
+                    $(melm).multiselect('refresh');
+                    $(melm).multiselect('select', obj[propName]);
+                    $(melm).change();
+                }
+            }
+            else if (type == 'select-one') {
+                let melm = $('#' + elm.id, $(elm).parent()[0]);
+                console.log(melm);
+                if ($(melm).parent()[0].id.includes('multiselect') || $(melm).parent()[0].className.includes('multiselect')) {
+                    $(melm).multiselect('deselectAll', false);
+                    $(melm).multiselect('refresh');
+                    $(melm).multiselect('select', obj[propName]);
+                    $(melm).change();
+                }
+                else
+                    $(melm).val(obj[propName]);
             }
             else
                 elm.value = obj[propName];

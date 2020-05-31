@@ -28,5 +28,18 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.PayrollStructure
 
         public PS_PayRange_Dto PayRange { get; set; }
         public int PayRangeId { get; set; }
+
+        public List<PS_PayGradeComponent_Dto> PayGradeComponents { get; set; }
+    }
+    public class PS_PayGradeComponent_Dto : AuditedEntityTenantDto<int>
+    {
+        public PS_PayComponent_Dto PayComponent { get; set; }
+        public int PayComponentId { get; set; }
+
+        public PS_PayGrade_Dto PayGrade { get; set; }
+        public int PayGradeId { get; set; }
+        public int MaxAnnualLimit { get; set; }
+        public PS_PaygradeComponentAmountValueType AmountValueType { get; set; }
+        public decimal Amount { get; set; }
     }
 }

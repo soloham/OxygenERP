@@ -19,12 +19,11 @@ using Volo.Abp.Auditing;
 using CERP.CERP.HR.Documents;
 using CERP.App.CustomEntityHistorySystem;
 using CERP.Attributes;
-using CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructure;
-using CERP.HR.OrganizationalManagement.OrganizationStructure;
-using CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure;
-using CERP.HR.Setup.OrganizationalManagement.OrganizationStructure;
+using CERP.ApplicationContracts.HR.OrganizationalManagement.PayrollStructure;
+using CERP.HR.OrganizationalManagement.PayrollStructure;
+using CERP.AppServices.HR.OrganizationalManagement.PayrollStructure;
 
-namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure.Pages.OrganizationStructures
+namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.PayrollStructure.Pages.PayGroups
 {
     public class ListModel : CERPPageModel
     {
@@ -32,20 +31,18 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
         public IRepository<DictionaryValue, Guid> DictionaryValuesRepo { get; set; }
         public IAuditLogRepository AuditLogsRepo { get; set; }
 
-        public OS_OrganizationStructureTemplateAppService OS_OrganizationStructureTemplateAppService { get; set; }
-        public OS_PositionTemplateAppService OS_PositionTemplateAppService { get; set; }
+        public PS_PayGroupAppService PS_PayGroupAppService { get; set; }
 
         public IAuditingManager AuditingManager { get; set; }
         public IRepository<CustomEntityChange> CustomEntityChangesRepo { get; set; }
 
-        public ListModel(IJsonSerializer jsonSerializer, IRepository<DictionaryValue, Guid> dictionaryValuesRepo, IWebHostEnvironment webHostEnvironment, IAuditLogRepository auditLogsRepo, OS_OrganizationStructureTemplateAppService oS_OrganizationStructureTemplateAppService, OS_PositionTemplateAppService oS_PositionTemplateAppService)
+        public ListModel(IJsonSerializer jsonSerializer, IRepository<DictionaryValue, Guid> dictionaryValuesRepo, IWebHostEnvironment webHostEnvironment, IAuditLogRepository auditLogsRepo, PS_PayGroupAppService oS_PayGroupAppService)
         {
             JsonSerializer = jsonSerializer;
             DictionaryValuesRepo = dictionaryValuesRepo;
             this.webHostEnvironment = webHostEnvironment;
             AuditLogsRepo = auditLogsRepo;
-            OS_OrganizationStructureTemplateAppService = oS_OrganizationStructureTemplateAppService;
-            OS_PositionTemplateAppService = oS_PositionTemplateAppService;
+            PS_PayGroupAppService = oS_PayGroupAppService;
         }
 
         public IJsonSerializer JsonSerializer { get; set; }
@@ -55,7 +52,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
 
         }
 
-        public async Task<IActionResult> OnPostOrganizationStructureTemplate()
+        public async Task<IActionResult> OnPostPayGroup()
         {
             if (ModelState.IsValid)
             {
@@ -63,32 +60,32 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                 {
                     var FormData = Request.Form;
 
-                    OS_OrganizationStructureTemplate_Dto organizationStructureTemplate_Dto = JsonSerializer.Deserialize<OS_OrganizationStructureTemplate_Dto>(FormData["info"]);
-                    //StructureVM structureVM = JsonSerializer.Deserialize<StructureVM>(FormData["info"]);
-                    bool IsEditing = organizationStructureTemplate_Dto.Id > 0;
+                    PS_PayGroup_Dto payGroup_Dto = JsonSerializer.Deserialize<PS_PayGroup_Dto>(FormData["info"]);
+
+                    bool IsEditing = payGroup_Dto.Id > 0;
                     if (IsEditing)
                     {
-                        OS_OrganizationStructureTemplate curOrganizationStructureTemplate = await OS_OrganizationStructureTemplateAppService.Repository.GetAsync(organizationStructureTemplate_Dto.Id);
-                        
+                        PS_PayGroup curPayGroup = await PS_PayGroupAppService.Repository.GetAsync(payGroup_Dto.Id);
+
                         if (AuditingManager.Current != null)
                         {
                             EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
 
-                            entityChangeInfo.EntityId = organizationStructureTemplate_Dto.Id.ToString();
-                            entityChangeInfo.EntityTenantId = organizationStructureTemplate_Dto.TenantId;
+                            entityChangeInfo.EntityId = payGroup_Dto.Id.ToString();
+                            entityChangeInfo.EntityTenantId = payGroup_Dto.TenantId;
                             entityChangeInfo.ChangeTime = DateTime.Now;
                             entityChangeInfo.ChangeType = EntityChangeType.Updated;
-                            entityChangeInfo.EntityTypeFullName = typeof(OS_OrganizationStructureTemplate).FullName;
+                            entityChangeInfo.EntityTypeFullName = typeof(PS_PayGroup).FullName;
 
                             entityChangeInfo.PropertyChanges = new List<EntityPropertyChangeInfo>();
                             List<EntityPropertyChangeInfo> entityPropertyChanges = new List<EntityPropertyChangeInfo>();
-                            var auditProps = typeof(OS_OrganizationStructureTemplate).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+                            var auditProps = typeof(PS_PayGroup).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
 
-                            OS_OrganizationStructureTemplate mappedInput = ObjectMapper.Map<OS_OrganizationStructureTemplate_Dto, OS_OrganizationStructureTemplate>(organizationStructureTemplate_Dto);
+                            PS_PayGroup mappedInput = ObjectMapper.Map<PS_PayGroup_Dto, PS_PayGroup>(payGroup_Dto);
                             foreach (var prop in auditProps)
                             {
                                 EntityPropertyChangeInfo propertyChange = new EntityPropertyChangeInfo();
-                                object origVal = prop.GetValue(curOrganizationStructureTemplate);
+                                object origVal = prop.GetValue(curPayGroup);
                                 propertyChange.OriginalValue = origVal == null ? "" : origVal.ToString();
                                 object newVal = prop.GetValue(mappedInput);
                                 propertyChange.NewValue = newVal == null ? "" : newVal.ToString();
@@ -103,9 +100,9 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                                         string valuePropName = prop.Name.TrimEnd('d', 'I');
                                         propertyChange.PropertyName = valuePropName;
 
-                                        var valueProp = typeof(OS_OrganizationStructureTemplate).GetProperty(valuePropName);
+                                        var valueProp = typeof(PS_PayGroup).GetProperty(valuePropName);
 
-                                        DictionaryValue _origValObj = (DictionaryValue)valueProp.GetValue(organizationStructureTemplate_Dto);
+                                        DictionaryValue _origValObj = (DictionaryValue)valueProp.GetValue(payGroup_Dto);
                                         if (_origValObj == null) _origValObj = await DictionaryValuesRepo.GetAsync((Guid)origVal);
                                         string _origVal = _origValObj.Value;
                                         propertyChange.OriginalValue = origVal == null ? "" : _origVal;
@@ -127,9 +124,9 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
 
                             #region ExtraProperties
                             //List<EmployeeExtraPropertyHistory> allExtraPropertyHistories = new List<EmployeeExtraPropertyHistory>();
-                            //if (organizationStructureTemplate_Dto.ExtraProperties != curOrganizationStructureTemplate.ExtraProperties)
+                            //if (department_Dto.ExtraProperties != curPayGroup.ExtraProperties)
                             //{
-                            //    //GeneralInfo oldGeneralInfo = organizationStructure.GetProperty<GeneralInfo>("generalInfo");
+                            //    //GeneralInfo oldGeneralInfo = department.GetProperty<GeneralInfo>("generalInfo");
                             //    //List<EmployeeExtraPropertyHistory> physicalIdsHistory = new List<EmployeeExtraPropertyHistory>();
                             //    //var generalInfoPhysicalIdAuditProps = typeof(PhysicalID).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
                             //    //List<PhysicalId<Guid>> NewPhysicalIds = generalInfo.PhysicalIds.Where(x => !oldGeneralInfo.PhysicalIds.Any(y => y.Id == x.Id)).ToList();
@@ -207,29 +204,25 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                             AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
                         }
 
-                        curOrganizationStructureTemplate.Name = organizationStructureTemplate_Dto.Name;
-                        curOrganizationStructureTemplate.NameLocalized = organizationStructureTemplate_Dto.NameLocalized;
-                        curOrganizationStructureTemplate.Code = organizationStructureTemplate_Dto.Code;
-                       
-                        curOrganizationStructureTemplate.ReviewPeriod = organizationStructureTemplate_Dto.ReviewPeriod;
-                        curOrganizationStructureTemplate.ValidityFromDate = organizationStructureTemplate_Dto.ValidityFromDate;
-                        curOrganizationStructureTemplate.ValidityToDate = organizationStructureTemplate_Dto.ValidityToDate;
+                        curPayGroup.Name = payGroup_Dto.Name;
+                        curPayGroup.NameLocalized = payGroup_Dto.NameLocalized;
+                        curPayGroup.Code = payGroup_Dto.Code;
+                        curPayGroup.Description = payGroup_Dto.Description;
+                        curPayGroup.FrequencyId = payGroup_Dto.FrequencyId;
+                        curPayGroup.Frequency = null;
 
-                        curOrganizationStructureTemplate.SetProperty("Structure", FormData["structure"]);
+                        PS_PayGroup_Dto updated = ObjectMapper.Map<PS_PayGroup, PS_PayGroup_Dto>(await PS_PayGroupAppService.Repository.UpdateAsync(curPayGroup));
 
-                        OS_OrganizationStructureTemplate_Dto updated = ObjectMapper.Map<OS_OrganizationStructureTemplate, OS_OrganizationStructureTemplate_Dto>(await OS_OrganizationStructureTemplateAppService.Repository.UpdateAsync(curOrganizationStructureTemplate));
-                        OS_OrganizationStructureTemplate_Dto updatedDto = await OS_OrganizationStructureTemplateAppService.GetOrganizationStructureTemplateAsync(updated.Id);
-                        return StatusCode(200, updatedDto);
+                        return StatusCode(200, updated);
                     }
                     else
                     {
-                        organizationStructureTemplate_Dto.Id = 0;
-                        //organizationStructureTemplate_Dto.PositionTemplates.ForEach(x => { x.Id = 0; x.Id = x.Id; });
-                        //organizationStructureTemplate_Dto.SubOrganizationStructureTemplates.ForEach(x => { x.Id = 0; x.SubOrganizationStructureTemplateId = x.SubOrganizationStructureTemplate.Id; x.SubOrganizationStructureTemplate = null; });
-                        organizationStructureTemplate_Dto.SetProperty("Structure", FormData["structure"]);
+                        payGroup_Dto.Id = 0;
+                        payGroup_Dto.Frequency = null;
 
-                        OS_OrganizationStructureTemplate_Dto added = await OS_OrganizationStructureTemplateAppService.CreateAsync(organizationStructureTemplate_Dto);
-                        OS_OrganizationStructureTemplate_Dto addeddDto = await OS_OrganizationStructureTemplateAppService.GetOrganizationStructureTemplateAsync(added.Id);
+                        PS_PayGroup_Dto added = await PS_PayGroupAppService.CreateAsync(payGroup_Dto);
+                        added = await PS_PayGroupAppService.GetAsync(added.Id);
+
                         if (AuditingManager.Current != null)
                         {
                             EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
@@ -237,49 +230,41 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                             entityChangeInfo.EntityTenantId = added.TenantId;
                             entityChangeInfo.ChangeTime = DateTime.Now;
                             entityChangeInfo.ChangeType = EntityChangeType.Created;
-                            entityChangeInfo.EntityTypeFullName = typeof(OS_OrganizationStructureTemplate).FullName;
+                            entityChangeInfo.EntityTypeFullName = typeof(PS_PayGroup).FullName;
 
                             AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
                         }
 
-                        return StatusCode(200, addeddDto);
+                        return StatusCode(200, added);
                     }
                 }
                 catch(Exception ex)
                 {
-                    return StatusCode(500, ex);
+                    
                 }
             }
 
             return StatusCode(500);
         }
-        public async Task<IActionResult> OnDeleteOrganizationStructureTemplate()
+        public async Task<IActionResult> OnDeletePayGroup()
         {
-            List<OS_OrganizationStructureTemplate_Dto> organizationStructures = JsonSerializer.Deserialize<List<OS_OrganizationStructureTemplate_Dto>>(Request.Form["organizationStructures"]);
+            List<PS_PayGroup_Dto> entitites = JsonSerializer.Deserialize<List<PS_PayGroup_Dto>>(Request.Form["payGroups"]);
             try
             {
-                for (int i = 0; i < organizationStructures.Count; i++)
+                for (int i = 0; i < entitites.Count; i++)
                 {
-                    OS_OrganizationStructureTemplate_Dto organizationStructure = organizationStructures[i];
-                    //await TaskTemplatesAppService.Repository.DeleteAsync(leaveRequest.);
-                    //var depSubDeps = OS_OrganizationStructureTemplateAppService.OrganizationStructureSubOrganizationStructureTemplateRepo.Where(x => x.OrganizationStructureTemplateId == organizationStructure.Id || x.SubOrganizationStructureTemplateId == organizationStructure.Id).ToList();
-                    //for (int y = 0; y < depSubDeps.Count; y++)
-                    //{
-                    //    await OS_OrganizationStructureTemplateAppService.OrganizationStructureSubOrganizationStructureTemplateRepo.DeleteAsync(depSubDeps[y]);
-                    //}
-                    //var depPoses = OS_OrganizationStructureTemplateAppService.PositionTemplateRepo.WithDetails().Where(x => x.OrganizationStructureTemplateId == organizationStructure.Id).ToList();
-                    //await Positions.ListModel.DeletePositions(depPoses, OS_PositionTemplateAppService.PositionJobsTemplateRepo, OS_PositionTemplateAppService.PositionTasksTemplateRepo, OS_PositionTemplateAppService.Repository, AuditingManager);
-
-                    await OS_OrganizationStructureTemplateAppService.Repository.DeleteAsync(organizationStructure.Id);
+                    PS_PayGroup_Dto entity = entitites[i];
+                    //await PayGroupsAppService.Repository.DeleteAsync(leaveRequest.);
+                    await PS_PayGroupAppService.Repository.DeleteAsync(entity.Id);
 
                     if (AuditingManager.Current != null)
                     {
                         EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
-                        entityChangeInfo.EntityId = organizationStructure.Id.ToString();
-                        entityChangeInfo.EntityTenantId = organizationStructure.TenantId;
+                        entityChangeInfo.EntityId = entity.Id.ToString();
+                        entityChangeInfo.EntityTenantId = entity.TenantId;
                         entityChangeInfo.ChangeTime = DateTime.Now;
                         entityChangeInfo.ChangeType = EntityChangeType.Deleted;
-                        entityChangeInfo.EntityTypeFullName = typeof(OS_OrganizationStructureTemplate).FullName;
+                        entityChangeInfo.EntityTypeFullName = typeof(PS_PayGroup).FullName;
 
                         AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
                     }
@@ -387,14 +372,14 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
             List<dynamic> DS = new List<dynamic>();
             List<dynamic> secondaryDS = new List<dynamic>();
             List<dynamic> tertiaryDS = new List<dynamic>();
-            var organizationStructureLogs = AuditLogsRepo.WithDetails().Where(x => x.Url == HttpContext.Request.Path.Value && x.EntityChanges != null && x.EntityChanges.Count > 0).ToList();
+            var departmentLogs = AuditLogsRepo.WithDetails().Where(x => x.Url == HttpContext.Request.Path.Value && x.EntityChanges != null && x.EntityChanges.Count > 0).ToList();
 
-            List<OS_OrganizationStructureTemplate_Dto> Entities = await OS_OrganizationStructureTemplateAppService.GetAllOrganizationStructureTemplatesAsync();
+            List<PS_PayGroup_Dto> Entities = await PS_PayGroupAppService.GetAllPayGroupsAsync();
             TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
 
-            for (int i = 0; i < organizationStructureLogs.Count; i++)
+            for (int i = 0; i < departmentLogs.Count; i++)
             {
-                AuditLog auditLog = organizationStructureLogs[i];
+                AuditLog auditLog = departmentLogs[i];
                 if (auditLog.EntityChanges == null || auditLog.EntityChanges.Count == 0) continue;
                 var entityChanges = auditLog.EntityChanges.ToList();
                 for (int j = 0; j < entityChanges.Count; j++)
@@ -405,9 +390,9 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                     changeRow.AuditLogId = entityChange.Id;
                     changeRow.EntityChangeId = entityChange.Id;
 
-                    OS_OrganizationStructureTemplate_Dto organizationStructure = Entities.First(x => x.Id.ToString() == entityChange.EntityId);
-                    changeRow.Id = organizationStructure.Id;
-                    changeRow.Name = organizationStructure.Name;
+                    PS_PayGroup_Dto department = Entities.First(x => x.Id.ToString() == entityChange.EntityId);
+                    changeRow.Id = department.Id;
+                    changeRow.Name = department.Name;
                     changeRow.Date = entityChange.ChangeTime.ToShortDateString();
                     changeRow.Time = entityChange.ChangeTime.ToShortTimeString();
                     changeRow.User = auditLog.UserName;
@@ -485,24 +470,6 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
 
             var secondaryGrid = new JsonResult(result);
             return secondaryGrid;
-        }
-
-        public class StructureVM
-        {
-            public List<NodeVM> Structure = new List<NodeVM>();
-        }
-        public class NodeVM
-        {
-            public int Id { get; set; }
-            public string Type { get; set; }
-            public UnitVM _unit { get; set; }
-            public int ParentId { get; set; }
-        }
-        public class UnitVM
-        {
-            public int Id { get; set; }
-            public dynamic UnitDetails;
-            public string UniqueId { get; set; }
         }
     }
 }

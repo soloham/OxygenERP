@@ -54,6 +54,9 @@
 
     List<object> referenceCommands = new List<object>();
     referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+    List<object> posJobCommands = new List<object>();
+    posJobCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
+    posJobCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
 }
 @section styles {
     @if ((bool)ViewData["IsEditing"])
@@ -76,11 +79,22 @@
         let isEditingPositions = false;
         let curPositionsEditRow;
 
+        let isEditingPositionJob = true;
+        let curPosJobEditRow;
+
         let isEditingUnit = false;
         let curUnitEditRow;
 
         let departments = [];
         let positions = [];
+
+        let positionTypes = [];
+        let positionStatuses = [];
+        let posJobLevels = [];
+        let posJobEmployeeClasses = [];
+        let posJobContractTypes = [];
+
+        let paygrades = [];
         let businessUnits = [];
         let divisions = [];
         let legalEntities = [];
@@ -256,6 +270,7 @@
         let usedBusinessUnits = [];
         let usedDivisions = [];
         let usedDepartments = [];
+        let posJobGrid;
         $(document).ready(function () {
             let options = {
                 buttonWidth: '100%',
@@ -272,17 +287,24 @@
             $('#buPositionsIds').multiselect(options);
             $('#buLocationsIds').multiselect(options);
             $('#buHead').multiselect(options);
+
             $('#divCostCentersIds').multiselect(options);
             $('#divPositionsIds').multiselect(options);
             $('#divHead').multiselect(options);
             $('#divLocationsIds').multiselect(options);
+
             $('#depCostCentersIds').multiselect(options);
             $('#depPositionsIds').multiselect(options);
             $('#depHead').multiselect(options);
             $('#depLocationsIds').multiselect(options);
 
+            //$('#posType').multiselect(options);
+            //$('#posStatus').multiselect(options);
+            $.each($('#Paygrade'), function (i, x) { $(x).multiselect(options) });
+
             let gridObj = $("#OrganizationStructuresGrid")[0].ej2_instances[0];
             let structureTGrid = $("#StructureTreeGrid")[0].ej2_instances[0];
+            posJobGrid = $("#PositionJobsDetailsGrid")[0].ej2_instances[0];
             //let positionsGrid = $("#PositionsGrid")[0].ej2_instances[0];
             //let subDGrid = $("#SubOrganizationStructuresGrid")[0].ej2_instances[0];
             $('#addBUCostCenterBtn').on('click', function () {
@@ -498,6 +520,53 @@
                 //$('#divHead').multiselect('dataprovider', rfdc()(dataMS));
                 //$('#depHead').multiselect('dataprovider', rfdc()(dataMS));
             });
+            cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayGrade.getAllPayGrades({}).done(function (data) {
+                console.log(data);
+                paygrades = data.items;
+
+                let dataMS = [];
+                for (let i = 0; i < paygrades.length; i++) {
+                    let item = paygrades[i];
+                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+                }
+
+                $.each($('#Paygrade'), function (x) { $(x).multiselect('dataprovider', rfdc()(dataMS)); });
+            });
+            cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.OrganizationPositionStatus).done(function (d) {
+                positionStatuses = d;
+                $('#posStatus')
+                    .find('option')
+                    .remove();
+                for (let i = 0; i < positionStatuses.length; i++) {
+                    let item = positionStatuses[i];
+                    $('#posStatus').append(`<option value="${item.id}">${item.value}</option>`);
+                }
+            });
+            cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.OrganizationPositionType).done(function (d) {
+                positionTypes = d;
+                $('#posType')
+                    .find('option')
+                    .remove()
+                for (let i = 0; i < positionTypes.length; i++) {
+                    let item = positionTypes[i];
+                    $('#posType').append(`<option value="${item.id}">${item.value}</option>`);
+                }
+            });
+            cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.OrganizationPositionJobLevels).done(function (d) {
+                posJobLevels = d;
+
+                posJobGrid.columns[3].edit.params.dataSource = posJobLevels;
+            });
+            cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.OrganizationPositionJobEmployeeClasses).done(function (d) {
+                posJobEmployeeClasses = d;
+
+                posJobGrid.columns[4].edit.params.dataSource = posJobEmployeeClasses;
+            });
+            cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.OrganizationPositionJobContractTypes).done(function (d) {
+                posJobContractTypes = d;
+
+                posJobGrid.columns[5].edit.params.dataSource = posJobContractTypes;
+            });
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_DivisionTemplate.getAllDivisionTemplates().done(function (data) {
                 for (var i = 0; i < data.length; i++) {
                     data[i].unitType = "Division";
@@ -551,7 +620,7 @@
                     console.log(curUnitEditRow);
 
                     structureTGrid.hideSpinner();
-
+                    structureTGrid.refresh();
                     toastr.info(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} has been updated`);
                 }
                 else {
@@ -577,6 +646,7 @@
                     console.log(curUnitEditRow);
 
                     structureTGrid.hideSpinner();
+                    structureTGrid.refresh();
 
                     toastr.info(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} has been updated`);
                 }
@@ -603,6 +673,7 @@
                     console.log(curUnitEditRow);
 
                     structureTGrid.hideSpinner();
+                    structureTGrid.refresh();
 
                     toastr.info(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} has been updated`);
                 }
@@ -615,21 +686,44 @@
                 if (ValidateForm('positionForm')) {
                     structureTGrid.showSpinner();
 
-                    let form = [];
-                    let details = $('#positionForm *:not([readonly])').find("textarea, input, select").serializeArray();
-                    console.log(details);
-                    form = form.concat(details);
+                    let generalForm = [];
+                    let generalDetails = $('#generalPOSDetailsTab *:not([readonly])').find("textarea, input, select").serializeArray();
+                    console.log(generalDetails);
+                    generalForm = generalForm.concat(generalDetails);
 
-                    let params = objectifyForm(form);
-                    curUnitEditRow._unit.unitDetails = params;
+                    let generalParams = objectifyForm(generalForm);
+                    delete generalParams.Code;
+                    delete generalParams.Name;
+                    delete generalParams.NameLocalized;
+
+                    let jobDetails = $('#PositionJobsDetailsGrid')[0].ej2_instances[0].dataSource;
+                    console.log(jobDetails);
+
+                    let orgForm = [];
+                    let orgDetails = $('#POSOrgDetailsTab *:not([readonly])').find("textarea, input, select").serializeArray();
+                    console.log(orgDetails);
+                    orgForm = orgForm.concat(orgDetails);
+
+                    let orgParams = objectifyForm(orgForm);
+                    delete orgParams.Code;
+                    delete orgParams.Name;
+                    delete orgParams.NameLocalized;
+
+                    if (!curUnitEditRow._unit.unitDetails)
+                        curUnitEditRow._unit.unitDetails = {};
+
+                    curUnitEditRow._unit.unitDetails.generalDetails = generalParams;
+                    curUnitEditRow._unit.unitDetails.jobDetails = jobDetails;
+                    //curUnitEditRow._unit.unitDetails.orgDetails = orgParams;
 
                     //curUnitEditRow._unit.unitDetails.costCenters = rfdc()(depCostCentersGrid.dataSource);
                     //curUnitEditRow._unit.unitDetails.associations = { positions: rfdc()(depPositionsGrid.dataSource) };
 
-                    console.log(params);
+                    console.log(generalParams);
                     console.log(curUnitEditRow);
 
                     structureTGrid.hideSpinner();
+                    structureTGrid.refresh();
 
                     toastr.info(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} has been updated`);
                 }
@@ -637,7 +731,7 @@
                     toastr.error(`${curUnitEditRow.type}: ${curUnitEditRow._unit.name} could not be updated`);
                 }
             });
-
+            
             $('#addOrganizationStructuresBtn').on('click', function () {
                 isEditingOrganizationStructures = false;
 
@@ -675,7 +769,9 @@
                     //let selectedPositions = $('#positionIds').val();
                     //console.log(selectedPositions);
                     //let selectedPositionTemplates = [];
-                    params.positionTemplates = positionsGrid.dataSource;
+
+                    //params.Structure = $('#StructureTreeGrid')[0].ej2_instances[0].dataSource;
+
                     //for (var i = 0; i < selectedPositions.length; i++) {
                     //    selectedPositionTemplates.push(positions.filter(x => x.id == selectedPositions[i])[0]);
                     //    params.positionTemplates.push(selectedPositionTemplates[i]);
@@ -689,6 +785,7 @@
 
                     let formData = new FormData();
                     formData.append("info", JSON.stringify(params));
+                    formData.append("structure", JSON.stringify($('#StructureTreeGrid')[0].ej2_instances[0].dataSource));
                     let xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
                     formData.append("__RequestVerificationToken", xhrToken);
                     console.log(params);
@@ -954,6 +1051,26 @@
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                                         <div class="form-group" style="padding: 15px">
                                             <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right ">Validity Start Date:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <input id="buValidityStart" name="ValidityFromDate" type="date" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right ">Validity End Date:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <input id="buValidityEnd" name="ValidityToDate" type="date" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
                                                 <label class="p-t-5 control-label pull-right ">Paygroup:</label>
                                             </div>
                                             <div class="col-sm-7" style="">
@@ -1029,15 +1146,13 @@
                             </div>
                         </div>
                         <div id="BUAssociationsTab" class="areaForm" style="display:none">
-                            <ejs-accordion id="buAssociationsFormAccordion">
+                            @*<ejs-accordion id="buAssociationsFormAccordion">
                                 <e-accordion-accordionitems>
                                     <e-accordion-accordionitem expanded="true" header="Positions" content="#buPosAssociations"></e-accordion-accordionitem>
-                                    <e-accordion-accordionitem header="Companies" content="#buCompsAssociations"></e-accordion-accordionitem>
-                                    <e-accordion-accordionitem header="Divisions" content="#buDivisionsAssociations"></e-accordion-accordionitem>
-                                </e-accordion-accordionitems>
-                            </ejs-accordion>
+                                   </e-accordion-accordionitems>
+                            </ejs-accordion>*@
 
-                            <div id="buPosAssociations" style="display: none;">
+                            <div id="buPosAssociations">
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="panel-body p-t-0" style="">
@@ -1097,10 +1212,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div id="buCompsAssociations" style="display: none;">
-                            </div>
-                            <div id="buDivisionsAssociations" style="display: none;">
-                            </div>
                         </div>
                         <div class="row m-t-20">
                             <div class="col-lg-12">
@@ -1141,6 +1252,27 @@
                                             <div class="col-sm-7" style="">
                                                 <select id="divLocationsIds" name="DIVLocationId" class="form-control">
                                                 </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right ">Validity Start Date:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <input id="divValidityStart" name="ValidityFromDate" type="date" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right ">Validity End Date:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <input id="divValidityEnd" name="ValidityToDate" type="date" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                                             </div>
                                         </div>
                                     </div>
@@ -1222,15 +1354,15 @@
                             </div>
                         </div>
                         <div id="DIVAssociationsTab" class="areaForm" style="display:none">
-                            <ejs-accordion id="divAssociationsFormAccordion">
+                            @*<ejs-accordion id="divAssociationsFormAccordion">
                                 <e-accordion-accordionitems>
                                     <e-accordion-accordionitem expanded="true" header="Positions" content="#divPosAssociations"></e-accordion-accordionitem>
                                     <e-accordion-accordionitem header="Companies" content="#divCompsAssociations"></e-accordion-accordionitem>
                                     <e-accordion-accordionitem header="Divisions" content="#divDivisionsAssociations"></e-accordion-accordionitem>
                                 </e-accordion-accordionitems>
-                            </ejs-accordion>
+                            </ejs-accordion>*@
 
-                            <div id="divPosAssociations" style="display: none;">
+                            <div id="divPosAssociations">
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="panel-body p-t-0" style="">
@@ -1290,10 +1422,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div id="divCompsAssociations" style="display: none;">
-                            </div>
-                            <div id="divDivisionsAssociations" style="display: none;">
-                            </div>
                         </div>
                         <div class="row m-t-20">
                             <div class="col-lg-12">
@@ -1301,17 +1429,15 @@
                             </div>
                         </div>
                     </div>
-                    
                     <div id="departmentForm" role="form" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
-                        <ejs-tab id="departmentFormTabs" animation="ViewBag.animation">
+                        @*<ejs-tab id="departmentFormTabs" animation="ViewBag.animation">
                             <e-tab-tabitems>
                                 <e-tab-tabitem header="@(new TabHeader { Text = "General" })" content="#generalDEPDetailsTab"></e-tab-tabitem>
                                 <e-tab-tabitem header="@(new TabHeader { Text = "Cost Centers" })" content="#DEPCostCentersTab"></e-tab-tabitem>
                                 <e-tab-tabitem header="@(new TabHeader { Text = "Associations" })" content="#DEPAssociationsTab"></e-tab-tabitem>
                             </e-tab-tabitems>
-                        </ejs-tab>
+                        </ejs-tab>*@
                         <div id="generalDEPDetailsTab" class="areaForm">
-
                             <div class="row">
                                 <div class="col-sm-2">
 
@@ -1336,6 +1462,26 @@
                                             <div class="col-sm-7" style="">
                                                 <select id="depLocationsIds" name="DEPLocationId" class="form-control" required>
                                                 </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right ">Validity Start Date:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <input id="depValidityStart" name="ValidityFromDate" type="date" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right ">Validity End Date:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <input id="depValidityEnd" name="ValidityToDate" type="date" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                                             </div>
                                         </div>
                                     </div>
@@ -1417,15 +1563,15 @@
                             </div>
                         </div>
                         <div id="DEPAssociationsTab" class="areaForm" style="display:none">
-                            <ejs-accordion id="depAssociationsFormAccordion">
+                            @*<ejs-accordion id="depAssociationsFormAccordion">
                                 <e-accordion-accordionitems>
                                     <e-accordion-accordionitem expanded="true" header="Positions" content="#depPosAssociations"></e-accordion-accordionitem>
                                     <e-accordion-accordionitem header="Companies" content="#depCompsAssociations"></e-accordion-accordionitem>
                                     <e-accordion-accordionitem header="Departments" content="#depDepartmentsAssociations"></e-accordion-accordionitem>
                                 </e-accordion-accordionitems>
-                            </ejs-accordion>
+                            </ejs-accordion>*@
 
-                            <div id="depPosAssociations" style="display: none;">
+                            <div id="depPosAssociations">
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="panel-body p-t-0" style="">
@@ -1484,10 +1630,6 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div id="depCompsAssociations" style="display: none;">
-                            </div>
-                            <div id="depDepartmentsAssociations" style="display: none;">
                             </div>
                         </div>
                         <div class="row m-t-20">
@@ -1571,7 +1713,7 @@
                                                 <label class="p-t-5 control-label pull-right ">Validity Start Date:</label>
                                             </div>
                                             <div class="col-sm-7" style="">
-                                                <input id="posValidityStart" name="ValidityFromDate" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                                <input id="posValidityStart" name="ValidityFromDate" type="date" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                                             </div>
                                         </div>
                                     </div>
@@ -1581,7 +1723,7 @@
                                                 <label class="p-t-5 control-label pull-right ">Validity End Date:</label>
                                             </div>
                                             <div class="col-sm-7" style="">
-                                                <input id="posValidityStart" name="ValidityToDate" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                                <input id="posValidityStart" name="ValidityToDate" type="date" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                                             </div>
                                         </div>
                                     </div>
@@ -1645,7 +1787,7 @@
                                                 <label class="p-t-5 control-label pull-right ">Pay Grade:</label>
                                             </div>
                                             <div class="col-sm-7" style="">
-                                                <select id="posPayrgrade" name="PayGradeId" class="form-control">
+                                                <select id="Paygrade" name="PayGradeId" class="form-control">
                                                 </select>
                                             </div>
                                         </div>
@@ -1657,53 +1799,148 @@
                             </div>
                         </div>
                         <div id="POSJobDetailsTab" class="areaForm" style="display:none">
+                            
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="panel-body p-t-0" style="">
                                         <div class="areaHeader" style="display:flex;">
-                                            <div id="posCostCentersLoader" class="pull-left loader-inline" style="display:none"></div>
+                                            <div id="posJobsLoader" class="pull-left loader-inline" style="display:none"></div>
                                             <div class="areaHeaderTitle">
-                                                <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Cost Centers</span>
-                                            </div>
-                                            <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
-                                                <a id="addPOSCostCenterBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                                                <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Jobs</span>
                                             </div>
                                         </div>
-                                        <div role="form" id="posCostCentersForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                                        <div role="form" id="posJobsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
                                             <div class="row">
-                                                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                                                    <div class="form-group">
-                                                        <label class="margin-bottom-5 control-label">Cost Centers:</label>
-                                                        <select id="posCostCentersIds" name="CostCentersIds" multiple="multiple" class="form-control">
-                                                        </select>
+                                                <div class="col-sm-1">
+
+                                                </div>
+                                                <div class="col-sm-9" style="padding:0">
+                                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                                        <div class="form-group" style="padding: 15px">
+                                                            <div class="col-sm-5" style="">
+                                                                <label class="p-t-5 control-label pull-right ">Job Code:</label>
+                                                            </div>
+                                                            <div class="col-sm-7" style="">
+                                                                <input id="jobCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" readonly>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                                        <div class="form-group" style="padding: 15px">
+                                                            <div class="col-sm-5" style="">
+                                                                <label class="p-t-5 control-label pull-right ">Job Title:</label>
+                                                            </div>
+                                                            <div class="col-sm-7" style="">
+                                                                <input id="jobName" name="JobName" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" readonly>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                                        <div class="form-group" style="padding: 15px">
+                                                            <div class="col-sm-5" style="">
+                                                                <label class="p-t-5 control-label pull-right ">Job Local Title:</label>
+                                                            </div>
+                                                            <div class="col-sm-7" style="">
+                                                                <input id="jobNameLocalized" name="NameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" readonly>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                                        <div class="form-group" style="padding: 15px">
+                                                            <div class="col-sm-5" style="">
+                                                                <label class="p-t-5 control-label pull-right ">Job Level:</label>
+                                                            </div>
+                                                            <div class="col-sm-7" style="">
+                                                                <select id="jobLevel" name="LevelId" class="form-control">
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                                        <div class="form-group" style="padding: 15px">
+                                                            <div class="col-sm-5" style="">
+                                                                <label class="p-t-5 control-label pull-right ">Validity Start Date:</label>
+                                                            </div>
+                                                            <div class="col-sm-7" style="">
+                                                                <input id="jobValidityStart" name="ValidityFromDate" type="date" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                                        <div class="form-group" style="padding: 15px">
+                                                            <div class="col-sm-5" style="">
+                                                                <label class="p-t-5 control-label pull-right ">Validity End Date:</label>
+                                                            </div>
+                                                            <div class="col-sm-7" style="">
+                                                                <input id="jobValidityStart" name="ValidityToDate" type="date" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                                        <div class="form-group" style="padding: 15px">
+                                                            <div class="col-sm-5" style="">
+                                                                <label class="p-t-5 control-label pull-right ">Contract Type:</label>
+                                                            </div>
+                                                            <div class="col-sm-7" style="">
+                                                                <select id="jobContractType" name="ContractTypeId" class="form-control">
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                                        <div class="form-group" style="padding: 15px">
+                                                            <div class="col-sm-5" style="">
+                                                                <label class="p-t-5 control-label pull-right ">Employee Class:</label>
+                                                            </div>
+                                                            <div class="col-sm-7" style="">
+                                                                <select id="jobEmployeeClass" name="EmployeeClassId" class="form-control">
+                                                                </select>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                                                    <div class="form-group">
-                                                        <label class="margin-bottom-5 control-label">Percentage:</label>
-                                                        <input type="number" min="1" max="100" value="" id="posCostCenterPercentage" name="Percentage" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
-                                                    </div>
+                                                <div class="col-sm-2">
+
                                                 </div>
-                                                <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                                                    <label class="control-label m-b-5 "></label>
-                                                    <button id="submitPOSCostCenterBtn" type="button" class="btn btn-success btn-block">Add Cost Center(s)</button>
+                                            </div>
+                                            <div class="row m-t-20">
+                                                <div class="col-lg-12">
+                                                    <input id="submitPosJobBtn" type="button" class="btn btn-success btn-block" value="Update Job" required />
                                                 </div>
                                             </div>
                                         </div>
-                                        <div id="posCostCentersCS" class="control-section">
-                                            <ejs-grid id="POSCostCenterReferenceGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                        <div id="posJobsCS" class="control-section">
+                                            <ejs-grid id="PositionJobsDetailsGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
                                                       allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
-                                                      hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                                      hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" commandClick="positionJobsCommandClick"
                                                       allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
-                                                      toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" actionBegin="referenceActionBegin" actionComplete="referenceActionComplete"
+                                                      toolbar="@initialToolBar" toolbarClick="defaultToolbarClick" actionBegin="posJobActionBegin" actionComplete="referenceActionComplete"
                                                       allowPaging="true" allowResizing="true">
 
+                                                @{
+                                                    var jobLevelEdit = new
+                                                    {
+                                                        @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Fields = new Syncfusion.EJ2.DropDowns.DropDownListFieldSettings() { Text = "value", Value = "id" }, DataSource = new List<object>(), Query = "new ej.data.Query()", AllowFiltering = true }
+                                                    };
+                                                    var jobEmployeeClassEdit = new
+                                                    {
+                                                        @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Fields = new Syncfusion.EJ2.DropDowns.DropDownListFieldSettings() { Text = "value", Value = "id" }, DataSource = new List<object>(), Query = "new ej.data.Query()", AllowFiltering = true }
+                                                    };
+                                                    var jobContractypeEdit = new
+                                                    {
+                                                        @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Fields = new Syncfusion.EJ2.DropDowns.DropDownListFieldSettings() { Text = "value", Value = "id" }, DataSource = new List<object>(), Query = "new ej.data.Query()", AllowFiltering = true }
+                                                    };
+                                                }
+
                                                 <e-grid-columns>
-                                                    <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
-                                                    <e-grid-column field="key" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
-                                                    <e-grid-column field="value" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
-                                                    <e-grid-column field="percentage" allowEditing="true" headerText="Percentage" textAlign="Center"></e-grid-column>
-                                                    <e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>
+                                                    <e-grid-column field="jobTemplate.id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                                    <e-grid-column field="jobTemplate.code" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                                    <e-grid-column field="jobTemplate.name" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                                    <e-grid-column field="level.value" allowEditing="true" headerText="Job Level" validationRules="@(new { required=true})" edit="jobLevelEdit" editType="dropdownedit" textAlign="Center"></e-grid-column>
+                                                    <e-grid-column field="employeeClass.value" allowEditing="true" headerText="Employee Class" validationRules="@(new { required=true})" edit="jobEmployeeClassEdit" editType="dropdownedit" textAlign="Center"></e-grid-column>
+                                                    <e-grid-column field="contractType.value" allowEditing="true" headerText="Contract Type" validationRules="@(new { required=true})" edit="jobContractypeEdit" editType="dropdownedit" textAlign="Center"></e-grid-column>
+                                                    <e-grid-column headerText="Actions" textAlign="Center" commands="posJobCommands"></e-grid-column>
                                                 </e-grid-columns>
 
                                                 <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
@@ -1717,17 +1954,75 @@
                             </div>
                         </div>
                         <div id="POSOrgDetailsTab" class="areaForm" style="display:none">
-                            <ejs-accordion id="posAssociationsFormAccordion">
-                                <e-accordion-accordionitems>
-                                    <e-accordion-accordionitem expanded="true" header="Positions" content="#posPosAssociations"></e-accordion-accordionitem>
-                                    <e-accordion-accordionitem header="Companies" content="#posCompsAssociations"></e-accordion-accordionitem>
-                                    <e-accordion-accordionitem header="Positions" content="#posPositionsAssociations"></e-accordion-accordionitem>
-                                </e-accordion-accordionitems>
-                            </ejs-accordion>
+                            <div class="row">
+                                <div class="col-sm-1">
 
-                            <div id="posCompsAssociations" style="display: none;">
-                            </div>
-                            <div id="posPositionsAssociations" style="display: none;">
+                                </div>
+                                <div class="col-sm-9" style="padding:0">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-5" style="">
+                                                <label class="p-t-5 control-label pull-right ">Business Unit:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <input id="jobBU" name="BUName" class="form-control" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-5" style="">
+                                                <label class="p-t-5 control-label pull-right ">Division:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <input id="jobDIV" name="DivName" class="form-control" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-5" style="">
+                                                <label class="p-t-5 control-label pull-right ">Department:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <input id="jobDEP" name="DepName" class="form-control" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-5" style="">
+                                                <label class="p-t-5 control-label pull-right ">Cost Center:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <input id="jobCostCenter" name="CostCenterName" class="form-control" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-5" style="">
+                                                <label class="p-t-5 control-label pull-right ">Location:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <input id="jobLocation" name="LocName" class="form-control" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-5" style="">
+                                                <label class="p-t-5 control-label pull-right ">Parent Position:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <input id="jobParent" name="ParentPosName" class="form-control" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+
+                                </div>
                             </div>
                         </div>
                         <div class="row m-t-20">
@@ -1736,8 +2031,6 @@
                             </div>
                         </div>
                     </div>
-                    
-                    
 
                     <ejs-treegrid id="StructureTreeGrid" dataSource="new List<dynamic>()" load="structureLoad" height="380px" rowSelected="structureTreeRowSelected"
                                   toolbarClick="structureToolbarClick" toolbar="@initialStructureToolBar" queryCellInfo="OnStructureQueryCellInfo"
@@ -1840,7 +2133,7 @@
                       showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
                       hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="organizationStructureActionBegin" actionComplete="organizationStructureActionComplete"
                       allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
-                      toolbarClick="toolbarClick" toolbar="@initialToolBar"
+                      toolbarClick="toolbarClick" toolbar="@initialToolBar" queryCellInfo="OnStructureQueryCellInfo"
                       allowPaging="true" allowResizing="true" dataSource="new List<dynamic>()">
 
                 <e-grid-columns>
@@ -2242,6 +2535,7 @@
                 case "Business Unit":
                     $('#osFormsHeader').find('#areaHeadertitle').text('Business Unit');
 
+                    FillFormByObject(curUnitEditRow._unit, $('#businessUnitForm'));
                     if (curUnitEditRow._unit.unitDetails)
                         FillFormByObject(curUnitEditRow._unit.unitDetails, $('#businessUnitForm'));
 
@@ -2264,6 +2558,7 @@
                 case "Division":
                     $('#osFormsHeader').find('#areaHeadertitle').text('Division');
 
+                    FillFormByObject(curUnitEditRow._unit, $('#divisionForm'));
                     if (curUnitEditRow._unit.unitDetails)
                         FillFormByObject(curUnitEditRow._unit.unitDetails, $('#divisionForm'));
 
@@ -2287,6 +2582,7 @@
                 case "Department":
                     $('#osFormsHeader').find('#areaHeadertitle').text('Department');
 
+                    FillFormByObject(curUnitEditRow._unit, $('#departmentForm'));
                     if (curUnitEditRow._unit.unitDetails)
                         FillFormByObject(curUnitEditRow._unit.unitDetails, $('#departmentForm'));
 
@@ -2309,32 +2605,146 @@
                 case "Position":
                     $('#osFormsHeader').find('#areaHeadertitle').text('Position');
 
-
                     let posVM;
                     if (curUnitEditRow._unit) {
-                        posVM = { ...curUnitEditRow._unit };
-
                         if (curUnitEditRow._unit.unitDetails) {
-                            posVM = { ...posVM, ...curUnitEditRow._unit.unitDetails };
+                            posVM = {
+                                generalDetails: { ...posVM, ...curUnitEditRow._unit.unitDetails.generalDetails }
+                            };
+                            if (curUnitEditRow._unit.unitDetails.jobDetails)
+                                posVM.jobDetails = [...curUnitEditRow._unit.unitDetails.jobDetails];
+                            if (curUnitEditRow._unit.unitDetails.orgDetails)
+                                posVM.orgDetails = { ...curUnitEditRow._unit.unitDetails.orgDetails };
+                            else {
+                                let bu;
+                                let div;
+                                let dep;
+                                let pos;
+                                let loc;
+
+                                let curLevel = -1;
+                                let curLevelObj = curUnitEditRow.parentItem;
+                                while (curLevel != 0) {
+                                    if (curLevelObj) {
+                                        let type = curLevelObj.type;
+                                        switch (type) {
+                                            case "Business Unit":
+                                                bu = curLevelObj;
+                                                break;
+                                            case "Division":
+                                                div = curLevelObj;
+                                                break;
+                                            case "Department":
+                                                if(!dep) dep = curLevelObj;
+                                                break;
+                                            case "Position":
+                                                if(!pos) pos = curLevelObj;
+                                                break;
+                                        }
+                                        curLevel = curLevelObj.level;
+                                        if (curLevelObj.parentItem) {
+                                            curLevelObj = curLevelObj.parentItem;
+                                        }
+                                    }
+                                    else
+                                        break;
+                                }
+
+                                posVM.orgDetails = {};
+                                if (bu) {
+                                    posVM.orgDetails.buName = bu._unit.name;
+                                    console.log(bu);
+                                    let loc = buLocations.filter(function (x) { return x.location.id == bu._unit.unitDetails.BULocationId })[0];
+                                    console.log(loc);
+                                    posVM.orgDetails.LocName = loc.location.locationCode + ' - ' + loc.location.locationName;
+                                }                                if (div) posVM.orgDetails.divName = div._unit.name;
+                                if (dep) posVM.orgDetails.depName = dep._unit.name;
+                                if (pos) posVM.orgDetails.parentPosName = pos._unit.name;
+                            }
+                        }
+                        else {
+                            let bu;
+                            let div;
+                            let dep;
+                            let pos;
+                            let loc;
+
+                            let curLevel = -1; 
+                            let curLevelObj = curUnitEditRow.parentItem;
+                            while (curLevel != 0) {
+                                if (curLevelObj) {
+                                    let type = curLevelObj.type;
+                                    switch (type) {
+                                        case "Business Unit":
+                                            bu = curLevelObj;
+                                            break;
+                                        case "Division":
+                                            div = curLevelObj;
+                                            break;
+                                        case "Department":
+                                            dep = curLevelObj;
+                                            break;
+                                        case "Position":
+                                            pos = curLevelObj;
+                                            break;
+                                    }
+                                    curLevel = curLevelObj.level;
+                                    if (curLevelObj.parentItem) {
+                                        curLevelObj = curLevelObj.parentItem;
+                                    }
+                                }
+                                else
+                                    break;
+                            }
+
+                            posVM = {
+                                generalDetails: { ...curUnitEditRow._unit },
+                            };
+                            posVM.orgDetails = { };
+                            if (bu) {
+                                posVM.orgDetails.buName = bu._unit.name;
+                                console.log(bu);
+                                let loc = buLocations.filter(function (x) { return x.location.id == bu._unit.unitDetails.BULocationId })[0];
+                                console.log(loc);
+                                posVM.orgDetails.LocName = loc.location.locationCode + ' - ' + loc.location.locationName;
+                            }
+                            if (div) posVM.orgDetails.divName = div._unit.name;
+                            if (dep) posVM.orgDetails.depName = dep._unit.name;
+                            if (pos) posVM.orgDetails.parentPosName = pos._unit.name;
+
+                            posVM.jobDetails = [];
+                            for (var i = 0; i < curUnitEditRow._unit.positionJobTemplates.length; i++) {
+                                posVM.jobDetails.push({ ...curUnitEditRow._unit.positionJobTemplates[i] });
+                            }
+                            console.log(posVM);
                         }
                     }
 
                     console.log("posVM");
                     console.log(posVM);
 
-                    if (posVM)
-                        FillFormByObject(posVM, $('#positionForm'));
-
-                    try {
-                        depCostCentersGrid.dataSource = rfdc()(curUnitEditRow._unit.unitDetails.costCenters);
-                        depCostCentersGrid.refresh();
-
-                        depPositionsGrid.dataSource = rfdc()(curUnitEditRow._unit.unitDetails.associations.positions);
-                        depPositionsGrid.refresh();
-
-                    } catch (e) {
-
+                    ClearForm($('#positionForm'));
+                    if (posVM) {
+                        FillFormByObject(posVM.generalDetails, $('#generalPOSDetailsTab'));
+                        if (posVM.jobDetails) {
+                            //FillFormByObject(posVM.jobDetails, $('#POSJobDetailsTab'));
+                            posJobGrid.dataSource = posVM.jobDetails;
+                            posJobGrid.refresh();
+                        }
+                        if (posVM.orgDetails)
+                            FillFormByObject(posVM.orgDetails, $('#POSOrgDetailsTab'));
                     }
+
+                    //try {
+                    //    depCostCentersGrid.dataSource = rfdc()(curUnitEditRow._unit.unitDetails.costCenters);
+                    //    depCostCentersGrid.refresh();
+
+                    //    depPositionsGrid.dataSource = rfdc()(curUnitEditRow._unit.unitDetails.associations.positions);
+                    //    depPositionsGrid.refresh();
+
+                    //} catch (e) {
+
+                    //}
 
                     $('#positionForm').slideDown();
                     $('#departmentForm').slideUp();
@@ -2358,11 +2768,48 @@
         }
         else if (curType == "Position") {
             if (curSelectedRow) {
-                if (typeof curSelectedRow._unit.unitDetails.associations.usedPositions == 'undefined') {
-                    curSelectedRow._unit.unitDetails.associations.usedPositions = [this.itemData];
-                }
-                else {
-                    curSelectedRow._unit.unitDetails.associations.usedPositions.push(this.itemData);
+                if (curSelectedRow.type == 'Position') {
+
+                    let curLevelObj = curSelectedRow.parentItem;
+                    while (curLevelObj.type == 'Position') {
+                        if (curLevelObj) {
+                            let type = curLevelObj.type;
+                            switch (type) {
+                                case "Business Unit":
+                                    bu = curLevelObj;
+                                    break;
+                                case "Division":
+                                    div = curLevelObj;
+                                    break;
+                                case "Department":
+                                    dep = curLevelObj;
+                                    break;
+                                case "Position":
+                                    pos = curLevelObj;
+                                    break;
+                            }
+                            if (curLevelObj.parentItem) {
+                                curLevelObj = curLevelObj.parentItem;
+                            }
+                        }
+                        else
+                            break;
+                    }
+
+                    if (curSelectedRow._unit.subPositions)
+                        curSelectedRow._unit.subPositions.push(this.itemData);
+                    else {
+                        curSelectedRow._unit.subPositions = [this.itemData];
+                    }
+
+                    curLevelObj._unit.unitDetails.associations.usedPositions.push(this.itemData);
+                } else {
+                    if (typeof curSelectedRow._unit.unitDetails.associations.usedPositions == 'undefined') {
+                        curSelectedRow._unit.unitDetails.associations.usedPositions = [this.itemData];
+                    }
+                    else {
+                        curSelectedRow._unit.unitDetails.associations.usedPositions.push(this.itemData);
+                    }
                 }
             }
         }
@@ -2378,6 +2825,23 @@
             case "Position":
                 return 3;
         }
+    }
+    
+    function posJobActionBegin(args) {
+        if (args.requestType == "save") {
+            console.log('tre');
+            console.log(args);
+
+            args.data.level = posJobLevels.filter(function (x) { return x.id == args.data.level.value })[0];
+            args.data.employeeClass = posJobEmployeeClasses.filter(function (x) { return x.id == args.data.employeeClass.value })[0];
+            args.data.contractType = posJobContractTypes.filter(function (x) { return x.id == args.data.contractType.value })[0];
+
+            console.log("--fsd--");
+            //curSelectedRow = undefined;
+            //else
+            //    
+        }
+
     }
     function structureTreeActionBegin(args) {
         console.log(args);
@@ -2398,7 +2862,7 @@
 
                     this.refresh();
                 }
-                else if (getUnitLevel(curType) == getUnitLevel(curSelectedRow.type) && curSelectedRow.type != "Department") {
+                else if (getUnitLevel(curType) == getUnitLevel(curSelectedRow.type) && curSelectedRow.type != "Department" && curSelectedRow.type != "Position") {
                     this.refresh();
                 }
                 else
@@ -2420,7 +2884,12 @@
                 args.data._unit = usedBusinessUnits.filter(function (x) { return x.id == args.data._unit.name })[0];
             }
             else if (curType == "Position" && typeof curSelectedRow !== 'undefined') {
-                args.data._unit = curSelectedRow._unit.unitDetails.associations.usedPositions.filter(function (x) { return x.id == args.data._unit.name })[0];
+                if (curSelectedRow.type == 'Position') {
+                    args.data._unit = curSelectedRow._unit.subPositions.filter(function (x) { return x.id == args.data._unit.name })[0];
+                } else {
+                    args.data._unit = curSelectedRow._unit.unitDetails.associations.usedPositions.filter(function (x) { return x.id == args.data._unit.name })[0];
+
+                }
             }
 
             args.data.id = this.dataSource.length + 1;
@@ -2432,6 +2901,7 @@
             //    
         }
     }
+
     function structureTreeActionComplete(args) {
         console.log(args);
         if (args.requestType == "add") {
@@ -2458,6 +2928,7 @@
         //if (args.column.field == "unit") {
         //    let curType = args.data.type;
         //    console.log(curType);
+        //    if (curType == "Department") {
         //    if (curType == "Department") {
         //        for (var i = 0; i < usedDepartments.length; i++) {
 
@@ -2516,67 +2987,41 @@
         //        }
         //    }
         //}
-        //if (args.column.field == "validityFromDate") {
-        //    let curType = args.data.type;
-        //    if (curType == "Department") {
-        //        for (var i = 0; i < usedDepartments.length; i++) {
+        console.log(args.column.field);
+        if (args.data.type == 'Position') {
+            if (args.column.field == "_unit.validityFromDate") {
+                if (args.data._unit.unitDetails) {
+                    args.cell.innerText = args.data._unit.unitDetails.generalDetails.ValidityFromDate; // assign the foreignkey field value to the innertext
+                }
+                else
+                    args.cell.innerText = args.data._unit.validityFromDate; // assign the foreignkey field value to the innertext
+            }
 
-        //            if (args.data.unit == usedDepartments[i].id) {
-        //                args.cell.innerText = usedDepartments[i].validityFromDate; // assign the foreignkey field value to the innertext
-        //            }
+            if (args.column.field == "_unit.validityToDate") {
+                if (args.data._unit.unitDetails) {
+                    args.cell.innerText = args.data._unit.unitDetails.generalDetails.ValidityToDate; // assign the foreignkey field value to the innertext
+                }
+                else
+                    args.cell.innerText = args.data._unit.validityToDate; // assign the foreignkey field value to the innertext
+            }
+        }
+        else {
+            if (args.column.field == "_unit.validityFromDate") {
+                if (args.data._unit.unitDetails) {
+                    args.cell.innerText = args.data._unit.unitDetails.ValidityFromDate; // assign the foreignkey field value to the innertext
+                }
+                else
+                    args.cell.innerText = args.data._unit.validityFromDate; // assign the foreignkey field value to the innertext
+            }
 
-        //        }
-        //    }
-        //    else if (curType == "Business Unit") {
-        //        for (var i = 0; i < usedBusinessUnits.length; i++) {
-
-        //            if (args.data.unit == usedBusinessUnits[i].id) {
-        //                args.cell.innerText = usedBusinessUnits[i].validityFromDate; // assign the foreignkey field value to the innertext
-        //            }
-
-        //        }
-        //    }
-        //    else if (curType == "Division") {
-        //        for (var i = 0; i < usedDivisions.length; i++) {
-
-        //            if (args.data.unit == usedDivisions[i].id) {
-        //                args.cell.innerText = usedDivisions[i].validityFromDate; // assign the foreignkey field value to the innertext
-        //            }
-
-        //        }
-        //    }
-        //}
-        //if (args.column.field == "validityToDate") {
-        //    let curType = args.data.type;
-        //    if (curType == "Department") {
-        //        for (var i = 0; i < usedDepartments.length; i++) {
-
-        //            if (args.data.unit == usedDepartments[i].id) {
-        //                args.cell.innerText = usedDepartments[i].validityToDate; // assign the foreignkey field value to the innertext
-        //            }
-
-        //        }
-        //    }
-        //    else if (curType == "Business Unit") {
-        //        for (var i = 0; i < usedBusinessUnits.length; i++) {
-
-        //            if (args.data.unit == usedBusinessUnits[i].id) {
-        //                args.cell.innerText = usedBusinessUnits[i].validityToDate; // assign the foreignkey field value to the innertext
-        //            }
-
-        //        }
-        //    }
-        //    else if (curType == "Division") {
-        //        for (var i = 0; i < usedDivisions.length; i++) {
-
-        //            if (args.data.unit == usedDivisions[i].id) {
-        //                args.cell.innerText = usedDivisions[i].validityToDate; // assign the foreignkey field value to the innertext
-        //            }
-
-        //        }
-        //    }
-        //}
-
+            if (args.column.field == "_unit.validityToDate") {
+                if (args.data._unit.unitDetails) {
+                    args.cell.innerText = args.data._unit.unitDetails.ValidityToDate; // assign the foreignkey field value to the innertext
+                }
+                else
+                    args.cell.innerText = args.data._unit.validityToDate; // assign the foreignkey field value to the innertext
+            }
+        }
 
     }
 
@@ -2590,17 +3035,31 @@
         return businessUnits.filter(function (x) { return usedBusinessUnits.filter(function (y) { return y.id == x.id }).length == 0 });
     }
     function getUnusedPositions(unitRow) {
+        console.log('getUnusedPositions');
         try {
             console.log(unitRow);
-            let positions = unitRow.taskData._unit.unitDetails.associations.positions;
-            console.log(positions);
+            let positions = [];
+            if (unitRow.type == 'Position') {
+                let curLevelObj = unitRow.parentItem;
+                while (curLevelObj.type == 'Position') {
+                    if (curLevelObj.parentItem) {
+                        curLevelObj = curLevelObj.parentItem;
+                    }
+                }
+                positions = curLevelObj._unit.unitDetails.associations.positions;
+                console.log(curLevelObj);
 
-            if (typeof positions !== 'undefined' && positions.length > 0 && typeof unitRow.childRecords !== 'undefined' && unitRow.childRecords.length > 0) {
-                console.log(positions);
-                positions = positions.filter(function (x) { return unitRow.childRecords.filter(function (y) { return y._unit.unitType == 'Position' && y.taskData._unit.id == x.id; }).length == 0 });
-                console.log(positions);
+                if (typeof positions !== 'undefined' && positions.length > 0 && typeof curLevelObj._unit.unitDetails.associations.usedPositions !== 'undefined' && curLevelObj._unit.unitDetails.associations.usedPositions.length > 0) {
+                    positions = positions.filter(function (x) { return curLevelObj._unit.unitDetails.associations.usedPositions.filter(function (y) { return y.id == x.id; }).length == 0 });
+                }
             }
-            console.log(positions);
+            else {
+                positions = unitRow._unit.unitDetails.associations.positions;
+
+                if (typeof positions !== 'undefined' && positions.length > 0 && typeof unitRow._unit.unitDetails.associations.usedPositions !== 'undefined' && unitRow._unit.unitDetails.associations.usedPositions.length > 0) {
+                    positions = positions.filter(function (x) { return unitRow._unit.unitDetails.associations.usedPositions.filter(function (y) { return y.id == x.id; }).length == 0 });
+                }
+            }
 
             for (var i = 0; i < positions.length; i++) {
                 positions[i].unitType = 'Position';
@@ -2751,6 +3210,28 @@
         }
         setTimeout(function () { gridObj.hideSpinner() }, 200);
     }
+    function positionJobsCommandClick(args) {
+        let gridObj = document.getElementById("PositionJobsDetailsGrid").ej2_instances[0];
+        
+        if (args.commandColumn.type == "Edit") {
+            isEditingPositionJob = true;
+            let params = args.rowData;
+            curPosJobEditRow = params;
+
+            toggleAreaFormBtn('posJobsForm', false);
+
+            setTimeout(function () {
+                toggleAreaFormBtn('posJobsForm', true);
+            }, 200);
+
+            FillFormByObject(params, $('#posJobsForm'));
+        }
+        else if (args.commandColumn.type == "Copy") {
+            this.copy(false);
+        }
+
+        setTimeout(function () { gridObj.hideSpinner() }, 200);
+    }
     function commandClick(args) {
         let gridObj = document.getElementById("OrganizationStructuresGrid").ej2_instances[0];
 
@@ -2768,29 +3249,18 @@
 
             FillFormByObject(params, $('#organizationStructuresForm'));
 
-            let subOrganizationStructuresGrid = $("#SubOrganizationStructuresGrid")[0].ej2_instances[0];
-            let positionsGrid = $("#PositionsGrid")[0].ej2_instances[0];
+            let treeGrid = $("#StructureTreeGrid")[0].ej2_instances[0];
+            console.log("fdsfdf");
+            console.log(params);
+            treeGrid.dataSource = JSON.parse(params.extraProperties['Structure'][0]);
+            treeGrid.refresh();
 
             $('#organizationStructuresLoader').slideDown();
-            $('#positionIds').multiselect('deselectAll', false);
-            $('#positionIds').multiselect('updateButtonText');
-
-            $('#depHeadId').multiselect('deselectAll', false);
-            $('#depHeadId').multiselect('updateButtonText');
+           
             cERP.appServices.hR.organizationalManagement.organizationStructure.oS_OrganizationStructureTemplate.getOrganizationStructureTemplate(params.id).done(function (data) {
                 console.log(data);
                 $('#organizationStructuresLoader').slideUp();
                 curOrganizationStructuresEditRow = data;
-
-                possibleSubOrganizationStructures = rfdc()(organizationStructures.filter(function (x) { return x.id != data.id }));
-
-                let dataMS = [];
-                for (let i = 0; i < possibleSubOrganizationStructures.length; i++) {
-                    let item = possibleSubOrganizationStructures[i];
-                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
-                }
-                $('#subOrganizationStructuresField').multiselect('dataprovider', dataMS);
-                $('#subOrganizationStructuresField').change();
 
                 //for (var i = 0; i < data.positionTemplates.length; i++) {
                 //    let posTemplate = data.positionTemplates[i];
@@ -2799,14 +3269,6 @@
                 //        positionsGrid.refresh();
                 //    });
                 //}
-
-                positionsGrid.dataSource = data.positionTemplates;
-                positionsGrid.refresh();
-                setTimeout(function () { positionsGrid.hideSpinner() }, 200);
-
-                subOrganizationStructuresGrid.dataSource = data.subOrganizationStructureTemplates;
-                subOrganizationStructuresGrid.refresh();
-                setTimeout(function () { subOrganizationStructuresGrid.hideSpinner() }, 200);
 
                 //let positionIds = [];
                 //for (var i = 0; i < data.positionTemplates.length; i++) {

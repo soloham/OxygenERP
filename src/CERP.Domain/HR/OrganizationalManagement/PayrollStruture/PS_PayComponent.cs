@@ -75,5 +75,6 @@ namespace CERP.HR.OrganizationalManagement.PayrollStructure
         public bool IsRecurringPaymentAndDeduction { get; set; }
         [CustomAudited]
         public int MaxDecimalPlaces { get; set; }
+        public string EffectiveDate { get; set; }
     }
 }

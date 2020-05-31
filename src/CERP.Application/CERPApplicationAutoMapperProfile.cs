@@ -236,6 +236,8 @@ namespace CERP
 
             CreateMap<PS_PayGrade, PS_PayGrade_Dto>();
             CreateMap<PS_PayGrade_Dto, PS_PayGrade>();
+            CreateMap<PS_PayGradeComponent, PS_PayGradeComponent_Dto>();
+            CreateMap<PS_PayGradeComponent_Dto, PS_PayGradeComponent>();
 
             CreateMap<PS_PayComponent, PS_PayComponent_Dto>();
             CreateMap<PS_PayComponent_Dto, PS_PayComponent>();

@@ -41,5 +41,24 @@ namespace CERP.HR.OrganizationalManagement.PayrollStructure
         public PS_PayRange PayRange { get; set; }
         [CustomAudited]
         public int PayRangeId { get; set; }
+
+        public virtual ICollection<PS_PayGradeComponent> PayGradeComponents { get; set; }
+    }
+
+    public class PS_PayGradeComponent : AuditedAggregateTenantRoot<int> {
+        public PS_PayComponent PayComponent { get; set; }
+        [CustomAudited]
+        public int PayComponentId { get; set; }
+
+        public PS_PayGrade PayGrade { get; set; }
+        [CustomAudited]
+        public int PayGradeId { get; set; }
+
+        [CustomAudited]
+        public int MaxAnnualLimit { get; set; }
+        [CustomAudited]
+        public PS_PaygradeComponentAmountValueType AmountValueType { get; set; }
+        [CustomAudited]
+        public decimal Amount { get; set; }
     }
 }

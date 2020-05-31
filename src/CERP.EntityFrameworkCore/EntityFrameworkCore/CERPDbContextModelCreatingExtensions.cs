@@ -775,6 +775,8 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.Frequency).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
             builder.Entity<PS_PayRange>(b =>
             {
@@ -793,6 +795,21 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureConcurrencyStamp();
 
                 b.HasOne(x => x.PayRange).WithMany().OnDelete(DeleteBehavior.NoAction);
+
+                b.HasMany(x => x.PayGradeComponents).WithOne(x => x.PayGrade).OnDelete(DeleteBehavior.NoAction);
+            });
+
+            builder.Entity<PS_PayGradeComponent>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}PayGradeComponents", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.HasKey("PayGradeId", "PayComponentId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.PayGrade).WithMany(x => x.PayGradeComponents).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.PayComponent).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
             builder.Entity<PS_PayComponent>(b =>
             {
@@ -814,7 +831,7 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
-                b.HasOne(x => x.PercentagePayComponentType).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.ValueComponentType).WithMany().OnDelete(DeleteBehavior.NoAction).IsRequired(false);
             });
             builder.Entity<PS_PayFrequency>(b =>
             {

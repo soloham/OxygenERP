@@ -124,6 +124,7 @@ namespace CERP.EntityFrameworkCore
         public DbSet<PS_PayGroup> PayGroups { get; set; }
         public DbSet<PS_PayRange> PayRanges { get; set; }
         public DbSet<PS_PayGrade> PayGrades { get; set; }
+        public DbSet<PS_PayGradeComponent> PayGradeComponents { get; set; }
         public DbSet<PS_PayComponent> PayComponents { get; set; }
         public DbSet<PS_PayComponentType> PayComponentTypes { get; set; }
         public DbSet<PS_PayFrequency> PayFrequencies { get; set; }

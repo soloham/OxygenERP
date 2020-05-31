@@ -19,11 +19,18 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.PayrollStructure
         public PS_PayComponentType_Dto()
         {
         }
-        public double Amount { get; set; }
-        public double PercentageValue { get; set; }
+        public string Code { get; set; }
+        public string Name { get; set; }
+        public string NameLocalized { get; set; }
+        public string Description { get; set; }
 
-        public PS_PayComponentType_Dto PercentagePayComponentType { get; set; }
-        public int PercentagePayComponentTypeId { get; set; }
+        public double Amount { get; set; }
+        public double Percentage { get; set; }
+
+        public PS_PayComponentTypeValueType ValueType { get; set; }
+
+        public PS_PayComponentType_Dto? ValueComponentType { get; set; }
+        public int? ValueComponentTypeId { get; set; }
 
     }
 }

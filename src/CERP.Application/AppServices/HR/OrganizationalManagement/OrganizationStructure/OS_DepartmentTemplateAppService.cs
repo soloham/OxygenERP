@@ -40,7 +40,7 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
         }
 
         public async Task<OS_DepartmentTemplate_Dto> GetDepartmentTemplateAsync(int id)
-        {
+        {   
             OS_DepartmentTemplate_Dto result = ObjectMapper.Map<OS_DepartmentTemplate, OS_DepartmentTemplate_Dto>(await Repository.GetAsync(id, true));
             return result;
         }

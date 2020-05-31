@@ -47,5 +47,6 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.PayrollStructure
         public bool IsUsedForCompPlanning { get; set; }
         public bool IsRecurringPaymentAndDeduction { get; set; }
         public int MaxDecimalPlaces { get; set; }
+        public string EffectiveDate { get; set; }
     }
 }

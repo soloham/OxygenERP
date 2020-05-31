@@ -46,4 +46,18 @@ namespace CERP.HR.Setup.OrganizationalManagement.PayrollStructure
         [Description("12")]
         Twelve
     }
+    public enum PS_PayComponentTypeValueType
+    {
+        [Description("Amount")]
+        Amount,
+        [Description("Percentage")]
+        Percentage
+    }
+    public enum PS_PaygradeComponentAmountValueType
+    {
+        [Description("Amount")]
+        Amount,
+        [Description("Percentage")]
+        Percentage
+    }
 }

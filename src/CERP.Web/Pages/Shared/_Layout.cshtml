@@ -811,7 +811,54 @@
                                         </ul>
                                     </li>
                                     <li class=""><a asp-area="" asp-page="">Enterprise Structure</a></li>
-                                    <li class=""><a asp-area="" asp-page="">Personnel Structure</a></li>
+                                    <li class="with-sub">
+                                        <a href="#" aria-haspopup="true">
+                                            @*<span class="menu-icon">
+                                                    <i class="zmdi zmdi-arrow"></i>
+                                                </span>*@
+                                            <span class="menu-text">Payroll Structure</span>
+                                        </a>
+                                        <ul class="sidebar-submenu sidebar-submenu-simple collapse" style="padding-left: 31px">
+                                            <li class="menu-subtitle">Payroll Structure</li>
+
+                                            <li class="">
+                                                <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/PayrollStructure/PayGroups/List">
+                                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                                    <span class="menu-text">Pay Group</span>
+                                                </a>
+                                            </li>
+                                            <li class="">
+                                                <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/PayrollStructure/PayRanges/List">
+                                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                                    <span class="menu-text">Pay Ranges</span>
+                                                </a>
+                                            </li>
+                                            <li class="">
+                                                <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/PayrollStructure/PayGrades/List">
+                                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                                    <span class="menu-text">Pay Grade</span>
+                                                </a>
+                                            </li>
+                                            <li class="">
+                                                <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/PayrollStructure/PayComponents/List">
+                                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                                    <span class="menu-text">Pay Component</span>
+                                                </a>
+                                            </li>
+                                            <li class="">
+                                                <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/PayrollStructure/PayComponentTypes/List">
+                                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                                    <span class="menu-text">Pay Component Type</span>
+                                                </a>
+                                            </li>
+                                            <li class="">
+                                                <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/PayrollStructure/PayFrequencies/List">
+                                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                                    <span class="menu-text">Pay Frequencies</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
                                 </ul>
                             </li>
                             <li class="with-sub">

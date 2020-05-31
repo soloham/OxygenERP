@@ -21,13 +21,27 @@ namespace CERP.HR.OrganizationalManagement.PayrollStructure
         }
 
         [CustomAudited]
+        public string Code { get; set; }
+
+        [CustomAudited]
+        public string Name { get; set; }
+        [CustomAudited]
+        public string NameLocalized { get; set; }
+
+        [CustomAudited]
+        public string Description { get; set; }
+
+        [CustomAudited]
         public double Amount { get; set; }
         [CustomAudited]
-        public double PercentageValue { get; set; }
+        public double Percentage { get; set; }
 
-        public PS_PayComponentType PercentagePayComponentType { get; set; }
         [CustomAudited]
-        public int PercentagePayComponentTypeId { get; set; }
+        public PS_PayComponentTypeValueType ValueType { get; set; }
+
+        public PS_PayComponentType? ValueComponentType { get; set; }
+        [CustomAudited]
+        public int? ValueComponentTypeId { get; set; }
 
     }
 }

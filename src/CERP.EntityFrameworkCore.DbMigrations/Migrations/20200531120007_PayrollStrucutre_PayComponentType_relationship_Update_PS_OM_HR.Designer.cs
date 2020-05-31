@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200531120007_PayrollStrucutre_PayComponentType_relationship_Update_PS_OM_HR")]
+    partial class PayrollStrucutre_PayComponentType_relationship_Update_PS_OM_HR
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3959,7 +3961,7 @@ namespace CERP.Migrations
                         .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("ValueComponentTypeId")
+                    b.Property<int>("ValueComponentTypeId")
                         .HasColumnType("int");
 
                     b.Property<int>("ValueType")
@@ -4084,58 +4086,6 @@ namespace CERP.Migrations
                     b.ToTable("PayGrades","HR.OrganizationalManagement.PayrollStructure");
                 });
 
-            modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayGradeComponent", b =>
-                {
-                    b.Property<int>("PayGradeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PayComponentId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("AmountValueType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnName("ConcurrencyStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnName("ExtraProperties")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("MaxAnnualLimit")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("PayGradeId", "PayComponentId");
-
-                    b.HasIndex("PayComponentId");
-
-                    b.ToTable("PayGradeComponents","HR.OrganizationalManagement.OrganizationStructure");
-                });
-
             modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayGroup", b =>
                 {
                     b.Property<int>("Id")
@@ -4164,9 +4114,6 @@ namespace CERP.Migrations
                         .HasColumnName("ExtraProperties")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("FrequencyId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("datetime2");
 
@@ -4184,8 +4131,6 @@ namespace CERP.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("FrequencyId");
 
                     b.ToTable("PayGroupes","HR.OrganizationalManagement.PayrollStructure");
                 });
@@ -8446,30 +8391,6 @@ namespace CERP.Migrations
                     b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayRange", "PayRange")
                         .WithMany()
                         .HasForeignKey("PayRangeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayGradeComponent", b =>
-                {
-                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayComponent", "PayComponent")
-                        .WithMany()
-                        .HasForeignKey("PayComponentId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayGrade", "PayGrade")
-                        .WithMany("PayGradeComponents")
-                        .HasForeignKey("PayGradeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayGroup", b =>
-                {
-                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayFrequency", "Frequency")
-                        .WithMany()
-                        .HasForeignKey("FrequencyId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });

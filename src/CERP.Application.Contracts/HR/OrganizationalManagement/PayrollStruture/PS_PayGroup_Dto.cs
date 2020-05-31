@@ -22,5 +22,8 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.PayrollStructure
         public string Name { get; set; }
         public string NameLocalized { get; set; }
         public string Description { get; set; }
+
+        public PS_PayFrequency_Dto Frequency { get; set; }
+        public int FrequencyId { get; set; }
     }
 }

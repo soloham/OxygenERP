@@ -19,7 +19,7 @@ using Volo.Abp.Domain.Repositories;
 
 namespace CERP.AppServices.HR.OrganizationalManagement.PayrollStructure
 {
-    public class PS_PayFrequencyAppService : CrudAppService<PS_PayFrequency, PS_PayFrequency_Dto, int, PagedAndSortedResultRequestDto, PS_PayFrequency, PS_PayFrequency_Dto>
+    public class PS_PayFrequencyAppService : CrudAppService<PS_PayFrequency, PS_PayFrequency_Dto, int, PagedAndSortedResultRequestDto, PS_PayFrequency_Dto, PS_PayFrequency_Dto>
     {
         public PS_PayFrequencyAppService(IRepository<PS_PayFrequency, int> repository) : base(repository)
         {
@@ -28,6 +28,11 @@ namespace CERP.AppServices.HR.OrganizationalManagement.PayrollStructure
 
         public IRepository<PS_PayFrequency, int> Repository { get; }
 
+        public async Task<List<PS_PayFrequency_Dto>> GetAllPayFrequenciesAsync()
+        {
+            List<PS_PayFrequency_Dto> list = (await Repository.GetListAsync(true)).Select(MapToGetListOutputDto).ToList();
+            return list;
+        }
         //public async Task<List<EntityReference>> GetAllReferences(int id)
         //{
         //    List<EntityReference> entityReferences = new List<EntityReference>();
