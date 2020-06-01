@@ -14,19 +14,19 @@
     ViewData["IsEditing"] = false;
     bool IsEditing = (bool)ViewData["IsEditing"];
 
-    ViewData["Title"] = L["PayGrades"].Name;
+    ViewData["Title"] = L["PayGrades"].Value;
     ViewData["IconClass"] = "fas fa-check-circle";
-    ViewData["HeaderTitle"] = L["PayGrades"].Name.ToUpper();
+    ViewData["HeaderTitle"] = L["PayGrades"].Value.ToUpper();
     ViewData["SubTitle"] = $"{L["ListOf"]} {L["PayGrades"]}";
     ViewData["Area"] = "Setup";
 
     ViewData["IsList"] = false;
     ViewData["IsCreate"] = false;
-    string cNT = $"{L["Add"].Name} {L["PayGrade"].Name}";
+    string cNT = $"{L["Add"].Value} {L["PayGrade"].Value}";
     ViewData["CreateNewText"] = cNT;
     ViewData["CreateNewLink"] = "/PayGrades/PayGrade";
 
-    string TabPlaceholder = (bool)ViewData["IsEditing"] ? L["Area"].Name : L["Step"].Name;
+    string TabPlaceholder = (bool)ViewData["IsEditing"] ? L["Area"].Value : L["Step"].Value;
 
     var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
 
@@ -42,6 +42,11 @@
     payGradesCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
     payGradesCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
     payGradesCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
+
+    List<object> payGradeComponentsActionsCommands = new List<object>();
+    payGradeComponentsActionsCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
+    payGradeComponentsActionsCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+    payGradeComponentsActionsCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
 
     List<object> referenceCommands = new List<object>();
     referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
@@ -78,8 +83,12 @@
         };
         $(document).ready(function () {
             $.each($('.payRangeId'), function (i, x) { $(x).multiselect(options) });
+            $('#payComponentId').multiselect(options);
+            $('#amountTypeId').multiselect(options);
 
             gridObj = $("#PayGradesGrid")[0].ej2_instances[0];
+            payGradeComponentGrid = $("#PayGradeComponentGrid")[0].ej2_instances[0];
+            
             gridObj.showSpinner();
             $('#payGradesLoader').slideDown(100);
             cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayGrade.getAllPayGrades().done(function (data) {
@@ -109,10 +118,19 @@
             });
             $('#submitPayGradeBtn').on('click', function (e) {
                 e.preventDefault();
-                submitPayGradeBtn('payGradeSpecificForm');
+                submitPayGradeBtn('payGradeSpecificForm', 'PayGradeComponentsTab');
+            });
+
+
+            $('#addPayGradeComponentBtn').on('click', function () {
+                loadPayGradeComponentTemplates('PayGradeComponentsTab');
+            });
+            $('#submitPayGradeComponentBtn').on('click', function (e) {
+                e.preventDefault();
+                submitPayGradeComponentBtn('PayGradeComponentsTab');
             });
         });
-        function submitPayGradeBtn(formId) {
+        function submitPayGradeBtn(formId, gridFromId) {
             if (ValidateForm(formId)) {
                 gridObj.showSpinner();
                 Swal.showLoading();
@@ -120,8 +138,9 @@
                 let form = [];
                 let functionDetails = $('#' + formId).find("textarea, input, select").serializeArray();
                 form = form.concat(functionDetails);
-
+                let payCompGrid = $("#PayGradeComponentGrid", '#' + gridFromId)[0].ej2_instances[0];
                 let params = objectifyForm(form);
+                params.payGradeComponents = payCompGrid.dataSource;
 
                 let id = 0;
                 if (gridObj.dataSource.length > 0)
@@ -193,6 +212,52 @@
                 Swal.hideLoading();
             }
         }
+        function submitPayGradeComponentBtn(formId) {
+            if (ValidateForm(formId)) {
+                let grid = $('#PayGradeComponentGrid', '#' + formId)[0].ej2_instances[0];
+
+                let selectedpayGradeComponent = $('#payComponentId', '#' + formId).val();
+                for (var i = 0; i < selectedpayGradeComponent.length; i++) {
+                    let payGradeComponent = payGradeComponents.filter(function (x) { return x.id == selectedpayGradeComponent[i] })[0];
+                    let maxAnnualLimit = $('#maxAnnualLimit', '#' + formId).val();
+                    grid.dataSource.push({ payComponent: payGradeComponent, maxAnnualLimit });
+                    grid.refresh();
+                }
+                populatePayGradeComponentTemplates(formId);
+            }
+            else {
+                Swal.close();
+                Swal.hideLoading();
+            }
+        }
+
+        let payGradeComponentGrid;
+        function loadPayGradeComponentTemplates(formId) {
+            $('#payGradeComponentsLoader', '#' + formId).slideDown(100);
+            cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayComponent.getAllComponents().done(function (data) {
+                $('#payGradeComponentsLoader', '#' + formId).slideUp(100);
+                payGradeComponents = data;
+                populatePayGradeComponentTemplates(formId);
+            });
+        }
+        function populatePayGradeComponentTemplates(formId) {
+            let grid = $('#PayGradeComponentGrid', '#' + formId)[0].ej2_instances[0];
+
+            try {
+                payGradeComponents = payGradeComponents.filter(function (y) {
+                    return grid.dataSource.filter(function (x) { return x.id == y.id }).length == 0
+                });
+            } catch (e) {
+
+            }
+
+            let dataMS = [];
+            for (let i = 0; i < payGradeComponents.length; i++) {
+                let item = payGradeComponents[i];
+                dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+            }
+            $('#payComponentId', '#' + formId).multiselect('dataprovider', dataMS);
+        }
     </script>
 }
 <partial name="_DefaultPageHeader" />
@@ -213,7 +278,7 @@
         </div>
         <form id="payGradesForm" onkeydown="return event.key != 'Enter';" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
             <div id="payGradeSpecificForm">
-                <ejs-tab id="payGradeSpecificFormTabs" animation="ViewBag.animation" height="250px">
+                <ejs-tab id="payGradeSpecificFormTabs" animation="ViewBag.animation">
                     <e-tab-tabitems>
                         <e-tab-tabitem header="@(new TabHeader { Text = "General" })" content="#generalTab"></e-tab-tabitem>
                         <e-tab-tabitem header="@(new TabHeader { Text = "Pay Grade Components" })" visible="true" content="#payGradeComponentsTab"></e-tab-tabitem>
@@ -307,31 +372,73 @@
                         </div>
                     </div>
                     <div class="col-sm-2" style="padding:0">
-                        <h3>Last Updated by * at */*/*</h3>
+                        <h3>@*Last Updated by * at */*/**@</h3>
 
                     </div>
                 </div>
-                <div id="payGradeComponentsTab" class="areaForm" style="display:none">
-                    <div class="row">
-                        <div class="col-md-12">
+
+                <div id="payGradeComponentsTab" style="display:none">
+                    <div id="PayGradeComponentsTab" class="areaForm">
+                        <div class="row">
                             <div class="panel-body p-t-0" style="">
-                                <div id="payGradeComponentsTabCS" class="control-section">
-                                    <ejs-grid id="PayGradeComponentsTabGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
-                                              allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
-                                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
-                                              allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
-                                              toolbar="@initialToolBar" toolbarClick="defaultToolbarClick"
-                                              allowPaging="true" allowResizing="true">
+                                <div class="areaHeader" style="display:flex;">
+                                    <div id="payGradeComponentsLoader" class="pull-left loader-inline" style="display:none"></div>
+                                    <div class="areaHeaderTitle">
+                                        <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Pay Components</span>
+                                    </div>
+                                    <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                        <a id="addPayGradeComponentBtn" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                                    </div>
+                                </div>
+                                <div role="form" id="payGradeComponentsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                                    <div class="col-sm-1" style="padding:0">
+                                    </div>
+                                    <div class="col-sm-9" style="padding:0">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                            <div class="form-group" style="padding: 15px">
+                                                <div class="col-sm-4" style="">
+                                                    <label class="p-t-5 control-label pull-right">Pay Component:</label>
+                                                </div>
+                                                <div class="col-sm-8" style="">
+                                                    <select id="payComponentId" class="payComponentId" name="PayComponentId" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                            <div class="form-group" style="padding: 15px">
+                                                <div class="col-sm-4" style="">
+                                                    <label class="p-t-5 control-label pull-right">Max Annual Limit:</label>
+                                                </div>
+                                                <div class="col-sm-8" style="">
+                                                    <input type="number" min="1" id="maxAnnualLimit" name="MaxAnnualLimit" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                            <label class="control-label m-b-5 "></label>
+                                            <button id="submitPayGradeComponentBtn" type="button" class="btn btn-success btn-block">Add Pay Component(s)</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2" style="padding:0">
+                                    </div>
+                                </div>
+                                <div id="payGradeComponentsCS" class="control-section">
+                                    <ejs-grid id="PayGradeComponentGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                                allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                                hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                                allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                                toolbar="@initialToolBar" toolbarClick="defaultToolbarClick"
+                                                allowPaging="true" allowResizing="true">
 
                                         <e-grid-columns>
                                             <e-grid-column field="payComponent.id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
-                                            <e-grid-column field="payComponent.type" allowEditing="false" headerText="Type" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="payComponent.payComponentType.name" allowEditing="false" headerText="Type" textAlign="Center"></e-grid-column>
                                             <e-grid-column field="payComponent.name" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
                                             <e-grid-column field="payComponent.code" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
-                                            <e-grid-column field="amountValueType" headerText="Amount Type" textAlign="Center"></e-grid-column>
-                                            <e-grid-column field="amount" headerText="Amount" textAlign="Center"></e-grid-column>
                                             <e-grid-column field="maxAnnualLimit" headerText="Max Annual Limit" textAlign="Center"></e-grid-column>
-                                            @*<e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>*@
+
+                                            <e-grid-column headerText="Actions" textAlign="Center" commands="payGradeComponentsActionsCommands"></e-grid-column>
                                         </e-grid-columns>
 
                                         <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
@@ -376,9 +483,19 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-12">
-                        <label class="control-label m-b-5 "></label>
-                        <input id="submitPayGradeBtn" type="button" class="btn btn-success btn-block" value="Create Pay Grade" required />
+
+                    <div class="col-sm-1" style="padding:0">
+                    </div>
+                    <div class="col-sm-9" style="padding:0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="form-group" style="padding: 15px">
+                                <input id="submitPayGradeBtn" type="button" class="btn btn-success btn-block" value="Create Pay Grade" required />
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2" style="padding:0">
+
                     </div>
                 </div>
             </div>
@@ -400,8 +517,8 @@
                     }'></e-grid-column>
                     <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
                     <e-grid-column field="description" headerText="Description" allowEditing="true" textAlign="Center"></e-grid-column>
-                    <e-grid-column field="payGradeStatus" headerText="Status" allowEditing="true" textAlign="Center"></e-grid-column>
-                    <e-grid-column field="payGradeLevel" headerText="Level" allowEditing="true" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="payGradeStatusDescription" headerText="Status" allowEditing="true" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="payGradeLevelDescription" headerText="Level" allowEditing="true" textAlign="Center"></e-grid-column>
                     <e-grid-column field="payRange.name" headerText="Pay Range" allowEditing="true" textAlign="Center"></e-grid-column>
 
                     <e-grid-column headerText="Actions" textAlign="Center" commands="payGradesCommands"></e-grid-column>
@@ -498,6 +615,7 @@
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                                     <div class="form-group" style="padding: 15px">
                                         <div class="col-sm-4" style="">
@@ -505,24 +623,64 @@
                                         </div>
                                         <div class="col-sm-8" style="">
                                             <select id="payRangeId" class="payRangeId" name="PayRangeId" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
-
                                             </select>
                                         </div>
                                     </div>
                                 </div>
-                                
                             </div>
                             <div class="col-md-2">
 
                             </div>
                         </div>
                         <div id='payComponentsTabTemplate${id}' style="display:none">
-
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="panel-body p-t-0" style="">
                                         <div id="payComponentsCS${id}" class="control-section">
-                                            <div id="payComponentsGrid${id}">
+
+                                            <div class="areaHeader" style="display:flex;">
+                                                <div id="payGradeComponentsLoader" class="pull-left loader-inline" style="display:none"></div>
+                                                <div class="areaHeaderTitle">
+                                                    <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Pay Components</span>
+                                                </div>
+                                                <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                                                    <a id="addPayGradeComponentBtn${id}" onclick="areaHeaderBtnClick(event);" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                                                </div>
+                                            </div>
+                                            <div role="form" id="payGradeComponentsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                                                <div class="col-sm-1" style="padding:0">
+                                                </div>
+                                                <div class="col-sm-9" style="padding:0">
+                                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                                        <div class="form-group" style="padding: 15px">
+                                                            <div class="col-sm-4" style="">
+                                                                <label class="p-t-5 control-label pull-right">Pay Component:</label>
+                                                            </div>
+                                                            <div class="col-sm-8" style="">
+                                                                <select id="payComponentId" class="payComponentId" name="PayComponentId" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                                        <div class="form-group" style="padding: 15px">
+                                                            <div class="col-sm-4" style="">
+                                                                <label class="p-t-5 control-label pull-right">Max Annual Limit:</label>
+                                                            </div>
+                                                            <div class="col-sm-8" style="">
+                                                                <input type="number" min="1" id="maxAnnualLimit" name="MaxAnnualLimit" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                                        <label class="control-label m-b-5 "></label>
+                                                        <button id="submitPayGradeComponentBtn${id}" type="button" class="btn btn-success btn-block">Add Pay Component</button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2" style="padding:0">
+                                                </div>
+                                            </div>
+                                            <div id="PayGradeComponentGrid">
                                             </div>
                                         </div>
                                     </div>
@@ -546,7 +704,7 @@
                         <div id="updatePayGradeBtn${id}" class="row" style="display:none">
                             <div class="col-md-12">
                                 <label class="control-label m-b-5 "></label>
-                                <input id="submitPayGradeBtn${id}" type="button" class="btn btn-success btn-block" value="Update PayGrade" required />
+                                <input id="submitPayGradeBtn${id}" type="button" class="btn btn-success btn-block" value="Update Pay Grade" required />
                             </div>
                         </div>
                     </div>
@@ -556,20 +714,37 @@
                 function detailDataBound(args) {
                     let params = args.data;
                     $('.payRangeId', `#generalTabTemplate${params.id}`).multiselect(options);
+                    $('.payComponentId', `#payComponentsTabTemplate${params.id}`).multiselect(options);
 
                     $('#payGradesLoader').slideDown();
-                    cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayRange.getAllPayRanges().done(function (data) {
-                        $('#payGradesLoader').slideUp(100);
 
+                    $('#addPayGradeComponentBtn' + params.id).on('click', function () {
+                        loadPayGradeComponentTemplates(`payComponentsTabTemplate${params.id}`);
+                    });
+                    $('#submitPayGradeComponentBtn' + params.id).on('click', function (e) {
+                        e.preventDefault();
+                        console.log(params.id);
+                        submitPayGradeComponentBtn(`payComponentsTabTemplate${params.id}`);
+                    });
+
+                    cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayComponent.getAllComponents().done(function (data) {
                         let dataMS = [];
                         for (let i = 0; i < data.length; i++) {
                             let item = data[i];
                             dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
                         }
-                        console.log(dataMS);
-                        $('.payRangeId', `#generalTabTemplate${params.id}`).multiselect('dataprovider', dataMS)
-                        $('.payRangeId', `#generalTabTemplate${params.id}`).multiselect('select', params.payRangeId)
+                        $('#payComponentId', `#payComponentsTabTemplate${params.id}`).multiselect('dataprovider', dataMS);
                     });
+
+                    cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayRange.getAllPayRanges().done(function (data) {
+                        let dataMS = [];
+                        for (let i = 0; i < data.length; i++) {
+                            let item = data[i];
+                            dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+                        }
+                        $('.payRangeId', `#generalTabTemplate${params.id}`).multiselect('dataprovider', dataMS);
+                    });
+
                     elmm = args;
                     var accordion = new ej.navigations.Accordion({
                         items: [
@@ -581,21 +756,24 @@
                     accordion.appendTo($(args.detailElement).find('#accordingHtml' + params.id)[0]);
 
                     var payComponentsGrid = new ej.grids.Grid({
-                        id: 'payComponentsGrid' + params.id,
+                        id: 'PayGradeComponentGrid',
+                        editSettings: { allowEditing: true, allowAdding: false, allowDeleting: true },
                         columns: [
-                            { field: 'payComponent۔id', headerText: 'Id', textAlign: 'Center', visible: 'false', isPrimaryKey: 'true', showInColumnChooser: 'false', },
-                            { field: 'payComponent۔type', allowEditing: 'false', headerText: 'Type', textAlign: 'Center', },
-                            { field: 'payComponent۔name', allowEditing: 'false', headerText: 'Name', textAlign: 'Center', },
-                            { field: 'payComponent۔code', allowEditing: 'false', headerText: 'Code', textAlign: 'Center', },
-                            { field: 'amountValueType', allowEditing: 'false', headerText: 'Amount Type', textAlign: 'Center', },
-                            { field: 'amount', allowEditing: 'false', headerText: 'Code', textAlign: 'Amount', },
-                            { field: 'maxAnnualLimit', allowEditing: 'false', headerText: 'Max Annual Limit', textAlign: 'Center', },
-
+                            { field: 'payComponent.id', allowEditing: false, visible: false, headerText: 'Id', textAlign: 'Center', isPrimaryKey: true, showInColumnChooser: false, },
+                            { field: 'payComponent.payComponentType.name', allowEditing: false, headerText: 'Type', textAlign: 'Center', },
+                            { field: 'payComponent.name', allowEditing: false, headerText: 'Name', textAlign: 'Center', },
+                            { field: 'payComponent.code', allowEditing: false, headerText: 'Code', textAlign: 'Center', },
+                            { field: 'maxAnnualLimit', allowEditing: true, headerText: 'Max Annual Limit', textAlign: 'Center', },
+                            {
+                                headerText: 'Actions', textAlign: 'Center', commands: [
+                                    { type: 'Edit', buttonOption: { cssClass: 'e-flat', iconCss: 'e-edit e-icons' } },
+                                    { type: 'Delete', buttonOption: { cssClass: 'e-flat', iconCss: 'e-delete e-icons' } }
+                                ],
+                            }
                         ],
                     });
-                    payComponentsGrid.appendTo($(args.detailElement).find('#payComponentsGrid' + params.id)[0]);
+                    payComponentsGrid.appendTo($(args.detailElement).find('#PayGradeComponentGrid', '#payComponentsTabTemplate' + params.id)[0]);
                     
-
                     var refGrid = new ej.grids.Grid({
                         id: 'detailReferencesGrid' + params.id,
                         columns: [
@@ -608,8 +786,8 @@
                     });
                     refGrid.appendTo($(args.detailElement).find('#referencesGrid' + params.id)[0]);
 
-                    $('#updatePayGradeBtn' + params.id).on('click', function () {
-                        submitPayGradeBtn('payGradeSpecificTemplateForm' + params.id);
+                    $('#submitPayGradeBtn' + params.id).on('click', function () {
+                        submitPayGradeBtn('generalTabTemplate' + params.id, 'payComponentsTabTemplate' + params.id);
                     });
 
                     fillDetailForm(params, false)
@@ -617,6 +795,8 @@
 
                 function fillDetailForm(params, isEditing) {
                     FillDivFormByObject(params, $('#generalTabTemplate' + params.id).find('input, select'));
+                    let payCompsGrid = $('#PayGradeComponentGrid', '#payComponentsTabTemplate' + params.id)[0].ej2_instances[0];
+
                     if (!isEditing) {
                         $.each($('#generalTabTemplate' + params.id + ' :input'), function (index, value) {
                             $(value).attr('readonly', 'readonly');
@@ -625,9 +805,11 @@
                         $.each($('#generalTabTemplate' + params.id + ' select'), function (index, value) {
                             $(value).attr('readonly', 'readonly');
                             if ($(value).parent()[0].className.includes('multiselect')) {
-                                setTimeout($(`.${$(value)[0].className}`, '#generalTabTemplate' + params.id).multiselect('disable'), 1000);
+                                setTimeout($(`#${$(value)[0].id}`, '#generalTabTemplate' + params.id).multiselect('disable'), 1000);
                             }
                         });
+                        $('#addPayGradeComponentBtn' + params.id, '#payComponentsTabTemplate' + params.id).slideUp();
+                        payCompsGrid.columns[5].visible = false;
 
                         $('#updatePayGradeBtn' + params.id).slideUp();
                     }
@@ -638,16 +820,20 @@
                         $.each($('#generalTabTemplate' + params.id + ' select'), function (index, value) {
                             $(value).removeAttr('readonly');
                             if ($(value).parent()[0].className.includes('multiselect'))
-                                setTimeout($(`.${$(value)[0].className}`, '#generalTabTemplate' + params.id).multiselect('enable'), 1000);
+                                //setTimeout($(`.${$(value)[0].className}`, '#generalTabTemplate' + params.id).multiselect('enable'), 1000);
+                                setTimeout($(`#${$(value)[0].id}`, '#generalTabTemplate' + params.id).multiselect('enable'), 1000);
                         });
 
+                        $('#addPayGradeComponentBtn' + params.id, '#payComponentsTabTemplate' + params.id).slideDown();
+                        payCompsGrid.columns[5].visible = true;
                         $('#updatePayGradeBtn' + params.id).slideDown();
                     }
+                    payCompsGrid.refresh();
                     $('#payGradesLoader').slideDown(100);
-                    cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayGrade.get(params.id).done(function (data) {
+                    cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayGrade.getPayGrade(params.id).done(function (data) {
                         $('#payGradesLoader').slideUp(100);
 
-                        let payCompsGrid = $('#payComponentsGrid' + params.id)[0].ej2_instances[0];
+                        console.log(data);
                         payCompsGrid.dataSource = data.payGradeComponents;
                         payCompsGrid.refresh();
 

@@ -1,4 +1,5 @@
-﻿using CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructure;
+﻿using CERP.App.Helpers;
+using CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructure;
 using CERP.Attributes;
 using CERP.Base;
 using CERP.FM.DTOs;
@@ -22,7 +23,9 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public string Description { get; set; }
         public DateTime ValidityFromDate { get; set; }
         public DateTime ValidityToDate { get; set; }
+        public string StructureStatusDescription { get => EnumExtensions.GetDescription(StructureStatus); set => StructureStatus = EnumExtensions.GetValueFromDescription<OS_StructureStatus>(value); }
         public OS_StructureStatus StructureStatus { get; set; }
+        public string ReviewPeriodDescription { get => EnumExtensions.GetDescription(ReviewPeriod); set => ReviewPeriod = EnumExtensions.GetValueFromDescription<OS_ReviewPeriod>(value); }
         public OS_ReviewPeriod ReviewPeriod { get; set; }
         public int? ReviewPeriodDays { get; set; }
 

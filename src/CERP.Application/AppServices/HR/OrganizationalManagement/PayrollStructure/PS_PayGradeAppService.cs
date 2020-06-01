@@ -21,12 +21,14 @@ namespace CERP.AppServices.HR.OrganizationalManagement.PayrollStructure
 {
     public class PS_PayGradeAppService : CrudAppService<PS_PayGrade, PS_PayGrade_Dto, int, PagedAndSortedResultRequestDto, PS_PayGrade_Dto, PS_PayGrade_Dto>
     {
-        public PS_PayGradeAppService(IRepository<PS_PayGrade, int> repository) : base(repository)
+        public PS_PayGradeAppService(IRepository<PS_PayGrade, int> repository, IRepository<PS_PayGradeComponent> payComponentsRepository) : base(repository)
         {
             Repository = repository;
+            PayComponentsRepository = payComponentsRepository;
         }
 
         public IRepository<PS_PayGrade, int> Repository { get; }
+        public IRepository<PS_PayGradeComponent> PayComponentsRepository { get; }
 
 
         public async Task<List<PS_PayGrade_Dto>> GetAllPayGradesAsync()
@@ -39,6 +41,19 @@ namespace CERP.AppServices.HR.OrganizationalManagement.PayrollStructure
             catch (Exception ex)
             {
                 return new List<PS_PayGrade_Dto>();
+            }
+        }
+        public async Task<PS_PayGrade_Dto> GetPayGradeAsync(int id)
+        {
+            try
+            {
+                PS_PayGrade_Dto grade1 = MapToGetOutputDto(Repository.WithDetails(x => x.PayRange, x => x.PayGradeComponents).First(x => x.Id == id));
+                PS_PayGrade_Dto grade = MapToGetOutputDto(await Repository.GetAsync(id, true));
+                return grade;
+            }
+            catch (Exception ex)
+            {
+                return new PS_PayGrade_Dto();
             }
         }
         //public async Task<List<EntityReference>> GetAllReferences(int id)

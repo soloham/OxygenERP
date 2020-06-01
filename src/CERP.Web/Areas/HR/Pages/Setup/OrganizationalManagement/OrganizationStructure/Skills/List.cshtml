@@ -14,19 +14,19 @@
     ViewData["IsEditing"] = false;
     bool IsEditing = (bool)ViewData["IsEditing"];
 
-    ViewData["Title"] = L["Skills"].Name;
+    ViewData["Title"] = L["Skills"].Value;
     ViewData["IconClass"] = "fas fa-check-circle";
-    ViewData["HeaderTitle"] = L["Skills"].Name.ToUpper();
+    ViewData["HeaderTitle"] = L["Skills"].Value.ToUpper();
     ViewData["SubTitle"] = $"{L["ListOf"]} {L["Skills"]}";
     ViewData["Area"] = "Setup";
 
     ViewData["IsList"] = false;
     ViewData["IsCreate"] = false;
-    string cNT = $"{L["Add"].Name} {L["Skill"].Name}";
+    string cNT = $"{L["Add"].Value} {L["Skill"].Value}";
     ViewData["CreateNewText"] = cNT;
     ViewData["CreateNewLink"] = "/Skills/Skill";
 
-    string TabPlaceholder = (bool)ViewData["IsEditing"] ? L["Area"].Name : L["Step"].Name;
+    string TabPlaceholder = (bool)ViewData["IsEditing"] ? L["Area"].Value : L["Step"].Value;
 
     var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
 

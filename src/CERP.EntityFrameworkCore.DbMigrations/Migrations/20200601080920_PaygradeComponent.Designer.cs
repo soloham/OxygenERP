@@ -4,14 +4,16 @@ using CERP.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CERP.Migrations
 {
     [DbContext(typeof(CERPMigrationsDbContext))]
-    partial class CERPMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200601080920_PaygradeComponent")]
+    partial class PaygradeComponent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4127,7 +4129,7 @@ namespace CERP.Migrations
 
                     b.HasIndex("PayComponentId");
 
-                    b.ToTable("PayGradeComponents","HR.OrganizationalManagement.PayrollStructure");
+                    b.ToTable("PayGradeComponents","HR.OrganizationalManagement.OrganizationStructure");
                 });
 
             modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayGroup", b =>

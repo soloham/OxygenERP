@@ -496,7 +496,7 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureConcurrencyStamp();
 
                 b.HasMany(p => p.DepartmentCostCenterTemplates).WithOne(p => p.DepartmentTemplate).OnDelete(DeleteBehavior.Cascade);
-                b.HasMany(p => p.PositionTemplates).WithOne(p => p.DepartmentTemplate).OnDelete(DeleteBehavior.Cascade);
+                //b.HasMany(p => p.PositionTemplates).WithOne(p => p.DepartmentTemplate).OnDelete(DeleteBehavior.Cascade);
                 b.HasMany(p => p.SubDepartmentTemplates).WithOne(p => p.DepartmentTemplate).OnDelete(DeleteBehavior.Cascade);
             });
             builder.Entity<OS_DepartmentCostCenterTemplate>(b =>
@@ -545,7 +545,7 @@ namespace CERP.EntityFrameworkCore
 
                 b.HasMany(p => p.PositionCostCenterTemplates).WithOne(p => p.PositionTemplate).OnDelete(DeleteBehavior.Cascade);
                 b.HasMany(p => p.PositionJobTemplates).WithOne(p => p.PositionTemplate).OnDelete(DeleteBehavior.Cascade);
-                b.HasMany(p => p.PositionTaskTemplates).WithOne(p => p.PositionTemplate).OnDelete(DeleteBehavior.Cascade);
+                //b.HasMany(p => p.PositionTaskTemplates).WithOne(p => p.PositionTemplate).OnDelete(DeleteBehavior.Cascade);
             });
 
             builder.Entity<OS_PositionCostCenterTemplate>(b =>
@@ -572,18 +572,18 @@ namespace CERP.EntityFrameworkCore
                 b.HasOne(x => x.PositionTemplate).WithMany(x => x.PositionJobTemplates).OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(x => x.JobTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
-            builder.Entity<OS_PositionTaskTemplate>(b =>
-            {
-                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}PositionTaskTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+            //builder.Entity<OS_PositionTaskTemplate>(b =>
+            //{
+            //    b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}PositionTaskTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
 
-                b.HasKey("PositionTemplateId", "TaskTemplateId");
-                b.ConfigureFullAuditedAggregateRoot();
-                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
-                b.ConfigureConcurrencyStamp();
+            //    b.HasKey("PositionTemplateId", "TaskTemplateId");
+            //    b.ConfigureFullAuditedAggregateRoot();
+            //    b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+            //    b.ConfigureConcurrencyStamp();
 
-                b.HasOne(x => x.PositionTemplate).WithMany(x => x.PositionTaskTemplates).OnDelete(DeleteBehavior.NoAction);
-                b.HasOne(x => x.TaskTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
-            });
+            //    b.HasOne(x => x.PositionTemplate).WithMany(x => x.PositionTaskTemplates).OnDelete(DeleteBehavior.NoAction);
+            //    b.HasOne(x => x.TaskTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
+            //});
 
             builder.Entity<OS_JobTemplate>(b =>
             {
@@ -801,7 +801,7 @@ namespace CERP.EntityFrameworkCore
 
             builder.Entity<PS_PayGradeComponent>(b =>
             {
-                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}PayGradeComponents", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+                b.ToTable($"{CERPConsts.HR_OM_PayrollStructure_DbTablePrefix}PayGradeComponents", CERPConsts.HR_OM_PayrollStructure_DbSchema);
 
                 b.HasKey("PayGradeId", "PayComponentId");
                 b.ConfigureFullAuditedAggregateRoot();

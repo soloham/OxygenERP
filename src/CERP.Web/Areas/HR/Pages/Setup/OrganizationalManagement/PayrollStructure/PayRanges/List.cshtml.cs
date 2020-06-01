@@ -61,6 +61,8 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.PayrollStructure.Page
                     var FormData = Request.Form;
 
                     PS_PayRange_Dto payRange_Dto = JsonSerializer.Deserialize<PS_PayRange_Dto>(FormData["info"]);
+                    if (payRange_Dto.Min > payRange_Dto.Max || payRange_Dto.Min > payRange_Dto.Mid || payRange_Dto.Mid > payRange_Dto.Max)
+                        return StatusCode(500, new Exception("Please provide valid Min, Mid & Max Configuration"));
 
                     bool IsEditing = payRange_Dto.Id > 0;
                     if (IsEditing)

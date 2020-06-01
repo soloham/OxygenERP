@@ -177,6 +177,16 @@
     "OrganizationStructures": "Organization Structures",
     "OrganizationStructure": "Organization Structure",
 
+    "PayGroups": "Pay Groups",
+    "PayGrades": "Pay Grades",
+    "PayRanges": "Pay Ranges",
+    "PayComponents": "Pay Components",
+    "PayComponent": "Pay Component",
+    "PayComponentType": "Pay Component Type",
+    "PayComponentTypes": "Pay Component Types",
+    "PayFrequencies": "Pay PayFrequencies",
+    "PayFrequency": "Pay PayFrequency",
+
     "Welcome": "Welcome",
     "LongWelcomeMessage": "Welcome to the application."
   }

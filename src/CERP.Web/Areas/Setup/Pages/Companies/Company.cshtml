@@ -7,13 +7,13 @@
     ViewData["IsEditing"] = false;
     bool IsEditing = (bool)ViewData["IsEditing"];
 
-    ViewData["Title"] = IsEditing ? $"{L["Edit"].Name} {L["Company"].Name}" : $"{L["Create"].Name} {L["Company"].Name}";
+    ViewData["Title"] = IsEditing ? $"{L["Edit"].Value} {L["Company"].Value}" : $"{L["Create"].Value} {L["Company"].Value}";
     ViewData["IconClass"] = "fa fa-user-tie";
-    ViewData["HeaderTitle"] = L["Company"].Name.ToUpper();
+    ViewData["HeaderTitle"] = L["Company"].Value.ToUpper();
 
     ViewData["IsList"] = false;
     ViewData["IsCreate"] = false;
-    string TabPlaceholder = (bool)ViewData["IsEditing"] ? L["Area"].Name : L["Step"].Name;
+    string TabPlaceholder = (bool)ViewData["IsEditing"] ? L["Area"].Value : L["Step"].Value;
 
     var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
     var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };

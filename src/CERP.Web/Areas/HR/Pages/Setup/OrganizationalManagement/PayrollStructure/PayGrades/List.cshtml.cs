@@ -213,7 +213,46 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.PayrollStructure.Page
                         curPayGrade.PayRangeId = payGrade_Dto.PayRangeId;
                         curPayGrade.PayRange = null;
 
+                        #region Child Entities
+                        PS_PayGradeComponent_Dto[] payGradeComponents = payGrade_Dto.PayGradeComponents.ToArray();
+                        int[] curPayGradeComponentsIds = curPayGrade.PayGradeComponents != null && curPayGrade.PayGradeComponents.Count > 0 ? curPayGrade.PayGradeComponents.Select(x => x.PayComponent.Id).ToArray() : new int[0];
+                        List<int> toDeleteSkills = new List<int>();
+                        for (int i = 0; i < curPayGradeComponentsIds.Length; i++)
+                        {
+                            PS_PayGradeComponent curPayGradeComponent = curPayGrade.PayGradeComponents.First(x => x.PayComponent.Id == curPayGradeComponentsIds[i]);
+                            if (!payGradeComponents.Any(x => x.PayComponent.Id == curPayGradeComponentsIds[i]))
+                            {
+                                curPayGrade.PayGradeComponents.Remove(curPayGrade.PayGradeComponents.First(x => x.PayComponent.Id == curPayGradeComponentsIds[i]));
+                                toDeleteSkills.Add(curPayGradeComponentsIds[i]);
+                            }
+                        }
+                        for (int i = 0; i < payGradeComponents.Length; i++)
+                        {
+                            if (curPayGrade.PayGradeComponents == null) curPayGrade.PayGradeComponents = new List<PS_PayGradeComponent>();
+                            if (!curPayGrade.PayGradeComponents.Any(x => x.PayComponentId == payGradeComponents[i].PayComponent.Id))
+                            {
+                                curPayGrade.PayGradeComponents.Add(new PS_PayGradeComponent() { PayComponentId = payGradeComponents[i].PayComponent.Id, MaxAnnualLimit = payGradeComponents[i].MaxAnnualLimit });
+                            }
+                            else
+                            {
+                                var _payGradeComponent = curPayGrade.PayGradeComponents.First(x => x.PayComponentId == payGradeComponents[i].PayComponent.Id);
+                                _payGradeComponent.MaxAnnualLimit = payGradeComponents[i].MaxAnnualLimit;
+                                //_functionLoc.FunctionValidityStart = posFunctions[i].FunctionValidityStart;
+                                //_functionLoc.FunctionValidityEnd = posFunctions[i].FunctionValidityEnd;
+                                //_functionLoc.Name = posFunctions[i].Name;
+
+                                //curFunction.PayGradeComponents.Remove(curFunction.PayGradeComponents.First(x => x.PayGradeId == _functionLoc.PayGradeId));
+                                await PS_PayGradeAppService.PayComponentsRepository.UpdateAsync(_payGradeComponent);
+                            }
+                        }
+                        for (int i = 0; i < toDeleteSkills.Count; i++)
+                        {
+                            await PS_PayGradeAppService.PayComponentsRepository.DeleteAsync(x => x.PayComponentId == toDeleteSkills[i]);
+                        }
+                        #endregion
+
                         PS_PayGrade_Dto updated = ObjectMapper.Map<PS_PayGrade, PS_PayGrade_Dto>(await PS_PayGradeAppService.Repository.UpdateAsync(curPayGrade));
+                        updated = await PS_PayGradeAppService.GetAsync(updated.Id);
 
                         return StatusCode(200, updated);
                     }
@@ -221,6 +260,8 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.PayrollStructure.Page
                     {
                         payGrade_Dto.Id = 0;
                         payGrade_Dto.PayRange = null;
+                        if (payGrade_Dto.PayGradeComponents != null)
+                            payGrade_Dto.PayGradeComponents.ForEach(x => { x.Id = 0; x.PayComponentId = x.PayComponent.Id; x.PayComponent = null; });
 
                         PS_PayGrade_Dto added = await PS_PayGradeAppService.CreateAsync(payGrade_Dto);
                         added = await PS_PayGradeAppService.GetAsync(added.Id);

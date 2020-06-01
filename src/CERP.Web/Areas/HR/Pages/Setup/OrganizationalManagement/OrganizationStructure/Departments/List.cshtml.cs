@@ -210,7 +210,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curDepartmentTemplate.Name = departmentTemplate_Dto.Name;
                         curDepartmentTemplate.NameLocalized = departmentTemplate_Dto.NameLocalized;
                         curDepartmentTemplate.Code = departmentTemplate_Dto.Code;
-                        curDepartmentTemplate.ReviewPeriod = departmentTemplate_Dto.ReviewPeriod;
+                        //curDepartmentTemplate.ReviewPeriod = departmentTemplate_Dto.ReviewPeriod;
                         curDepartmentTemplate.ValidityFromDate = departmentTemplate_Dto.ValidityFromDate;
                         curDepartmentTemplate.ValidityToDate = departmentTemplate_Dto.ValidityToDate;
 

@@ -396,7 +396,10 @@ namespace CERP.EntityFrameworkCore
                 #region Payroll Structure
                 options.Entity<PS_PayGrade>(opt =>
                 {
-                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.PayRange);
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.PayRange)
+                                                       .Include(p => p.PayGradeComponents)
+                                                        .ThenInclude(p => p.PayComponent)
+                                                        .ThenInclude(p => p.PayComponentType);
                 });
                 options.Entity<PS_PayComponent>(opt =>
                 {

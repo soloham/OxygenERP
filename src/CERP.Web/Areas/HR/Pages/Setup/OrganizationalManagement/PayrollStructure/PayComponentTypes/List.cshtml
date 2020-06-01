@@ -14,19 +14,19 @@
     ViewData["IsEditing"] = false;
     bool IsEditing = (bool)ViewData["IsEditing"];
 
-    ViewData["Title"] = L["PayComponentTypes"].Name;
+    ViewData["Title"] = L["PayComponentTypes"].Value;
     ViewData["IconClass"] = "fas fa-check-circle";
-    ViewData["HeaderTitle"] = L["PayComponentTypes"].Name.ToUpper();
+    ViewData["HeaderTitle"] = L["PayComponentTypes"].Value.ToUpper();
     ViewData["SubTitle"] = $"{L["ListOf"]} {L["PayComponentTypes"]}";
     ViewData["Area"] = "Setup";
 
     ViewData["IsList"] = false;
     ViewData["IsCreate"] = false;
-    string cNT = $"{L["Add"].Name} {L["PayComponentType"].Name}";
+    string cNT = $"{L["Add"].Value} {L["PayComponentType"].Value}";
     ViewData["CreateNewText"] = cNT;
     ViewData["CreateNewLink"] = "/PayComponentTypes/PayComponentType";
 
-    string TabPlaceholder = (bool)ViewData["IsEditing"] ? L["Area"].Name : L["Step"].Name;
+    string TabPlaceholder = (bool)ViewData["IsEditing"] ? L["Area"].Value : L["Step"].Value;
 
     var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
 
@@ -114,7 +114,7 @@
             if (ValidateForm(formId)) {
                 gridObj.showSpinner();
                 Swal.showLoading();
-
+                console.log('ewr');
                 let form = [];
                 let functionDetails = $('#' + formId).find("textarea, input, select").serializeArray();
                 form = form.concat(functionDetails);
@@ -291,11 +291,11 @@
                                 </div>
                                 <div class="col-sm-8" style="">
                                     <div class="col-sm-6" style="padding-left:0">
-                                        <select id="payComponentValueComponentType" name="ValueComponentTypeId" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                        <select id="payComponentValueComponentType" name="ValueComponentTypeId" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                                         </select>
                                     </div>
                                     <div class="col-sm-6" style="padding-right:0">
-                                        <input type="number" min="1" max="100" id="payComponentTypePercentage" name="Percentage" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        <input type="number" min="1" max="100" id="payComponentTypePercentage" name="Percentage" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                                     </div>
                                 </div>
                             </div>
@@ -369,7 +369,7 @@
                     }'></e-grid-column>
                     <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
                     <e-grid-column field="description" headerText="Description" allowEditing="true" textAlign="Center"></e-grid-column>
-                    <e-grid-column field="valueType" headerText="Value Type" allowEditing="true" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="valueTypeDescription" headerText="Value Type" allowEditing="true" textAlign="Center"></e-grid-column>
                     <e-grid-column field="amount" headerText="Amount" allowEditing="true" textAlign="Center"></e-grid-column>
                     <e-grid-column field="percentage" headerText="Percentage" allowEditing="true" textAlign="Center"></e-grid-column>
                     <e-grid-column field="valueComponentType.name" headerText="Value Component Type" allowEditing="true" textAlign="Center"></e-grid-column>
@@ -461,11 +461,11 @@
                                         </div>
                                         <div class="col-sm-8" style="">
                                             <div class="col-sm-6" style="padding-left:0">
-                                                <select id="payComponentValueComponentType" name="ValueComponentTypeId" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                                <select id="payComponentValueComponentType" name="ValueComponentTypeId" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                                                 </select>
                                             </div>
                                             <div class="col-sm-6" style="padding-right:0">
-                                                <input type="number" min="1" max="100" id="payComponentTypePercentage" name="Percentage" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                                <input type="number" min="0" value="1" max="100" id="payComponentTypePercentage" name="Percentage" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                                             </div>
                                         </div>
                                     </div>
@@ -560,7 +560,8 @@
                     });
                     refGrid.appendTo($(args.detailElement).find('#referencesGrid' + params.id)[0]);
 
-                    $('#updatePayComponentTypeBtn' + params.id).on('click', function () {
+                    $('#submitPayComponentTypeBtn' + params.id).on('click', function () {
+                        console.log('fsdf');
                         submitPayComponentTypeBtn('payComponentTypeSpecificTemplateForm' + params.id);
                     });
 

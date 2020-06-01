@@ -54,11 +54,8 @@ namespace CERP.HR.OrganizationalManagement.PayrollStructure
         [CustomAudited]
         public int PayGradeId { get; set; }
 
+
         [CustomAudited]
         public int MaxAnnualLimit { get; set; }
-        [CustomAudited]
-        public PS_PaygradeComponentAmountValueType AmountValueType { get; set; }
-        [CustomAudited]
-        public decimal Amount { get; set; }
     }
 }

@@ -227,7 +227,8 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.PayrollStructure.Page
                         curPayComponentType.ValueComponentType = null;
 
                         PS_PayComponentType_Dto updated = ObjectMapper.Map<PS_PayComponentType, PS_PayComponentType_Dto>(await PS_PayComponentTypeAppService.Repository.UpdateAsync(curPayComponentType));
-
+                        updated = ObjectMapper.Map<PS_PayComponentType, PS_PayComponentType_Dto>(PS_PayComponentTypeAppService.Repository.WithDetails(x => x.ValueComponentType).First(x => x.Id == updated.Id));
+                        
                         return StatusCode(200, updated);
                     }
                     else

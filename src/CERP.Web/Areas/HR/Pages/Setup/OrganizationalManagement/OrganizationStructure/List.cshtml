@@ -15,19 +15,19 @@
     ViewData["IsEditing"] = false;
     bool IsEditing = (bool)ViewData["IsEditing"];
 
-    ViewData["Title"] = L["OrganizationStructures"].Name;
+    ViewData["Title"] = L["OrganizationStructures"].Value;
     ViewData["IconClass"] = "far fa-building";
-    ViewData["HeaderTitle"] = L["OrganizationStructures"].Name.ToUpper();
+    ViewData["HeaderTitle"] = L["OrganizationStructures"].Value.ToUpper();
     ViewData["SubTitle"] = $"{L["ListOf"]} {L["OrganizationStructures"]}";
     ViewData["Area"] = "Setup";
 
     ViewData["IsList"] = false;
     ViewData["IsCreate"] = false;
-    string cNT = $"{L["Add"].Name} {L["OrganizationStructure"].Name}";
+    string cNT = $"{L["Add"].Value} {L["OrganizationStructure"].Value}";
     ViewData["CreateNewText"] = cNT;
     ViewData["CreateNewLink"] = "/OrganizationStructures/OrganizationStructure";
 
-    string TabPlaceholder = (bool)ViewData["IsEditing"] ? L["Area"].Name : L["Step"].Name;
+    string TabPlaceholder = (bool)ViewData["IsEditing"] ? L["Area"].Value : L["Step"].Value;
 
     var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
 
@@ -300,7 +300,8 @@
 
             //$('#posType').multiselect(options);
             //$('#posStatus').multiselect(options);
-            $.each($('#Paygrade'), function (i, x) { $(x).multiselect(options) });
+            $.each($('.paygroup'), function (i, x) { $(x).multiselect(options) });
+            $.each($('.paygrade'), function (i, x) { $(x).multiselect(options) });
 
             let gridObj = $("#OrganizationStructuresGrid")[0].ej2_instances[0];
             let structureTGrid = $("#StructureTreeGrid")[0].ej2_instances[0];
@@ -578,6 +579,24 @@
                     data[i].unitType = "Business Unit";
                 }
                 businessUnits = data;
+            });
+
+            cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayGroup.getList({}).done(function (data) {
+                let dataMS = [];
+                for (let i = 0; i < data.items.length; i++) {
+                    let item = data.items[i];
+                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+                }
+                $.each($('.paygroup'), function (i, x) { $(x).multiselect('dataprovider', dataMS) });
+            });
+            
+            cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayGrade.getList({}).done(function (data) {
+                let dataMS = [];
+                for (let i = 0; i < data.items.length; i++) {
+                    let item = data.items[i];
+                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+                }
+                $.each($('.paygrade'), function (i, x) { $(x).multiselect('dataprovider', dataMS) });
             });
 
             gridObj.showSpinner();
@@ -981,12 +1000,12 @@
 
                     </div>
                     @*<div class="col-lg-3 col-md-3 col-sm-3 col-12">
-            <div class="form-group">
-                <label class="margin-bottom-5 control-label">OrganizationStructure Head:</label>
-                <select id="depHeadId" name="OrganizationStructureHeadId" class="form-control">
-                </select>
-            </div>
-        </div>*@
+                        <div class="form-group">
+                            <label class="margin-bottom-5 control-label">OrganizationStructure Head:</label>
+                            <select id="depHeadId" name="OrganizationStructureHeadId" class="form-control">
+                            </select>
+                        </div>
+                    </div>*@
                 </div>
             </div>
             <div id="structureInfo" style="display:none">
@@ -1071,10 +1090,10 @@
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                                         <div class="form-group" style="padding: 15px">
                                             <div class="col-sm-4" style="">
-                                                <label class="p-t-5 control-label pull-right ">Paygroup:</label>
+                                                <label class="p-t-5 control-label pull-right ">Pay Group:</label>
                                             </div>
                                             <div class="col-sm-7" style="">
-                                                <select id="buPayroup" name="BUPaygroupId" class="form-control">
+                                                <select id="buPaygroup" name="BUPaygroupId" class="paygroup form-control">
                                                 </select>
                                             </div>
                                         </div>
@@ -1282,7 +1301,7 @@
                                                 <label class="p-t-5 control-label pull-right ">Paygroup:</label>
                                             </div>
                                             <div class="col-sm-7" style="">
-                                                <select id="divPayroup" name="DIVPaygroupId" class="form-control">
+                                                <select id="divPayroup" name="DIVPaygroupId" class="paygroup form-control">
                                                 </select>
                                             </div>
                                         </div>
@@ -1491,7 +1510,7 @@
                                                 <label class="p-t-5 control-label pull-right ">Paygroup:</label>
                                             </div>
                                             <div class="col-sm-7" style="">
-                                                <select id="depPayroup" name="DEPPaygroupId" class="form-control" required>
+                                                <select id="depPayroup" name="DEPPaygroupId" class="paygroup form-control" required>
                                                 </select>
                                             </div>
                                         </div>
@@ -1787,7 +1806,7 @@
                                                 <label class="p-t-5 control-label pull-right ">Pay Grade:</label>
                                             </div>
                                             <div class="col-sm-7" style="">
-                                                <select id="Paygrade" name="PayGradeId" class="form-control">
+                                                <select id="PosPaygrade" name="PayGradeId" class="paygrade form-control">
                                                 </select>
                                             </div>
                                         </div>
