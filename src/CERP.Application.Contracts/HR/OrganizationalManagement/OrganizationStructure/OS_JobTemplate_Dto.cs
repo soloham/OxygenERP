@@ -24,7 +24,7 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public string NameLocalized { get; set; }
 
         public string Description { get; set; }
-        public int MaxJobPositions { get; set; }
+        //public int MaxJobPositions { get; set; }
 
         public DateTime ValidityFromDate { get; set; }
         public DateTime ValidityToDate { get; set; }

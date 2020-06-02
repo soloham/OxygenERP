@@ -186,13 +186,13 @@
             $('#buHead').multiselect('dataprovider', rfdc()(_dataMS));
             _dataMS = [];
             for (let i = 0; i < divPositionsGrid.dataSource.length; i++) {
-                let item = buPositionsGrid.dataSource[i];
+                let item = divPositionsGrid.dataSource[i];
                 _dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
             }
             $('#divHead').multiselect('dataprovider', rfdc()(_dataMS));
             _dataMS = [];
             for (let i = 0; i < depPositionsGrid.dataSource.length; i++) {
-                let item = buPositionsGrid.dataSource[i];
+                let item = depPositionsGrid.dataSource[i];
                 _dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
             }
             $('#depHead').multiselect('dataprovider', rfdc()(_dataMS));
@@ -346,19 +346,19 @@
                     let selectedPositions = $('#buPositionsIds').val();
                     for (var i = 0; i < selectedPositions.length; i++) {
                         let _function = buPositions.filter(function (x) { return x.id == selectedPositions[i] })[0];
-                        _function.percentage = parseInt($('#buPositionPercentage').val());
+                        //_function.percentage = parseInt($('#buPositionPercentage').val());
 
-                        let curSum = 0;
-                        for (var i = 0; i < buPositionsGrid.dataSource.length; i++) {
-                            curSum += buPositionsGrid.dataSource[i].percentage;
-                        }
-                        console.log(curSum);
-                        if (curSum + _function.percentage <= 100)
-                            buPositionsGrid.dataSource.push(_function);
-                        else {
-                            toastr.error(`Sum of all percentages exceed 100`);
-                            buPositionsGrid.hideSpinner();
-                        }
+                        buPositionsGrid.dataSource.push(_function);
+                        //let curSum = 0;
+                        //for (var i = 0; i < buPositionsGrid.dataSource.length; i++) {
+                        //    curSum += buPositionsGrid.dataSource[i].percentage;
+                        //}
+                        //console.log(curSum);
+                        //if (curSum + _function.percentage <= 100)
+                        //else {
+                        //    toastr.error(`Sum of all percentages exceed 100`);
+                        //    buPositionsGrid.hideSpinner();
+                        //}
 
                         buPositionsGrid.refresh();
                     }
@@ -405,19 +405,19 @@
                     let selectedPositions = $('#divPositionsIds').val();
                     for (var i = 0; i < selectedPositions.length; i++) {
                         let _function = divPositions.filter(function (x) { return x.id == selectedPositions[i] })[0];
-                        _function.percentage = parseInt($('#divPositionPercentage').val());
-
-                        let curSum = 0;
-                        for (var i = 0; i < divPositionsGrid.dataSource.length; i++) {
-                            curSum += divPositionsGrid.dataSource[i].percentage;
-                        }
-                        console.log(curSum);
-                        if (curSum + _function.percentage <= 100)
-                            divPositionsGrid.dataSource.push(_function);
-                        else {
-                            toastr.error(`Sum of all percentages exceed 100`);
-                            divPositionsGrid.hideSpinner();
-                        }
+                        //_function.percentage = parseInt($('#divPositionPercentage').val());
+                        divPositionsGrid.dataSource.push(_function);
+                        //let curSum = 0;
+                        //for (var i = 0; i < divPositionsGrid.dataSource.length; i++) {
+                        //    curSum += divPositionsGrid.dataSource[i].percentage;
+                        //}
+                        //console.log(curSum);
+                        //if (curSum + _function.percentage <= 100)
+                        //    
+                        //else {
+                        //    toastr.error(`Sum of all percentages exceed 100`);
+                        //    divPositionsGrid.hideSpinner();
+                        //}
 
                         divPositionsGrid.refresh();
                     }
@@ -464,19 +464,19 @@
                     let selectedPositions = $('#depPositionsIds').val();
                     for (var i = 0; i < selectedPositions.length; i++) {
                         let _function = depPositions.filter(function (x) { return x.id == selectedPositions[i] })[0];
-                        _function.percentage = parseInt($('#depPositionPercentage').val());
-
-                        let curSum = 0;
-                        for (var i = 0; i < depPositionsGrid.dataSource.length; i++) {
-                            curSum += depPositionsGrid.dataSource[i].percentage;
-                        }
-                        console.log(curSum);
-                        if (curSum + _function.percentage <= 100)
-                            depPositionsGrid.dataSource.push(_function);
-                        else {
-                            toastr.error(`Sum of all percentages exceed 100`);
-                            depPositionsGrid.hideSpinner();
-                        }
+                        //_function.percentage = parseInt($('#depPositionPercentage').val());
+                        depPositionsGrid.dataSource.push(_function);
+                        //let curSum = 0;
+                        //for (var i = 0; i < depPositionsGrid.dataSource.length; i++) {
+                        //    curSum += depPositionsGrid.dataSource[i].percentage;
+                        //}
+                        //console.log(curSum);
+                        //if (curSum + _function.percentage <= 100)
+                        //    
+                        //else {
+                        //    toastr.error(`Sum of all percentages exceed 100`);
+                        //    depPositionsGrid.hideSpinner();
+                        //}
 
                     }
                     depPositionsGrid.refresh();
@@ -753,7 +753,13 @@
             
             $('#addOrganizationStructuresBtn').on('click', function () {
                 isEditingOrganizationStructures = false;
+                //structureTGrid.dataSource = [];
+                //structureTGrid.refresh();
+                usedBusinessUnits = [];
+                usedDivisions = [];
+                usedDepartments = [];
 
+                emptyTGDS = true;
                 $('#submitOrganizationStructureBtn').val('Create Organization Structure');
             });
 
@@ -1186,17 +1192,11 @@
                                             </div>
                                             <div role="form" id="buPositionsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
                                                 <div class="row">
-                                                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                                    <div class="col-lg-9 col-md-9 col-sm-9 col-12">
                                                         <div class="form-group">
                                                             <label class="margin-bottom-5 control-label">Positions:</label>
                                                             <select id="buPositionsIds" name="PositionsIds" multiple="multiple" class="form-control">
                                                             </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                                                        <div class="form-group">
-                                                            <label class="margin-bottom-5 control-label">Percentage:</label>
-                                                            <input type="number" min="1" max="100" value="" id="buPositionPercentage" name="Percentage" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-3 col-md-3 col-sm-3 col-12">
@@ -1396,17 +1396,11 @@
                                             </div>
                                             <div role="form" id="divPositionsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
                                                 <div class="row">
-                                                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                                    <div class="col-lg-9 col-md-9 col-sm-9 col-12">
                                                         <div class="form-group">
                                                             <label class="margin-bottom-5 control-label">Positions:</label>
                                                             <select id="divPositionsIds" name="PositionsIds" multiple="multiple" class="form-control">
                                                             </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                                                        <div class="form-group">
-                                                            <label class="margin-bottom-5 control-label">Percentage:</label>
-                                                            <input type="number" min="1" max="100" value="" id="divPositionPercentage" name="Percentage" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-3 col-md-3 col-sm-3 col-12">
@@ -1449,13 +1443,13 @@
                         </div>
                     </div>
                     <div id="departmentForm" role="form" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
-                        @*<ejs-tab id="departmentFormTabs" animation="ViewBag.animation">
+                        <ejs-tab id="departmentFormTabs" animation="ViewBag.animation">
                             <e-tab-tabitems>
                                 <e-tab-tabitem header="@(new TabHeader { Text = "General" })" content="#generalDEPDetailsTab"></e-tab-tabitem>
                                 <e-tab-tabitem header="@(new TabHeader { Text = "Cost Centers" })" content="#DEPCostCentersTab"></e-tab-tabitem>
                                 <e-tab-tabitem header="@(new TabHeader { Text = "Associations" })" content="#DEPAssociationsTab"></e-tab-tabitem>
                             </e-tab-tabitems>
-                        </ejs-tab>*@
+                        </ejs-tab>
                         <div id="generalDEPDetailsTab" class="areaForm">
                             <div class="row">
                                 <div class="col-sm-2">
@@ -1465,7 +1459,7 @@
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                                         <div class="form-group" style="padding: 15px">
                                             <div class="col-sm-4" style="">
-                                                <label class="p-t-5 control-label pull-right ">Head of DIV:</label>
+                                                <label class="p-t-5 control-label pull-right ">Head of Department:</label>
                                             </div>
                                             <div class="col-sm-7" style="">
                                                 <select id="depHead" name="HeadOfDEPId" class="form-control" required>
@@ -1507,10 +1501,21 @@
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                                         <div class="form-group" style="padding: 15px">
                                             <div class="col-sm-4" style="">
-                                                <label class="p-t-5 control-label pull-right ">Paygroup:</label>
+                                                <label class="p-t-5 control-label pull-right ">Pay Group:</label>
                                             </div>
                                             <div class="col-sm-7" style="">
-                                                <select id="depPayroup" name="DEPPaygroupId" class="paygroup form-control" required>
+                                                <select id="depPayroup" name="PayGroupId" class="paygroup form-control" required>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right ">Pay Grade:</label>
+                                            </div>
+                                            <div class="col-sm-7" style="">
+                                                <select id="depPayrade" name="PayGradeId" class="paygrade form-control" required>
                                                 </select>
                                             </div>
                                         </div>
@@ -1605,17 +1610,11 @@
                                             </div>
                                             <div role="form" id="depPositionsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
                                                 <div class="row">
-                                                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                                    <div class="col-lg-9 col-md-9 col-sm-9 col-12">
                                                         <div class="form-group">
                                                             <label class="margin-bottom-5 control-label">Positions:</label>
                                                             <select id="depPositionsIds" name="PositionsIds" multiple="multiple" class="form-control">
                                                             </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                                                        <div class="form-group">
-                                                            <label class="margin-bottom-5 control-label">Percentage:</label>
-                                                            <input type="number" min="1" max="100" value="" id="depPositionPercentage" name="Percentage" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-3 col-md-3 col-sm-3 col-12">
@@ -1636,7 +1635,7 @@
                                                         <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
                                                         <e-grid-column field="code" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
                                                         <e-grid-column field="name" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
-                                                        <e-grid-column field="percentage" allowEditing="true" headerText="Percentage" textAlign="Center"></e-grid-column>
+                                                        @*<e-grid-column field="percentage" allowEditing="true" headerText="Percentage" textAlign="Center"></e-grid-column>*@
                                                         <e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>
                                                     </e-grid-columns>
 
@@ -2559,7 +2558,12 @@
                         FillFormByObject(curUnitEditRow._unit.unitDetails, $('#businessUnitForm'));
 
                     try {
-                        buCostCentersGrid.dataSource = rfdc()(curUnitEditRow._unit.unitDetails.costCenters);
+                        if (curUnitEditRow._unit.unitDetails) {
+                            buCostCentersGrid.dataSource = rfdc()(curUnitEditRow._unit.unitDetails.costCenters);
+                        }
+                        else {
+                            buCostCentersGrid.dataSource = rfdc()(curUnitEditRow._unit.buCostCenterTemplates.map(function (x) { return { percentage: x.percentage, ...x.costCenter} }));
+                        }
                         buCostCentersGrid.refresh();
 
                         buPositionsGrid.dataSource = rfdc()(curUnitEditRow._unit.unitDetails.associations.positions);
@@ -2583,7 +2587,12 @@
 
 
                     try {
-                        divCostCentersGrid.dataSource = rfdc()(curUnitEditRow._unit.unitDetails.costCenters);
+                        if (curUnitEditRow._unit.unitDetails) {
+                            divCostCentersGrid.dataSource = rfdc()(curUnitEditRow._unit.unitDetails.costCenters);
+                        }
+                        else {
+                            divCostCentersGrid.dataSource = rfdc()(curUnitEditRow._unit.divisionCostCenterTemplates.map(function (x) { return { percentage: x.percentage, ...x.costCenter} }));
+                        }
                         divCostCentersGrid.refresh();
 
                         divPositionsGrid.dataSource = rfdc()(curUnitEditRow._unit.unitDetails.associations.positions);
@@ -2606,7 +2615,12 @@
                         FillFormByObject(curUnitEditRow._unit.unitDetails, $('#departmentForm'));
 
                     try {
-                        depCostCentersGrid.dataSource = rfdc()(curUnitEditRow._unit.unitDetails.costCenters);
+                        if (curUnitEditRow._unit.unitDetails) {
+                            depCostCentersGrid.dataSource = rfdc()(curUnitEditRow._unit.unitDetails.costCenters);
+                        }
+                        else {
+                            depCostCentersGrid.dataSource = rfdc()(curUnitEditRow._unit.departmentCostCenterTemplates.map(function (x) { return { percentage: x.percentage, ...x.costCenter} }));
+                        }
                         depCostCentersGrid.refresh();
 
                         depPositionsGrid.dataSource = rfdc()(curUnitEditRow._unit.unitDetails.associations.positions);
@@ -2921,16 +2935,24 @@
         }
     }
 
+    let emptyTGDS = false;
     function structureTreeActionComplete(args) {
         console.log(args);
         if (args.requestType == "add") {
 
         }
         else if (args.requestType == "save") {
-            let ds = rfdc()(this.dataSource);
+            if (emptyTGDS && this.dataSource.length > 0) {
+                this.dataSource = [this.dataSource[0]];
+                emptyTGDS = false;
+            }
+            let ds = ($("#StructureTreeGrid")[0].ej2_instances[0].dataSource);
+            console.log('this.dataSource');
+            console.log(this.dataSource);
             this.dataSource = [];
             this.dataSource = ds;
-            this.refresh();
+            console.log(ds);
+            //this.refresh();
 
             //curSelectedRow = undefined;
         }
@@ -3268,9 +3290,8 @@
 
             FillFormByObject(params, $('#organizationStructuresForm'));
 
+            emptyTGDS = false;
             let treeGrid = $("#StructureTreeGrid")[0].ej2_instances[0];
-            console.log("fdsfdf");
-            console.log(params);
             treeGrid.dataSource = JSON.parse(params.extraProperties['Structure'][0]);
             treeGrid.refresh();
 

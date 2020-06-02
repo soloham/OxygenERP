@@ -19,18 +19,18 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
 {
     public class OS_PositionTemplateAppService : CrudAppService<OS_PositionTemplate, OS_PositionTemplate_Dto, int, PagedAndSortedResultRequestDto, OS_PositionTemplate_Dto, OS_PositionTemplate_Dto>
     {
-        public OS_PositionTemplateAppService(IRepository<OS_PositionTemplate, int> repository, /*IRepository<OS_DepartmentPositionTemplate, int> departmentPositionTemplateRepo,*/ IRepository<OS_PositionJobTemplate, int> positionJobsTemplateRepo, IRepository<OS_PositionTaskTemplate, int> positionTasksTemplateRepo, IRepository<OS_PositionCostCenterTemplate, int> positionCostCentersTemplateRepo) : base(repository)
+        public OS_PositionTemplateAppService(IRepository<OS_PositionTemplate, int> repository, /*IRepository<OS_DepartmentPositionTemplate, int> departmentPositionTemplateRepo,*/ IRepository<OS_PositionJobTemplate, int> positionJobsTemplateRepo, IRepository<OS_PositionCostCenterTemplate, int> positionCostCentersTemplateRepo) : base(repository)
         {
             Repository = repository;
             //DepartmentPositionTemplateRepo = departmentPositionTemplateRepo;
             PositionJobsTemplateRepo = positionJobsTemplateRepo;
-            PositionTasksTemplateRepo = positionTasksTemplateRepo;
+            //PositionTasksTemplateRepo = positionTasksTemplateRepo;
             PositionCostCentersTemplateRepo = positionCostCentersTemplateRepo;
         }
 
         public IRepository<OS_PositionTemplate, int> Repository { get; }
         public IRepository<OS_PositionJobTemplate, int> PositionJobsTemplateRepo { get; }
-        public IRepository<OS_PositionTaskTemplate, int> PositionTasksTemplateRepo { get; }
+        //public IRepository<OS_PositionTaskTemplate, int> PositionTasksTemplateRepo { get; }
 
         public IRepository<OS_PositionCostCenterTemplate, int> PositionCostCentersTemplateRepo { get; set; }
 
@@ -46,9 +46,9 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
         {
             List<EntityReference> entityReferences = new List<EntityReference>();
 
-            entityReferences.AddRange(Repository.WithDetails(x => x.DepartmentTemplate).Where(x => x.Id == id)
+            entityReferences.AddRange(PositionJobsTemplateRepo.WithDetails(x => x.JobTemplate).Where(x => x.Id == id)
                 .ToList()
-                .Select(x => new EntityReference() { Id = entityReferences.Count + 1, Name = x.DepartmentTemplate.Name, Code = x.DepartmentTemplate.Code, Type = "Department" }));
+                .Select(x => new EntityReference() { Id = entityReferences.Count + 1, Name = x.JobTemplate.Name, Code = x.JobTemplate.Code, Type = "Department" }));
 
             return entityReferences;
         }

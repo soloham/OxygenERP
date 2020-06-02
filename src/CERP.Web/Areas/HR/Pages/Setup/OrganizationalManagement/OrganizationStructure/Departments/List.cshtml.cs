@@ -249,61 +249,61 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                             await OS_DepartmentTemplateAppService.DepartmentCostCentersTemplateRepo.DeleteAsync(x => x.DepartmentTemplateId == toDeleteCostCenters[i]);
                         }
 
-                        OS_PositionTemplate_Dto[] depPositions = departmentTemplate_Dto.PositionTemplates.ToArray();
-                        int[] curDepPositionsIds = curDepartmentTemplate.PositionTemplates != null && curDepartmentTemplate.PositionTemplates.Count > 0? curDepartmentTemplate.PositionTemplates.Select(x => x.Id).ToArray() : new int[0];
-                        List<OS_PositionTemplate> toDeletePositions = new List<OS_PositionTemplate>();
-                        for (int i = 0; i < curDepPositionsIds.Length; i++)
-                        {
-                            OS_PositionTemplate curDepartmentPosition = curDepartmentTemplate.PositionTemplates.First(x => x.Id == curDepPositionsIds[i]);
-                            if (!depPositions.Any(x => x.Id == curDepPositionsIds[i] && x.CreationTime == curDepartmentPosition.CreationTime))
-                            {
-                                //curDepartmentTemplate.PositionTemplates.Remove(curDepartmentPosition);
-                                toDeletePositions.Add(curDepartmentPosition);
-                            }
-                            else
-                            {
+                        //OS_PositionTemplate_Dto[] depPositions = departmentTemplate_Dto.PositionTemplates.ToArray();
+                        //int[] curDepPositionsIds = curDepartmentTemplate.PositionTemplates != null && curDepartmentTemplate.PositionTemplates.Count > 0? curDepartmentTemplate.PositionTemplates.Select(x => x.Id).ToArray() : new int[0];
+                        //List<OS_PositionTemplate> toDeletePositions = new List<OS_PositionTemplate>();
+                        //for (int i = 0; i < curDepPositionsIds.Length; i++)
+                        //{
+                        //    OS_PositionTemplate curDepartmentPosition = curDepartmentTemplate.PositionTemplates.First(x => x.Id == curDepPositionsIds[i]);
+                        //    if (!depPositions.Any(x => x.Id == curDepPositionsIds[i] && x.CreationTime == curDepartmentPosition.CreationTime))
+                        //    {
+                        //        //curDepartmentTemplate.PositionTemplates.Remove(curDepartmentPosition);
+                        //        toDeletePositions.Add(curDepartmentPosition);
+                        //    }
+                        //    else
+                        //    {
 
-                            }
-                        }
-                        for (int i = 0; i < depPositions.Length; i++)
-                        {
-                            if (!curDepartmentTemplate.PositionTemplates.Any(x => x.Id == depPositions[i].Id && x.CreationTime == depPositions[i].CreationTime))
-                            {
-                                OS_PositionTemplate positionTemplate = await OS_DepartmentTemplateAppService.PositionTemplateRepo.GetAsync(depPositions[i].Id);
-                                curDepartmentTemplate.PositionTemplates.Add(positionTemplate);
-                                positionTemplate.DepartmentTemplateId = curDepartmentTemplate.Id;
-                                positionTemplate.DepartmentTemplate = null;
-                            }
-                            else
-                            {
-                                var _positionLoc = curDepartmentTemplate.PositionTemplates.First(x => x.Id == depPositions[i].Id);
-                                //_departmentLoc.PositionValidityStart = depPositions[i].PositionValidityStart;
-                                //_departmentLoc.PositionValidityEnd = depPositions[i].PositionValidityEnd;
-                                //_departmentLoc.Name = depPositions[i].Name;
+                        //    }
+                        //}
+                        //for (int i = 0; i < depPositions.Length; i++)
+                        //{
+                        //    if (!curDepartmentTemplate.PositionTemplates.Any(x => x.Id == depPositions[i].Id && x.CreationTime == depPositions[i].CreationTime))
+                        //    {
+                        //        OS_PositionTemplate positionTemplate = await OS_DepartmentTemplateAppService.PositionTemplateRepo.GetAsync(depPositions[i].Id);
+                        //        curDepartmentTemplate.PositionTemplates.Add(positionTemplate);
+                        //        positionTemplate.DepartmentTemplateId = curDepartmentTemplate.Id;
+                        //        positionTemplate.DepartmentTemplate = null;
+                        //    }
+                        //    else
+                        //    {
+                        //        var _positionLoc = curDepartmentTemplate.PositionTemplates.First(x => x.Id == depPositions[i].Id);
+                        //        //_departmentLoc.PositionValidityStart = depPositions[i].PositionValidityStart;
+                        //        //_departmentLoc.PositionValidityEnd = depPositions[i].PositionValidityEnd;
+                        //        //_departmentLoc.Name = depPositions[i].Name;
 
-                                //curDepartment.DepartmentPositionTemplates.Remove(curDepartment.DepartmentPositionTemplates.First(x => x.PositionTemplateId == _departmentLoc.PositionTemplateId));
-                                //await OS_DepartmentTemplateAppService.PositionTemplateRepo.UpdateAsync(_positionLoc);
-                            }
-                        }        
-                        for (int i = 0; i < toDeletePositions.Count; i++)
-                        {
-                            curDepartmentTemplate.PositionTemplates.Remove(curDepartmentTemplate.PositionTemplates.First(x => x.Id == toDeletePositions[i].Id && x.CreationTime == toDeletePositions[i].CreationTime));
-                            if (toDeletePositions[i].PositionJobTemplates != null)
-                            {
-                                for (int y = 0; y < toDeletePositions[i].PositionJobTemplates.Count; y++)
-                                {
-                                    await OS_PositionTemplateAppService.PositionJobsTemplateRepo.DeleteAsync(toDeletePositions[i].PositionJobTemplates.ElementAt(y).Id);
-                                }
-                            }
-                            if (toDeletePositions[i].PositionTaskTemplates != null)
-                            {
-                                for (int y = 0; y < toDeletePositions[i].PositionTaskTemplates.Count; y++)
-                                {
-                                    await OS_PositionTemplateAppService.PositionTasksTemplateRepo.DeleteAsync(toDeletePositions[i].PositionTaskTemplates.ElementAt(y).Id);
-                                }
-                            }
-                            await OS_DepartmentTemplateAppService.PositionTemplateRepo.DeleteAsync(x => x.Id == toDeletePositions[i].Id && x.CreationTime == toDeletePositions[i].CreationTime);
-                        }
+                        //        //curDepartment.DepartmentPositionTemplates.Remove(curDepartment.DepartmentPositionTemplates.First(x => x.PositionTemplateId == _departmentLoc.PositionTemplateId));
+                        //        //await OS_DepartmentTemplateAppService.PositionTemplateRepo.UpdateAsync(_positionLoc);
+                        //    }
+                        //}        
+                        //for (int i = 0; i < toDeletePositions.Count; i++)
+                        //{
+                        //    curDepartmentTemplate.PositionTemplates.Remove(curDepartmentTemplate.PositionTemplates.First(x => x.Id == toDeletePositions[i].Id && x.CreationTime == toDeletePositions[i].CreationTime));
+                        //    if (toDeletePositions[i].PositionJobTemplates != null)
+                        //    {
+                        //        for (int y = 0; y < toDeletePositions[i].PositionJobTemplates.Count; y++)
+                        //        {
+                        //            await OS_PositionTemplateAppService.PositionJobsTemplateRepo.DeleteAsync(toDeletePositions[i].PositionJobTemplates.ElementAt(y).Id);
+                        //        }
+                        //    }
+                        //    if (toDeletePositions[i].PositionTaskTemplates != null)
+                        //    {
+                        //        for (int y = 0; y < toDeletePositions[i].PositionTaskTemplates.Count; y++)
+                        //        {
+                        //            await OS_PositionTemplateAppService.PositionTasksTemplateRepo.DeleteAsync(toDeletePositions[i].PositionTaskTemplates.ElementAt(y).Id);
+                        //        }
+                        //    }
+                        //    await OS_DepartmentTemplateAppService.PositionTemplateRepo.DeleteAsync(x => x.Id == toDeletePositions[i].Id && x.CreationTime == toDeletePositions[i].CreationTime);
+                        //}
 
                         OS_DepartmentSubDepartmentTemplate_Dto[] depSubDeps = departmentTemplate_Dto.SubDepartmentTemplates.ToArray();
                         int[] curDepSubDepsIds = curDepartmentTemplate.SubDepartmentTemplates != null && curDepartmentTemplate.SubDepartmentTemplates.Count > 0? curDepartmentTemplate.SubDepartmentTemplates.Select(x => x.Id).ToArray() : new int[0];
@@ -400,8 +400,8 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                     {
                         await OS_DepartmentTemplateAppService.DepartmentSubDepartmentTemplateRepo.DeleteAsync(depSubDeps[y]);
                     }
-                    var depPoses = OS_DepartmentTemplateAppService.PositionTemplateRepo.WithDetails().Where(x => x.DepartmentTemplateId == department.Id).ToList();
-                    await Positions.ListModel.DeletePositions(depPoses, OS_PositionTemplateAppService.PositionJobsTemplateRepo, OS_PositionTemplateAppService.PositionTasksTemplateRepo, OS_PositionTemplateAppService.Repository, AuditingManager);
+                    //var depPoses = OS_DepartmentTemplateAppService.PositionTemplateRepo.WithDetails().Where(x => x.DepartmentTemplateId == department.Id).ToList();
+                    //await Positions.ListModel.DeletePositions(depPoses, OS_PositionTemplateAppService.PositionJobsTemplateRepo, OS_PositionTemplateAppService.PositionTasksTemplateRepo, OS_PositionTemplateAppService.Repository, AuditingManager);
 
                     await OS_DepartmentTemplateAppService.Repository.DeleteAsync(department.Id);
 

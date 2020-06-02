@@ -1,4 +1,5 @@
-﻿using CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructure;
+﻿using CERP.ApplicationContracts.HR.OrganizationalManagement;
+using CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructure;
 using CERP.HR.EMPLOYEE.DTOs;
 using CERP.HR.OrganizationalManagement.OrganizationStructure;
 using CERP.HR.Timesheets;
@@ -43,6 +44,25 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
         {   
             OS_DepartmentTemplate_Dto result = ObjectMapper.Map<OS_DepartmentTemplate, OS_DepartmentTemplate_Dto>(await Repository.GetAsync(id, true));
             return result;
+        }
+
+        public async Task<List<EntityReference>> GetAllReferences(int id)
+        {
+            List<EntityReference> entityReferences = new List<EntityReference>();
+
+            entityReferences.AddRange(DepartmentSubDepartmentTemplateRepo.WithDetails(x => x.SubDepartmentTemplate).Where(x => x.DepartmentTemplateId == id)
+                .ToList()
+                .Select(x => new EntityReference() { Id = entityReferences.Count + 1, Name = x.SubDepartmentTemplate.Name, Code = x.SubDepartmentTemplate.Code, Type = "Sub Department Template" }));
+
+            //entityReferences.AddRange(TasksReferenceRepo.WithDetails(x => x.TaskTemplate).Where(x => x.DivisionTemplateId == id)
+            //    .ToList()
+            //    .Select(x => new EntityReference() { Id = entityReferences.Count + 1, Name = x.TaskTemplate.Name, Code = x.TaskTemplate.Code, Type = "Task" }));
+
+            //entityReferences.AddRange(JobsReferenceRepo.WithDetails(x => x.JobTemplate).Where(x => x.DivisionTemplateId == id)
+            //    .ToList()
+            //    .Select(x => new EntityReference() { Id = entityReferences.Count + 1, Name = x.JobTemplate.Name, Code = x.JobTemplate.Code, Type = "Job" }));
+
+            return entityReferences;
         }
     }
 }

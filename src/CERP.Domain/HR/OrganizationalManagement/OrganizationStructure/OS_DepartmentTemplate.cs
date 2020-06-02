@@ -1,6 +1,7 @@
 ﻿using CERP.App;
 using CERP.Attributes;
 using CERP.Base;
+using CERP.HR.OrganizationalManagement.PayrollStructure;
 using CERP.HR.Setup.OrganizationalManagement.OrganizationStructure;
 using System;
 using System.Collections.Generic;
@@ -29,14 +30,22 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         [CustomAudited]
         public DateTime ValidityToDate { get; set; }
 
-        [CustomAudited]
-        public OS_ReviewPeriod ReviewPeriod { get; set; }
-        [CustomAudited]
-        public int? ReviewPeriodDays { get; set; }
+        //[CustomAudited]
+        //public OS_ReviewPeriod ReviewPeriod { get; set; }
+        //[CustomAudited]
+        //public int? ReviewPeriodDays { get; set; }
 
-        public virtual ICollection<OS_PositionTemplate> PositionTemplates { get; set; }
+        //public virtual ICollection<OS_PositionTemplate> PositionTemplates { get; set; }
         public virtual ICollection<OS_DepartmentSubDepartmentTemplate> SubDepartmentTemplates { get; set; }
         public virtual ICollection<OS_DepartmentCostCenterTemplate> DepartmentCostCenterTemplates { get; set; }
+
+        public PS_PayGroup PayGroup { get; set; }
+        [CustomAudited]
+        public int PayGroupId { get; set; }
+
+        public PS_PayGrade PayGrade { get; set; }
+        [CustomAudited]
+        public int PayGradeId { get; set; }
 
         public bool ContainsDepartment(int id)
         {
@@ -56,14 +65,14 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
 
         public double Percentage { get; set; }
     }
-    public class OS_DepartmentPositionTemplate : AuditedAggregateTenantRoot<int>
-    {
-        public OS_DepartmentTemplate DepartmentTemplate { get; set; }
-        public int DepartmentTemplateId { get; set; }
+    //public class OS_DepartmentPositionTemplate : AuditedAggregateTenantRoot<int>
+    //{
+    //    public OS_DepartmentTemplate DepartmentTemplate { get; set; }
+    //    public int DepartmentTemplateId { get; set; }
 
-        public OS_PositionTemplate PositionTemplate { get; set; }
-        public int PositionTemplateId { get; set; }
-    }
+    //    public OS_PositionTemplate PositionTemplate { get; set; }
+    //    public int PositionTemplateId { get; set; }
+    //}
     public class OS_DepartmentSubDepartmentTemplate : AuditedAggregateTenantRoot<int>
     {
         public OS_DepartmentTemplate DepartmentTemplate { get; set; }

@@ -26,8 +26,8 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         [CustomAudited]
         public string Description { get; set; }
 
-        [CustomAudited]
-        public int MaxJobPositions { get; set; }
+        //[CustomAudited]
+        //public int MaxJobPositions { get; set; }
 
         [CustomAudited]
         public DateTime ValidityFromDate { get; set; }

@@ -19,7 +19,7 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
 {
     public class OS_TaskTemplateAppService : CrudAppService<OS_TaskTemplate, OS_TaskTemplate_Dto, int, PagedAndSortedResultRequestDto, OS_TaskTemplate_Dto, OS_TaskTemplate_Dto>
     {
-        public OS_TaskTemplateAppService(IRepository<OS_TaskTemplate, int> repository, IRepository<OS_TaskSkillTemplate, int> skillsRepository, IRepository<OS_TaskAcademiaTemplate, int> academiaRepository, IRepository<OS_CompensationMatrixTemplate, int> compensationmatrixRepository, IRepository<OS_CompensationMatrixTemplate, int> compensationMatrixRepository, IRepository<OS_JobTaskTemplate, int> jobsReferenceRepo, IRepository<OS_PositionTaskTemplate, int> positionsReferenceRepo) : base(repository)
+        public OS_TaskTemplateAppService(IRepository<OS_TaskTemplate, int> repository, IRepository<OS_TaskSkillTemplate, int> skillsRepository, IRepository<OS_TaskAcademiaTemplate, int> academiaRepository, IRepository<OS_CompensationMatrixTemplate, int> compensationmatrixRepository, IRepository<OS_CompensationMatrixTemplate, int> compensationMatrixRepository, IRepository<OS_JobTaskTemplate, int> jobsReferenceRepo) : base(repository)
         {
             Repository = repository;
             SkillsRepository = skillsRepository;
@@ -27,7 +27,7 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
             CompensationMatrixRepository = compensationmatrixRepository;
             CompensationMatrixRepository = compensationMatrixRepository;
             JobsReferenceRepo = jobsReferenceRepo;
-            PositionsReferenceRepo = positionsReferenceRepo;
+            //PositionsReferenceRepo = positionsReferenceRepo;
         }
 
         public IRepository<OS_TaskTemplate, int> Repository { get; }
@@ -36,7 +36,7 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
         public IRepository<OS_CompensationMatrixTemplate, int> CompensationMatrixRepository { get; }
 
         public IRepository<OS_JobTaskTemplate, int> JobsReferenceRepo { get; }
-        public IRepository<OS_PositionTaskTemplate, int> PositionsReferenceRepo { get; }
+        //public IRepository<OS_PositionTaskTemplate, int> PositionsReferenceRepo { get; }
 
         public async Task<List<OS_TaskTemplate_Dto>> GetAllTaskTemplatesAsync()
         {
@@ -92,9 +92,9 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
                 .ToList()
                 .Select(x => new EntityReference() { Id = entityReferences.Count + 1, Name = x.JobTemplate.Name, Code = x.JobTemplate.Code, Type = "Job" }));
             
-            entityReferences.AddRange(PositionsReferenceRepo.WithDetails(x => x.PositionTemplate).Where(x => x.TaskTemplateId == id)
-                .ToList()
-                .Select(x => new EntityReference() { Id = entityReferences.Count + 1, Name = x.PositionTemplate.Name, Code = x.PositionTemplate.Code, Type = "Position" }));
+            //entityReferences.AddRange(PositionsReferenceRepo.WithDetails(x => x.PositionTemplate).Where(x => x.TaskTemplateId == id)
+            //    .ToList()
+            //    .Select(x => new EntityReference() { Id = entityReferences.Count + 1, Name = x.PositionTemplate.Name, Code = x.PositionTemplate.Code, Type = "Position" }));
 
             return entityReferences;
         }

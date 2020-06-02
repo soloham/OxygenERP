@@ -62,7 +62,7 @@ positionsCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
 
 List<OS_PositionLevel> positionLevels = Enum.GetValues(typeof(OS_PositionLevel)).Cast<OS_PositionLevel>().ToList();
 
-List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Cast<OS_ReviewPeriod>().ToList();
+//List<OS_ReviewPeriod> reviewPeriods = Enum.GetValues(typeof(OS_ReviewPeriod)).Cast<OS_ReviewPeriod>().ToList();
 
 List<object> referenceCommands = new List<object>();
 referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
@@ -91,10 +91,6 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
 
         let departments = [];
         let possibleSubDepartments = [];
-        let positions = [];
-
-        let positionJobs = [];
-        let positionTasks = [];
 
         let costCenters = [];
 
@@ -138,13 +134,15 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
             $('#depHeadId').multiselect(options);
             $('#costCentersIds').multiselect(options);
             $('#subDepartmentsField').multiselect(options);
-            $('#reviewPeriod').multiselect(options);
+            $('#depPaygroup').multiselect(options);
+            $('#depPaygrade').multiselect(options);
+            //$('#reviewPeriod').multiselect(options);
 
-            $('#positionJobs').multiselect(options);
-            $('#positionTasks').multiselect(options);
+            //$('#positionJobs').multiselect(options);
+            //$('#positionTasks').multiselect(options);
 
             let gridObj = $("#DepartmentsGrid")[0].ej2_instances[0];
-            let positionsGrid = $("#PositionsGrid")[0].ej2_instances[0];
+            //let positionsGrid = $("#PositionsGrid")[0].ej2_instances[0];
             let subDGrid = $("#SubDepartmentsGrid")[0].ej2_instances[0];
 
 
@@ -179,25 +177,25 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
             });
 
 
-            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_JobTemplate.getList({}).done(function (data) {
-                positionJobs = data.items;
-                let dataMS = [];
-                for (let i = 0; i < data.items.length; i++) {
-                    let item = data.items[i];
-                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
-                }
-                $('#positionJobs').multiselect('dataprovider', dataMS);
-            });
-            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_TaskTemplate.getList({}).done(function (data) {
-                positionTasks = data.items;
-                console.log(positionTasks);
-                let dataMS = [];
-                for (let i = 0; i < data.items.length; i++) {
-                    let item = data.items[i];
-                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
-                }
-                $('#positionTasks').multiselect('dataprovider', dataMS);
-            });
+            //cERP.appServices.hR.organizationalManagement.organizationStructure.oS_JobTemplate.getList({}).done(function (data) {
+            //    positionJobs = data.items;
+            //    let dataMS = [];
+            //    for (let i = 0; i < data.items.length; i++) {
+            //        let item = data.items[i];
+            //        dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+            //    }
+            //    $('#positionJobs').multiselect('dataprovider', dataMS);
+            //});
+            //cERP.appServices.hR.organizationalManagement.organizationStructure.oS_TaskTemplate.getList({}).done(function (data) {
+            //    positionTasks = data.items;
+            //    console.log(positionTasks);
+            //    let dataMS = [];
+            //    for (let i = 0; i < data.items.length; i++) {
+            //        let item = data.items[i];
+            //        dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+            //    }
+            //    $('#positionTasks').multiselect('dataprovider', dataMS);
+            //});
 
             gridObj.showSpinner();
             $('#departmentsLoader').slideDown(100);
@@ -220,7 +218,24 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
                 $('#subDepartmentsField').change();
             });
 
-            $('#addPositionsBtn').on('click', function () {
+            cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayGroup.getAllPayGroups().done(function (data) {
+                let dataMS = [];
+                for (let i = 0; i < data.length; i++) {
+                    let item = data[i];
+                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+                }
+                $('#depPaygroup').multiselect('dataprovider', dataMS);
+            });
+            cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayGrade.getAllPayGrades().done(function (data) {
+                let dataMS = [];
+                for (let i = 0; i < data.length; i++) {
+                    let item = data[i];
+                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+                }
+                $('#depPaygrade').multiselect('dataprovider', dataMS);
+            });
+
+            @*$('#addPositionsBtn').on('click', function () {
                 isEditingPositions = false;
 
                 $('#submitPositionBtn').val('Create Position');
@@ -338,7 +353,7 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
                     Swal.close();
                     Swal.hideLoading();
                 }
-            });
+            });*@
 
             $('#addDepartmentsBtn').on('click', function () {
                 isEditingDepartments = false;
@@ -459,7 +474,7 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
                     //let selectedPositions = $('#positionIds').val();
                     //console.log(selectedPositions);
                     //let selectedPositionTemplates = [];
-                    params.positionTemplates = positionsGrid.dataSource;
+                    //params.positionTemplates = positionsGrid.dataSource;
                     //for (var i = 0; i < selectedPositions.length; i++) {
                     //    selectedPositionTemplates.push(positions.filter(x => x.id == selectedPositions[i])[0]);
                     //    params.positionTemplates.push(selectedPositionTemplates[i]);
@@ -551,7 +566,7 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
                 <e-tab-tabitems>
                     <e-tab-tabitem header="@(new TabHeader { Text = "General" })" content="#generalFieldsInfo"></e-tab-tabitem>
                     <e-tab-tabitem header="@(new TabHeader { Text = "Sub Departments" })" content="#subDepartmentsInfo"></e-tab-tabitem>
-                    <e-tab-tabitem header="@(new TabHeader { Text = "Positions" })" content="#positionsInfo"></e-tab-tabitem>
+                    @*<e-tab-tabitem header="@(new TabHeader { Text = "Positions" })" content="#positionsInfo"></e-tab-tabitem>*@
                     <e-tab-tabitem header="@(new TabHeader { Text = "Cost Centers" })" content="#costCentersTab"></e-tab-tabitem>
                 </e-tab-tabitems>
             </ejs-tab>
@@ -559,190 +574,86 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
             <div id="generalFieldsInfo" class="areaForm" style="display:none">
                 <div id="departmentSpecificForm">
                     <div class="row">
-                        <div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Department Code:</label>
-                                <input type="text" id="departmentCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="form-group" style="padding: 15px">
+                                <div class="col-sm-4" style="">
+                                    <label class="p-t-5 control-label pull-right">Department Code:</label>
+                                </div>
+                                <div class="col-sm-8" style="">
+                                    <input type="text" id="departmentCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                            <div class="col-sm-6" style="padding:0">
-                                <div class="form-group">
-                                    <label class="control-label m-b-5 ">Title:</label>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="form-group" style="padding: 15px">
+                                <div class="col-sm-4" style="">
+                                    <label class="p-t-5 control-label pull-right">Title:</label>
+                                </div>
+                                <div class="col-sm-8" style="">
                                     <input type="text" id="departmentTitle" name="Name" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
                                 </div>
                             </div>
-                            <div class="col-sm-6" style="padding:0">
-                                <div class="form-group">
-                                    <label class="control-label m-b-5 ">Title (In Arabic):</label>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="form-group" style="padding: 15px">
+                                <div class="col-sm-4" style="">
+                                    <label class="p-t-5 control-label pull-right">Title (In Arabic):</label>
+                                </div>
+                                <div class="col-sm-8" style="">
                                     <input type="text" id="departmentTitleLocalized" name="NameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                                 </div>
                             </div>
                         </div>
-                        @*<div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                        <div class="form-group">
-                            <label class="margin-bottom-5 control-label">Department Head:</label>
-                            <select id="depHeadId" name="DepartmentHeadId" class="form-control">
-                            </select>
-                        </div>
-                    </div>*@
-                        <div class="col-lg-4 col-md-6 col-sm-6 col-12">
-                            <div class="col-sm-6" style="padding:0">
-                                <div class="form-group">
-                                    <label class="control-label m-b-5 ">Valid From:</label>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="form-group" style="padding: 15px">
+                                <div class="col-sm-4" style="">
+                                    <label class="p-t-5 control-label pull-right">Valid From:</label>
+                                </div>
+                                <div class="col-sm-8" style="">
                                     <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
                                 </div>
                             </div>
-                            <div class="col-sm-6" style="padding:0">
-                                <div class="form-group">
-                                    <label class="control-label m-b-5 ">Valid To:</label>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="form-group" style="padding: 15px">
+                                <div class="col-sm-4" style="">
+                                    <label class="p-t-5 control-label pull-right">Valid To:</label>
+                                </div>
+                                <div class="col-sm-8" style="">
                                     <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                            <div id="reviewPeriodTypeField" class="col-sm-12" style="padding:0">
-                                <div class="form-group">
-                                    <label class="margin-bottom-5 control-label">Review Period:</label>
-                                    <select id="reviewPeriod" name="ReviewPeriod" onchange="
-                                                if (typeof $('option:selected', '#reviewPeriod').attr('data-value') !== 'undefined' && $('option:selected', '#reviewPeriod').attr('data-value').includes('Day')) {
-                                                    $('#reviewPeriodTypeField').removeClass('col-sm-12');
-                                                    $('#reviewPeriodTypeField').addClass('col-sm-6');
-                                                    setTimeout(function () {
-                                                        $('#reviewPeriodDaysField').slideDown(0);
-                                                    }, 520);
-                                                } else {
-                                                    $('#reviewPeriodDaysField').slideUp(0);
-                                                    $('#reviewPeriodTypeField').removeClass('col-sm-6');
-                                                    $('#reviewPeriodTypeField').addClass('col-sm-12');
-                                                }
-                                            " class="form-control" required>
-                                        @for (int i = 0; i < reviewPeriods.Count; i++)
-                                        {
-                                            <option value="@((int)reviewPeriods[i])" data-value="@EnumExtensions.GetDescription(reviewPeriods[i])">@EnumExtensions.GetDescription(reviewPeriods[i])</option>
-                                        }
+                            <div class="form-group" style="padding: 15px">
+                                <div class="col-sm-4" style="">
+                                    <label class="p-t-5 control-label pull-right">Pay Group:</label>
+                                </div>
+                                <div class="col-sm-8" style="">
+                                    <select id="depPaygroup" name="PayGroupId" class="text-left form-control inline pull-left" required>
                                     </select>
                                 </div>
                             </div>
-                            <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none; padding:0">
-                                <div class="form-group">
-                                    <label class="margin-bottom-5 control-label">Period Days:</label>
-                                    <input type="number" min="0" id="reviewPeriodDays" name="ReviewPeriodDays" value="0" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="form-group" style="padding: 15px">
+                                <div class="col-sm-4" style="">
+                                    <label class="p-t-5 control-label pull-right">Pay Grade:</label>
+                                </div>
+                                <div class="col-sm-8" style="">
+                                    <select id="depPaygrade" name="PayGradeId" class="text-left form-control inline pull-left" required>
+                                    </select>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div id="positionsInfo" class="areaForm" style="display:none;">
+            @*<div id="positionsInfo" class="areaForm" style="display:none;">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="panel-body p-t-0" style="">
-                            @*<div class="areaHeader" style="display:flex;">
-                            <div id="positionsLoader" class="pull-left loader-inline" style="display:none"></div>
-                            <div class="areaHeaderTitle">
-                                <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Positions</span>
-                                <span id="" class="areaHeaderTitleInNode menu-text"> > </span>
-                                <span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>
-                            </div>
-                            <h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>
-                            <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
-                                <div class="clearfix margin-15"></div>
-                                <a id="addPositionsBtn" onclick="areaHeaderBtnClick(event); isEditingPositions = false;" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>
-                            </div>
-                        </div>
-                        <div role="form" id="positionsForm" class="row areaForm" method="post" data-toggle="validator" style="display: none; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
-                            <div id="positionSpecificForm">
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                                        <div class="col-sm-6" style="padding:0">
-                                            <div class="form-group">
-                                                <label class="control-label m-b-5 ">Title:</label>
-                                                <input type="text" id="positionTitle" name="Name"  value = "@(empInfo!=null? empInfo.EMAIL : "")" class="form-control " required>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6" style="padding:0">
-                                            <div class="form-group">
-                                                <label class="control-label m-b-5 ">Title (In Arabic):</label>
-                                                <input type="text" id="positionTitleLocalized" name="NameLocalized"  value = "@(empInfo!=null? empInfo.EMAIL : "")" class="form-control">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                                        <div class="form-group">
-                                            <label class="margin-bottom-5 control-label">Position Code:</label>
-                                            <input type="text" id="positionCode" name="Code"  value = "@(empInfo!=null? empInfo.EMAIL : "")" class="form-control" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                                        <div class="form-group">
-                                            <label class="margin-bottom-5 control-label">Jobs:</label>
-                                            <select id="positionJobs" multiple="multiple" name="Jobs" class="form-control">
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                                        <div class="form-group">
-                                            <label class="margin-bottom-5 control-label">Tasks:</label>
-                                            <select id="positionTasks" multiple="multiple" name="Tasks" class="form-control">
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                        <div class="form-group">
-                                            <label class="margin-bottom-5 control-label">Level:</label>
-                                            <select id="positionLevel" name="Level" class="form-control">
-                                                @for (int i = 0; i < positionLevels.Count; i++)
-                                                {
-                                                    <option value="@((int)positionLevels[i])">@EnumExtensions.GetDescription(positionLevels[i])</option>
-                                                }
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                        <div class="form-group">
-                                            <label class="control-label m-b-5 ">Activation Date:</label>
-                                            <input type="date" id="positionActivationDate" name="ActivationDate" class="text-left form-control inline pull-left" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                        <div class="col-sm-6" style="padding:0">
-                                            <div class="form-group">
-                                                <label class="control-label m-b-5 ">Valid From:</label>
-                                                <input type="date" id="positionValidityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6" style="padding:0">
-                                            <div class="form-group">
-                                                <label class="control-label m-b-5 ">Valid To:</label>
-                                                <input type="date" id="positionValidityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                                        <div class="form-group">
-                                            <label class="margin-bottom-5 control-label">Cost Center:</label>
-                                            <select id="positionCostCenterId" name="CostCenterId" class="form-control">
-                                                @for (int i = 0; i < costCenters.Count; i++)
-                                                {
-                                                    <option value="@costCenters[i].Id" data-value="@costCenters[i].Value">@costCenters[i].Value</option>
-                                                }
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr />
-                            <div class="row m-t-20">
-                                <div class="col-lg-12">
-                                    <input id="submitPositionBtn" type="button" class="btn btn-success btn-block" value="Create Position" required />
-                                </div>
-                            </div>
-                        </div>*@
+                            
                             <div id="positionsCS" class="control-section">
                                 <ejs-grid id="PositionsGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="positionCommandClick"
                                           showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
@@ -759,8 +670,6 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
                         }'></e-grid-column>
                                         <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
                                         <e-grid-column field="costCenter.value" headerText="Cost Center" textAlign="Center"></e-grid-column>
-                                        @*<e-grid-column field="levelDescription" headerText="Level" textAlign="Center"></e-grid-column>*@
-                                        @*<e-grid-column field="activationDate" headerText="Activation Date" type="date" format="yMd" , allowEditing="true" editType="datepicker" textAlign="Center"></e-grid-column>*@
                                         <e-grid-column headerText="Validity" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
                             new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityFromDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "From", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
                             new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityToDate", Type="date", Format="yMd", AllowEditing=true, EditType="datepicker", HeaderText = "To", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
@@ -778,7 +687,7 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>*@
             <div id="subDepartmentsInfo" class="areaForm" style="display:none;">
                 <div class="row">
                     <div class="col-md-12">
@@ -800,20 +709,20 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
                                 <div class="row">
                                     <div class="col-lg-3 col-md-3 col-sm-3 col-12">
                                         <div class="form-group">
-                                            <label class="control-label m-b-5 ">Sub Department:</label>
+                                            <label class="p-t-5 control-label">Sub Department:</label>
                                             <select id="subDepartmentsField" multiple="multiple" onchange="if ($('#subDepartmentsField').val().length > 1) { $('#subDepartmentTypeField').attr('readonly', 'readonly'); $('#subDepartmentTypeField').val(''); $('#subDepartmentName').val('[Auto]'); $('#subDepartmentName').attr('readonly','readonly'); } else { $('#subDepartmentTypeField').removeAttr('readonly'); $('#subDepartmentName').removeAttr('readonly'); $('#subDepartmentName').val($('option:selected', '#subDepartmentsField').text()); $('#subDepartmentTypeField').val('@OS_SubDepartmentRelationshipType.ReportingTo');  }" name="SubDepartment" class="form-control" required>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-sm-3 col-12">
                                         <div class="form-group">
-                                            <label class="control-label m-b-5 ">Name:</label>
+                                            <label class="p-t-5 control-label">Name:</label>
                                             <input type="text" id="subDepartmentName" name="SubDepartmentName" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
                                         </div>
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-sm-3 col-12">
                                         <div class="form-group">
-                                            <label class="control-label m-b-5 ">Sub Department Type:</label>
+                                            <label class="p-t-5 control-label">Sub Department Type:</label>
                                             <select id="subDepartmentTypeField" name="subDepartmentRelationshipTypeDescription" class="form-control" required>
                                                 @for (int i = 0; i < subDepartmentRelationshipTypes.Count; i++)
                                                 {
@@ -823,7 +732,7 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
                                         </div>
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                                        <label class="control-label m-b-5 "></label>
+                                        <label class="p-t-5 control-label"></label>
                                         <button id="submitSubDepartmentBtn" type="button" class="btn btn-success btn-block">Add Sub Department</button>
                                     </div>
                                 </div>
@@ -873,19 +782,19 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
                                 <div class="row">
                                     <div class="col-lg-4 col-md-4 col-sm-4 col-12">
                                         <div class="form-group">
-                                            <label class="margin-bottom-5 control-label">Cost Centers:</label>
+                                            <label class="p-t-5 control-label">Cost Centers:</label>
                                             <select id="costCentersIds" name="CostCentersIds" multiple="multiple" class="form-control">
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-lg-4 col-md-4 col-sm-4 col-12">
                                         <div class="form-group">
-                                            <label class="margin-bottom-5 control-label">Percentage:</label>
+                                            <label class="p-t-5 control-label">Percentage:</label>
                                             <input type="number" min="1" max="100" value="" id="costCenterPercentage" name="Percentage" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
                                         </div>
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                                        <label class="control-label m-b-5 "></label>
+                                        <label class="p-t-5 control-label"></label>
                                         <button id="submitCostCenterBtn" type="button" class="btn btn-success btn-block">Add Cost Center(s)</button>
                                     </div>
                                 </div>
@@ -918,7 +827,7 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
             </div>
             <div class="row">
                 <div class="col-lg-12">
-                    <input id="submitDepartmentBtn" type="button" class="btn btn-success btn-block" value="Create Department" required />
+                    <input id="submitDepartmentBtn" type="button" class="m-t-20 btn btn-success btn-block" value="Create Department" required />
                 </div>
             </div>
         </form>
@@ -938,10 +847,12 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
                     }'></e-grid-column>
                     <e-grid-column field="getDepartmentStructureString" headerText="Structure" textAlign="Center"></e-grid-column>
                     <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
-                    <e-grid-column field="getDepartmentPositionsString" headerText="Positions" textAlign="Center"></e-grid-column>
+                    @*<e-grid-column field="getDepartmentPositionsString" headerText="Positions" textAlign="Center"></e-grid-column>*@
                     @*<e-grid-column field="departmentHead.name" headerText="Head" textAlign="Center"></e-grid-column>*@
                     @*<e-grid-column field="costCenter.value" headerText="Cost Center" textAlign="Center"></e-grid-column>*@
-                    <e-grid-column field="reviewPeriodDescription" headerText="Review period" textAlign="Center"></e-grid-column>
+                    @*<e-grid-column field="reviewPeriodDescription" headerText="Review period" textAlign="Center"></e-grid-column>*@
+                    <e-grid-column field="payGroup.name" headerText="Pay Group" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="payGrade.name" headerText="Pay Grade" textAlign="Center"></e-grid-column>
                     <e-grid-column headerText="Validity" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityFromDate", Type="date", Format="E, MMMM d, y", AllowEditing=true, EditType="datepicker", HeaderText = "From", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityToDate", Type="date", Format="E, MMMM d, y", AllowEditing=true, EditType="datepicker", HeaderText = "To", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
@@ -974,10 +885,6 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
 </ejs-dialog>
 
 <script>
-    function loadPositionStatusesDropdown() {
-
-    }
-
     let isAuditTrail = false;
     function alertBtnClick() {
         let dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
@@ -1110,11 +1017,9 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
             FillFormByObject(params, $('#departmentsForm'));
 
             let subDepartmentsGrid = $("#SubDepartmentsGrid")[0].ej2_instances[0];
-            let positionsGrid = $("#PositionsGrid")[0].ej2_instances[0];
+            //let positionsGrid = $("#PositionsGrid")[0].ej2_instances[0];
 
             $('#departmentsLoader').slideDown();
-            $('#positionIds').multiselect('deselectAll', false);
-            $('#positionIds').multiselect('updateButtonText');
 
             $('#depHeadId').multiselect('deselectAll', false);
             $('#depHeadId').multiselect('updateButtonText');
@@ -1145,9 +1050,9 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
                 costCentersGrid.dataSource = params.departmentCostCenterTemplates.map(function (item) { item.costCenter.percentage = item.percentage; return item.costCenter });
                 costCentersGrid.refresh();
 
-                positionsGrid.dataSource = data.positionTemplates;
-                positionsGrid.refresh();
-                setTimeout(function () { positionsGrid.hideSpinner() }, 200);
+                //positionsGrid.dataSource = data.positionTemplates;
+                //positionsGrid.refresh();
+                //setTimeout(function () { positionsGrid.hideSpinner() }, 200);
 
                 subDepartmentsGrid.dataSource = data.subDepartmentTemplates;
                 subDepartmentsGrid.refresh();
@@ -1211,7 +1116,7 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
         }
     }
 
-    function positionCommandClick(args) {
+    @*function positionCommandClick(args) {
         let gridObj = document.getElementById("PositionsGrid").ej2_instances[0];
 
         if (args.commandColumn.type == "Edit") {
@@ -1302,7 +1207,7 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
                 });
             }
         }
-    }
+    }*@
 
     function subDepartmentsToolbarClick(args) {
         let gridObj = document.getElementById("SubDepartmentsGrid").ej2_instances[0];
@@ -1461,6 +1366,7 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
             setTimeout(function () { gridObj.hideSpinner() }, 200);
         }
     }
+
     function referenceActionComplete(args) {
         if (args.requestType == "delete") {
             populateCostCenterTemplates();

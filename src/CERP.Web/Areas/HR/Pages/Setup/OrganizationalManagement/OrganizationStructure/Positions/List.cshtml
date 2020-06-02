@@ -71,36 +71,35 @@
         var curPositionsEditRow;
         let positions = [];
         let jobs = [];
-        let tasks = [];
-        let departments = [];
+        //let tasks = [];
         let costCenters = [];
 
-        let tasksGrid;
-        function populateTaskTemplates() {
-            try {
-                tasks = tasks.filter(function (y) {
-                    return tasksGrid.dataSource.filter(function (x) { return x.id == y.id }).length == 0
-                });
-            } catch (e) {
+        //let tasksGrid;
+        //function populateTaskTemplates() {
+        //    try {
+        //        tasks = tasks.filter(function (y) {
+        //            return tasksGrid.dataSource.filter(function (x) { return x.id == y.id }).length == 0
+        //        });
+        //    } catch (e) {
 
-            }
+        //    }
 
-            let dataMS = [];
-            for (let i = 0; i < tasks.length; i++) {
-                let item = tasks[i];
-                dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
-            }
-            $('#tasksIds').multiselect('dataprovider', dataMS);
-            console.log(dataMS);
-        }
-        function loadTaskTemplates() {
-            $('#tasksLoader').slideDown(100);
-            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_TaskTemplate.getList({}).done(function (data) {
-                $('#tasksLoader').slideUp(100);
-                tasks = data.items;
-                populateTaskTemplates();
-            });
-        }
+        //    let dataMS = [];
+        //    for (let i = 0; i < tasks.length; i++) {
+        //        let item = tasks[i];
+        //        dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+        //    }
+        //    $('#tasksIds').multiselect('dataprovider', dataMS);
+        //    console.log(dataMS);
+        //}
+        //function loadTaskTemplates() {
+        //    $('#tasksLoader').slideDown(100);
+        //    cERP.appServices.hR.organizationalManagement.organizationStructure.oS_TaskTemplate.getList({}).done(function (data) {
+        //        $('#tasksLoader').slideUp(100);
+        //        tasks = data.items;
+        //        populateTaskTemplates();
+        //    });
+        //}
 
         let jobsGrid;
         function populateJobTemplates() {
@@ -170,22 +169,22 @@
             $('#jobsIds').multiselect(options);
             $('#reviewPeriod').multiselect(options);
             $('#costCentersIds').multiselect(options);
-            $('#tasksIds').multiselect(options);
+            //$('#tasksIds').multiselect(options);
             //$('#positionDepartmentId').multiselect(options);
 
-            $('#addTaskBtn').on('click', function () {
-                loadTaskTemplates();
-            });
-            tasksGrid = $('#TaskReferenceGrid')[0].ej2_instances[0];
-            $('#submitTaskBtn').on('click', function () {
-                let selectedTasks = $('#tasksIds').val();
-                for (var i = 0; i < selectedTasks.length; i++) {
-                    let _function = tasks.filter(function (x) { return x.id == selectedTasks[i] })[0];
-                    tasksGrid.dataSource.push(_function);
-                    tasksGrid.refresh();
-                }
-                populateTaskTemplates();
-            });
+            //$('#addTaskBtn').on('click', function () {
+            //    loadTaskTemplates();
+            //});
+            //tasksGrid = $('#TaskReferenceGrid')[0].ej2_instances[0];
+            //$('#submitTaskBtn').on('click', function () {
+            //    let selectedTasks = $('#tasksIds').val();
+            //    for (var i = 0; i < selectedTasks.length; i++) {
+            //        let _function = tasks.filter(function (x) { return x.id == selectedTasks[i] })[0];
+            //        tasksGrid.dataSource.push(_function);
+            //        tasksGrid.refresh();
+            //    }
+            //    populateTaskTemplates();
+            //});
 
             $('#addJobBtn').on('click', function () {
                 loadJobTemplates();
@@ -231,19 +230,19 @@
             });
 
 
-            cERP.appServices.hR.organizationalManagement.organizationStructure.oS_DepartmentTemplate.getList({}).done(function (data) {
-                departments = data.items;
+            //cERP.appServices.hR.organizationalManagement.organizationStructure.oS_DepartmentTemplate.getList({}).done(function (data) {
+            //    departments = data.items;
 
-                let dataMS = [];
-                $('#positionDepartmentId').find('option').remove().end();
-                for (let i = 0; i < departments.length; i++) {
-                    let item = departments[i];
-                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
-                    $('#positionDepartmentId').append(`<option value='${item.id}'>${item.code} - ${item.name}</option>`);
-                }
-                //$('#positionDepartmentId').multiselect('dataprovider', dataMS);
-                //$('#positionDepartmentId').change();
-            });
+            //    let dataMS = [];
+            //    $('#positionDepartmentId').find('option').remove().end();
+            //    for (let i = 0; i < departments.length; i++) {
+            //        let item = departments[i];
+            //        dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+            //        $('#positionDepartmentId').append(`<option value='${item.id}'>${item.code} - ${item.name}</option>`);
+            //    }
+            //    //$('#positionDepartmentId').multiselect('dataprovider', dataMS);
+            //    //$('#positionDepartmentId').change();
+            //});
 
             let gridObj = $("#PositionsGrid")[0].ej2_instances[0];
             gridObj.showSpinner();
@@ -314,15 +313,15 @@
                     //    return;
                     //}
 
-                    let selectedTasks = tasksGrid.dataSource.map(function (item) { return { taskTemplate: item } });;
-                    params.positionTaskTemplates = [];
-                    for (var i = 0; i < selectedTasks.length; i++) {
-                        let toAdd = selectedTasks[i]
-                        if (isEditingPositions) {
-                            toAdd.positionTemplateId = curPositionsEditRow.id;
-                        }
-                        params.positionTaskTemplates.push(toAdd);
-                    }
+                    //let selectedTasks = tasksGrid.dataSource.map(function (item) { return { taskTemplate: item } });;
+                    //params.positionTaskTemplates = [];
+                    //for (var i = 0; i < selectedTasks.length; i++) {
+                    //    let toAdd = selectedTasks[i]
+                    //    if (isEditingPositions) {
+                    //        toAdd.positionTemplateId = curPositionsEditRow.id;
+                    //    }
+                    //    params.positionTaskTemplates.push(toAdd);
+                    //}
 
                     let selectedJobs = jobsGrid.dataSource.map(function (item) { return { jobTemplate: item } });;
                     params.positionJobTemplates = [];
@@ -414,114 +413,126 @@
                 <ejs-tab id="positionSpecificFormTabs" animation="ViewBag.animation" height="250px">
                     <e-tab-tabitems>
                         <e-tab-tabitem header="@(new TabHeader { Text = "General" })" content="#generalTab"></e-tab-tabitem>
-                        <e-tab-tabitem header="@(new TabHeader { Text = "Tasks" })" content="#tasksTab"></e-tab-tabitem>
+                        @*<e-tab-tabitem header="@(new TabHeader { Text = "Tasks" })" content="#tasksTab"></e-tab-tabitem>*@
                         <e-tab-tabitem header="@(new TabHeader { Text = "Jobs" })" content="#jobsTab"></e-tab-tabitem>
                         <e-tab-tabitem header="@(new TabHeader { Text = "Cost Centers" })" content="#costCentersTab"></e-tab-tabitem>
                         <e-tab-tabitem header="@(new TabHeader { Text = "References" })" visible="false" content="#referencesTab"></e-tab-tabitem>
                     </e-tab-tabitems>
                 </ejs-tab>
                 <div id="generalTab" class="areaForm">
-                    <div class="row">
-                        <div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                            <div class="col-sm-6" style="padding:0">
-                                <div class="form-group">
-                                    <label class="control-label m-b-5 ">Title:</label>
-                                    <input type="text" id="positionTitle" name="Name" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
-                                </div>
-                            </div>
-                            <div class="col-sm-6" style="padding:0">
-                                <div class="form-group">
-                                    <label class="control-label m-b-5 ">Title (In Arabic):</label>
-                                    <input type="text" id="positionTitleLocalized" name="NameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
-                                </div>
-                            </div>
+                    <div class="row" style="">
+                        <div class="col-sm-1"style="">
                         </div>
-                        <div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Position Code:</label>
-                                <input type="text" id="positionCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                            <div id="reviewPeriodTypeField" class="col-sm-12" style="padding:0">
-                                <div class="form-group">
-                                    <label class="margin-bottom-5 control-label">Review Period:</label>
-                                    <select id="reviewPeriod" name="ReviewPeriod" onchange="
-                                            if (typeof $('option:selected', '#reviewPeriod').attr('data-value') !== 'undefined' && $('option:selected', '#reviewPeriod').attr('data-value').includes('Day')) {
-                                                $('#reviewPeriodTypeField').removeClass('col-sm-12');
-                                                $('#reviewPeriodTypeField').addClass('col-sm-6');
-                                                setTimeout(function () {
-                                                    $('#reviewPeriodDaysField').slideDown(0);
-                                                }, 520);
-                                            } else {
-                                                $('#reviewPeriodDaysField').slideUp(0);
-                                                $('#reviewPeriodTypeField').removeClass('col-sm-6');
-                                                $('#reviewPeriodTypeField').addClass('col-sm-12');
-                                            }
-                                        " class="form-control" required>
-                                        @for (int i = 0; i < reviewPeriods.Count; i++)
-                                        {
-                                            <option value="@((int)reviewPeriods[i])" data-value="@EnumExtensions.GetDescription(reviewPeriods[i])">@EnumExtensions.GetDescription(reviewPeriods[i])</option>
-                                        }
-                                    </select>
+                        <div class="col-sm-9"style="">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4"style="">
+                                        <label class="p-t-5 control-label pull-right">Title:</label>
+                                    </div>
+                                    <div class="col-sm-8"style="">
+                                        <input type="text" id="positionTitle" name="Name" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                    </div>
                                 </div>
                             </div>
-                            <div id="reviewPeriodDaysField" class="col-sm-6" style="display:none; padding:0">
-                                <div class="form-group">
-                                    <label class="margin-bottom-5 control-label">Period Days:</label>
-                                    <input type="number" min="0" id="reviewPeriodDays" name="ReviewPeriodDays" value="0" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4"style="">
+                                        <label class="p-t-5 control-label pull-right">Title (In Arabic):</label>
+                                    </div>
+                                    <div class="col-sm-8"style="">
+                                        <input type="text" id="positionTitleLocalized" name="NameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        @*<div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label class="margin-bottom-5 control-label">Level:</label>
-                        <select id="positionLevel" name="Level" class="form-control">
-                            @for (int i = 0; i < positionLevels.Count; i++)
-                            {
-                                <option value="@((int)positionLevels[i])">@EnumExtensions.GetDescription(positionLevels[i])</option>
-                            }
-                        </select>
-                    </div>
-                </div>*@
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group"style="padding: 15px">
+                                    <div class="col-sm-4"style="">
+                                        <label class="p-t-5 control-label pull-right">Position Code:</label>
+                                    </div>
+                                    <div class="col-sm-8"style="">
+                                        <input type="text" id="positionCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div id="reviewPeriodTypeField" style="">
+                                    <div class="form-group" style="padding: 15px">
+                                        <div class="col-sm-4"style="">
+                                            <label class="p-t-5 control-label pull-right">Review Period:</label>
+                                        </div>
+                                        <div class="col-sm-8"style="">
+                                            <select id="reviewPeriod" name="ReviewPeriod" onchange="
+                                                if (typeof $('option:selected', '#reviewPeriod').attr('data-value') !== 'undefined' && $('option:selected', '#reviewPeriod').attr('data-value').includes('Day')) {
+                                                    //$('#reviewPeriodTypeField').removeClass('col-sm-12');
+                                                    //$('#reviewPeriodTypeField').addClass('col-sm-6');
+                                                        $('#reviewPeriodDaysField').slideDown();
+                                                } else {
+                                                    $('#reviewPeriodDaysField').slideUp();
+                                                    //$('#reviewPeriodTypeField').removeClass('col-sm-6');
+                                                    //$('#reviewPeriodTypeField').addClass('col-sm-12');
+                                                }
+                                            " class="form-control" required>
+                                                @for (int i = 0; i < reviewPeriods.Count; i++)
+                                                {
+                                                    <option value="@((int)reviewPeriods[i])" data-value="@EnumExtensions.GetDescription(reviewPeriods[i])">@EnumExtensions.GetDescription(reviewPeriods[i])</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="reviewPeriodDaysField" class="col-lg-12 col-md-12 col-sm-12 col-12" style="display:none; padding:0">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4"style="">
+                                        <label class="p-t-5 control-label pull-right">Period Days:</label>
+                                    </div>
+                                    <div class="col-sm-8"style="">
+                                        <input type="number" min="0" id="reviewPeriodDays" name="ReviewPeriodDays" value="0" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                    </div>
+                                </div>
+                            </div>
 
-                        <div class="col-lg-4 col-md-6 col-sm-6 col-12">
-                            <div class="col-sm-6" style="padding:0">
-                                <div class="form-group">
-                                    <label class="control-label m-b-5 ">Valid From:</label>
-                                    <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4"style="">
+                                        <label class="p-t-5 control-label pull-right">Valid From:</label>
+                                    </div>
+                                    <div class="col-sm-8"style="">
+                                        <input type="date" id="validityFromDate" name="ValidityFromDate" class="text-left form-control inline pull-left" required>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-sm-6" style="padding:0">
-                                <div class="form-group">
-                                    <label class="control-label m-b-5 ">Valid To:</label>
-                                    <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4"style="">
+                                        <label class="p-t-5 control-label pull-right">Valid To:</label>
+                                    </div>
+                                    <div class="col-sm-8"style="">
+                                        <input type="date" id="validityToDate" name="ValidityToDate" class="text-left form-control inline pull-left" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4"style="">
+                                        <label class="p-t-5 control-label pull-right">Hiring Type:</label>
+                                    </div>
+                                    <div class="col-sm-8"style="">
+                                        <select id="hiringType" name="HiringType" class="form-control">
+                                            @for (int i = 0; i < hiringTypes.Count; i++)
+                                            {
+                                                <option value="@hiringTypes[i]">@EnumExtensions.GetDescription(hiringTypes[i])</option>
+                                            }
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-md-6 col-sm-6 col-12">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Hiring Type:</label>
-                                <select id="hiringType" name="HiringType" class="form-control">
-                                    @for (int i = 0; i < hiringTypes.Count; i++)
-                                    {
-                                        <option value="@hiringTypes[i]">@EnumExtensions.GetDescription(hiringTypes[i])</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-sm-4 col-12">
-                            <div class="form-group">
-                                <label class="margin-bottom-5 control-label">Department / Sub Department:</label>
-                                <select id="positionDepartmentId" name="DepartmentTemplateId" class="form-control" required>
-                                </select>
-                            </div>
+                        <div class="col-sm-2" style="padding:0">
                         </div>
                     </div>
                 </div>
-                <div id="tasksTab" class="areaForm" style="display:none">
+                @*<div id="tasksTab" class="areaForm" style="display:none">
                     <div class="row">
                         <div class="col-md-12">
                             <div class="panel-body p-t-0" style="">
@@ -573,7 +584,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>*@
                 <div id="jobsTab" class="areaForm" style="display:none">
                     <div class="row">
                         <div class="col-md-12">
@@ -719,10 +730,9 @@
                     </div>
                 </div>
             </div>
-            <hr />
             <div class="row m-t-20">
                 <div class="col-lg-12">
-                    <input id="submitPositionBtn" type="button" class="btn btn-success btn-block" value="Create Position" required />
+                    <input id="submitPositionBtn" type="button" class="btn btn-success btn-block m-t-20" value="Create Position" required />
                 </div>
             </div>
         </form>
@@ -742,7 +752,7 @@
                     }'></e-grid-column>
                     <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
                     @*<e-grid-column field="costCenter.value" headerText="Cost Center" textAlign="Center"></e-grid-column>*@
-                    <e-grid-column field="departmentTemplate.name" headerText="Department" textAlign="Center"></e-grid-column>
+                    @*<e-grid-column field="departmentTemplate.name" headerText="Department" textAlign="Center"></e-grid-column>*@
                     <e-grid-column field="hiringTypeDescription" headerText="Hiring Type" textAlign="Center"></e-grid-column>
                     <e-grid-column field="reviewPeriodDescription" headerText="Review period" textAlign="Center"></e-grid-column>
                     <e-grid-column headerText="Validity" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
@@ -777,9 +787,6 @@
 </ejs-dialog>
 
 <script>
-    function loadPositionStatusesDropdown() {
-
-    }
 
     let isAuditTrail = false;
     function alertBtnClick() {

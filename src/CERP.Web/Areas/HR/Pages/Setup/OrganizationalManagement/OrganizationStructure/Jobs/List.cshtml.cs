@@ -212,7 +212,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curJobTemplate.ValidityFromDate = jobTemplate_Dto.ValidityFromDate;
                         curJobTemplate.ValidityToDate = jobTemplate_Dto.ValidityToDate;
                         curJobTemplate.Description = jobTemplate_Dto.Description;
-                        curJobTemplate.MaxJobPositions = jobTemplate_Dto.MaxJobPositions;
+                        //curJobTemplate.MaxJobPositions = jobTemplate_Dto.MaxJobPositions;
                         curJobTemplate.CompensationMatrix = null;
                         curJobTemplate.CompensationMatrixId = jobTemplate_Dto.CompensationMatrixId;
 

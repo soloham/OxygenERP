@@ -20,10 +20,12 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
     public class OS_DivisionTemplateAppService : CrudAppService<OS_DivisionTemplate, OS_DivisionTemplate_Dto, int, PagedAndSortedResultRequestDto, OS_DivisionTemplate_Dto, OS_DivisionTemplate_Dto>
     {
         public IRepository<OS_DivisionTemplate, int> Repository { get; }
+        public IRepository<OS_OrganizationStructureTemplateBusinessUnit> OrganizationStructureBUsRepository { get; }
 
-        public OS_DivisionTemplateAppService(IRepository<OS_DivisionTemplate, int> repository) : base(repository)
+        public OS_DivisionTemplateAppService(IRepository<OS_DivisionTemplate, int> repository, IRepository<OS_OrganizationStructureTemplateBusinessUnit> organizationStructureRepository) : base(repository)
         {
             Repository = repository;
+            OrganizationStructureBUsRepository = organizationStructureRepository;
         }
 
         public async Task<List<OS_DivisionTemplate_Dto>> GetAllDivisionTemplatesAsync()
@@ -36,9 +38,9 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
         {
             List<EntityReference> entityReferences = new List<EntityReference>();
 
-            //entityReferences.AddRange(FunctionsReferenceRepo.WithDetails(x => x.FunctionTemplate).Where(x => x.DivisionTemplateId == id)
-            //    .ToList()
-            //    .Select(x => new EntityReference() { Id = entityReferences.Count + 1, Name = x.FunctionTemplate.Name, Code = x.FunctionTemplate.Code, Type = "Function" }));
+            entityReferences.AddRange(OrganizationStructureBUsRepository.WithDetails().Where(x => x.OrganizationStructureTemplateDivisions.Any(y => y.DivisionTemplateId == id))
+                .ToList()
+                .Select(x => new EntityReference() { Id = entityReferences.Count + 1, Name = x.BusinessUnitTemplate.Name, Code = x.BusinessUnitTemplate.Code, Type = "OS Business Unit" }));
 
             //entityReferences.AddRange(TasksReferenceRepo.WithDetails(x => x.TaskTemplate).Where(x => x.DivisionTemplateId == id)
             //    .ToList()

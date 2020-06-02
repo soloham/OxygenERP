@@ -168,6 +168,16 @@
     <Compile Remove="Migrations\20200527134518_PositionTemplates_BusinessUnits_Divisions_Departments_OS_OM_HR_CHECK.Designer.cs" />
     <Compile Remove="Migrations\20200528061059_PayrollStrucure.cs" />
     <Compile Remove="Migrations\20200528061059_PayrollStrucure.Designer.cs" />
+    <Compile Remove="Migrations\20200601155357_OrganizationStructure_TREE_OS_OM_HR.cs" />
+    <Compile Remove="Migrations\20200601155357_OrganizationStructure_TREE_OS_OM_HR.Designer.cs" />
+    <Compile Remove="Migrations\20200601181234_OrganizationStructure_TREE_OS_OM_DIV_BU_TertiaryCompositeKey2.cs" />
+    <Compile Remove="Migrations\20200601181234_OrganizationStructure_TREE_OS_OM_DIV_BU_TertiaryCompositeKey2.Designer.cs" />
+    <Compile Remove="Migrations\20200601205958_OrganizationStructure_TREE_OS_OM_DIV_BU_CompositeKeyComplex_BU_DIV_DEP_POS.cs" />
+    <Compile Remove="Migrations\20200601205958_OrganizationStructure_TREE_OS_OM_DIV_BU_CompositeKeyComplex_BU_DIV_DEP_POS.Designer.cs" />
+    <Compile Remove="Migrations\20200601221152_OrganizationStructure_TREE_OS_OM_DIV_BU_CompositeKeyComplex_BU_DIV_DEP_POS_Recursion_Fix.cs" />
+    <Compile Remove="Migrations\20200601221152_OrganizationStructure_TREE_OS_OM_DIV_BU_CompositeKeyComplex_BU_DIV_DEP_POS_Recursion_Fix.Designer.cs" />
+    <Compile Remove="Migrations\20200601231106_OrganizationStructure_TREE_OS_OM_DIV_BU_CompositeKeyComplex_BU_DIV_DEP_POS_Recursion_HeadRequirementFix3.cs" />
+    <Compile Remove="Migrations\20200601231106_OrganizationStructure_TREE_OS_OM_DIV_BU_CompositeKeyComplex_BU_DIV_DEP_POS_Recursion_HeadRequirementFix3.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

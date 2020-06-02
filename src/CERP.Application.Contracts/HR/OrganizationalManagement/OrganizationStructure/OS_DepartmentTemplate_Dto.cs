@@ -1,5 +1,6 @@
 ﻿using CERP.App;
 using CERP.App.Helpers;
+using CERP.ApplicationContracts.HR.OrganizationalManagement.PayrollStructure;
 using CERP.Base;
 using CERP.FM;
 using CERP.HR.Employees;
@@ -29,29 +30,35 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public DateTime ValidityFromDate { get; set; }
         public DateTime ValidityToDate { get; set; }
 
-        public string ReviewPeriodDescription { get => EnumExtensions.GetDescription(ReviewPeriod); set => ReviewPeriod = EnumExtensions.GetValueFromDescription<OS_ReviewPeriod>(value); }
-        public OS_ReviewPeriod ReviewPeriod { get; set; }
+        //public string ReviewPeriodDescription { get => EnumExtensions.GetDescription(ReviewPeriod); set => ReviewPeriod = EnumExtensions.GetValueFromDescription<OS_ReviewPeriod>(value); }
+        //public OS_ReviewPeriod ReviewPeriod { get; set; }
         public int? ReviewPeriodDays { get; set; }
 
-        public string GetDepartmentPositionsString { get
-            {
-                string result = "";
-                try
-                {
-                    for (int i = 0; i < PositionTemplates.Count; i++)
-                    {
-                        OS_PositionTemplate_Dto curPos = PositionTemplates[i];
-                        result += curPos.Name + (i == PositionTemplates.Count - 1 ? "" : ", ");
-                    }
-                }
-                catch (Exception ex)
-                {
+        //public string GetDepartmentPositionsString { get
+        //    {
+        //        string result = "";
+        //        try
+        //        {
+        //            for (int i = 0; i < PositionTemplates.Count; i++)
+        //            {
+        //                OS_PositionTemplate_Dto curPos = PositionTemplates[i];
+        //                result += curPos.Name + (i == PositionTemplates.Count - 1 ? "" : ", ");
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
 
-                }
-                return result == "" ? "-" : result;
-            }
-        }
-        public List<OS_PositionTemplate_Dto> PositionTemplates { get; set; } = new List<OS_PositionTemplate_Dto>();
+        //        }
+        //        return result == "" ? "-" : result;
+        //    }
+        //}
+        //public List<OS_PositionTemplate_Dto> PositionTemplates { get; set; } = new List<OS_PositionTemplate_Dto>();
+
+        public PS_PayGroup_Dto PayGroup { get; set; }
+        public int PayGroupId { get; set; }
+
+        public PS_PayGrade_Dto PayGrade { get; set; }
+        public int PayGradeId { get; set; }
 
         public bool ContainsDepartment(int id, bool state = false)
         {
@@ -103,14 +110,14 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
 
         public double Percentage { get; set; }
     }
-    public class OS_DepartmentPositionTemplate_Dto : AuditedEntityTenantDto<int>
-    {
-        public OS_DepartmentTemplate_Dto DepartmentTemplate { get; set; }
-        public int DepartmentTemplateId { get; set; }
+    //public class OS_DepartmentPositionTemplate_Dto : AuditedEntityTenantDto<int>
+    //{
+    //    public OS_DepartmentTemplate_Dto DepartmentTemplate { get; set; }
+    //    public int DepartmentTemplateId { get; set; }
 
-        public OS_PositionTemplate_Dto PositionTemplate { get; set; }
-        public int PositionTemplateId { get; set; }
-    }
+    //    public OS_PositionTemplate_Dto PositionTemplate { get; set; }
+    //    public int PositionTemplateId { get; set; }
+    //}
     public class OS_DepartmentSubDepartmentTemplate_Dto : AuditedEntityTenantDto<int>
     {
         public OS_DepartmentTemplate_Dto DepartmentTemplate { get; set; }

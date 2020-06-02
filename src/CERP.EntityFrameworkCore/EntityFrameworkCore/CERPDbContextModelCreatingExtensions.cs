@@ -393,7 +393,7 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
             });
-            builder.Entity<OS_OrganizationStructureTemplateBusinessUnits>(b =>
+            builder.Entity<OS_OrganizationStructureTemplateBusinessUnit>(b =>
             {
                 b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplateBusinessUnits", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
 
@@ -405,31 +405,55 @@ namespace CERP.EntityFrameworkCore
                 b.HasOne(x => x.OrganizationStructureTemplate).WithMany(x => x.OrganizationStructureTemplateBusinessUnits).OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(x => x.BusinessUnitTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
 
+                b.HasMany(x => x.OrganizationStructureTemplateDivisions).WithOne(x => x.OrganizationStructureTemplateBusinessUnit).OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(x => x.OrganizationStructureTemplateDepartments).WithOne(x => x.OrganizationStructureTemplateBusinessUnit).OnDelete(DeleteBehavior.Cascade);
+
+                b.HasMany(x => x.OrganizationStructureTemplateBusinessUnitAssociatedPositions).WithOne(x => x.OrganizationStructureTemplateBusinessUnit).OnDelete(DeleteBehavior.NoAction);
+                b.HasMany(x => x.OrganizationStructureTemplateBusinessUnitCostCenters).WithOne(x => x.OrganizationStructureTemplateBusinessUnit).OnDelete(DeleteBehavior.NoAction);
+
                 b.HasMany(x => x.OrganizationStructureTemplateBusinessUnitPositions).WithOne(x => x.OrganizationStructureTemplateBusinessUnit).OnDelete(DeleteBehavior.NoAction);
             });
             builder.Entity<OS_OrganizationStructureTemplateBusinessUnitPosition>(b =>
             {
                 b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplateBusinessUnitPositions", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
 
-                b.HasKey("OrganizationStructureTemplateBusinessUnitId", "PositionTemplateId");
+                b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "PositionTemplateId");
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
-                b.HasOne(x => x.OrganizationStructureTemplateBusinessUnit).WithMany(x => x.OrganizationStructureTemplateBusinessUnitPositions).OnDelete(DeleteBehavior.NoAction);
+                //b.HasOne(x => x.OrganizationStructureTemplateBusinessUnit).WithMany(x => x.OrganizationStructureTemplateBusinessUnitAssociatedPositions).OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(x => x.PositionTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
-            builder.Entity<OS_OrganizationStructureTemplateDivisions>(b =>
+            builder.Entity<OS_OrganizationStructureTemplateBusinessUnitCostCenter>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplateBusinessUnitCostCenters", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "CostCenterId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                //b.HasOne(x => x.OrganizationStructureTemplateBusinessUnit).WithMany(x => x.OrganizationStructureTemplateBusinessUnitCostCenters).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.CostCenter).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+
+            builder.Entity<OS_OrganizationStructureTemplateDivision>(b =>
             {
                 b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplateDivisions", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
 
-                b.HasKey("OrganizationStructureTemplateId", "DivisionTemplateId");
+                b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId");
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
-                b.HasOne(x => x.OrganizationStructureTemplate).WithMany(x => x.OrganizationStructureTemplateDivisions).OnDelete(DeleteBehavior.NoAction);
+                //b.HasOne(x => x.OrganizationStructureTemplateBusinessUnit).WithMany(x => x.OrganizationStructureTemplateDivisions).OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(x => x.DivisionTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
+                //b.HasOne(x => x.Parent).WithMany().IsRequired(true).OnDelete(DeleteBehavior.NoAction);
+                b.HasMany(x => x.OrganizationStructureTemplateDepartments).WithOne(x => x.OrganizationStructureTemplateDivision).IsRequired(false).OnDelete(DeleteBehavior.Restrict);
+
+                b.HasMany(x => x.OrganizationStructureTemplateDivisionAssociatedPositions).WithOne(x => x.OrganizationStructureTemplateDivision).OnDelete(DeleteBehavior.NoAction);
+                b.HasMany(x => x.OrganizationStructureTemplateDivisionCostCenters).WithOne(x => x.OrganizationStructureTemplateDivision).OnDelete(DeleteBehavior.NoAction);
 
                 b.HasMany(x => x.OrganizationStructureTemplateDivisionPositions).WithOne(x => x.OrganizationStructureTemplateDivision).OnDelete(DeleteBehavior.NoAction);
             });
@@ -437,40 +461,107 @@ namespace CERP.EntityFrameworkCore
             {
                 b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplateDivisionPositions", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
 
-                b.HasKey("OrganizationStructureTemplateDivisionId", "PositionTemplateId");
+                b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId", "PositionTemplateId");
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
-                b.HasOne(x => x.OrganizationStructureTemplateDivision).WithMany(x => x.OrganizationStructureTemplateDivisionPositions).OnDelete(DeleteBehavior.NoAction);
+                //b.HasOne(x => x.OrganizationStructureTemplateDivision).WithMany(x => x.OrganizationStructureTemplateDivisionAssociatedPositions).OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(x => x.PositionTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
-            builder.Entity<OS_OrganizationStructureTemplateDepartments>(b =>
+            builder.Entity<OS_OrganizationStructureTemplateDivisionCostCenter>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplateDivisionCostCenters", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId", "CostCenterId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                //b.HasOne(x => x.OrganizationStructureTemplateDivision).WithMany(x => x.OrganizationStructureTemplateDivisionCostCenters).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.CostCenter).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+
+            builder.Entity<OS_OrganizationStructureTemplateDepartment>(b =>
             {
                 b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplateDepartments", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
 
-                b.HasKey("OrganizationStructureTemplateId", "DepartmentTemplateId");
+                b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId",  "DepartmentTemplateId");
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
-                b.HasOne(x => x.OrganizationStructureTemplate).WithMany(x => x.OrganizationStructureTemplateDepartments).OnDelete(DeleteBehavior.NoAction);
-                b.HasOne(x => x.DepartmentTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
+                //b.HasOne(x => x.OrganizationStructureTemplateHeadDepartment).WithMany(x => x.OrganizationStructureTemplateDepartments).IsRequired(false).OnDelete(DeleteBehavior.Restrict);
 
-                b.HasMany(x => x.OrganizationStructureTemplateDepartmentPositions).WithOne(x => x.OrganizationStructureTemplateDepartment).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.DepartmentTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
+                //b.HasOne(x => x.OrganizationStructureTemplateBusinessUnit).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasMany(x => x.OrganizationStructureTemplateDepartments).WithOne().IsRequired(false).OnDelete(DeleteBehavior.Restrict);
+
+                b.HasMany(x => x.OrganizationStructureTemplateDepartmentAssociatedPositions).WithOne(x => x.OrganizationStructureTemplateDepartment).OnDelete(DeleteBehavior.NoAction);
+                b.HasMany(x => x.OrganizationStructureTemplateDepartmentCostCenters).WithOne(x => x.OrganizationStructureTemplateDepartment).OnDelete(DeleteBehavior.NoAction);
+
+                b.HasMany(x => x.OrganizationStructureTemplateDepartmentPositions).WithOne(x => x.OrganizationStructureTemplateDepartment).IsRequired(false).OnDelete(DeleteBehavior.Restrict);
             });
             builder.Entity<OS_OrganizationStructureTemplateDepartmentPosition>(b =>
             {
                 b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplateDepartmentPositions", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
 
-                b.HasKey("OrganizationStructureTemplateDepartmentId", "PositionTemplateId");
+                b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId",  "DepartmentTemplateId", "PositionTemplateId");
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
-                b.HasOne(x => x.OrganizationStructureTemplateDepartment).WithMany(x => x.OrganizationStructureTemplateDepartmentPositions).OnDelete(DeleteBehavior.NoAction);
+                //b.HasOne(x => x.OrganizationStructureTemplateDepartment).WithMany(x => x.OrganizationStructureTemplateDepartmentAssociatedPositions).OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(x => x.PositionTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
+            builder.Entity<OS_OrganizationStructureTemplateDepartmentCostCenter>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplateDepartmentCostCenters", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId",  "DepartmentTemplateId", "CostCenterId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                //b.HasOne(x => x.OrganizationStructureTemplateDepartment).WithMany(x => x.OrganizationStructureTemplateDepartmentCostCenters).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.CostCenter).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+
+            builder.Entity<OS_OrganizationStructureTemplatePosition>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplatePositions", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId",  "DepartmentTemplateId", "PositionTemplateId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                //b.HasOne(x => x.OrganizationStructureTemplateHeadPosition).WithMany(x => x.OrganizationStructureTemplatePositions).IsRequired(false).OnDelete(DeleteBehavior.Restrict);
+
+                b.HasOne(x => x.PositionTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
+                //b.HasOne(x => x.OrganizationStructureTemplateBusinessUnit).WithMany().OnDelete(DeleteBehavior.NoAction);
+                //b.HasOne(x => x.OrganizationStructureTemplateDivision).WithMany().IsRequired(false).OnDelete(DeleteBehavior.NoAction);
+                //b.HasOne(x => x.OrganizationStructureTemplateDepartment).WithMany().IsRequired(false).OnDelete(DeleteBehavior.NoAction);
+
+                b.HasMany(x => x.OrganizationStructureTemplatePositionJobs).WithOne(x => x.OrganizationStructureTemplatePosition).OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<OS_OrganizationStructureTemplatePositionJob>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplatePositionJobs", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
+
+                b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId",  "DepartmentTemplateId", "PositionTemplateId", "JobTemplateId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                //b.HasOne(x => x.OrganizationStructureTemplatePosition).WithMany(x => x.OrganizationStructureTemplatePositionJobs).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.JobTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
+
+                b.HasOne(x => x.Level).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.EmployeeClass).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.ContractType).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+
             builder.Entity<OS_BusinessUnitTemplate>(b =>
             {
                 b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}BusinessUnitTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);

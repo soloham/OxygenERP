@@ -26,7 +26,7 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         //public string LevelDescription { get => EnumExtensions.GetDescription(Level); set => Level = EnumExtensions.GetValueFromDescription<OS_PositionLevel>(value); }
         //public OS_PositionLevel Level { get; set; }
 
-        public int MaxPositionsPerDepartment { get; set; }
+        //public int MaxPositionsPerDepartment { get; set; }
 
         public string HiringTypeDescription { get => EnumExtensions.GetDescription(HiringType); set => HiringType = EnumExtensions.GetValueFromDescription<OS_PositionHiringType>(value); }
         public OS_PositionHiringType HiringType { get; set; }
@@ -39,11 +39,11 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public string ReviewPeriodDescription { get => EnumExtensions.GetDescription(ReviewPeriod); set => ReviewPeriod = EnumExtensions.GetValueFromDescription<OS_ReviewPeriod>(value); }
         public OS_ReviewPeriod ReviewPeriod { get; set; }
 
-        public OS_DepartmentTemplate_Dto DepartmentTemplate { get; set; }
-        public int DepartmentTemplateId { get; set; }
+        //public OS_DepartmentTemplate_Dto DepartmentTemplate { get; set; }
+        //public int DepartmentTemplateId { get; set; }
 
         public List<OS_PositionJobTemplate_Dto> PositionJobTemplates { get; set; } = new List<OS_PositionJobTemplate_Dto>();
-        public List<OS_PositionTaskTemplate_Dto> PositionTaskTemplates { get; set; } = new List<OS_PositionTaskTemplate_Dto>();
+        //public List<OS_PositionTaskTemplate_Dto> PositionTaskTemplates { get; set; } = new List<OS_PositionTaskTemplate_Dto>();
         public List<OS_PositionCostCenterTemplate_Dto> PositionCostCenterTemplates { get; set; } = new List<OS_PositionCostCenterTemplate_Dto>();
     }
     public class OS_PositionCostCenterTemplate_Dto : AuditedEntityTenantDto<int>
@@ -64,12 +64,12 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public OS_JobTemplate_Dto JobTemplate { get; set; }
         public int JobTemplateId { get; set; }
     }
-    public class OS_PositionTaskTemplate_Dto : AuditedEntityTenantDto<int>
-    {
-        public OS_PositionTemplate_Dto PositionTemplate { get; set; }
-        public int PositionTemplateId { get; set; }
+    //public class OS_PositionTaskTemplate_Dto : AuditedEntityTenantDto<int>
+    //{
+    //    public OS_PositionTemplate_Dto PositionTemplate { get; set; }
+    //    public int PositionTemplateId { get; set; }
 
-        public OS_TaskTemplate_Dto TaskTemplate { get; set; }
-        public int TaskTemplateId { get; set; }
-    }
+    //    public OS_TaskTemplate_Dto TaskTemplate { get; set; }
+    //    public int TaskTemplateId { get; set; }
+    //}
 }

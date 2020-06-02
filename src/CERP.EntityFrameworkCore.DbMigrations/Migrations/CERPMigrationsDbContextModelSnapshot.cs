@@ -2437,10 +2437,10 @@ namespace CERP.Migrations
                     b.Property<string>("NameLocalized")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ReviewPeriod")
+                    b.Property<int>("PayGradeId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ReviewPeriodDays")
+                    b.Property<int>("PayGroupId")
                         .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")
@@ -2454,6 +2454,10 @@ namespace CERP.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PayGradeId");
+
+                    b.HasIndex("PayGroupId");
 
                     b.ToTable("DepartmentTemplates","HR.OrganizationalManagement.OrganizationStructure");
                 });
@@ -2877,9 +2881,6 @@ namespace CERP.Migrations
                     b.Property<Guid?>("LastModifierId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("MaxJobPositions")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -3021,64 +3022,7 @@ namespace CERP.Migrations
                     b.ToTable("OrganizationStructureTemplates","HR.OrganizationalManagement.OrganizationStructure");
                 });
 
-            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateBusinessUnitPosition", b =>
-                {
-                    b.Property<int>("OrganizationStructureTemplateBusinessUnitId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PositionTemplateId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnName("ConcurrencyStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnName("ExtraProperties")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("OrganizationStructureTemplateBusinessUnitBusinessUnitTemplateId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrganizationStructureTemplateBusinessUnitOrganizationStructureTemplateId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("ValidityFromDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ValidityToDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("OrganizationStructureTemplateBusinessUnitId", "PositionTemplateId");
-
-                    b.HasIndex("PositionTemplateId");
-
-                    b.HasIndex("OrganizationStructureTemplateBusinessUnitOrganizationStructureTemplateId", "OrganizationStructureTemplateBusinessUnitBusinessUnitTemplateId");
-
-                    b.ToTable("OrganizationStructureTemplateBusinessUnitPositions","HR.OrganizationalManagement.OrganizationStructure");
-                });
-
-            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateBusinessUnits", b =>
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateBusinessUnit", b =>
                 {
                     b.Property<int>("OrganizationStructureTemplateId")
                         .HasColumnType("int");
@@ -3110,11 +3054,11 @@ namespace CERP.Migrations
                     b.Property<Guid?>("LastModifierId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("LocationId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("LocationId1")
+                    b.Property<Guid>("LocationId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("PayGroupId")
+                        .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnName("TenantId")
@@ -3130,18 +3074,23 @@ namespace CERP.Migrations
 
                     b.HasIndex("BusinessUnitTemplateId");
 
-                    b.HasIndex("LocationId1");
+                    b.HasIndex("LocationId");
+
+                    b.HasIndex("PayGroupId");
 
                     b.ToTable("OrganizationStructureTemplateBusinessUnits","HR.OrganizationalManagement.OrganizationStructure");
                 });
 
-            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDepartmentPosition", b =>
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateBusinessUnitCostCenter", b =>
                 {
-                    b.Property<int>("OrganizationStructureTemplateDepartmentId")
+                    b.Property<int>("OrganizationStructureTemplateId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PositionTemplateId")
+                    b.Property<int>("BusinessUnitTemplateId")
                         .HasColumnType("int");
+
+                    b.Property<Guid>("CostCenterId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -3167,11 +3116,57 @@ namespace CERP.Migrations
                     b.Property<Guid?>("LastModifierId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationStructureTemplateDepartmentDepartmentTemplateId")
+                    b.Property<int>("Percentage")
                         .HasColumnType("int");
 
-                    b.Property<int>("OrganizationStructureTemplateDepartmentOrganizationStructureTemplateId")
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "CostCenterId");
+
+                    b.HasIndex("CostCenterId");
+
+                    b.ToTable("OrganizationStructureTemplateBusinessUnitCostCenters","HR.OrganizationalManagement.OrganizationStructure");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateBusinessUnitPosition", b =>
+                {
+                    b.Property<int>("OrganizationStructureTemplateId")
                         .HasColumnType("int");
+
+                    b.Property<int>("BusinessUnitTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PositionTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsHead")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnName("TenantId")
@@ -3183,18 +3178,22 @@ namespace CERP.Migrations
                     b.Property<DateTime>("ValidityToDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("OrganizationStructureTemplateDepartmentId", "PositionTemplateId");
+                    b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "PositionTemplateId");
 
                     b.HasIndex("PositionTemplateId");
 
-                    b.HasIndex("OrganizationStructureTemplateDepartmentOrganizationStructureTemplateId", "OrganizationStructureTemplateDepartmentDepartmentTemplateId");
-
-                    b.ToTable("OrganizationStructureTemplateDepartmentPositions","HR.OrganizationalManagement.OrganizationStructure");
+                    b.ToTable("OrganizationStructureTemplateBusinessUnitPositions","HR.OrganizationalManagement.OrganizationStructure");
                 });
 
-            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDepartments", b =>
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDepartment", b =>
                 {
                     b.Property<int>("OrganizationStructureTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BusinessUnitTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DivisionTemplateId")
                         .HasColumnType("int");
 
                     b.Property<int>("DepartmentTemplateId")
@@ -3224,11 +3223,20 @@ namespace CERP.Migrations
                     b.Property<Guid?>("LastModifierId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("LocationId")
+                    b.Property<int?>("OS_OrganizationStructureTemplateDepartmentBusinessUnitTemplateId")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("LocationId1")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("OS_OrganizationStructureTemplateDepartmentDepartmentTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OS_OrganizationStructureTemplateDepartmentDivisionTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OS_OrganizationStructureTemplateDepartmentOrganizationStructureTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OS_OrganizationStructureTemplateId")
+                        .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnName("TenantId")
@@ -3240,18 +3248,87 @@ namespace CERP.Migrations
                     b.Property<DateTime>("ValidityToDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("OrganizationStructureTemplateId", "DepartmentTemplateId");
+                    b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId", "DepartmentTemplateId");
 
                     b.HasIndex("DepartmentTemplateId");
 
-                    b.HasIndex("LocationId1");
+                    b.HasIndex("OS_OrganizationStructureTemplateId");
+
+                    b.HasIndex("OS_OrganizationStructureTemplateDepartmentOrganizationStructureTemplateId", "OS_OrganizationStructureTemplateDepartmentBusinessUnitTemplateId", "OS_OrganizationStructureTemplateDepartmentDivisionTemplateId", "OS_OrganizationStructureTemplateDepartmentDepartmentTemplateId");
 
                     b.ToTable("OrganizationStructureTemplateDepartments","HR.OrganizationalManagement.OrganizationStructure");
                 });
 
-            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDivisionPosition", b =>
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDepartmentCostCenter", b =>
                 {
-                    b.Property<int>("OrganizationStructureTemplateDivisionId")
+                    b.Property<int>("OrganizationStructureTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BusinessUnitTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DivisionTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DepartmentTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("CostCenterId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("HeadDepartmentTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Percentage")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId", "DepartmentTemplateId", "CostCenterId");
+
+                    b.HasIndex("CostCenterId");
+
+                    b.ToTable("OrganizationStructureTemplateDepartmentCostCenters","HR.OrganizationalManagement.OrganizationStructure");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDepartmentPosition", b =>
+                {
+                    b.Property<int>("OrganizationStructureTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BusinessUnitTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DivisionTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DepartmentTemplateId")
                         .HasColumnType("int");
 
                     b.Property<int>("PositionTemplateId")
@@ -3272,20 +3349,20 @@ namespace CERP.Migrations
                         .HasColumnName("ExtraProperties")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("HeadDepartmentTemplateId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Id")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsHead")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("LastModifierId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("OrganizationStructureTemplateDivisionDivisionTemplateId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrganizationStructureTemplateDivisionOrganizationStructureTemplateId")
-                        .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnName("TenantId")
@@ -3297,18 +3374,19 @@ namespace CERP.Migrations
                     b.Property<DateTime>("ValidityToDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("OrganizationStructureTemplateDivisionId", "PositionTemplateId");
+                    b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId", "DepartmentTemplateId", "PositionTemplateId");
 
                     b.HasIndex("PositionTemplateId");
 
-                    b.HasIndex("OrganizationStructureTemplateDivisionOrganizationStructureTemplateId", "OrganizationStructureTemplateDivisionDivisionTemplateId");
-
-                    b.ToTable("OrganizationStructureTemplateDivisionPositions","HR.OrganizationalManagement.OrganizationStructure");
+                    b.ToTable("OrganizationStructureTemplateDepartmentPositions","HR.OrganizationalManagement.OrganizationStructure");
                 });
 
-            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDivisions", b =>
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDivision", b =>
                 {
                     b.Property<int>("OrganizationStructureTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BusinessUnitTemplateId")
                         .HasColumnType("int");
 
                     b.Property<int>("DivisionTemplateId")
@@ -3338,10 +3416,119 @@ namespace CERP.Migrations
                     b.Property<Guid?>("LastModifierId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("LocationId")
+                    b.Property<int?>("OS_OrganizationStructureTemplateId")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("LocationId1")
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ValidityFromDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ValidityToDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId");
+
+                    b.HasIndex("DivisionTemplateId");
+
+                    b.HasIndex("OS_OrganizationStructureTemplateId");
+
+                    b.ToTable("OrganizationStructureTemplateDivisions","HR.OrganizationalManagement.OrganizationStructure");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDivisionCostCenter", b =>
+                {
+                    b.Property<int>("OrganizationStructureTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BusinessUnitTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DivisionTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("CostCenterId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Percentage")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId", "CostCenterId");
+
+                    b.HasIndex("CostCenterId");
+
+                    b.ToTable("OrganizationStructureTemplateDivisionCostCenters","HR.OrganizationalManagement.OrganizationStructure");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDivisionPosition", b =>
+                {
+                    b.Property<int>("OrganizationStructureTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BusinessUnitTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DivisionTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PositionTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsHead")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("TenantId")
@@ -3354,13 +3541,176 @@ namespace CERP.Migrations
                     b.Property<DateTime>("ValidityToDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("OrganizationStructureTemplateId", "DivisionTemplateId");
+                    b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId", "PositionTemplateId");
 
-                    b.HasIndex("DivisionTemplateId");
+                    b.HasIndex("PositionTemplateId");
 
-                    b.HasIndex("LocationId1");
+                    b.ToTable("OrganizationStructureTemplateDivisionPositions","HR.OrganizationalManagement.OrganizationStructure");
+                });
 
-                    b.ToTable("OrganizationStructureTemplateDivisions","HR.OrganizationalManagement.OrganizationStructure");
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplatePosition", b =>
+                {
+                    b.Property<int>("OrganizationStructureTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BusinessUnitTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DivisionTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DepartmentTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PositionTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("HeadDepartmentTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("OS_OrganizationStructureTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OS_OrganizationStructureTemplatePositionBusinessUnitTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OS_OrganizationStructureTemplatePositionDepartmentTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OS_OrganizationStructureTemplatePositionDivisionTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OS_OrganizationStructureTemplatePositionOrganizationStructureTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OS_OrganizationStructureTemplatePositionPositionTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ValidityFromDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ValidityToDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId", "DepartmentTemplateId", "PositionTemplateId");
+
+                    b.HasIndex("OS_OrganizationStructureTemplateId");
+
+                    b.HasIndex("PositionTemplateId");
+
+                    b.HasIndex("OS_OrganizationStructureTemplatePositionOrganizationStructureTemplateId", "OS_OrganizationStructureTemplatePositionBusinessUnitTemplateId", "OS_OrganizationStructureTemplatePositionDivisionTemplateId", "OS_OrganizationStructureTemplatePositionDepartmentTemplateId", "OS_OrganizationStructureTemplatePositionPositionTemplateId");
+
+                    b.ToTable("OrganizationStructureTemplatePositions","HR.OrganizationalManagement.OrganizationStructure");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplatePositionJob", b =>
+                {
+                    b.Property<int>("OrganizationStructureTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BusinessUnitTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DivisionTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DepartmentTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PositionTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("JobTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ContractTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("EmployeeClassId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("HeadDepartmentTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HeadPositionTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("LevelId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ValidityFromDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ValidityToDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId", "DepartmentTemplateId", "PositionTemplateId", "JobTemplateId");
+
+                    b.HasIndex("ContractTypeId");
+
+                    b.HasIndex("EmployeeClassId");
+
+                    b.HasIndex("JobTemplateId");
+
+                    b.HasIndex("LevelId");
+
+                    b.ToTable("OrganizationStructureTemplatePositionJobs","HR.OrganizationalManagement.OrganizationStructure");
                 });
 
             modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_PositionCostCenterTemplate", b =>
@@ -3453,49 +3803,6 @@ namespace CERP.Migrations
                     b.ToTable("PositionJobTemplates","HR.OrganizationalManagement.OrganizationStructure");
                 });
 
-            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_PositionTaskTemplate", b =>
-                {
-                    b.Property<int>("PositionTemplateId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TaskTemplateId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnName("ConcurrencyStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnName("ExtraProperties")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnName("TenantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("PositionTemplateId", "TaskTemplateId");
-
-                    b.HasIndex("TaskTemplateId");
-
-                    b.ToTable("PositionTaskTemplates","HR.OrganizationalManagement.OrganizationStructure");
-                });
-
             modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_PositionTemplate", b =>
                 {
                     b.Property<int>("Id")
@@ -3520,9 +3827,6 @@ namespace CERP.Migrations
                     b.Property<Guid?>("CreatorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("DepartmentTemplateId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ExtraProperties")
                         .HasColumnName("ExtraProperties")
                         .HasColumnType("nvarchar(max)");
@@ -3535,9 +3839,6 @@ namespace CERP.Migrations
 
                     b.Property<Guid?>("LastModifierId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("MaxPositionsPerDepartment")
-                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -3562,8 +3863,6 @@ namespace CERP.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DepartmentTemplateId");
 
                     b.ToTable("PositionTemplates","HR.OrganizationalManagement.OrganizationStructure");
                 });
@@ -8064,6 +8363,21 @@ namespace CERP.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_DepartmentTemplate", b =>
+                {
+                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayGrade", "PayGrade")
+                        .WithMany()
+                        .HasForeignKey("PayGradeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayGroup", "PayGroup")
+                        .WithMany()
+                        .HasForeignKey("PayGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_FunctionAcademiaTemplate", b =>
                 {
                     b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_AcademiaTemplate", "AcademiaTemplate")
@@ -8196,22 +8510,7 @@ namespace CERP.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateBusinessUnitPosition", b =>
-                {
-                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_PositionTemplate", "PositionTemplate")
-                        .WithMany()
-                        .HasForeignKey("PositionTemplateId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateBusinessUnits", "OrganizationStructureTemplateBusinessUnit")
-                        .WithMany("OrganizationStructureTemplateBusinessUnitPositions")
-                        .HasForeignKey("OrganizationStructureTemplateBusinessUnitOrganizationStructureTemplateId", "OrganizationStructureTemplateBusinessUnitBusinessUnitTemplateId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateBusinessUnits", b =>
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateBusinessUnit", b =>
                 {
                     b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_BusinessUnitTemplate", "BusinessUnitTemplate")
                         .WithMany()
@@ -8221,11 +8520,93 @@ namespace CERP.Migrations
 
                     b.HasOne("CERP.Setup.LocationTemplate", "Location")
                         .WithMany()
-                        .HasForeignKey("LocationId1");
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplate", "OrganizationStructureTemplate")
                         .WithMany("OrganizationStructureTemplateBusinessUnits")
                         .HasForeignKey("OrganizationStructureTemplateId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayGroup", "PayGroup")
+                        .WithMany()
+                        .HasForeignKey("PayGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateBusinessUnitCostCenter", b =>
+                {
+                    b.HasOne("CERP.App.DictionaryValue", "CostCenter")
+                        .WithMany()
+                        .HasForeignKey("CostCenterId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateBusinessUnit", "OrganizationStructureTemplateBusinessUnit")
+                        .WithMany("OrganizationStructureTemplateBusinessUnitCostCenters")
+                        .HasForeignKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateBusinessUnitPosition", b =>
+                {
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_PositionTemplate", "PositionTemplate")
+                        .WithMany()
+                        .HasForeignKey("PositionTemplateId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateBusinessUnit", "OrganizationStructureTemplateBusinessUnit")
+                        .WithMany("OrganizationStructureTemplateBusinessUnitAssociatedPositions")
+                        .HasForeignKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDepartment", b =>
+                {
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_DepartmentTemplate", "DepartmentTemplate")
+                        .WithMany()
+                        .HasForeignKey("DepartmentTemplateId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplate", null)
+                        .WithMany("OrganizationStructureTemplateDepartments")
+                        .HasForeignKey("OS_OrganizationStructureTemplateId");
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateBusinessUnit", "OrganizationStructureTemplateBusinessUnit")
+                        .WithMany("OrganizationStructureTemplateDepartments")
+                        .HasForeignKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDivision", "OrganizationStructureTemplateDivision")
+                        .WithMany("OrganizationStructureTemplateDepartments")
+                        .HasForeignKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDepartment", null)
+                        .WithMany("OrganizationStructureTemplateDepartments")
+                        .HasForeignKey("OS_OrganizationStructureTemplateDepartmentOrganizationStructureTemplateId", "OS_OrganizationStructureTemplateDepartmentBusinessUnitTemplateId", "OS_OrganizationStructureTemplateDepartmentDivisionTemplateId", "OS_OrganizationStructureTemplateDepartmentDepartmentTemplateId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDepartmentCostCenter", b =>
+                {
+                    b.HasOne("CERP.App.DictionaryValue", "CostCenter")
+                        .WithMany()
+                        .HasForeignKey("CostCenterId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDepartment", "OrganizationStructureTemplateDepartment")
+                        .WithMany("OrganizationStructureTemplateDepartmentCostCenters")
+                        .HasForeignKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId", "DepartmentTemplateId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
@@ -8238,28 +8619,43 @@ namespace CERP.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDepartments", "OrganizationStructureTemplateDepartment")
-                        .WithMany("OrganizationStructureTemplateDepartmentPositions")
-                        .HasForeignKey("OrganizationStructureTemplateDepartmentOrganizationStructureTemplateId", "OrganizationStructureTemplateDepartmentDepartmentTemplateId")
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDepartment", "OrganizationStructureTemplateDepartment")
+                        .WithMany("OrganizationStructureTemplateDepartmentAssociatedPositions")
+                        .HasForeignKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId", "DepartmentTemplateId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDepartments", b =>
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDivision", b =>
                 {
-                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_DepartmentTemplate", "DepartmentTemplate")
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_DivisionTemplate", "DivisionTemplate")
                         .WithMany()
-                        .HasForeignKey("DepartmentTemplateId")
+                        .HasForeignKey("DivisionTemplateId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("CERP.Setup.LocationTemplate", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId1");
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplate", null)
+                        .WithMany("OrganizationStructureTemplateDivisions")
+                        .HasForeignKey("OS_OrganizationStructureTemplateId");
 
-                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplate", "OrganizationStructureTemplate")
-                        .WithMany("OrganizationStructureTemplateDepartments")
-                        .HasForeignKey("OrganizationStructureTemplateId")
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateBusinessUnit", "OrganizationStructureTemplateBusinessUnit")
+                        .WithMany("OrganizationStructureTemplateDivisions")
+                        .HasForeignKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDivisionCostCenter", b =>
+                {
+                    b.HasOne("CERP.App.DictionaryValue", "CostCenter")
+                        .WithMany()
+                        .HasForeignKey("CostCenterId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDivision", "OrganizationStructureTemplateDivision")
+                        .WithMany("OrganizationStructureTemplateDivisionCostCenters")
+                        .HasForeignKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
@@ -8272,28 +8668,76 @@ namespace CERP.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDivisions", "OrganizationStructureTemplateDivision")
-                        .WithMany("OrganizationStructureTemplateDivisionPositions")
-                        .HasForeignKey("OrganizationStructureTemplateDivisionOrganizationStructureTemplateId", "OrganizationStructureTemplateDivisionDivisionTemplateId")
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDivision", "OrganizationStructureTemplateDivision")
+                        .WithMany("OrganizationStructureTemplateDivisionAssociatedPositions")
+                        .HasForeignKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDivisions", b =>
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplatePosition", b =>
                 {
-                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_DivisionTemplate", "DivisionTemplate")
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplate", null)
+                        .WithMany("OrganizationStructureTemplatePositions")
+                        .HasForeignKey("OS_OrganizationStructureTemplateId");
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_PositionTemplate", "PositionTemplate")
                         .WithMany()
-                        .HasForeignKey("DivisionTemplateId")
+                        .HasForeignKey("PositionTemplateId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("CERP.Setup.LocationTemplate", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId1");
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateBusinessUnit", "OrganizationStructureTemplateBusinessUnit")
+                        .WithMany("OrganizationStructureTemplateBusinessUnitPositions")
+                        .HasForeignKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
-                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplate", "OrganizationStructureTemplate")
-                        .WithMany("OrganizationStructureTemplateDivisions")
-                        .HasForeignKey("OrganizationStructureTemplateId")
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDivision", "OrganizationStructureTemplateDivision")
+                        .WithMany("OrganizationStructureTemplateDivisionPositions")
+                        .HasForeignKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDepartment", "OrganizationStructureTemplateDepartment")
+                        .WithMany("OrganizationStructureTemplateDepartmentPositions")
+                        .HasForeignKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId", "DepartmentTemplateId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplatePosition", null)
+                        .WithMany("OrganizationStructureTemplatePositions")
+                        .HasForeignKey("OS_OrganizationStructureTemplatePositionOrganizationStructureTemplateId", "OS_OrganizationStructureTemplatePositionBusinessUnitTemplateId", "OS_OrganizationStructureTemplatePositionDivisionTemplateId", "OS_OrganizationStructureTemplatePositionDepartmentTemplateId", "OS_OrganizationStructureTemplatePositionPositionTemplateId");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplatePositionJob", b =>
+                {
+                    b.HasOne("CERP.App.DictionaryValue", "ContractType")
+                        .WithMany()
+                        .HasForeignKey("ContractTypeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.App.DictionaryValue", "EmployeeClass")
+                        .WithMany()
+                        .HasForeignKey("EmployeeClassId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_JobTemplate", "JobTemplate")
+                        .WithMany()
+                        .HasForeignKey("JobTemplateId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.App.DictionaryValue", "Level")
+                        .WithMany()
+                        .HasForeignKey("LevelId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplatePosition", "OrganizationStructureTemplatePosition")
+                        .WithMany("OrganizationStructureTemplatePositionJobs")
+                        .HasForeignKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId", "DepartmentTemplateId", "PositionTemplateId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
@@ -8325,30 +8769,6 @@ namespace CERP.Migrations
                         .WithMany("PositionJobTemplates")
                         .HasForeignKey("PositionTemplateId")
                         .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_PositionTaskTemplate", b =>
-                {
-                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_PositionTemplate", "PositionTemplate")
-                        .WithMany("PositionTaskTemplates")
-                        .HasForeignKey("PositionTemplateId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_TaskTemplate", "TaskTemplate")
-                        .WithMany()
-                        .HasForeignKey("TaskTemplateId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_PositionTemplate", b =>
-                {
-                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_DepartmentTemplate", "DepartmentTemplate")
-                        .WithMany("PositionTemplates")
-                        .HasForeignKey("DepartmentTemplateId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 

@@ -28,8 +28,8 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         //[CustomAudited]
         //public OS_PositionLevel Level { get; set; }
 
-        [CustomAudited]
-        public int MaxPositionsPerDepartment { get; set; }
+        //[CustomAudited]
+        //public int MaxPositionsPerDepartment { get; set; }
 
 
         [CustomAudited]
@@ -47,13 +47,13 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         [CustomAudited]
         public OS_PositionHiringType HiringType { get; set; }
 
-        [CustomAudited]
-        public OS_DepartmentTemplate DepartmentTemplate { get; set; }
-        [CustomAudited]
-        public int DepartmentTemplateId { get; set; }
+        //[CustomAudited]
+        //public OS_DepartmentTemplate DepartmentTemplate { get; set; }
+        //[CustomAudited]
+        //public int DepartmentTemplateId { get; set; }
 
         public virtual ICollection<OS_PositionJobTemplate> PositionJobTemplates { get; set; }
-        public virtual ICollection<OS_PositionTaskTemplate> PositionTaskTemplates { get; set; }
+        //public virtual ICollection<OS_PositionTaskTemplate> PositionTaskTemplates { get; set; }
         public virtual ICollection<OS_PositionCostCenterTemplate> PositionCostCenterTemplates { get; set; }
     }
     public class OS_PositionCostCenterTemplate : AuditedAggregateTenantRoot<int>
@@ -74,12 +74,12 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public OS_JobTemplate JobTemplate { get; set; }
         public int JobTemplateId { get; set; }
     }
-    public class OS_PositionTaskTemplate : AuditedAggregateTenantRoot<int>
-    {
-        public OS_PositionTemplate PositionTemplate { get; set; }
-        public int PositionTemplateId { get; set; }
+    //public class OS_PositionTaskTemplate : AuditedAggregateTenantRoot<int>
+    //{
+    //    public OS_PositionTemplate PositionTemplate { get; set; }
+    //    public int PositionTemplateId { get; set; }
         
-        public OS_TaskTemplate TaskTemplate { get; set; }
-        public int TaskTemplateId { get; set; }
-    }
+    //    public OS_TaskTemplate TaskTemplate { get; set; }
+    //    public int TaskTemplateId { get; set; }
+    //}
 }

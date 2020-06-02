@@ -64,7 +64,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                     var FormData = Request.Form;
 
                     OS_OrganizationStructureTemplate_Dto organizationStructureTemplate_Dto = JsonSerializer.Deserialize<OS_OrganizationStructureTemplate_Dto>(FormData["info"]);
-                    //StructureVM structureVM = JsonSerializer.Deserialize<StructureVM>(FormData["info"]);
+                    StructureVM structureVM = new StructureVM() { Structure = JsonSerializer.Deserialize<List<NodeVM>>(FormData["structure"]) };
                     bool IsEditing = organizationStructureTemplate_Dto.Id > 0;
                     if (IsEditing)
                     {
@@ -227,6 +227,262 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         //organizationStructureTemplate_Dto.PositionTemplates.ForEach(x => { x.Id = 0; x.Id = x.Id; });
                         //organizationStructureTemplate_Dto.SubOrganizationStructureTemplates.ForEach(x => { x.Id = 0; x.SubOrganizationStructureTemplateId = x.SubOrganizationStructureTemplate.Id; x.SubOrganizationStructureTemplate = null; });
                         organizationStructureTemplate_Dto.SetProperty("Structure", FormData["structure"]);
+                        organizationStructureTemplate_Dto.OrganizationStructureTemplateBusinessUnits = new List<OS_OrganizationStructureTemplateBusinessUnit_Dto>();
+                        organizationStructureTemplate_Dto.OrganizationStructureTemplateDivisions = new List<OS_OrganizationStructureTemplateDivision_Dto>();
+                        organizationStructureTemplate_Dto.OrganizationStructureTemplateDepartments = new List<OS_OrganizationStructureTemplateDepartment_Dto>();
+                        organizationStructureTemplate_Dto.OrganizationStructureTemplatePositions = new List<OS_OrganizationStructureTemplatePosition_Dto>();
+                        
+                        var OrganizationStructureTemplateBusinessUnits = new List<OS_OrganizationStructureTemplateBusinessUnit_Dto>();
+                        var OrganizationStructureTemplateDivisions = new List<OS_OrganizationStructureTemplateDivision_Dto>();
+                        var OrganizationStructureTemplateDepartments = new List<OS_OrganizationStructureTemplateDepartment_Dto>();
+                        var OrganizationStructureTemplatePositions = new List<OS_OrganizationStructureTemplatePosition_Dto>();
+
+                        structureVM.Structure.Reverse();
+                        for (int i = 0; i < structureVM.Structure.Count; i++)
+                        {
+                            NodeVM structuralNode = structureVM.Structure[i];
+
+                            UnitVM unit = structuralNode._unit;
+                            switch (structuralNode.Type)
+                            {
+                                case "Business Unit":
+                                    OS_OrganizationStructureTemplateBusinessUnit_Dto orgStructureBusinessUnit = new OS_OrganizationStructureTemplateBusinessUnit_Dto();
+                                    orgStructureBusinessUnit.Id = structuralNode.Id;
+                                    orgStructureBusinessUnit.BusinessUnitTemplateId = unit.Id;
+                                    orgStructureBusinessUnit.ValidityFromDate = DateTime.Parse(unit.ValidityFromDate);
+                                    orgStructureBusinessUnit.ValidityToDate = DateTime.Parse(unit.ValidityToDate);
+
+                                    if (unit.UnitDetails != null)
+                                    {
+                                        orgStructureBusinessUnit.ValidityFromDate = DateTime.Parse(unit.UnitDetails.ValidityFromDate.ToString());
+                                        orgStructureBusinessUnit.ValidityToDate = DateTime.Parse(unit.UnitDetails.ValidityToDate.ToString());
+
+
+                                        orgStructureBusinessUnit.OrganizationStructureTemplateBusinessUnitCostCenters = new List<OS_OrganizationStructureTemplateBusinessUnitCostCenter_Dto>();
+                                        List<CostCenterVM> CostCenters = JsonSerializer.Deserialize<List<CostCenterVM>>(unit.UnitDetails.costCenters.ToString());
+                                        for (int y = 0; y < CostCenters.Count; y++)
+                                        {
+                                            CostCenterVM cc = CostCenters[y];
+                                            OS_OrganizationStructureTemplateBusinessUnitCostCenter_Dto orgBUCC = new OS_OrganizationStructureTemplateBusinessUnitCostCenter_Dto();
+                                            orgBUCC.CostCenterId = cc.Id;
+                                            orgBUCC.Percentage = cc.Percentage;
+
+                                            orgStructureBusinessUnit.OrganizationStructureTemplateBusinessUnitCostCenters.Add(orgBUCC);
+                                        }
+
+                                        orgStructureBusinessUnit.OrganizationStructureTemplateBusinessUnitAssociatedPositions = new List<OS_OrganizationStructureTemplateBusinessUnitPosition_Dto>();
+                                        List<PositionVM> AssociatedPositions = this.JsonSerializer.Deserialize<List<PositionVM>>((unit.UnitDetails.associations as dynamic).positions.ToString());
+                                        for (int y = 0; y < AssociatedPositions.Count; y++)
+                                        {
+                                            PositionVM p = AssociatedPositions[y];
+                                            OS_OrganizationStructureTemplateBusinessUnitPosition_Dto orgBUP = new OS_OrganizationStructureTemplateBusinessUnitPosition_Dto();
+                                            orgBUP.PositionTemplateId = p.Id;
+
+                                            orgStructureBusinessUnit.OrganizationStructureTemplateBusinessUnitAssociatedPositions.Add(orgBUP);
+                                        }
+
+                                        Guid locId = Guid.Empty;
+                                        Guid.TryParse(unit.UnitDetails.BULocationId.ToString(), out locId);
+                                        orgStructureBusinessUnit.LocationId = locId;
+
+                                        int headId = int.Parse(unit.UnitDetails.HeadOfBUId.ToString());
+                                        orgStructureBusinessUnit.OrganizationStructureTemplateBusinessUnitAssociatedPositions.FirstOrDefault(x => x.PositionTemplateId == headId).IsHead = true;
+                                        orgStructureBusinessUnit.OrganizationStructureTemplateBusinessUnitAssociatedPositions.FirstOrDefault(x => x.PositionTemplateId != headId).IsHead = false;
+
+                                        orgStructureBusinessUnit.PayGroupId = int.Parse(unit.UnitDetails.BUPaygroupId.ToString());
+                                    }
+
+                                    organizationStructureTemplate_Dto.OrganizationStructureTemplateBusinessUnits.Add(orgStructureBusinessUnit);
+                                    OrganizationStructureTemplateBusinessUnits.Add(orgStructureBusinessUnit);
+                                    break;
+                                case "Division":
+                                    OS_OrganizationStructureTemplateDivision_Dto orgStructureDivision = new OS_OrganizationStructureTemplateDivision_Dto();
+                                    orgStructureDivision.Id = structuralNode.Id;
+                                    orgStructureDivision.DivisionTemplateId = unit.Id;
+                                    orgStructureDivision.ValidityFromDate = DateTime.Parse(unit.ValidityFromDate);
+                                    orgStructureDivision.ValidityToDate = DateTime.Parse(unit.ValidityToDate);
+
+                                    if (unit.UnitDetails != null)
+                                    {
+                                        orgStructureDivision.ValidityFromDate = DateTime.Parse(unit.UnitDetails.ValidityFromDate.ToString());
+                                        orgStructureDivision.ValidityToDate = DateTime.Parse(unit.UnitDetails.ValidityToDate.ToString());
+
+                                        orgStructureDivision.OrganizationStructureTemplateDivisionCostCenters = new List<OS_OrganizationStructureTemplateDivisionCostCenter_Dto>();
+                                        List<CostCenterVM> CostCenters = JsonSerializer.Deserialize<List<CostCenterVM>>(unit.UnitDetails.costCenters.ToString());
+                                        for (int y = 0; y < CostCenters.Count; y++)
+                                        {
+                                            CostCenterVM cc = CostCenters[y];
+                                            OS_OrganizationStructureTemplateDivisionCostCenter_Dto orgDIVCC = new OS_OrganizationStructureTemplateDivisionCostCenter_Dto();
+                                            orgDIVCC.CostCenterId = cc.Id;
+                                            orgDIVCC.Percentage = cc.Percentage;
+
+                                            orgStructureDivision.OrganizationStructureTemplateDivisionCostCenters.Add(orgDIVCC);
+                                        }
+
+                                        orgStructureDivision.OrganizationStructureTemplateDivisionAssociatedPositions = new List<OS_OrganizationStructureTemplateDivisionPosition_Dto>();
+                                        List<PositionVM> AssociatedPositions = this.JsonSerializer.Deserialize<List<PositionVM>>((unit.UnitDetails.associations as dynamic).positions.ToString());
+                                        for (int y = 0; y < AssociatedPositions.Count; y++)
+                                        {
+                                            PositionVM p = AssociatedPositions[y];
+                                            OS_OrganizationStructureTemplateDivisionPosition_Dto orgDIVP = new OS_OrganizationStructureTemplateDivisionPosition_Dto();
+                                            orgDIVP.PositionTemplateId = p.Id;
+
+                                            orgStructureDivision.OrganizationStructureTemplateDivisionAssociatedPositions.Add(orgDIVP);
+                                        }
+
+                                        //Guid locId = Guid.Empty;
+                                        //Guid.TryParse(unit.UnitDetails.DIVLocationId.ToString(), out locId);
+                                        //orgStructureDivision.LocationId = locId;
+
+                                        int headId = int.Parse(unit.UnitDetails.HeadOfDIVId.ToString());
+                                        orgStructureDivision.OrganizationStructureTemplateDivisionAssociatedPositions.FirstOrDefault(x => x.PositionTemplateId == headId).IsHead = true;
+                                        orgStructureDivision.OrganizationStructureTemplateDivisionAssociatedPositions.FirstOrDefault(x => x.PositionTemplateId != headId).IsHead = false;
+
+                                        //orgStructureDivision.ParentId = 
+                                        //orgStructureDivision.PayGroupId = int.Parse(unit.UnitDetails.DIVPaygroupId.ToString());
+                                    }
+
+                                    int parentBUId = int.Parse(structuralNode.ParentId.ToString());
+                                    var ParentBU = organizationStructureTemplate_Dto.OrganizationStructureTemplateBusinessUnits.FirstOrDefault(x => x.Id == parentBUId);
+                                    if (ParentBU.OrganizationStructureTemplateDivisions == null)
+                                        ParentBU.OrganizationStructureTemplateDivisions = new List<OS_OrganizationStructureTemplateDivision_Dto>();
+                                    ParentBU.OrganizationStructureTemplateDivisions.Add(orgStructureDivision);
+
+                                    OrganizationStructureTemplateDivisions.Add(orgStructureDivision);
+                                    //organizationStructureTemplate_Dto.
+                                    break;
+                                case "Department":
+                                    OS_OrganizationStructureTemplateDepartment_Dto orgStructureDepartment = new OS_OrganizationStructureTemplateDepartment_Dto();
+                                    orgStructureDepartment.Id = structuralNode.Id;
+                                    orgStructureDepartment.DepartmentTemplateId = unit.Id;
+                                    orgStructureDepartment.ValidityFromDate = DateTime.Parse(unit.ValidityFromDate);
+                                    orgStructureDepartment.ValidityToDate = DateTime.Parse(unit.ValidityToDate);
+
+                                    if (unit.UnitDetails != null)
+                                    {
+                                        orgStructureDepartment.ValidityFromDate = DateTime.Parse(unit.UnitDetails.ValidityFromDate.ToString());
+                                        orgStructureDepartment.ValidityToDate = DateTime.Parse(unit.UnitDetails.ValidityToDate.ToString());
+
+                                        orgStructureDepartment.OrganizationStructureTemplateDepartmentCostCenters = new List<OS_OrganizationStructureTemplateDepartmentCostCenter_Dto>();
+                                        List<CostCenterVM> CostCenters = JsonSerializer.Deserialize<List<CostCenterVM>>(unit.UnitDetails.costCenters.ToString());
+                                        for (int y = 0; y < CostCenters.Count; y++)
+                                        {
+                                            CostCenterVM cc = CostCenters[y];
+                                            OS_OrganizationStructureTemplateDepartmentCostCenter_Dto orgDEPCC = new OS_OrganizationStructureTemplateDepartmentCostCenter_Dto();
+                                            orgDEPCC.CostCenterId = cc.Id;
+                                            orgDEPCC.Percentage = cc.Percentage;
+
+                                            orgStructureDepartment.OrganizationStructureTemplateDepartmentCostCenters.Add(orgDEPCC);
+                                        }
+
+                                        orgStructureDepartment.OrganizationStructureTemplateDepartmentAssociatedPositions = new List<OS_OrganizationStructureTemplateDepartmentPosition_Dto>();
+                                        List<PositionVM> AssociatedPositions = this.JsonSerializer.Deserialize<List<PositionVM>>((unit.UnitDetails.associations as dynamic).positions.ToString());
+                                        for (int y = 0; y < AssociatedPositions.Count; y++)
+                                        {
+                                            PositionVM p = AssociatedPositions[y];
+                                            OS_OrganizationStructureTemplateDepartmentPosition_Dto orgDEPP = new OS_OrganizationStructureTemplateDepartmentPosition_Dto();
+                                            orgDEPP.PositionTemplateId = p.Id;
+
+                                            orgStructureDepartment.OrganizationStructureTemplateDepartmentAssociatedPositions.Add(orgDEPP);
+                                        }
+
+                                        //Guid locId = Guid.Empty;
+                                        //Guid.TryParse(unit.UnitDetails.DEPLocationId.ToString(), out locId);
+                                        //orgStructureDepartment.LocationId = locId;
+
+                                        int headId = int.Parse(unit.UnitDetails.HeadOfDEPId.ToString());
+                                        orgStructureDepartment.OrganizationStructureTemplateDepartmentAssociatedPositions.FirstOrDefault(x => x.PositionTemplateId == headId).IsHead = true;
+                                        orgStructureDepartment.OrganizationStructureTemplateDepartmentAssociatedPositions.FirstOrDefault(x => x.PositionTemplateId != headId).IsHead = false;
+                                    }
+
+                                    int parentId = int.Parse(structuralNode.ParentId.ToString());
+                                    if (OrganizationStructureTemplateBusinessUnits.Any(x => x.Id == parentId))
+                                    {
+                                        var _ParentBU = OrganizationStructureTemplateBusinessUnits.FirstOrDefault(x => x.Id == parentId);
+                                        if (_ParentBU.OrganizationStructureTemplateDepartments == null)
+                                            _ParentBU.OrganizationStructureTemplateDepartments = new List<OS_OrganizationStructureTemplateDepartment_Dto>();
+                                        _ParentBU.OrganizationStructureTemplateDepartments.Add(orgStructureDepartment);
+                                    }
+                                    else if (OrganizationStructureTemplateDivisions.Any(x => x.Id == parentId))
+                                    {
+                                        var _ParentDIV = OrganizationStructureTemplateDivisions.FirstOrDefault(x => x.Id == parentId);
+                                        if (_ParentDIV.OrganizationStructureTemplateDepartments == null)
+                                            _ParentDIV.OrganizationStructureTemplateDepartments = new List<OS_OrganizationStructureTemplateDepartment_Dto>();
+                                        _ParentDIV.OrganizationStructureTemplateDepartments.Add(orgStructureDepartment);
+                                    }
+                                    else if (OrganizationStructureTemplateDepartments.Any(x => x.Id == parentId))
+                                    {
+                                        //var _ParentDEP = OrganizationStructureTemplateDepartments.FirstOrDefault(x => x.Id == parentId);
+                                        //if (_ParentDEP.OrganizationStructureTemplateDepartments == null)
+                                        //    _ParentDEP.OrganizationStructureTemplateDepartments = new List<OS_OrganizationStructureTemplateDepartment_Dto>();
+                                        //_ParentDEP.OrganizationStructureTemplateDepartments.Add(orgStructureDepartment);
+                                    }
+
+                                    OrganizationStructureTemplateDepartments.Add(orgStructureDepartment);
+                                    //organizationStructureTemplate_Dto.OrganizationStructureTemplateDepartments.Add(orgStructureDepartment);
+                                    break;
+                                case "Position":
+                                    OS_OrganizationStructureTemplatePosition_Dto orgStructurePosition = new OS_OrganizationStructureTemplatePosition_Dto();
+                                    orgStructurePosition.Id = structuralNode.Id;
+                                    orgStructurePosition.PositionTemplateId = unit.Id;
+                                    orgStructurePosition.ValidityFromDate = DateTime.Parse(unit.ValidityFromDate);
+                                    orgStructurePosition.ValidityToDate = DateTime.Parse(unit.ValidityToDate);
+
+                                    if (unit.UnitDetails != null)
+                                    {
+                                        //orgStructurePosition.ValidityFromDate = DateTime.Parse(unit.UnitDetails.ValidityFromDate.ToString());
+                                        //orgStructurePosition.ValidityToDate = DateTime.Parse(unit.UnitDetails.ValidityToDate.ToString());
+
+                                        orgStructurePosition.OrganizationStructureTemplatePositionJobs = new List<OS_OrganizationStructureTemplatePositionJob_Dto>();
+                                        List<PositionJobVM> Jobs = JsonSerializer.Deserialize<List<PositionJobVM>>(unit.UnitDetails.jobDetails.ToString());
+                                        for (int y = 0; y < Jobs.Count; y++)
+                                        {
+                                            PositionJobVM pJ = Jobs[y];
+                                            OS_OrganizationStructureTemplatePositionJob_Dto orgDEPPJ = new OS_OrganizationStructureTemplatePositionJob_Dto();
+                                            orgDEPPJ.JobTemplateId = pJ.Id;
+
+                                            orgDEPPJ.EmployeeClassId = pJ.EmployeeClassId;
+                                            orgDEPPJ.LevelId = pJ.LevelId;
+                                            orgDEPPJ.ContractTypeId = pJ.ContractTypeId;
+
+                                            orgStructurePosition.OrganizationStructureTemplatePositionJobs.Add(orgDEPPJ);
+                                        }
+                                    }
+
+                                    int _parentId = int.Parse(structuralNode.ParentId.ToString());
+                                    if (OrganizationStructureTemplateBusinessUnits.Any(x => x.Id == _parentId))
+                                    {
+                                        var _ParentBU = OrganizationStructureTemplateBusinessUnits.FirstOrDefault(x => x.Id == _parentId);
+                                        if (_ParentBU.OrganizationStructureTemplateBusinessUnitPositions == null)
+                                            _ParentBU.OrganizationStructureTemplateBusinessUnitPositions = new List<OS_OrganizationStructureTemplatePosition_Dto>();
+                                        _ParentBU.OrganizationStructureTemplateBusinessUnitPositions.Add(orgStructurePosition);
+                                    }
+                                    else if (OrganizationStructureTemplateDivisions.Any(x => x.Id == _parentId))
+                                    {
+                                        var _ParentDIV = OrganizationStructureTemplateDivisions.FirstOrDefault(x => x.Id == _parentId);
+                                        if (_ParentDIV.OrganizationStructureTemplateDivisionPositions == null)
+                                            _ParentDIV.OrganizationStructureTemplateDivisionPositions = new List<OS_OrganizationStructureTemplatePosition_Dto>();
+                                        _ParentDIV.OrganizationStructureTemplateDivisionPositions.Add(orgStructurePosition);
+                                    }
+                                    else if (OrganizationStructureTemplateDepartments.Any(x => x.Id == _parentId))
+                                    {
+                                        var _ParentDEP = OrganizationStructureTemplateDepartments.FirstOrDefault(x => x.Id == _parentId);
+                                        if (_ParentDEP.OrganizationStructureTemplateDepartmentPositions == null)
+                                            _ParentDEP.OrganizationStructureTemplateDepartmentPositions = new List<OS_OrganizationStructureTemplatePosition_Dto>();
+                                        _ParentDEP.OrganizationStructureTemplateDepartmentPositions.Add(orgStructurePosition);
+                                    }
+                                    else if (OrganizationStructureTemplatePositions.Any(x => x.Id == _parentId))
+                                    {
+                                        //var _ParentPOS = OrganizationStructureTemplatePositions.FirstOrDefault(x => x.Id == _parentId);
+                                        //if (_ParentPOS.OrganizationStructureTemplatePositions == null)
+                                        //    _ParentPOS.OrganizationStructureTemplatePositions = new List<OS_OrganizationStructureTemplatePosition_Dto>();
+                                        //_ParentPOS.OrganizationStructureTemplatePositions.Add(orgStructurePosition);
+                                    }
+
+                                    OrganizationStructureTemplatePositions.Add(orgStructurePosition);
+                                    break;
+                            }
+                        }
 
                         OS_OrganizationStructureTemplate_Dto added = await OS_OrganizationStructureTemplateAppService.CreateAsync(organizationStructureTemplate_Dto);
                         OS_OrganizationStructureTemplate_Dto addeddDto = await OS_OrganizationStructureTemplateAppService.GetOrganizationStructureTemplateAsync(added.Id);
@@ -497,12 +753,43 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
             public string Type { get; set; }
             public UnitVM _unit { get; set; }
             public int ParentId { get; set; }
+
+            public dynamic ParentItem { get; set; }
+        }
+        public class PositionVM
+        {
+            public int Id { get; set; }
+            public string ValidityFromDate { get; set; }
+            public string ValidityToDate { get; set; }
+        }
+        public class PositionJobVM
+        {
+            public int Id { get; set; }
+
+            public Guid LevelId { get; set; }
+            public Guid EmployeeClassId { get; set; }
+            public Guid ContractTypeId { get; set; }
+
+            public string ValidityFromDate { get; set; }
+            public string ValidityToDate { get; set; }
+        }
+        public class CostCenterVM
+        {
+            public Guid Id { get; set; }
+            public int Percentage { get; set; }
         }
         public class UnitVM
         {
             public int Id { get; set; }
-            public dynamic UnitDetails;
+            public dynamic UnitDetails { get; set; }
             public string UniqueId { get; set; }
+            public string ValidityFromDate { get; set; }
+            public string ValidityToDate { get; set; }
+            public int PayGroupId { get; set; }
+            public int PayGradeId { get; set; }
+            public int LocationId { get; set; }
+
+            public dynamic DepartmentCostCenterTemplates { get; set; }
         }
     }
 }

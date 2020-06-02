@@ -155,18 +155,33 @@ namespace CERP
             #region Organization Structure
             CreateMap<OS_OrganizationStructureTemplate, OS_OrganizationStructureTemplate_Dto>();
             CreateMap<OS_OrganizationStructureTemplate_Dto, OS_OrganizationStructureTemplate>();
-            CreateMap<OS_OrganizationStructureTemplateBusinessUnits, OS_OrganizationStructureTemplateBusinessUnits_Dto>();
-            CreateMap<OS_OrganizationStructureTemplateBusinessUnits_Dto, OS_OrganizationStructureTemplateBusinessUnits>();
+
+            CreateMap<OS_OrganizationStructureTemplateBusinessUnit, OS_OrganizationStructureTemplateBusinessUnit_Dto>();
+            CreateMap<OS_OrganizationStructureTemplateBusinessUnit_Dto, OS_OrganizationStructureTemplateBusinessUnit>();
             CreateMap<OS_OrganizationStructureTemplateBusinessUnitPosition, OS_OrganizationStructureTemplateBusinessUnitPosition_Dto>();
             CreateMap<OS_OrganizationStructureTemplateBusinessUnitPosition_Dto, OS_OrganizationStructureTemplateBusinessUnitPosition>();
-            CreateMap<OS_OrganizationStructureTemplateDivisions, OS_OrganizationStructureTemplateDivisions_Dto>();
-            CreateMap<OS_OrganizationStructureTemplateDivisions_Dto, OS_OrganizationStructureTemplateDivisions>();
+            CreateMap<OS_OrganizationStructureTemplateBusinessUnitCostCenter, OS_OrganizationStructureTemplateBusinessUnitCostCenter_Dto>();
+            CreateMap<OS_OrganizationStructureTemplateBusinessUnitCostCenter_Dto, OS_OrganizationStructureTemplateBusinessUnitCostCenter>();
+
+            CreateMap<OS_OrganizationStructureTemplateDivision, OS_OrganizationStructureTemplateDivision_Dto>();
+            CreateMap<OS_OrganizationStructureTemplateDivision_Dto, OS_OrganizationStructureTemplateDivision>();
             CreateMap<OS_OrganizationStructureTemplateDivisionPosition, OS_OrganizationStructureTemplateDivisionPosition_Dto>();
             CreateMap<OS_OrganizationStructureTemplateDivisionPosition_Dto, OS_OrganizationStructureTemplateDivisionPosition>();
-            CreateMap<OS_OrganizationStructureTemplateDepartments, OS_OrganizationStructureTemplateDepartments_Dto>();
-            CreateMap<OS_OrganizationStructureTemplateDepartments_Dto, OS_OrganizationStructureTemplateDepartments>();
+            CreateMap<OS_OrganizationStructureTemplateDivisionCostCenter, OS_OrganizationStructureTemplateDivisionCostCenter_Dto>();
+            CreateMap<OS_OrganizationStructureTemplateDivisionCostCenter_Dto, OS_OrganizationStructureTemplateDivisionCostCenter>();
+
+            CreateMap<OS_OrganizationStructureTemplateDepartment, OS_OrganizationStructureTemplateDepartment_Dto>();
+            CreateMap<OS_OrganizationStructureTemplateDepartment_Dto, OS_OrganizationStructureTemplateDepartment>();
             CreateMap<OS_OrganizationStructureTemplateDepartmentPosition, OS_OrganizationStructureTemplateDepartmentPosition_Dto>();
             CreateMap<OS_OrganizationStructureTemplateDepartmentPosition_Dto, OS_OrganizationStructureTemplateDepartmentPosition>();
+            CreateMap<OS_OrganizationStructureTemplateDepartmentCostCenter, OS_OrganizationStructureTemplateDepartmentCostCenter_Dto>();
+            CreateMap<OS_OrganizationStructureTemplateDepartmentCostCenter_Dto, OS_OrganizationStructureTemplateDepartmentCostCenter>();
+
+            CreateMap<OS_OrganizationStructureTemplatePosition, OS_OrganizationStructureTemplatePosition_Dto>();
+            CreateMap<OS_OrganizationStructureTemplatePosition_Dto, OS_OrganizationStructureTemplatePosition>();
+            CreateMap<OS_OrganizationStructureTemplatePositionJob, OS_OrganizationStructureTemplatePositionJob_Dto>();
+            CreateMap<OS_OrganizationStructureTemplatePositionJob_Dto, OS_OrganizationStructureTemplatePositionJob>();
+
 
             CreateMap<OS_DivisionTemplate, OS_DivisionTemplate_Dto>();
             CreateMap<OS_DivisionTemplate_Dto, OS_DivisionTemplate>();
@@ -178,8 +193,8 @@ namespace CERP
             CreateMap<OS_DepartmentTemplate_Dto, OS_DepartmentTemplate>();
             CreateMap<OS_DepartmentSubDepartmentTemplate, OS_DepartmentSubDepartmentTemplate_Dto>();
             CreateMap<OS_DepartmentSubDepartmentTemplate_Dto, OS_DepartmentSubDepartmentTemplate>();
-            CreateMap<OS_DepartmentPositionTemplate, OS_DepartmentPositionTemplate_Dto>();
-            CreateMap<OS_DepartmentPositionTemplate_Dto, OS_DepartmentPositionTemplate>();
+            //CreateMap<OS_DepartmentPositionTemplate, OS_DepartmentPositionTemplate_Dto>();
+            //CreateMap<OS_DepartmentPositionTemplate_Dto, OS_DepartmentPositionTemplate>();
             CreateMap<OS_DepartmentCostCenterTemplate, OS_DepartmentCostCenterTemplate_Dto>();
             CreateMap<OS_DepartmentCostCenterTemplate_Dto, OS_DepartmentCostCenterTemplate>();
 
@@ -187,8 +202,8 @@ namespace CERP
             CreateMap<OS_PositionTemplate_Dto, OS_PositionTemplate>();
             CreateMap<OS_PositionJobTemplate, OS_PositionJobTemplate_Dto>();
             CreateMap<OS_PositionJobTemplate_Dto, OS_PositionJobTemplate>();
-            CreateMap<OS_PositionTaskTemplate, OS_PositionTaskTemplate_Dto>();
-            CreateMap<OS_PositionTaskTemplate_Dto, OS_PositionTaskTemplate>();
+            //CreateMap<OS_PositionTaskTemplate, OS_PositionTaskTemplate_Dto>();
+            //CreateMap<OS_PositionTaskTemplate_Dto, OS_PositionTaskTemplate>();
             CreateMap<OS_PositionCostCenterTemplate, OS_PositionCostCenterTemplate_Dto>();
             CreateMap<OS_PositionCostCenterTemplate_Dto, OS_PositionCostCenterTemplate>();
 

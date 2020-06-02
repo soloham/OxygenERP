@@ -77,12 +77,17 @@ namespace CERP.EntityFrameworkCore
         #region Organizational Management
         #region Organization Structure
         public DbSet<OS_OrganizationStructureTemplate> OS_OrganizationStructureTemplates { get; set; }
-        public DbSet<OS_OrganizationStructureTemplateBusinessUnits> OS_OrganizationStructureTemplateBusinessUnits { get; set; }
+        public DbSet<OS_OrganizationStructureTemplateBusinessUnit> OS_OrganizationStructureTemplateBusinessUnits { get; set; }
         public DbSet<OS_OrganizationStructureTemplateBusinessUnitPosition> OS_OrganizationStructureTemplateBusinessUnitPositions { get; set; }
-        public DbSet<OS_OrganizationStructureTemplateDivisions> OS_OrganizationStructureTemplateDivisions { get; set; }
+        public DbSet<OS_OrganizationStructureTemplateBusinessUnitCostCenter> OS_OrganizationStructureTemplateBusinessUnitCostCenters { get; set; }
+        public DbSet<OS_OrganizationStructureTemplateDivision> OS_OrganizationStructureTemplateDivisions { get; set; }
         public DbSet<OS_OrganizationStructureTemplateDivisionPosition> OS_OrganizationStructureTemplateDivisionPositions { get; set; }
-        public DbSet<OS_OrganizationStructureTemplateDepartments> OS_OrganizationStructureTemplateDepartments { get; set; }
+        public DbSet<OS_OrganizationStructureTemplateDivisionCostCenter> OS_OrganizationStructureTemplateDivisionCostCenters { get; set; }
+        public DbSet<OS_OrganizationStructureTemplateDepartment> OS_OrganizationStructureTemplateDepartments { get; set; }
         public DbSet<OS_OrganizationStructureTemplateDepartmentPosition> OS_OrganizationStructureTemplateDepartmentPositions { get; set; }
+        public DbSet<OS_OrganizationStructureTemplateDepartmentCostCenter> OS_OrganizationStructureTemplateDepartmentCostCenters { get; set; }
+         public DbSet<OS_OrganizationStructureTemplatePosition> OS_OrganizationStructureTemplatePositions { get; set; }
+        public DbSet<OS_OrganizationStructureTemplatePositionJob> OS_OrganizationStructureTemplatePositionJobs { get; set; }
 
         public DbSet<OS_BusinessUnitTemplate> OS_BusinessUnitTemplates { get; set; }
         public DbSet<OS_DivisionTemplate> OS_DivisionTemplates { get; set; }
