@@ -33,7 +33,7 @@ namespace CERP.HR.OrganizationalManagement.PayrollStructure
         public string Description { get; set; }
 
         [CustomAudited]
-        public PS_PayComponentStatus PayGradeStatus { get; set; }
+        public PS_PayComponentStatus PayComponentStatus { get; set; }
 
         public PS_PayComponentType PayComponentType { get; set; }
         [CustomAudited]

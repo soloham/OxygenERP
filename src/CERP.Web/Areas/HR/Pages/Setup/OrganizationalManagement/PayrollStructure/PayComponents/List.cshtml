@@ -15,7 +15,7 @@
     bool IsEditing = (bool)ViewData["IsEditing"];
 
     ViewData["Title"] = L["PayComponents"].Value;
-    ViewData["IconClass"] = "fas fa-check-circle";
+    ViewData["IconClass"] = "fas fa-list";
     ViewData["HeaderTitle"] = L["PayComponents"].Value.ToUpper();
     ViewData["SubTitle"] = $"{L["ListOf"]} {L["PayComponents"]}";
     ViewData["Area"] = "Setup";
@@ -470,7 +470,7 @@
                         </div>
                     </div>
                     <div class="col-sm-2" style="padding:0">
-                        <h3>Last Updated by * at */*/*</h3>
+                        <h3>@*Last Updated by * at */*/**@</h3>
 
                     </div>
                 </div>
@@ -529,9 +529,22 @@
                     }'></e-grid-column>
                     <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
                     <e-grid-column field="description" headerText="Description" allowEditing="true" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="statusDescription" allowEditing="false" headerText="Status" textAlign="Center"></e-grid-column>
                     <e-grid-column field="payComponentType.name" headerText="Component Type" allowEditing="true" textAlign="Center"></e-grid-column>
                     <e-grid-column field="currency.currencyName" headerText="Currency" allowEditing="true" textAlign="Center"></e-grid-column>
                     <e-grid-column field="payFrequency.name" headerText="Pay Frequency" allowEditing="true" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="isEarning" allowEditing="false" headerText="Is Earning" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="canOverride" showInColumnChooser="true" allowEditing="false" headerText="Override" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="isRecurring" showInColumnChooser="true" visible="false" allowEditing="false" headerText="Recurring" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="isIncomeTaxTreatment" showInColumnChooser="true" visible="false" allowEditing="false" headerText="Income Tax Treatment" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="isGOSITreatment" showInColumnChooser="true" visible="false" allowEditing="false" headerText="GOSI Treatment" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="isEOSBTreatment" showInColumnChooser="true" visible="false" allowEditing="false" headerText="EOSB Treatment" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="selfServiceVisibility" showInColumnChooser="true" visible="false" allowEditing="false" headerText="Self Service Visibility" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="selfServiceDescription" showInColumnChooser="true" visible="false" allowEditing="false" headerText="Self Service Description" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="isUsedForCompPlanning" showInColumnChooser="true" visible="false" allowEditing="false" headerText="Used For Comp Planning" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="isRecurringPaymentAndDeduction" showInColumnChooser="true" visible="false" allowEditing="false" headerText="Recurring Payment And Deduction" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="maxDecimalPlaces" showInColumnChooser="true" visible="false" allowEditing="false" headerText="Max Decimal Places" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="effectiveDate" showInColumnChooser="true" visible="false" allowEditing="false" headerText="Effective Date" textAlign="Center"></e-grid-column>
 
                     <e-grid-column headerText="Actions" textAlign="Center" commands="payComponentsCommands"></e-grid-column>
                 </e-grid-columns>

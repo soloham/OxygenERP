@@ -1,0 +1,1383 @@
+﻿@page "/HR/EmployeeCentral/Employee"
+@using Syncfusion.EJ2.Navigations;
+@using CERP.HR.Employee.Enums;
+@using CERP.App.Helpers;
+@model CERP.Web.Areas.HR.Pages.EmployeeCentral.EmployeeModel
+@{
+    ViewData["Title"] = "Employees";
+    ViewData["IconClass"] = "fa fa-user-tie";
+    ViewData["HeaderTitle"] = "EMPLOYEES";
+    ViewData["SubTitle"] = "List of Employees";
+    ViewData["Area"] = "HR";
+
+    ViewData["IsList"] = false;
+    ViewData["IsCreate"] = false;
+
+    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+
+    var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
+    var initialCrudToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Add", "Delete", "Search", "ColumnChooser" };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Audit Trail", tooltipText = "View Audit Trail", prefixIcon = "e-toggleaudittrail", id = "toggleaudittrail" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
+
+    List<object> attachmentsCommands = new List<object>();
+    attachmentsCommands.Add(new { type = "View", buttonOption = new { iconCss = "e-icons e-view", cssClass = "e-flat" } });
+    attachmentsCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+
+    List<object> defaultCrudCommands = new List<object>();
+    defaultCrudCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
+    defaultCrudCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+    defaultCrudCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
+
+    var dicValueTypeEdit = new
+    {
+        @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Fields = new Syncfusion.EJ2.DropDowns.DropDownListFieldSettings() { Text = "label", Value = "value" }, DataSource = new List<object>(), Query = "new ej.data.Query()", AllowFiltering = true }
+    };
+    var complexNameEdit = new
+    {
+        @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Fields = new Syncfusion.EJ2.DropDowns.DropDownListFieldSettings() { Text = "name", Value = "id" }, DataSource = new List<object>(), Query = "new ej.data.Query()", AllowFiltering = true }
+    };
+}
+
+@section styles {
+    <style>
+        .EmployeeHeader {
+            height: 400px;
+            background-image: url('/images/banner2.jpg');
+            background-size: cover;
+        }
+
+        .customTab .e-tab-header.e-control.e-toolbar {
+            background-color: #24344D !important;
+        }
+
+        .customTab .e-toolbar .e-toolbar-items {
+            display: flex;
+            justify-content: center;
+            background-color: #24344D !important;
+            color: #fff !important;
+        }
+
+        .customTab.e-tab .e-tab-header .e-toolbar-item.e-active .e-tab-text {
+            color: #fff !important;
+        }
+
+        .customTab.e-tab .e-tab-header .e-toolbar-item .e-tab-text {
+            color: #fff !important;
+        }
+
+        .customTab.e-tab .e-tab-header .e-toolbar-item.active .e-tab-text:hover {
+            color: #fff !important;
+        }
+
+        .customTab.e-tab .e-tab-header .e-toolbar-item .e-tab-text:hover {
+            color: #eeeeee !important;
+        }
+
+        .customTab.e-tab .e-tab-header .e-toolbar-item .e-tab-wrap {
+            color: #24344D !important;
+            border-radius: 0;
+            color: #333;
+            border: 1px solid !important;
+        }
+
+        .customTab .e-tab .e-tab-header .e-toolbar-item.e-active .e-text-wrap::before {
+            border: 1.5px solid #0078d6;
+            content: '';
+            display: block;
+            position: absolute;
+            top: 95%;
+            width: 100%;
+        }
+
+        .customTab .e-toolbar-item.e-template {
+            padding: 0 20px 0 0 !important;
+        }
+
+
+        .classicTab .e-tab-header.e-control.e-toolbar {
+            background-color: #eaeaea !important;
+        }
+
+        .classicTab .e-toolbar .e-toolbar-items {
+            display: initial !important;
+            /*justify-content: center;*/
+            background-color: #fff !important;
+            color: #333 !important;
+            width: 250px !important;
+            border-right: 2px Solid #0078d6;
+        }
+
+        .classicTab.e-tab .e-tab-header .e-toolbar-item.e-active .e-tab-text {
+            color: #fff !important;
+        }
+
+        .classicTab.e-tab .e-tab-header .e-toolbar-item .e-tab-text {
+            color: #333 !important;
+        }
+
+            .classicTab.e-tab .e-tab-header .e-toolbar-item .e-tab-text:hover {
+                color: #030303 !important;
+            }
+
+        .classicTab.e-tab .e-tab-header .e-toolbar-item.active .e-tab-text:hover {
+            color: #fff !important;
+        }
+
+        .classicTab.e-tab .e-tab-header .e-toolbar-item .e-tab-wrap {
+            color: #eaeaea !important;
+            border-radius: 0;
+            color: #333;
+            border: 1px solid !important;
+        }
+
+        .classicTab .e-tab .e-tab-header .e-toolbar-item.e-active .e-text-wrap::before {
+            border: 1.5px solid #0078d6;
+            content: '';
+            display: block;
+            position: absolute;
+            top: 95%;
+            width: 100%;
+        }
+
+        .classicTab .e-toolbar-item.e-template {
+            padding: 0 0px 0px 0 !important;
+            margin: 5px 0px 0px 0 !important;
+            height: 20px;
+        }
+
+
+        .defaultTab .e-tab-header.e-control.e-toolbar {
+            background-color: #eaeaea !important;
+        }
+
+        .defaultTab .e-toolbar .e-toolbar-items {
+            display: initial !important;
+            /*justify-content: center;*/
+            background-color: initial !important;
+            color: #333 !important;
+            width: initial !important;
+            border-right: initial !important;
+        }
+
+        .defaultTab.e-tab .e-tab-header .e-toolbar-item.e-active .e-tab-text {
+            color: #333 !important;
+        }
+
+        .defaultTab.e-tab .e-tab-header .e-toolbar-item .e-tab-text {
+            color: initial !important;
+        }
+
+            .defaultTab.e-tab .e-tab-header .e-toolbar-item .e-tab-text:hover {
+                color: initial !important;
+            }
+
+        .defaultTab.e-tab .e-tab-header .e-toolbar-item.active .e-tab-text:hover {
+            color: #fff !important;
+        }
+
+        .defaultTab.e-tab .e-tab-header .e-toolbar-item .e-tab-wrap {
+            color: #eaeaea !important;
+            border-radius: 0 !important;
+            color: #333 !important;
+            border: none !important;
+        }
+
+        .defaultTab.e-tab .e-tab-header .e-toolbar-item.e-active .e-text-wrap::before {
+            border: 1.5px solid #0078d6;
+            content: '';
+            display: block;
+            position: absolute;
+            top: 95%;
+            width: 100%;
+        }
+
+        .defaultTab.e-tab .e-tab-header .e-toolbar-item.e-active .e-tab-wrap {
+            background: none !important;
+            border-radius: 0;
+            border-color: #0078d6;
+        }
+
+        .defaultTab .e-toolbar-item.e-template {
+            padding: initial !important;
+            margin: initial !important;
+            height: initial !important;
+        }
+
+        .mainTab {
+            background: #fff;
+            margin: 20px 10px;
+            border-top: 2px Solid #0078d6;
+        }
+
+        .secondaryTab {
+            background: #fff;
+            margin-left: 96px;
+            border-left: 2px Solid #0078d6;
+        }
+
+        .customForm {
+            margin: 0 0 0 10px;
+            background: #fff;
+            border: 1px solid #cccccc
+        }
+
+            .customForm .formHeader {
+                background: #fff;
+                padding: 5px;
+                border-bottom: 1px solid #cccccc
+            }
+
+                .customForm .formHeader .headerTitle {
+                    text-shadow: 0px 0px 350px #2c5173;
+                    font-size: 22px;
+                    font-family: "Segoe UI", "GeezaPro", "DejaVu Serif", sans-serif, "-apple-system", "BlinkMacSystemFont";
+                    font-weight: 400;
+                    /* align-self: center; */
+                    flex: auto;
+                    background-color: transparent;
+                    height: inherit;
+                    padding: 0px 0 0px 10px !important;
+                    display: inherit;
+                }
+
+            .customForm .formContent {
+                padding: 10px 10px 20px 10px;
+            }
+    </style>
+}
+@section scripts {
+    <script>
+        let isEditingEmployee = false;
+        let curEmployee;
+
+        let isEditingNationalIdentity = false;
+        let curNationalIdentityEditRow;
+
+        let departments = [];
+        let possibleSubDepartments = [];
+
+        let dictionaryValueTypes = [];
+        let fullNameValueObjects = [];
+
+
+        let nationalIdentityGrid;
+        let passportTravelGrid;
+        let emailAddressesGrid;
+        let phoneAddressesGrid;
+        let homeAddressesGrid;
+        let emergencyContactsGrid;
+
+        let dependantsGrid;
+        let dependantBiosGrid;
+        let dependantNationalIndentitiesGrid;
+        let dependantPassportTravelDocsGrid;
+
+        function populateDictionaryValues(data, grid, columnIndex) {
+            let dataMS = [];
+            for (let i = 0; i < data.length; i++) {
+                let item = data[i];
+                dataMS.push({ label: `${item.key} - ${item.value}`, value: item.id, data: item });
+            }
+            grid.columns[columnIndex].edit.params.dataSource = dataMS;
+            console.log(dataMS);
+        }
+        function populateMSDictionaryValues(data, multiselect) {
+            let dataMS = [];
+            for (let i = 0; i < data.length; i++) {
+                let item = data[i];
+                dataMS.push({ label: `${item.key} - ${item.value}`, value: item.id, data: item });
+            }
+            console.log(dataMS);
+            $(multiselect).multiselect('dataprovider', dataMS);
+        }
+        function loadDictionaryValues(valueType, gridsArray = [], columnsArray = [], multiselects = []) {
+            $.each(gridsArray, function (i, x) { x.showSpinner(); });
+            cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(valueType).done(function (data) {
+                $.each(gridsArray, function (i, x) { x.hideSpinner(); });
+
+                dictionaryValueTypes.removeIf(function (x) { return data.filter(function (y) { return y.id == x.id }).length > 0 })
+                dictionaryValueTypes = dictionaryValueTypes.concat(data);
+
+                $.each(gridsArray, function (i, x) { populateDictionaryValues(data, x, columnsArray[i]) });
+                if(multiselects.length > 0)
+                    $.each(multiselects, function (i, x) { populateMSDictionaryValues(data, x) });
+            });
+        }
+
+        $(document).ready(function () {
+            let options = {
+                buttonWidth: '100%',
+                includeSelectAllOption: true,
+                enableFiltering: false,
+                enableClickableOptGroups: true,
+                includeResetOption: true,
+                includeResetDivider: true,
+                enableCollapsibleOptGroups: true
+            };
+            $('#empBirthCountry').multiselect(options);
+            $('#empGender').multiselect(options);
+            $('#empMaritalStatus').multiselect(options);
+            $('#empNationality').multiselect(options);
+            $('#empPreferredLanguage').multiselect(options);
+
+            nationalIdentityGrid = $('#NationalIdentitiesGrid')[0].ej2_instances[0];
+
+            passportTravelGrid = $('#PassportTravelsGrid')[0].ej2_instances[0];
+
+            emailAddressesGrid = $('#EmailAddressesGrid')[0].ej2_instances[0];
+            loadDictionaryValues(ValueTypeModules.EmailType, [emailAddressesGrid], [1]);
+
+            phoneAddressesGrid = $('#PhoneAddressesGrid')[0].ej2_instances[0];
+            loadDictionaryValues(ValueTypeModules.PhoneType, [phoneAddressesGrid], [1]);
+
+            homeAddressesGrid = $('#HomeAddressesGrid')[0].ej2_instances[0];
+            loadDictionaryValues(ValueTypeModules.AddressType, [homeAddressesGrid], [1]);
+
+            emergencyContactsGrid = $('#EmergencyContactsGrid')[0].ej2_instances[0];
+
+
+            dependantsGrid = $('#DependantsGrid')[0].ej2_instances[0];
+            dependantBiosGrid = $('#DependantsBiosGrid')[0].ej2_instances[0];
+            dependantNationalIndentitiesGrid = $('#DependantsNationalIdentitiesGrid')[0].ej2_instances[0];
+            dependantPassportTravelDocsGrid = $('#DependantsPassportTravelDocsGrid')[0].ej2_instances[0];
+
+            loadDictionaryValues(ValueTypeModules.IDType, [nationalIdentityGrid, dependantNationalIndentitiesGrid], [1, 1]);
+            loadDictionaryValues(ValueTypeModules.Country, [passportTravelGrid, homeAddressesGrid, emergencyContactsGrid, dependantBiosGrid, dependantPassportTravelDocsGrid], [2, 8, 11, 2, 2], ['#empBirthCountry', '#empNationality']);
+            loadDictionaryValues(ValueTypeModules.Relationship, [emergencyContactsGrid, dependantsGrid], [1, 5]);
+
+            loadDictionaryValues(ValueTypeModules.Gender, [], [], ['#empGender']);
+            loadDictionaryValues(ValueTypeModules.MaritalStatus, [], [], ['#empMaritalStatus']);
+            loadDictionaryValues(ValueTypeModules.Language, [], [], ['#empPreferredLanguage']);
+        });
+    </script>
+}
+
+<div class="site-content" style="background-color: rgb(253,253,253);">
+    <div id="employeeHeader" class="EmployeeHeader">
+
+    </div>
+
+    <ejs-tab id="employeeMainTabs" animation="ViewBag.animation" headerPlacement="Top" heightAdjustMode="Content" cssClass="customTab" overflowMode="Scrollable" created="mainTabCreated">
+        <e-tab-tabitems>
+            <e-tab-tabitem header="@(new TabHeader { Text = "PERSONAL INFORMATION" })" content="#personalInfoTab"></e-tab-tabitem>
+            <e-tab-tabitem header="@(new TabHeader { Text = "EMPLOYMENT" })" content="#employmentInfoTabs"></e-tab-tabitem>
+            <e-tab-tabitem header="@(new TabHeader { Text = "COMPENSATION" })" conte nt="#compensationTab"></e-tab-tabitem>
+            <e-tab-tabitem header="@(new TabHeader { Text = "TIME" })" conte nt="#timeTab"></e-tab-tabitem>
+            <e-tab-tabitem header="@(new TabHeader { Text = "ACADEMIA & SKILLS PROFILE" })" conte nt="#academiaSkillProfileTab"></e-tab-tabitem>
+            <e-tab-tabitem header="@(new TabHeader { Text = "LOANS" })" conte nt="#academiaSkillProfileTab"></e-tab-tabitem>
+        </e-tab-tabitems>
+    </ejs-tab>
+
+    <div id="personalInfoTab" class="mainTab" style="display: none">
+        <ejs-tab id="personalInfoTabs" animation="ViewBag.animation" heightAdjustMode="None" overflowMode="Scrollable" headerPlacement="Left" cssClass="e-fill classicTab">
+            <e-tab-tabitems>
+                <e-tab-tabitem header="@(new TabHeader { Text = "General Information" })" content="#generalInfoTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Biographical Information" })" content="#bioInfoTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Identity" })" content="#identityInfoTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Contact Information" })" content="#contactInfoTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Dependants Information" })" content="#dependantsInfoTab"></e-tab-tabitem>
+            </e-tab-tabitems>
+        </ejs-tab>
+        <div id="generalInfoTab" class="secondaryTab" style="display: none">
+            <div class="customForm">
+                <div class="formHeader">
+                    <span class="headerTitle">General Information</span>
+                </div>
+                <div class="formContent h-fill-available">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">First Name:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="text" id="firstName" name="FirstName" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">First Name AR:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="text" id="firstNameLocal" name="FirstNameLocal" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Last Name:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="text" id="lastName" name="LastName" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Last Name AR:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="text" id="lastNameLocal" name="LastNameLocal" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Middle Name:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="text" id="middleName" name="MiddleName" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Middle Name AR:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="text" id="middleNameLocal" name="MiddleNameLocal" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Title:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="text" id="empTitle" name="Title" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Preferred Name:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="text" id="empPreferredName" name="PreferredName" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Initials:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="text" id="empInitials" name="Initials" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-md-6" style="padding-left:0">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Gender:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <select id="empGender" name="Gender" class="form-control" required>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Display Name:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="text" id="empDisplayName" name="DisplayName" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Marital Status:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <select id="empMaritalStatus" onchange="
+                                            if (typeof $('option:selected', '#empMaritalStatus').attr('data-value') !== 'undefined' && $('option:selected', '#empMaritalStatus').attr('data-value').includes('Married')) {
+                                                $('#empMarriedSinceField').slideDown(100);
+                                            } else {
+                                                $('#empMarriedSinceField').slideUp(100);
+                                            }
+                                        " name="MaritalStatus" class="form-control" required>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="empMarriedSinceField" class="col-lg-12 col-md-12 col-sm-12 col-12" style="display:none">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Married Since:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="month" id="empMarriedSince" name="MarriedSince" class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Preferred Language:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <select id="empPreferredLanguage" name="PreferredLanguage" class="form-control" required>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Nationality:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <select id="empNationality" name="Nationality" class="form-control" required>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="bioInfoTab" class="secondaryTab" style="display: none">
+            <div class="customForm">
+                <div class="formHeader">
+                    <span class="headerTitle">Biographical Information</span>
+                </div>
+                <div class="formContent h-fill-available">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Date of Birth:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="date" id="dateOfBirth" name="DateOfBirth" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Country of Birth:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <select id="empBirthCountry" name="BirthCountry" class="form-control" required>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Place of Birth:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="text" id="birthPlace" name="PlaceOfBirth" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Attachments:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="file" id="bioAttachment" name="BioAttachment" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="identityInfoTab" class="secondaryTab" style="display: none">
+            <div class="customForm">
+                <div class="formHeader">
+                    <span class="headerTitle">Identity Information</span>
+                </div>
+                <div class="formContent h-fill-available">
+                    <ejs-accordion id="identityInfoAccordion">
+                        <e-accordion-accordionitems>
+                            <e-accordion-accordionitem expanded="true" header="National Identity" content="#nationalIdentityInfo"></e-accordion-accordionitem>
+                            <e-accordion-accordionitem header="Passports/Travel Documents" content="#passportTravelInfo"></e-accordion-accordionitem>
+                        </e-accordion-accordionitems>
+                    </ejs-accordion>
+                    <div id="nationalIdentityInfo">
+                        <div class="control-section">
+                            <div id="nationalIdentitiesCS" class="control-section">
+                                <ejs-grid id="NationalIdentitiesGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultPrimaryFilesCrudCommandClick"
+                                          showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultPrimaryFilesCrudActionBegin" actionComplete="defaultPrimaryFilesCrudActionComplete"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                          toolbarClick="defaultCrudToolbarClick" toolbar="@initialCrudToolBar.Where(x => { if (x.GetType() == typeof(string)) { return (string)x != "ColumnChooser"; } else return true; })"
+                                          allowPaging="true" allowResizing="true">
+
+                                    @{
+
+
+                                    }
+                                    <e-grid-columns>
+                                        <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="idType.value" headerText="ID Type" editType="dropdownedit" edit="dicValueTypeEdit" valueAccessor="@("dictionaryValueAccessor")" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="idNumber" headerText="ID Number" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>
+
+                                        <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
+                                    </e-grid-columns>
+
+                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" mode="Dialog"></e-grid-editSettings>
+                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                </ejs-grid>
+                            </div>
+                            <div id="auditTrail" style="display:none;">
+                                @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                            </div>
+                        </div>
+                    </div>
+                    <div id="passportTravelInfo" style="display: none">
+                        <div class="control-section">
+                            <div id="passportTravelsCS" class="control-section">
+                                <ejs-grid id="PassportTravelsGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultPrimaryFilesCrudCommandClick"
+                                          showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultPrimaryFilesCrudActionBegin" actionComplete="defaultPrimaryFilesCrudActionComplete"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                          toolbarClick="defaultCrudToolbarClick" toolbar="@initialCrudToolBar.Where(x => { if (x.GetType() == typeof(string)) { return (string)x != "ColumnChooser"; } else return true; })"
+                                          allowPaging="true" allowResizing="true">
+
+                                    @{
+
+                                        var documentTypeEdit = new
+                                        {
+@@params = new Syncfusion.EJ2.DropDowns.DropDownList() { DataSource = EnumExtensions.GetDescriptions(typeof(IdentityDocumentType)), Query = "new ej.data.Query()", AllowFiltering = true }
+                                    };
+
+                                    }
+                                    <e-grid-columns>
+                                        <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="docType.value" headerText="Document Type" editType="dropdownedit" edit="documentTypeEdit" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="issuingCountry.value" valueAccessor="@("dictionaryValueAccessor")" headerText="Issuing Country" editType="dropdownedit" edit="dicValueTypeEdit" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="docNumber" headerText="Document Number" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>
+
+                                        <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
+                                    </e-grid-columns>
+
+                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" mode="Dialog"></e-grid-editSettings>
+                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                </ejs-grid>
+                            </div>
+                            <div id="auditTrail" style="display:none;">
+                                @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="contactInfoTab" class="secondaryTab" style="display:none">
+            <div class="customForm">
+                <div class="formHeader">
+                    <span class="headerTitle">Contact Information</span>
+                </div>
+                <div class="formContent h-fill-available">
+                    <ejs-accordion id="contactInfoAccordion">
+                        <e-accordion-accordionitems>
+                            <e-accordion-accordionitem expanded="true" header="Email Addresses" content="#emailAddressesInfo"></e-accordion-accordionitem>
+                            <e-accordion-accordionitem header="Phone Numbers" content="#phoneAddressesInfo"></e-accordion-accordionitem>
+                            <e-accordion-accordionitem header="Home Addresses" content="#homeAddressesInfo"></e-accordion-accordionitem>
+                            <e-accordion-accordionitem header="Emergency Contacts" content="#emergencyContactsInfo"></e-accordion-accordionitem>
+                        </e-accordion-accordionitems>
+                    </ejs-accordion>
+                    <div id="emailAddressesInfo">
+                        <div class="control-section">
+                            <div id="emailAddressesCS" class="control-section">
+                                <ejs-grid id="EmailAddressesGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultPalePrimaryCrudCommandClick"
+                                          showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultPalePrimaryCrudActionBegin" actionComplete="defaultPalePrimaryCrudActionComplete"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                          toolbarClick="defaultCrudToolbarClick" toolbar="@initialCrudToolBar.Where(x => { if (x.GetType() == typeof(string)) { return (string)x != "ColumnChooser"; } else return true; })"
+                                          allowPaging="true" allowResizing="true">
+
+                                    @{
+
+
+                                    }
+                                    <e-grid-columns>
+                                        <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="emailType.value" headerText="Email Type" editType="dropdownedit" edit="dicValueTypeEdit" valueAccessor="@("dictionaryValueAccessor")" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="emailAddress" headerText="Email Address" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        @*<e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>*@
+                                        <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        @*<e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>*@
+
+                                        <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
+                                    </e-grid-columns>
+
+                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" mode="Dialog"></e-grid-editSettings>
+                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                </ejs-grid>
+                            </div>
+                            <div id="auditTrail" style="display:none;">
+                                @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                            </div>
+                        </div>
+                    </div>
+                    <div id="phoneAddressesInfo" style="display: none">
+                        <div class="control-section">
+                            <div id="phoneAddressesCS" class="control-section">
+                                <ejs-grid id="PhoneAddressesGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultPalePrimaryCrudCommandClick"
+                                          showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultPalePrimaryCrudActionBegin" actionComplete="defaultPalePrimaryCrudActionComplete"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                          toolbarClick="defaultCrudToolbarClick" toolbar="@initialCrudToolBar.Where(x => { if (x.GetType() == typeof(string)) { return (string)x != "ColumnChooser"; } else return true; })"
+                                          allowPaging="true" allowResizing="true">
+
+                                    @{
+
+                                    }
+                                    <e-grid-columns>
+                                        <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="phoneType.value" valueAccessor="@("dictionaryValueAccessor")" headerText="Phone Type" editType="dropdownedit" edit="dicValueTypeEdit" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="phoneNumber" headerText="Phone Number" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="extention" headerText="Extension" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        @*<e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>*@
+                                        <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        @*<e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>*@
+
+                                        <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
+                                    </e-grid-columns>
+
+                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" mode="Dialog"></e-grid-editSettings>
+                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                </ejs-grid>
+                            </div>
+                            <div id="auditTrail" style="display:none;">
+                                @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                            </div>
+                        </div>
+                    </div>
+                    <div id="homeAddressesInfo" style="display: none">
+                        <div class="control-section">
+                            <div id="homeAddressesCS" class="control-section">
+                                <ejs-grid id="HomeAddressesGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultPalePrimaryCrudCommandClick"
+                                          showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultPalePrimaryCrudActionBegin" actionComplete="defaultPalePrimaryCrudActionComplete"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                          toolbarClick="defaultCrudToolbarClick" toolbar="@initialCrudToolBar.Where(x => { if (x.GetType() == typeof(string)) { return (string)x != "ColumnChooser"; } else return true; })"
+                                          allowPaging="true" allowResizing="true">
+
+                                    @{
+
+                                    }
+                                    <e-grid-columns>
+                                        <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="addressType.value" valueAccessor="@("dictionaryValueAccessor")" headerText="Address Type" editType="dropdownedit" edit="dicValueTypeEdit" textAlign="Center"></e-grid-column>
+                                        <e-grid-column field="regularAddress" displayAsCheckBox="true" editType="booleanedit" headerText="Regular Address" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="addressLine1" headerText="Address Line 1" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="addressLine2" headerText="Address Line 2" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="city" headerText="City" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="state" headerText="State" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="postalCode" headerText="Postal Code" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="country.value" valueAccessor="@("dictionaryValueAccessor")" headerText="Country" editType="dropdownedit" edit="dicValueTypeEdit" textAlign="Center"></e-grid-column>
+                                        @*<e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>*@
+                                        <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        @*<e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>*@
+
+                                        <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
+                                    </e-grid-columns>
+
+                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" mode="Dialog"></e-grid-editSettings>
+                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                </ejs-grid>
+                            </div>
+                            <div id="auditTrail" style="display:none;">
+                                @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                            </div>
+                        </div>
+                    </div>
+                    <div id="emergencyContactsInfo" style="display: none">
+                        <div class="control-section">
+                            <div id="emergencyContactsCS" class="control-section">
+                                <ejs-grid id="EmergencyContactsGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultPalePrimaryCrudCommandClick"
+                                          showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultPalePrimaryCrudActionBegin" actionComplete="defaultPalePrimaryCrudActionComplete"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                          toolbarClick="defaultCrudToolbarClick" toolbar="@initialCrudToolBar.Where(x => { if (x.GetType() == typeof(string)) { return (string)x != "ColumnChooser"; } else return true; })"
+                                          allowPaging="true" allowResizing="true">
+
+                                    @{
+
+                                    }
+                                    <e-grid-columns>
+                                        <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="relationshipType.value" valueAccessor="@("dictionaryValueAccessor")" headerText="Relationship" editType="dropdownedit" edit="dicValueTypeEdit" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="name" headerText="Name" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="phoneNumber" headerText="Phone Number" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="emailAddress" headerText="Email Address" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="alternatePhone" headerText="Alternate Phone" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="AddressLine1" headerText="Address Line 1" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="AddressLine2" headerText="Address Line 2" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="city" headerText="City" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="state" headerText="State" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="postalCode" headerText="Postal Code" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="country.value" valueAccessor="@("dictionaryValueAccessor")" headerText="Country" editType="dropdownedit" edit="dicValueTypeEdit" textAlign="Center"></e-grid-column>
+                                        <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        @*<e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>*@
+
+                                        <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
+                                    </e-grid-columns>
+
+                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" mode="Dialog"></e-grid-editSettings>
+                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                </ejs-grid>
+                            </div>
+                            <div id="auditTrail" style="display:none;">
+                                @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="dependantsInfoTab" class="secondaryTab" style="display:none">
+            <div class="customForm">
+                <div class="formHeader">
+                    <span class="headerTitle">Dependants Information</span>
+                </div>
+                <div class="formContent h-fill-available">
+                    <ejs-accordion id="dependantsInfoAccordion">
+                        <e-accordion-accordionitems>
+                            <e-accordion-accordionitem expanded="true" header="Dependants" content="#dependantsInfo"></e-accordion-accordionitem>
+                            <e-accordion-accordionitem header="Dependants Biographical Information" content="#dependantsBioInfo"></e-accordion-accordionitem>
+                            <e-accordion-accordionitem header="Dependants Identity Information" content="#dependantsIdentityInfo"></e-accordion-accordionitem>
+                        </e-accordion-accordionitems>
+                    </ejs-accordion> 
+                    <div id="dependantsInfo">
+                        <div class="control-section">
+                            <div id="dependantsCS" class="control-section">
+                                <ejs-grid id="DependantsGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultCrudCommandClick"
+                                          showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultCrudActionBegin" actionComplete="defaultCrudActionComplete"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                          toolbarClick="defaultCrudToolbarClick" toolbar="@initialCrudToolBar.Where(x => { if (x.GetType() == typeof(string)) { return (string)x != "ColumnChooser"; } else return true; })"
+                                          allowPaging="true" allowResizing="true">
+
+                                    @{
+
+
+                                    }
+                                    <e-grid-columns>
+                                        <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="firstName" headerText="First Name" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=false})" field="firstNameAR" headerText="First Name AR" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="middleName" headerText="Middle Name" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="lastName" headerText="Last Name" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="relationship.value" headerText="Relationship" editType="dropdownedit" edit="dicValueTypeEdit" valueAccessor="@("dictionaryValueAccessor")" textAlign="Center"></e-grid-column>
+
+                                        <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
+                                    </e-grid-columns>
+
+                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" mode="Dialog"></e-grid-editSettings>
+                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                </ejs-grid>
+                            </div>
+                            <div id="auditTrail" style="display:none;">
+                                @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                            </div>
+                        </div>
+                    </div>
+                    <div id="dependantsBioInfo" style="display: none">
+                        <div class="control-section">
+                            <div id="dependantsBiosCS" class="control-section">
+                                <ejs-grid id="DependantsBiosGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultFilesCrudCommandClick"
+                                          showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultFilesCrudActionBegin" actionComplete="defaultFilesCrudActionComplete"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                          toolbarClick="defaultCrudToolbarClick" toolbar="@initialCrudToolBar.Where(x => { if (x.GetType() == typeof(string)) { return (string)x != "ColumnChooser"; } else return true; })"
+                                          allowPaging="true" allowResizing="true">
+
+                                    @{
+
+                                    }
+                                    <e-grid-columns>
+                                        <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="dateOfBirth" headerText="Date of Birth" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="birthCountry.value" valueAccessor="@("dictionaryValueAccessor")" headerText="Issuing Country" editType="dropdownedit" edit="dicValueTypeEdit" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="placeOfBirth" headerText="Place of Birth" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="dependant.name" valueAccessor="@("fullNameValueAccessor")" headerText="Dependant" editType="dropdownedit" edit="complexNameEdit" textAlign="Center"></e-grid-column>
+
+                                        <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
+                                    </e-grid-columns>
+
+                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" mode="Dialog"></e-grid-editSettings>
+                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                </ejs-grid>
+                            </div>
+                            <div id="auditTrail" style="display:none;">
+                                @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                            </div>
+                        </div>
+                    </div>
+                    <div id="dependantsIdentityInfo" style="display: none">
+                        <ejs-tab id="dependantsIdentityInfoTabs" animation="ViewBag.animation" heightAdjustMode="None" overflowMode="Scrollable" headerPlacement="Top" cssClass="e-fill customTab">
+                            <e-tab-tabitems>
+                                <e-tab-tabitem header="@(new TabHeader { Text = "National Identities" })" content="#dependantsNationalIdentitiesTab"></e-tab-tabitem>
+                                <e-tab-tabitem header="@(new TabHeader { Text = "Passport/Travel Documents" })" content="#dependantsPassportTravelDocsTab"></e-tab-tabitem>
+                            </e-tab-tabitems>
+                        </ejs-tab>
+                        <div id="dependantsNationalIdentitiesTab">
+                            <div class="control-section">
+                                <div id="dependantsNationalIdentitiesCS" class="control-section">
+                                    <ejs-grid id="DependantsNationalIdentitiesGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultPrimaryFilesCrudCommandClick"
+                                              showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultPrimaryFilesCrudActionBegin" actionComplete="defaultPrimaryFilesCrudActionComplete"
+                                              allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                              toolbarClick="defaultCrudToolbarClick" toolbar="@initialCrudToolBar.Where(x => { if (x.GetType() == typeof(string)) { return (string)x != "ColumnChooser"; } else return true; })"
+                                              allowPaging="true" allowResizing="true">
+
+                                        @{
+
+
+                                        }
+                                        <e-grid-columns>
+                                            <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                            <e-grid-column validationRules="@(new { required=true})" field="idType.value" headerText="ID Type" editType="dropdownedit" edit="dicValueTypeEdit" valueAccessor="@("dictionaryValueAccessor")" textAlign="Center"></e-grid-column>
+                                            <e-grid-column validationRules="@(new { required=true})" field="idNumber" headerText="ID Number" allowEditing="true" textAlign="Center"></e-grid-column>
+                                            <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
+                                            <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
+                                            <e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>
+                                            <e-grid-column validationRules="@(new { required=true})" field="dependant.name" valueAccessor="@("fullNameValueAccessor")" headerText="Dependant" editType="dropdownedit" edit="complexNameEdit" textAlign="Center"></e-grid-column>
+
+                                            <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
+                                        </e-grid-columns>
+
+                                        <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" mode="Dialog"></e-grid-editSettings>
+                                        <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                        <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                    </ejs-grid>
+                                </div>
+                                <div id="auditTrail" style="display:none;">
+                                    @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                                </div>
+                            </div>
+                        </div>
+                        <div id="dependantsPassportTravelDocsTab" style="display: none">
+                            <div class="control-section">
+                                <div id="passportTravelsCS" class="control-section">
+                                    <ejs-grid id="DependantsPassportTravelDocsGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultPrimaryFilesCrudCommandClick"
+                                              showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultPrimaryFilesCrudActionBegin" actionComplete="defaultPrimaryFilesCrudActionComplete"
+                                              allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                              toolbarClick="defaultCrudToolbarClick" toolbar="@initialCrudToolBar.Where(x => { if (x.GetType() == typeof(string)) { return (string)x != "ColumnChooser"; } else return true; })"
+                                              allowPaging="true" allowResizing="true">
+
+                                        @{
+
+                                            var dependantDocumentTypeEdit = new
+                                            {
+                                                @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { DataSource = EnumExtensions.GetDescriptions(typeof(IdentityDocumentType)), Query = "new ej.data.Query()", AllowFiltering = true }
+                                            };
+                                        }
+                                        <e-grid-columns>
+                                            <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                            <e-grid-column validationRules="@(new { required=true})" field="docType.value" headerText="Document Type" editType="dropdownedit" edit="dependantDocumentTypeEdit" textAlign="Center"></e-grid-column>
+                                            <e-grid-column validationRules="@(new { required=true})" field="issuingCountry.value" valueAccessor="@("dictionaryValueAccessor")" headerText="Issuing Country" editType="dropdownedit" edit="dicValueTypeEdit" textAlign="Center"></e-grid-column>
+                                            <e-grid-column validationRules="@(new { required=true})" field="docNumber" headerText="Document Number" allowEditing="true" textAlign="Center"></e-grid-column>
+                                            <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
+                                            <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>
+                                            <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
+                                            <e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>
+                                            <e-grid-column validationRules="@(new { required=true})" field="dependant.name" valueAccessor="@("fullNameValueAccessor")" headerText="Dependant" editType="dropdownedit" edit="complexNameEdit" textAlign="Center"></e-grid-column>
+
+                                            <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
+                                        </e-grid-columns>
+
+                                        <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                        <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" mode="Dialog"></e-grid-editSettings>
+                                        <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                        <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                    </ejs-grid>
+                                </div>
+                                <div id="auditTrail" style="display:none;">
+                                    @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="employmentInfoTab" class="mainTab" style="display: none">
+        <ejs-tab id="employmentInfoTabs" animation="ViewBag.animation" heightAdjustMode="None" overflowMode="Scrollable" headerPlacement="Left" cssClass="e-fill classicTab">
+            <e-tab-tabitems>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Organizational Structure" })" content="#generalInfoTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Biographical Information" })" content="#bioInfoTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Identity" })" content="#identityInfoTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Contact Information" })" content="#contactInfoTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Dependants Information" })" content="#dependantsInfoTab"></e-tab-tabitem>
+            </e-tab-tabitems>
+        </ejs-tab>
+    </div>
+
+
+    <ejs-dialog id="alert_dialog" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy with Header" content="Atleast one row should be selected to copy with header">
+        <e-dialog-buttons>
+            <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+        </e-dialog-buttons>
+    </ejs-dialog>
+    <ejs-dialog id="alert_dialog_1" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy" content="Atleast one row should be selected to copy">
+        <e-dialog-buttons>
+            <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+        </e-dialog-buttons>
+    </ejs-dialog>
+</div>
+
+<script>
+    let mainTab;
+    function mainTabCreated() {
+        mainTab = $('#employeeMainTabs')[0].ej2_instances[0];
+        removeStyleClass(mainTab);
+        mainTab.element.classList.add('e-fill');
+    }
+    function defaultTabCreated() {
+        console.log('this');
+        console.log(this);
+        removeStyleClass(this);
+    }
+    function removeStyleClass(tab) {
+        console.log(tab);
+        tab.element.classList.remove('e-fill');
+        tab.element.classList.remove('e-background');
+        tab.element.classList.remove('e-accent');
+    }
+
+
+    function fullNameValueAccessor(field, data, column) {
+        //show only the file name in grid columns
+        try {
+            let result;
+            if ((Object.byString(data, field))) {
+                let value = fullNameValueObjects.filter(function (x) { return x.id == Object.byString(data, field) })[0];
+                result = value.firstName + ' ';
+                result += value.lastName;
+            }
+            else {
+                result = data[field]
+            }
+            return result;
+        }
+        catch (ex) {
+            console.error(ex);
+        }
+    }
+    function dictionaryValueAccessor(field, data, column) {
+        //show only the file name in grid columns
+        try {
+            let result;
+            if ((Object.byString(data, field))) {
+                let value = dictionaryValueTypes.filter(function (x) { return x.id == Object.byString(data, field) })[0];
+                result = value.key + ' - ';
+                result += value.value;
+            }
+            else {
+                result = data[field]
+            }
+            return result;
+        }
+        catch (ex) {
+            console.error(ex);
+        }
+    }
+    function fileNameAccessor(field, data, column) {
+        //show only the file name in grid columns
+        if (typeof (Object.byString(data, field)) != 'undefined' && Object.byString(data, field).length > 0)
+            return (Object.byString(data, field))[0].name;
+        else {
+            return "—";
+        }
+    }
+
+    let elem;
+    let uploadObj;
+    function fileCreate() {
+        elem = document.createElement('input');
+        return elem;
+    }
+    function fileRead(args) {
+        return uploadObj.filesData;
+    }
+    function fileDestroy() {
+        uploadObj.destroy();
+    }
+    function fileWrite(args) {
+        if (args.requestType === 'beginEdit') {
+        }
+        uploadObj = new ej.inputs.Uploader({
+            //while editing we have loaded the previous file
+            files: (args.requestType === 'beginEdit') ? args.rowData.files : [''],
+            allowedExtensions: '.jpg,.png,.docx,.xlsx,.pdf,.doc, .xls',
+            minFileSize: 100,
+            maxFileSize: 1500000,
+            multiple: false
+        });
+        uploadObj.appendTo(elem)
+    }
+
+    function checkValidity(endDate) {
+        let validityEndDate = new Date(endDate);
+        let isValid = new Date().getDate() < validityEndDate.getDate();
+
+        return isValid;
+    }
+    function updateAndCheckPalePrimaryValidity(dataSource, cur = null) {
+
+        let primaries = dataSource.filter(function (x) { return x.isPrimary });
+        if (primaries.length == 0 || primaries.length > 1) {
+            let isSet = false;
+            if (cur != null && cur.isPrimary)
+                isSet = true;
+            $.each(dataSource, function (i, x) {
+                if (cur != null && isSet && x.id == cur.id) { }
+                else {
+                    x.isPrimary = false;
+                    if (!isSet) {
+                        x.isPrimary = true;
+                        isSet = true;
+                    }
+                }
+            });
+        }
+    }
+    function updateAndCheckPrimaryValidity(dataSource, cur = null) {
+        console.log(dataSource);
+        $.each(dataSource, function (i, x) {
+            if (!checkValidity(x.validityToDate)) x.isPrimary = false;
+        });
+
+        let primaries = dataSource.filter(function (x) { return x.isPrimary });
+        console.log('primaries');
+        console.log(primaries);
+        if (primaries.length == 0 || primaries.length > 1) {
+            let isSet = false;
+            if (cur != null && checkValidity(cur.validityToDate) && cur.isPrimary)
+                isSet = true;
+            $.each(dataSource, function (i, x) {
+                if (cur != null && isSet && x.id == cur.id) { }
+                else
+                    x.isPrimary = false;
+                if (checkValidity(x.validityToDate)) {
+                    if (!isSet) {
+                        x.isPrimary = true;
+                        isSet = true;
+                    }
+                }
+            });
+        }
+        console.log(dataSource);
+    }
+    function getUniqueIdForDS(dataSource, max = 100) {
+        let id = Math.floor(Math.random() * max);
+        let isUnique = dataSource.filter(function (x) { return x.id == id; }).length == 0;
+        while (!isUnique) {
+            id = Math.floor(Math.random() * max);
+            isUnique = dataSource.filter(function (x) { return x.id == id; }).length == 0;
+        }
+
+        return id;
+    }
+
+
+    function defaultPrimaryFilesCrudActionComplete(args) {
+        if (args.requestType == "add") {
+
+        }
+        else if (args.requestType == "save") {
+            console.log('save');
+            console.log(this.dataSource);
+
+            let isPrimary = args.data.isPrimary;
+            let isValid = checkValidity(args.data.validityToDate);
+            if (isPrimary) {
+                args.data.isPrimary = isValid;
+            }
+
+            updateAndCheckPrimaryValidity(this.dataSource, args.data);
+
+            let cur = this.dataSource.filter(function (x) { return x.id == args.data.id })[0];
+            args.data.id = getUniqueIdForDS(this.dataSource);
+
+            if (typeof args.data.attachment !== 'undefined' && args.data.attachment.length > 0) {
+                cur.files = [...args.data.attachment];
+                console.log(cur.files);
+                console.log(this.dataSource);
+            }
+            else {
+                cur.files = [];
+            }
+            this.refresh();
+        }
+    }
+    function defaultPrimaryFilesCrudActionBegin(args) {
+        let type = args.requestType;
+        if (type == "beginEdit" || type == "add") {
+            let dependantColumns = this.columns.filter(function (x) { return x.field == 'dependant.name' });
+            attachDependantsReferences(dependantColumns);
+        }
+    }
+    function defaultPrimaryFilesCrudCommandClick() {
+
+    }
+
+    function defaultPalePrimaryCrudActionComplete(args) {
+        if (args.requestType == "add") {
+
+        }
+        else if (args.requestType == "save") {
+            console.log('save');
+            console.log(this.dataSource);
+
+            updateAndCheckPalePrimaryValidity(this.dataSource, args.data);
+
+            let cur = this.dataSource.filter(function (x) { return x.id == args.data.id })[0];
+            args.data.id = getUniqueIdForDS(this.dataSource);
+
+            this.refresh();
+        }
+    }
+    function defaultPalePrimaryCrudActionBegin(args){
+        let type = args.requestType;
+        if (type == "beginEdit" || type == "add") {
+            let dependantColumns = this.columns.filter(function (x) { return x.field == 'dependant.name' });
+            attachDependantsReferences(dependantColumns);
+        }
+    }
+    function defaultPalePrimaryCrudCommandClick() {
+
+    }
+    
+    function defaultCrudActionComplete(args) {
+        if (args.requestType == "add") {
+
+        }
+        else if (args.requestType == "save") {
+            console.log('save');
+            console.log(this.dataSource);
+
+            //let cur = this.dataSource.filter(function (x) { return x.id == args.data.id })[0];
+            args.data.id = getUniqueIdForDS(this.dataSource);
+
+            this.refresh();
+        }
+    }
+    function defaultCrudActionBegin(args){
+        let type = args.requestType;
+        if (type == "beginEdit" || type == "add") {
+            let dependantColumns = this.columns.filter(function (x) { return x.field == 'dependant.name' });
+            attachDependantsReferences(dependantColumns);
+        }
+    }
+    function defaultCrudCommandClick() {
+
+    }
+
+    function defaultFilesCrudActionComplete(args) {
+        if (args.requestType == "add") {
+
+        }
+        else if (args.requestType == "save") {
+            console.log('save');
+            console.log(this.dataSource);
+
+            let cur = this.dataSource.filter(function (x) { return x.id == args.data.id })[0];
+            args.data.id = getUniqueIdForDS(this.dataSource);
+
+            if (typeof args.data.attachment !== 'undefined' && args.data.attachment.length > 0) {
+                cur.files = [...args.data.attachment];
+                console.log(cur.files);
+                console.log(this.dataSource);
+            }
+            else {
+                cur.files = [];
+            }
+            this.refresh();
+        }
+    }
+    function defaultFilesCrudActionBegin(args) {
+        let type = args.requestType;
+        if (type == "beginEdit" || type == "add") {
+            let dependantColumns = this.columns.filter(function (x) { return x.field == 'dependant.name' });
+            console.log(dependantColumns);
+            attachDependantsReferences(dependantColumns);
+        }
+    }
+    function defaultFilesCrudCommandClick() {
+
+    }
+
+    function attachDependantsReferences(dependantColumns) {
+        if (dependantColumns.length > 0) {
+            let dependants = dependantsGrid.dataSource;
+
+            $.each(dependants, function (i, x) { x.name = x.firstName + ' ' + x.lastName; });
+
+            fullNameValueObjects = fullNameValueObjects.filter(function (x) { return dependants.filter(function (y) { return y.id == x.id }).length > 0 });
+            fullNameValueObjects = fullNameValueObjects.concat(dependants);
+            $.each(dependantColumns, function (i, x) { return x.edit.params.dataSource = dependants; });
+        }
+    }
+
+
+    function alertBtnClick() {
+        let dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+        let dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
+        dialogObj.hide();
+        dialogObj1.hide();
+    }
+</script>

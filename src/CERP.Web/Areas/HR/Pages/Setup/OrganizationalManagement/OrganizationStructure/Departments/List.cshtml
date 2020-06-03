@@ -235,126 +235,6 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
                 $('#depPaygrade').multiselect('dataprovider', dataMS);
             });
 
-            @*$('#addPositionsBtn').on('click', function () {
-                isEditingPositions = false;
-
-                $('#submitPositionBtn').val('Create Position');
-            });
-            $('#submitPositionBtn').on('click', function (e) {
-                e.preventDefault();
-                if (ValidateForm('positionSpecificForm')) {
-                    positionsGrid.showSpinner();
-                    Swal.showLoading();
-
-                    let form = [];
-                    let positionDetails = $('#positionSpecificForm').find("textarea, input, select").serializeArray();
-                    form = form.concat(positionDetails);
-
-                    let params = objectifyForm(form);
-
-                    let id = 0;
-                    if (positionsGrid.dataSource.length > 0)
-                        id = positionsGrid.dataSource[positionsGrid.dataSource.length - 1].id;
-
-                    params.isEditing = isEditingPositions;
-
-                    if (isEditingPositions) {
-                        params.id = curPositionsEditRow.id;
-
-                        //cERP.appServices.hR.leaveRequestTemplates.update()
-                    }
-                    else {
-
-                        //cERP.appServices.hR.leaveRequestTemplates.update()
-                    }
-
-
-                    let selectedPositionJobs = $('#positionJobs').val();
-                    console.log(selectedPositionJobs);
-                    let selectedPositionJobTemplates = [];
-                    params.positionJobTemplates = [];
-                    for (var i = 0; i < selectedPositionJobs.length; i++) {
-                        selectedPositionJobTemplates.push(positionJobs.filter(x => x.id == selectedPositionJobs[i])[0]);
-                        let toAdd = { jobTemplate: selectedPositionJobTemplates[i] };
-                        if (isEditingPositions) {
-                            toAdd.positionTemplateId = curPositionsEditRow.id;
-                        }
-                        params.positionJobTemplates.push(toAdd);
-                    }
-
-                    let selectedPositionTasks = $('#positionTasks').val();
-                    console.log(selectedPositionTasks);
-                    let selectedPositionTaskTemplates = [];
-                    params.positionTaskTemplates = [];
-                    for (var i = 0; i < selectedPositionTasks.length; i++) {
-                        selectedPositionTaskTemplates.push(positionTasks.filter(x => x.id == selectedPositionTasks[i])[0]);
-                        let toAdd = { taskTemplate: selectedPositionTaskTemplates[i] };
-                        if (isEditingPositions) {
-                            toAdd.positionTemplateId = curPositionsEditRow.id;
-                        }
-                        params.positionTaskTemplates.push(toAdd);
-                    }
-
-
-
-                    params.departmentTemplateId = curDepartmentsEditRow.id;
-
-                    let formData = new FormData();
-                    formData.append("info", JSON.stringify(params));
-                    let xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
-                    formData.append("__RequestVerificationToken", xhrToken);
-
-                    $.ajax({
-                        url: "@Url.Content("~")/HR/OrganizationStructure/Positions?handler=PositionTemplate",
-                        async: true,
-                        type: "POST",
-                        data: formData,
-                        contentType: false,
-                        processData: false,
-                        success: function (data) {
-                            Swal.hideLoading();
-                            console.log(data);
-                            if (isEditingPositions) {
-                                positionsGrid.refresh(); // refresh the Grid.
-
-                                swal.fire("Success", "Position has successfully been updated", "success");
-
-                                for (let i = 0; i < positionsGrid.dataSource.length; i++) {
-                                    if (positionsGrid.dataSource[i].id == data.id) {
-                                        positionsGrid.dataSource[i] = data;
-                                    }
-                                }
-                                positionsGrid.refresh();
-                            }
-                            else {
-                                positionsGrid.dataSource.push(data);
-
-                                positionsGrid.refresh(); // refresh the Grid.
-
-                                swal.fire("Success", "Position has successfully been added", "success");
-                            }
-                            positionsGrid.hideSpinner();
-                        },
-                        error: function (err) {
-                            Swal.hideLoading();
-                            let errMsg = "";
-                            if (typeof err !== 'undefined')  errMsg = err.responseJSON.Message;
-                            if (isEditingPositions)
-                                swal.fire("Failed", errMsg + " \nPosition couldn't be updated, please fix all errors and try again.", "error");
-                            else
-                                swal.fire("Failed", errMsg + " \nPosition couldn't be added, please fix all errors and try again.", "error");
-
-                            console.log(err);
-                            positionsGrid.hideSpinner();
-                        }
-                    });
-                }
-                else {
-                    Swal.close();
-                    Swal.hideLoading();
-                }
-            });*@
-
             $('#addDepartmentsBtn').on('click', function () {
                 isEditingDepartments = false;
 
@@ -382,12 +262,6 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
                     if (existantDeps.length > 0) {
                         return;
                     }
-                    @*if (selectedSubDepartments.length > 1 && grid.dataSource.length == 0) {
-                        toastr.error('A @EnumExtensions.GetDescription(OS_DepartmentStatus.Active) sub-department is required to perform this action');
-                        grid.hideSpinner();
-                        return;
-                    }*@
-
                     for (var i = 0; i < selectedSubDepartments.length; i++)
                     {
                         let subDepartmentType = $('#subDepartmentTypeField').val();
@@ -471,19 +345,6 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
                         gridObj.hideSpinner();
                         return;
                     }
-                    //let selectedPositions = $('#positionIds').val();
-                    //console.log(selectedPositions);
-                    //let selectedPositionTemplates = [];
-                    //params.positionTemplates = positionsGrid.dataSource;
-                    //for (var i = 0; i < selectedPositions.length; i++) {
-                    //    selectedPositionTemplates.push(positions.filter(x => x.id == selectedPositions[i])[0]);
-                    //    params.positionTemplates.push(selectedPositionTemplates[i]);
-                    //}
-
-                    //let selectedDepHead = $('#depHeadId').val();
-                    //let selectedDepHeadTemplate = selectedPositionTemplates.push(positions.filter(x => x.id == selectedDepHead)[0]);
-                    //params.departmentHead = { positionTemplate: selectedDepHeadTemplate };
-
                     params.subDepartmentTemplates = subDGrid.dataSource;
 
                     let formData = new FormData();

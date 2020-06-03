@@ -15,7 +15,7 @@
     bool IsEditing = (bool)ViewData["IsEditing"];
 
     ViewData["Title"] = L["PayGroups"].Value;
-    ViewData["IconClass"] = "fas fa-check-circle";
+    ViewData["IconClass"] = "fas fa-list";
     ViewData["HeaderTitle"] = L["PayGroups"].Value.ToUpper();
     ViewData["SubTitle"] = $"{L["ListOf"]} {L["PayGroups"]}";
     ViewData["Area"] = "Setup";
@@ -332,6 +332,7 @@
                     }'></e-grid-column>
                     <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
                     <e-grid-column field="description" headerText="Description" allowEditing="true" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="frequency.name" headerText="Pay Frequency" allowEditing="true" textAlign="Center"></e-grid-column>
 
                     <e-grid-column headerText="Actions" textAlign="Center" commands="payGroupsCommands"></e-grid-column>
                 </e-grid-columns>

@@ -208,7 +208,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.PayrollStructure.Page
                         curPayComponent.NameLocalized = payComponent_Dto.NameLocalized;
                         curPayComponent.Code = payComponent_Dto.Code;
                         curPayComponent.Description = payComponent_Dto.Description;
-                        curPayComponent.PayGradeStatus = payComponent_Dto.PayGradeStatus;
+                        curPayComponent.PayComponentStatus = payComponent_Dto.PayComponentStatus;
                         curPayComponent.IsEarning = payComponent_Dto.IsEarning;
                         curPayComponent.PayComponentValue = payComponent_Dto.PayComponentValue;
                         curPayComponent.IsRecurring = payComponent_Dto.IsRecurring;

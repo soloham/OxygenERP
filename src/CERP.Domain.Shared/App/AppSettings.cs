@@ -82,6 +82,12 @@ namespace CERP
         [Description("Job Employee Class")]
         OrganizationPositionJobEmployeeClasses,
         [Description("Job Contract Type")]
-        OrganizationPositionJobContractTypes
+        OrganizationPositionJobContractTypes,
+        [Description("Email Type")]
+        EmailType,
+        [Description("Phone Type")]
+        PhoneType,
+        [Description("Address Type")]
+        AddressType
     }
 }

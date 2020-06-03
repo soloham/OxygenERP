@@ -184,8 +184,8 @@
     "PayComponent": "Pay Component",
     "PayComponentType": "Pay Component Type",
     "PayComponentTypes": "Pay Component Types",
-    "PayFrequencies": "Pay PayFrequencies",
-    "PayFrequency": "Pay PayFrequency",
+    "PayFrequencies": "Pay Frequencies",
+    "PayFrequency": "Pay Frequency",
 
     "Welcome": "Welcome",
     "LongWelcomeMessage": "Welcome to the application."

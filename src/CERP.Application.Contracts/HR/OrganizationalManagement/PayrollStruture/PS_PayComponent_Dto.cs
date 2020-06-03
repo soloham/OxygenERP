@@ -13,6 +13,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using Volo.Abp.Domain.Entities.Auditing;
 using CERP.Setup.DTOs;
+using CERP.App.Helpers;
 
 namespace CERP.ApplicationContracts.HR.OrganizationalManagement.PayrollStructure
 {
@@ -25,7 +26,9 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.PayrollStructure
         public string Name { get; set; }
         public string NameLocalized { get; set; }
         public string Description { get; set; }
-        public PS_PayComponentStatus PayGradeStatus { get; set; }
+
+        public string PayComponentStatusDescription { get => EnumExtensions.GetDescription(PayComponentStatus); set => PayComponentStatus = EnumExtensions.GetValueFromDescription<PS_PayComponentStatus>(value); }
+        public PS_PayComponentStatus PayComponentStatus { get; set; }
 
         public PS_PayComponentType_Dto PayComponentType { get; set; }
         public int PayComponentTypeId { get; set; }

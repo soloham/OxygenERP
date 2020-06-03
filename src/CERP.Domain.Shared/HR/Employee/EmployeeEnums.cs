@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace CERP.HR.Employee.Enums
@@ -16,5 +17,13 @@ namespace CERP.HR.Employee.Enums
         Iqama,
         Ahwal,
         Visa
+    }
+
+    public enum IdentityDocumentType
+    {
+        [Description("Passport")]
+        Passport,
+        [Description("Travel")]
+        Travel
     }
 }

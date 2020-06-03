@@ -15,7 +15,7 @@
     bool IsEditing = (bool)ViewData["IsEditing"];
 
     ViewData["Title"] = L["PayRanges"].Value;
-    ViewData["IconClass"] = "fas fa-check-circle";
+    ViewData["IconClass"] = "fas fa-list";
     ViewData["HeaderTitle"] = L["PayRanges"].Value.ToUpper();
     ViewData["SubTitle"] = $"{L["ListOf"]} {L["PayRanges"]}";
     ViewData["Area"] = "Setup";
@@ -338,6 +338,11 @@
                     }'></e-grid-column>
                     <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
                     <e-grid-column field="description" headerText="Description" allowEditing="true" textAlign="Center"></e-grid-column>
+                    <e-grid-column headerText="Range" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
+                        new Syncfusion.EJ2.Grids.GridColumn() { Field= "min", HeaderText = "Min", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
+                        new Syncfusion.EJ2.Grids.GridColumn() { Field= "mid", HeaderText = "Mid", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
+                        new Syncfusion.EJ2.Grids.GridColumn() { Field= "max", HeaderText = "Max", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
+                    }'></e-grid-column>
 
                     <e-grid-column headerText="Actions" textAlign="Center" commands="payRangesCommands"></e-grid-column>
                 </e-grid-columns>
@@ -440,17 +445,17 @@
                         </div>
                         <div id='referencesTabTemplate${id}' style="display:none">
 
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="panel-body p-t-0" style="">
-                                        <div id="referencesCS${id}" class="control-section">
-                                            <div id="referencesGrid${id}">
-                                            </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel-body p-t-0" style="">
+                                    <div id="referencesCS${id}" class="control-section">
+                                        <div id="referencesGrid${id}">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+</div>
 
                         <div id="updatePayRangeBtn${id}" class="row" style="display:none">
                             <div class="col-md-12">

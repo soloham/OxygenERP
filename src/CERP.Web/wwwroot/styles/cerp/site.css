@@ -107,6 +107,9 @@ i.fab {
     .site-footer {
         margin-left: 260px !important;
     }
+    .layout-left-sidebar-collapsed .site-footer {
+        margin-left: 60px !important;
+    }
 }
 
 @media (min-width: 768px) {
