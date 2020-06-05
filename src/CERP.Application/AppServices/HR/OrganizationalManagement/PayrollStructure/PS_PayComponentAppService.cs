@@ -40,6 +40,11 @@ namespace CERP.AppServices.HR.OrganizationalManagement.PayrollStructure
             List<PS_PayComponent_Dto> list = (await Repository.GetListAsync(true)).Select(MapToGetListOutputDto).ToList();
             return list;
         }
+        public List<PS_PayComponent_Dto> GetAllByPayComponentTypeAsync(int typeId)
+        {
+            List<PS_PayComponent_Dto> list = (Repository.WithDetails().Where(x => x.PayComponentTypeId == typeId).ToList()).Select(MapToGetListOutputDto).ToList();
+            return list;
+        }
         public async Task<PS_PayComponent_Dto> GetComponentAsync(int id)
         {
             PS_PayComponent_Dto obj = ObjectMapper.Map<PS_PayComponent, PS_PayComponent_Dto>(await Repository.GetAsync(id, true));

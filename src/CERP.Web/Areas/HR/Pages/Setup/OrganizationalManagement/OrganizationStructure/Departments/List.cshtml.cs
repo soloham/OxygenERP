@@ -214,7 +214,6 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         curDepartmentTemplate.ValidityFromDate = departmentTemplate_Dto.ValidityFromDate;
                         curDepartmentTemplate.ValidityToDate = departmentTemplate_Dto.ValidityToDate;
 
-
                         OS_DepartmentCostCenterTemplate_Dto[] depCostCenters = departmentTemplate_Dto.DepartmentCostCenterTemplates.ToArray();
                         int[] curPosCostCentersIds = curDepartmentTemplate.DepartmentCostCenterTemplates != null && curDepartmentTemplate.DepartmentCostCenterTemplates.Count > 0 ? curDepartmentTemplate.DepartmentCostCenterTemplates.Select(x => x.DepartmentTemplate.Id).ToArray() : new int[0];
                         List<int> toDeleteCostCenters = new List<int>();

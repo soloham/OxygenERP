@@ -88,6 +88,14 @@ namespace CERP
         [Description("Phone Type")]
         PhoneType,
         [Description("Address Type")]
-        AddressType
+        AddressType,
+        [Description("Education Certificates")]
+        EducationCertificate,
+        [Description("Training Certificates")]
+        TrainingCertificate,
+        [Description("Type I Skills")]
+        TypeISkill,
+        [Description("Type II Skills")]
+        TypeIISkill
     }
 }

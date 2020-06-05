@@ -66,12 +66,10 @@ namespace CERP.HR.Setup.OrganizationalManagement.OrganizationStructure
     }
     public enum OS_SkillType
     {
-        [Description("Reporting To")]
-        ReportingTo,
-        [Description("Isolated")]
-        Isolated,
-        [Description("Assistant")]
-        Assistant
+        [Description("Type I")]
+        TypeI,
+        [Description("Type II")]
+        TypeII
     }
     public enum OS_SkillUpdatePeriod
     {

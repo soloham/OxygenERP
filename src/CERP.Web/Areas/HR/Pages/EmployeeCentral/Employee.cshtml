@@ -2,6 +2,8 @@
 @using Syncfusion.EJ2.Navigations;
 @using CERP.HR.Employee.Enums;
 @using CERP.App.Helpers;
+@using CERP.HR.Setup.OrganizationalManagement.OrganizationStructure;
+@using CERP.HR.Setup.OrganizationalManagement.PayrollStructure;
 @model CERP.Web.Areas.HR.Pages.EmployeeCentral.EmployeeModel
 @{
     ViewData["Title"] = "Employees";
@@ -19,6 +21,9 @@
     var initialCrudToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Add", "Delete", "Search", "ColumnChooser" };
     var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Audit Trail", tooltipText = "View Audit Trail", prefixIcon = "e-toggleaudittrail", id = "toggleaudittrail" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
 
+    List<object> payslipCommands = new List<object>();
+    payslipCommands.Add(new { type = "ViewPayslip", buttonOption = new { iconCss = "e-icons e-view", cssClass = "e-flat" } });
+
     List<object> attachmentsCommands = new List<object>();
     attachmentsCommands.Add(new { type = "View", buttonOption = new { iconCss = "e-icons e-view", cssClass = "e-flat" } });
     attachmentsCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
@@ -28,18 +33,36 @@
     defaultCrudCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
     defaultCrudCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
 
+    var integerFieldEdit = new
+    {
+        @@params = new Syncfusion.EJ2.Inputs.NumericTextBox() { Created = "numericTextBoxEditCreated", Decimals = 0 }
+    };
     var dicValueTypeEdit = new
     {
-        @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Fields = new Syncfusion.EJ2.DropDowns.DropDownListFieldSettings() { Text = "label", Value = "value" }, DataSource = new List<object>(), Query = "new ej.data.Query()", AllowFiltering = true }
+        @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Created = "dicValueTypeCreated", Change = "dicValueEditChanged", Fields = new Syncfusion.EJ2.DropDowns.DropDownListFieldSettings() { Text = "label", Value = "value" }, DataSource = new List<object>(), Query = "new ej.data.Query()", AllowFiltering = true }
     };
-    var complexNameEdit = new
+    var codeNameTypeEdit = new
     {
-        @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Fields = new Syncfusion.EJ2.DropDowns.DropDownListFieldSettings() { Text = "name", Value = "id" }, DataSource = new List<object>(), Query = "new ej.data.Query()", AllowFiltering = true }
+        @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Created="codeNameTypeCreated", Change = "codeNameEditChanged", Fields = new Syncfusion.EJ2.DropDowns.DropDownListFieldSettings() { Text = "label", Value = "value" }, DataSource = new List<object>(), Query = "new ej.data.Query()", AllowFiltering = true }
     };
+
+var complexNameEdit = new
+{
+@@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Fields = new Syncfusion.EJ2.DropDowns.DropDownListFieldSettings() { Text = "name", Value = "id" }, DataSource = new List<object>(), Query = "new ej.data.Query()", AllowFiltering = true }
+};
+var payComponentValueTypeEdit = new
+{
+@@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Created="payComponentValueTypeCreated", Fields = new Syncfusion.EJ2.DropDowns.DropDownListFieldSettings() { Text = "name", Value = "id" }, DataSource = EnumExtensions.GetDescriptions(typeof(PS_PayComponentTypeValueType)), Query = "new ej.data.Query()", AllowFiltering = true }
+};
 }
 
 @section styles {
     <style>
+        .e-grid .e-headercell {
+            background-color: #ffffff;
+            font-weight: 600 !important
+            /*font-size: 18px;*/;
+        }
         .EmployeeHeader {
             height: 400px;
             background-image: url('/images/banner2.jpg');
@@ -258,6 +281,7 @@
 
         let dictionaryValueTypes = [];
         let fullNameValueObjects = [];
+        let codeNameTypes = [];
 
 
         let nationalIdentityGrid;
@@ -272,13 +296,40 @@
         let dependantNationalIndentitiesGrid;
         let dependantPassportTravelDocsGrid;
 
+
+        let oSJobsGrid;
+
+
+        let compBenefitsGrid;
+        let cashPaymentTypesGrid;
+        let chequePaymentTypesGrid;
+        let bankPaymentTypesGrid;
+        let payslipsGrid;
+
+
+        let academiaProfileGrid;
+        let skillsProfileGrid;
+
+
+        let loansGrid;
+
         function populateDictionaryValues(data, grid, columnIndex) {
             let dataMS = [];
             for (let i = 0; i < data.length; i++) {
                 let item = data[i];
                 dataMS.push({ label: `${item.key} - ${item.value}`, value: item.id, data: item });
             }
-            grid.columns[columnIndex].edit.params.dataSource = dataMS;
+            try {
+                if (typeof columnIndex === typeof '')
+                    grid.columns.filter(function (x) { return x.field == columnIndex })[0].edit.params.dataSource = dataMS;
+                else
+                    grid.columns[columnIndex].edit.params.dataSource = dataMS;
+            } catch (ex) {
+                console.error(ex);
+                console.log(columnIndex);
+                console.log(grid.columns[columnIndex]);
+                console.log(grid.columns.filter(function (x) { return x.field == columnIndex })[0]);
+            }
             console.log(dataMS);
         }
         function populateMSDictionaryValues(data, multiselect) {
@@ -299,8 +350,44 @@
                 dictionaryValueTypes = dictionaryValueTypes.concat(data);
 
                 $.each(gridsArray, function (i, x) { populateDictionaryValues(data, x, columnsArray[i]) });
-                if(multiselects.length > 0)
+                if (multiselects.length > 0)
                     $.each(multiselects, function (i, x) { populateMSDictionaryValues(data, x) });
+            });
+        }
+
+        function populateCodeNameTypes(data, grid, columnIndex) {
+            let dataMS = [];
+            for (let i = 0; i < data.length; i++) {
+                let item = data[i];
+                dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+            }
+            if (typeof columnIndex === typeof '')
+                grid.columns.filter(function (x) { return x.field == columnIndex })[0].edit.params.dataSource = dataMS;
+            else
+                grid.columns[columnIndex].edit.params.dataSource = dataMS;
+
+            console.log(dataMS);
+        }
+        function populateMSCodeNameTypes(data, multiselect) {
+            let dataMS = [];
+            for (let i = 0; i < data.length; i++) {
+                let item = data[i];
+                dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+            }
+            console.log(dataMS);
+            $(multiselect).multiselect('dataprovider', dataMS);
+        }
+        function loadCodeNameTypes(serviceFuncion, gridsArray = [], columnsArray = [], multiselects = []) {
+            $.each(gridsArray, function (i, x) { x.showSpinner(); });
+            serviceFuncion().done(function (data) {
+                $.each(gridsArray, function (i, x) { x.hideSpinner(); });
+
+                codeNameTypes.removeIf(function (x) { return data.filter(function (y) { return y.id == x.id }).length > 0 })
+                codeNameTypes = codeNameTypes.concat(data);
+
+                $.each(gridsArray, function (i, x) { populateCodeNameTypes(data, x, columnsArray[i]) });
+                if (multiselects.length > 0)
+                    $.each(multiselects, function (i, x) { populateMSCodeNameTypes(data, x) });
             });
         }
 
@@ -341,13 +428,67 @@
             dependantNationalIndentitiesGrid = $('#DependantsNationalIdentitiesGrid')[0].ej2_instances[0];
             dependantPassportTravelDocsGrid = $('#DependantsPassportTravelDocsGrid')[0].ej2_instances[0];
 
-            loadDictionaryValues(ValueTypeModules.IDType, [nationalIdentityGrid, dependantNationalIndentitiesGrid], [1, 1]);
-            loadDictionaryValues(ValueTypeModules.Country, [passportTravelGrid, homeAddressesGrid, emergencyContactsGrid, dependantBiosGrid, dependantPassportTravelDocsGrid], [2, 8, 11, 2, 2], ['#empBirthCountry', '#empNationality']);
+
+            oSJobsGrid = $('#JobsGrid')[0].ej2_instances[0];
+
+            compBenefitsGrid = $('#BenefitsGrid')[0].ej2_instances[0];
+            cashPaymentTypesGrid = $('#CashPaymentTypesGrid')[0].ej2_instances[0];
+            chequePaymentTypesGrid = $('#ChequePaymentTypesGrid')[0].ej2_instances[0];
+            bankPaymentTypesGrid = $('#BankPaymentTypesGrid')[0].ej2_instances[0];
+            payslipsGrid = $('#PayslipsGrid')[0].ej2_instances[0];
+
+
+            academiaProfileGrid = $('#AcademiaGrid')[0].ej2_instances[0];
+            skillsProfileGrid = $('#SkillsGrid')[0].ej2_instances[0];
+
+
+            loansGrid = $('#LoansGrid')[0].ej2_instances[0];
+
+            loadDictionaryValues(ValueTypeModules.IDType, [nationalIdentityGrid, dependantNationalIndentitiesGrid], [1, 2]);
+            loadDictionaryValues(ValueTypeModules.Country,
+                [
+                    passportTravelGrid,
+                    homeAddressesGrid,
+                    emergencyContactsGrid,
+                    dependantBiosGrid,
+                    dependantPassportTravelDocsGrid,
+                    bankPaymentTypesGrid
+                ],
+                [
+                    2,
+                    8,
+                    11,
+                    3,
+                    'issuingCountry.value',
+                    7
+                ],
+                ['#empBirthCountry', '#empNationality']);
             loadDictionaryValues(ValueTypeModules.Relationship, [emergencyContactsGrid, dependantsGrid], [1, 5]);
 
             loadDictionaryValues(ValueTypeModules.Gender, [], [], ['#empGender']);
             loadDictionaryValues(ValueTypeModules.MaritalStatus, [], [], ['#empMaritalStatus']);
             loadDictionaryValues(ValueTypeModules.Language, [], [], ['#empPreferredLanguage']);
+
+            loadDictionaryValues(ValueTypeModules.Bank, [bankPaymentTypesGrid], [1]);
+
+            loadDictionaryValues(ValueTypeModules.OrganizationPositionJobEmployeeClasses, [oSJobsGrid], ['employeeClass.value']);
+            loadDictionaryValues(ValueTypeModules.OrganizationPositionJobContractTypes, [oSJobsGrid], ['contractType.value']);
+
+            loadDictionaryValues(ValueTypeModules.LoanType, [loansGrid], [1]);
+
+            loadDictionaryValues(ValueTypeModules.AcademicInstitution, [academiaProfileGrid], ['institute.value']);
+            //loadDictionaryValues(ValueTypeModules., [academiaProfileGrid], ['institute.value']);
+
+            let payGradesGridsArr = [oSJobsGrid];
+            let payGradesGridsColsArr = ['payGrade.value'];
+            let payGradesMultiselectsArr = [];
+
+            loadCodeNameTypes(cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayGrade.getAllPayGrades, payGradesGridsArr, payGradesGridsColsArr, payGradesMultiselectsArr);
+
+            loadCodeNameTypes(cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayComponentType.getAllPayComponentTypes, [compBenefitsGrid], ['payComponentType.name']);
+
+
+            loadCodeNameTypes(cERP.appServices.hR.organizationalManagement.organizationStructure.oS_OrganizationStructureTemplate.getAllOrganizationStructureTemplates, [], ['empCompany']);
         });
     </script>
 }
@@ -361,10 +502,10 @@
         <e-tab-tabitems>
             <e-tab-tabitem header="@(new TabHeader { Text = "PERSONAL INFORMATION" })" content="#personalInfoTab"></e-tab-tabitem>
             <e-tab-tabitem header="@(new TabHeader { Text = "EMPLOYMENT" })" content="#employmentInfoTabs"></e-tab-tabitem>
-            <e-tab-tabitem header="@(new TabHeader { Text = "COMPENSATION" })" conte nt="#compensationTab"></e-tab-tabitem>
-            <e-tab-tabitem header="@(new TabHeader { Text = "TIME" })" conte nt="#timeTab"></e-tab-tabitem>
-            <e-tab-tabitem header="@(new TabHeader { Text = "ACADEMIA & SKILLS PROFILE" })" conte nt="#academiaSkillProfileTab"></e-tab-tabitem>
-            <e-tab-tabitem header="@(new TabHeader { Text = "LOANS" })" conte nt="#academiaSkillProfileTab"></e-tab-tabitem>
+            <e-tab-tabitem header="@(new TabHeader { Text = "COMPENSATION" })" content="#compensationTab"></e-tab-tabitem>
+            <e-tab-tabitem header="@(new TabHeader { Text = "TIME" })" content="#timeTab"></e-tab-tabitem>
+            <e-tab-tabitem header="@(new TabHeader { Text = "ACADEMIA & SKILLS PROFILE" })" content="#academiaSkillsProfileTab"></e-tab-tabitem>
+            <e-tab-tabitem header="@(new TabHeader { Text = "LOANS" })" content="#loansTab"></e-tab-tabitem>
         </e-tab-tabitems>
     </ejs-tab>
 
@@ -735,7 +876,7 @@
                                         <e-grid-column validationRules="@(new { required=true})" field="emailType.value" headerText="Email Type" editType="dropdownedit" edit="dicValueTypeEdit" valueAccessor="@("dictionaryValueAccessor")" textAlign="Center"></e-grid-column>
                                         <e-grid-column validationRules="@(new { required=true})" field="emailAddress" headerText="Email Address" allowEditing="true" textAlign="Center"></e-grid-column>
                                         @*<e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
-                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>*@
+                                            <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>*@
                                         <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
                                         @*<e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>*@
 
@@ -772,7 +913,7 @@
                                         <e-grid-column validationRules="@(new { required=true})" field="phoneNumber" headerText="Phone Number" allowEditing="true" textAlign="Center"></e-grid-column>
                                         <e-grid-column validationRules="@(new { required=true})" field="extention" headerText="Extension" allowEditing="true" textAlign="Center"></e-grid-column>
                                         @*<e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
-                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>*@
+                                            <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>*@
                                         <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
                                         @*<e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>*@
 
@@ -814,7 +955,7 @@
                                         <e-grid-column validationRules="@(new { required=true})" field="postalCode" headerText="Postal Code" allowEditing="true" textAlign="Center"></e-grid-column>
                                         <e-grid-column validationRules="@(new { required=true})" field="country.value" valueAccessor="@("dictionaryValueAccessor")" headerText="Country" editType="dropdownedit" edit="dicValueTypeEdit" textAlign="Center"></e-grid-column>
                                         @*<e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
-                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>*@
+                                            <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>*@
                                         <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
                                         @*<e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>*@
 
@@ -890,7 +1031,7 @@
                             <e-accordion-accordionitem header="Dependants Biographical Information" content="#dependantsBioInfo"></e-accordion-accordionitem>
                             <e-accordion-accordionitem header="Dependants Identity Information" content="#dependantsIdentityInfo"></e-accordion-accordionitem>
                         </e-accordion-accordionitems>
-                    </ejs-accordion> 
+                    </ejs-accordion>
                     <div id="dependantsInfo">
                         <div class="control-section">
                             <div id="dependantsCS" class="control-section">
@@ -942,11 +1083,11 @@
                                     }
                                     <e-grid-columns>
                                         <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="dependant.name" valueAccessor="@("fullNameValueAccessor")" headerText="Dependant" editType="dropdownedit" edit="complexNameEdit" textAlign="Center"></e-grid-column>
                                         <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="dateOfBirth" headerText="Date of Birth" allowEditing="true" textAlign="Center"></e-grid-column>
                                         <e-grid-column validationRules="@(new { required=true})" field="birthCountry.value" valueAccessor="@("dictionaryValueAccessor")" headerText="Issuing Country" editType="dropdownedit" edit="dicValueTypeEdit" textAlign="Center"></e-grid-column>
                                         <e-grid-column validationRules="@(new { required=true})" field="placeOfBirth" headerText="Place of Birth" allowEditing="true" textAlign="Center"></e-grid-column>
                                         <e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>
-                                        <e-grid-column validationRules="@(new { required=true})" field="dependant.name" valueAccessor="@("fullNameValueAccessor")" headerText="Dependant" editType="dropdownedit" edit="complexNameEdit" textAlign="Center"></e-grid-column>
 
                                         <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
                                     </e-grid-columns>
@@ -985,13 +1126,13 @@
                                         }
                                         <e-grid-columns>
                                             <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                            <e-grid-column validationRules="@(new { required=true})" field="dependant.name" valueAccessor="@("fullNameValueAccessor")" headerText="Dependant" editType="dropdownedit" edit="complexNameEdit" textAlign="Center"></e-grid-column>
                                             <e-grid-column validationRules="@(new { required=true})" field="idType.value" headerText="ID Type" editType="dropdownedit" edit="dicValueTypeEdit" valueAccessor="@("dictionaryValueAccessor")" textAlign="Center"></e-grid-column>
                                             <e-grid-column validationRules="@(new { required=true})" field="idNumber" headerText="ID Number" allowEditing="true" textAlign="Center"></e-grid-column>
                                             <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
                                             <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>
                                             <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
                                             <e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>
-                                            <e-grid-column validationRules="@(new { required=true})" field="dependant.name" valueAccessor="@("fullNameValueAccessor")" headerText="Dependant" editType="dropdownedit" edit="complexNameEdit" textAlign="Center"></e-grid-column>
 
                                             <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
                                         </e-grid-columns>
@@ -1021,8 +1162,8 @@
 
                                             var dependantDocumentTypeEdit = new
                                             {
-                                                @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { DataSource = EnumExtensions.GetDescriptions(typeof(IdentityDocumentType)), Query = "new ej.data.Query()", AllowFiltering = true }
-                                            };
+@@params = new Syncfusion.EJ2.DropDowns.DropDownList() { DataSource = EnumExtensions.GetDescriptions(typeof(IdentityDocumentType)), Query = "new ej.data.Query()", AllowFiltering = true }
+                                        };
                                         }
                                         <e-grid-columns>
                                             <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
@@ -1057,13 +1198,718 @@
     <div id="employmentInfoTab" class="mainTab" style="display: none">
         <ejs-tab id="employmentInfoTabs" animation="ViewBag.animation" heightAdjustMode="None" overflowMode="Scrollable" headerPlacement="Left" cssClass="e-fill classicTab">
             <e-tab-tabitems>
-                <e-tab-tabitem header="@(new TabHeader { Text = "Organizational Structure" })" content="#generalInfoTab"></e-tab-tabitem>
-                <e-tab-tabitem header="@(new TabHeader { Text = "Biographical Information" })" content="#bioInfoTab"></e-tab-tabitem>
-                <e-tab-tabitem header="@(new TabHeader { Text = "Identity" })" content="#identityInfoTab"></e-tab-tabitem>
-                <e-tab-tabitem header="@(new TabHeader { Text = "Contact Information" })" content="#contactInfoTab"></e-tab-tabitem>
-                <e-tab-tabitem header="@(new TabHeader { Text = "Dependants Information" })" content="#dependantsInfoTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Organization Structure" })" content="#orgStructureChartTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Organization Inforamtion" })" content="#orgStructureInfoTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Job Information" })" content="#jobInfoTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Positions History" })" content="#posHistoryInfoTab"></e-tab-tabitem>
             </e-tab-tabitems>
         </ejs-tab>
+
+        <div id="orgStructureChartTab" class="secondaryTab" style="display: none">
+
+        </div>
+        <div id="orgStructureInfoTab" class="secondaryTab" style="display: none">
+            <div class="customForm">
+                <div class="formHeader">
+                    <span class="headerTitle">Organization Information</span>
+                </div>
+                <div class="formContent h-fill-available">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Company:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <select id="empCompany" name="CompanyId" class="form-control" required>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Business Unit:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <select id="empBU" name="BusinessUnitId" class="form-control" required>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Division:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <select id="empDIV" name="DivisionId" class="form-control" required>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Department:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <select id="empDEP" name="DepartmentId" class="form-control" required>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Location:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <select id="empLOC" name="LocationId" class="form-control" required>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Timezone:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <select id="empTimezone" name="TimezoneId" class="form-control" required>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Cost Center:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <select id="empCostCenter" name="CostCenterId" class="form-control" required>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="jobInfoTab" class="secondaryTab" style="display: none">
+            <div class="customForm">
+                <div class="formHeader">
+                    <span class="headerTitle">Jobs Information</span>
+                </div>
+                <div class="formContent h-fill-available">
+                    <div class="">
+                        <div class="control-section">
+                            <div id="jobsCS" class="control-section">
+                                <ejs-grid id="JobsGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultCommandClick"
+                                          showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultActionBegin" actionComplete="defaultActionComplete"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                          toolbarClick="defaultToolbarClick" toolbar="@initialToolBar"
+                                          allowPaging="true" allowResizing="true">
+
+                                    @{
+
+
+                                    }
+                                    <e-grid-columns>
+                                        <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="title" headerText="Job Title" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="jobClassification.name" headerText="Job Classification" editType="dropdownedit" edit="dicValueTypeEdit" valueAccessor="@("dictionaryValueAccessor")" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="employeeClass.value" headerText="Employee Class" editType="dropdownedit" edit="dicValueTypeEdit" valueAccessor="@("dictionaryValueAccessor")" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="contractType.value" headerText="Contract Type" editType="dropdownedit" edit="dicValueTypeEdit" valueAccessor="@("dictionaryValueAccessor")" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="payGrade.value" headerText="Pay Grade" editType="dropdownedit" edit="codeNameTypeEdit" valueAccessor="@("codeNameValueAccessor")" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="getWorkingHours" headerText="Working Hours" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="getTimeInPosition" headerText="Time In Position" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="startDate" headerText="Start Date" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="hiringDate" headerText="Hiring Date" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="originalStartDate" headerText="Original Start Date" allowEditing="true" textAlign="Center"></e-grid-column>
+
+                                        @*<e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>*@
+                                    </e-grid-columns>
+
+                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="false" allowDeleting="false" allowEditing="false"></e-grid-editSettings>
+                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                </ejs-grid>
+                            </div>
+                            <div id="auditTrail" style="display:none;">
+                                @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="posHistoryInfoTab" class="secondaryTab" style="display: none">
+
+        </div>
+    </div>
+    <div id="compensationTab" class="mainTab" style="display: none">
+        <ejs-tab id="compensationTabs" animation="ViewBag.animation" heightAdjustMode="None" overflowMode="Scrollable" headerPlacement="Left" cssClass="e-fill classicTab">
+            <e-tab-tabitems>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Basic Salary" })" content="#basicSalaryTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Benefits" })" content="#benefitsTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Payment Details" })" content="#paymentDetailsTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Payslips" })" content="#payslipsTab"></e-tab-tabitem>
+            </e-tab-tabitems>
+        </ejs-tab>
+
+        <div id="basicSalaryTab" class="secondaryTab" style="display: none">
+            <div class="customForm">
+                <div class="formHeader">
+                    <span class="headerTitle">Basic Salary Information</span>
+                </div>
+                <div class="formContent h-fill-available">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Pay Group:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <select id="empCBS_PayGroup" name="PayGroupId" class="form-control" required>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Pay Grade:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <select id="empCBS_PayGrade" name="PayGradeId" class="form-control" required>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="benefitsTab" class="secondaryTab" style="display: none">
+            <div class="customForm">
+                <div class="formHeader">
+                    <span class="headerTitle">Benefits Information</span>
+                </div>
+                <div class="formContent h-fill-available">
+                    <div class="">
+                        <div class="control-section">
+                            <div id="benefitsCS" class="control-section">
+                                <ejs-grid id="BenefitsGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultCrudCommandClick"
+                                          showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultCrudActionBegin" actionComplete="defaultCrudActionComplete"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                          toolbarClick="defaultCrudToolbarClick" toolbar="@initialCrudToolBar"
+                                          allowPaging="true" allowResizing="true">
+
+                                    @{
+
+
+                                    }
+                                    <e-grid-columns>
+                                        <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="payComponentType.name" headerText="Pay Component Type" editType="dropdownedit" edit="codeNameTypeEdit" valueAccessor="@("codeNameValueAccessor")" textAlign="Center"></e-grid-column>
+                                        @*<e-grid-column validationRules="@(new { required=true})" field="payComponentType.valueTypeDescription" headerText="Value Type" allowEditing="false" textAlign="Center"></e-grid-column>*@
+                                        <e-grid-column validationRules="@(new { required=true})" field="payComponentId" headerText="Pay Component" editType="dropdownedit" edit="codeNameTypeEdit" valueAccessor="@("codeNameValueAccessor")" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="payComponentType.valueTypeDescription" headerText="Value Type" editType="dropdownedit" edit="payComponentValueTypeEdit" allowEditing="false" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=false})" field="payComponentType.valueComponentTypeId" headerText="Value Component Type" visible="true" editType="dropdownedit" edit="codeNameTypeEdit" valueAccessor="@("codeNameValueAccessor")" allowEditing="false" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="payComponentType.amount" editType="numericedit" edit="integerFieldEdit" headerText="Amount/Percentage" allowEditing="false" textAlign="Center"></e-grid-column>
+                                        @*<e-grid-column validationRules="@(new { required=true})" field="payComponentType.percentage" headerText="Percentage" visible="false" allowEditing="true" textAlign="Center"></e-grid-column>*@
+                                        <e-grid-column validationRules="@(new { required=true})" field="payFrequencyId" headerText="Pay Frequency" editType="dropdownedit" edit="codeNameTypeEdit" valueAccessor="@("codeNameValueAccessor")" allowEditing="false" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid Till" allowEditing="true" textAlign="Center"></e-grid-column>
+
+                                        <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
+                                    </e-grid-columns>
+
+                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" mode="Dialog"></e-grid-editSettings>
+                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                </ejs-grid>
+                            </div>
+                            <div id="auditTrail" style="display:none;">
+                                @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="paymentDetailsTab" class="secondaryTab" style="display: none">
+            <div class="customForm">
+                <div class="formHeader">
+                    <span class="headerTitle">Payment Details</span>
+                </div>
+                <div class="formContent h-fill-available">
+                    <ejs-accordion id="empCPaymentDetailsInfoAccordion">
+                        <e-accordion-accordionitems>
+                            <e-accordion-accordionitem expanded="true" header="Cash Payment Types" content="#cashPaymentTypesInfo"></e-accordion-accordionitem>
+                            <e-accordion-accordionitem header="Cheque Payment Types" content="#chequePaymentTypesInfo"></e-accordion-accordionitem>
+                            <e-accordion-accordionitem header="Bank Payment Types" content="#bankPaymentTypesInfo"></e-accordion-accordionitem>
+                        </e-accordion-accordionitems>
+                    </ejs-accordion>
+                    <div id="cashPaymentTypesInfo">
+                        <div class="control-section">
+                            <div id="cashPaymentTypesCS" class="control-section">
+                                <ejs-grid id="CashPaymentTypesGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultPrimaryCrudCommandClick"
+                                          showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultPrimaryCrudActionBegin" actionComplete="defaultPrimaryCrudActionComplete"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                          toolbarClick="defaultCrudToolbarClick" toolbar="@initialCrudToolBar.Where(x => { if (x.GetType() == typeof(string)) { return (string)x != "ColumnChooser"; } else return true; })"
+                                          allowPaging="true" allowResizing="true">
+
+                                    @{
+
+                                    }
+                                    <e-grid-columns>
+                                        <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="collectionLocation.value" headerText="Collection Location" editType="dropdownedit" edit="dicValueTypeEdit" valueAccessor="@("dictionaryValueAccessor")" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
+
+                                        <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
+                                    </e-grid-columns>
+
+                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" mode="Dialog"></e-grid-editSettings>
+                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                </ejs-grid>
+                            </div>
+                            <div id="auditTrail" style="display:none;">
+                                @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                            </div>
+                        </div>
+                    </div>
+                    <div id="bankPaymentTypesInfo" style="display: none">
+                        <div class="control-section">
+                            <div id="bankPaymentTypesCS" class="control-section">
+                                <ejs-grid id="BankPaymentTypesGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultPrimaryCrudCommandClick"
+                                          showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultPrimaryCrudActionBegin" actionComplete="defaultPrimaryCrudActionComplete"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                          toolbarClick="defaultCrudToolbarClick" toolbar="@initialCrudToolBar.Where(x => { if (x.GetType() == typeof(string)) { return (string)x != "ColumnChooser"; } else return true; })"
+                                          allowPaging="true" allowResizing="true">
+
+                                    @{
+
+                                    }
+                                    <e-grid-columns>
+                                        <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="bankName.value" valueAccessor="@("dictionaryValueAccessor")" headerText="Bank" editType="dropdownedit" edit="dicValueTypeEdit" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="bankAccName" headerText="Bank Account Name" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="bankAccNumber" headerText="Bank Account Number" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="bankIBAN" headerText="IBAN" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="bankAddress" headerText="Bank Address" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="city" headerText="City" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="country.value" valueAccessor="@("dictionaryValueAccessor")" headerText="Country" editType="dropdownedit" edit="dicValueTypeEdit" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
+
+                                        <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
+                                    </e-grid-columns>
+
+                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" mode="Dialog"></e-grid-editSettings>
+                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                </ejs-grid>
+                            </div>
+                            <div id="auditTrail" style="display:none;">
+                                @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                            </div>
+                        </div>
+                    </div>
+                    <div id="chequePaymentTypesInfo" style="display: none">
+                        <div class="control-section">
+                            <div id="chequePaymentTypesCS" class="control-section">
+                                <ejs-grid id="ChequePaymentTypesGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultPrimaryCrudCommandClick"
+                                          showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultPrimaryCrudActionBegin" actionComplete="defaultPrimaryCrudActionComplete"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                          toolbarClick="defaultCrudToolbarClick" toolbar="@initialCrudToolBar.Where(x => { if (x.GetType() == typeof(string)) { return (string)x != "ColumnChooser"; } else return true; })"
+                                          allowPaging="true" allowResizing="true">
+
+                                    @{
+
+                                    }
+                                    <e-grid-columns>
+                                        <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="nameOnCheque" headerText="Name on Cheque" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
+
+                                        <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
+                                    </e-grid-columns>
+
+                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" mode="Dialog"></e-grid-editSettings>
+                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                </ejs-grid>
+                            </div>
+                            <div id="auditTrail" style="display:none;">
+                                @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="payslipsTab" class="secondaryTab" style="display: none">
+            <div class="customForm">
+                <div class="formHeader">
+                    <span class="headerTitle">Payslips Information</span>
+                </div>
+                <div class="formContent h-fill-available">
+                    <div class="">
+                        <div class="control-section">
+                            <div id="payslipsCS" class="control-section">
+                                <ejs-grid id="PayslipsGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultCommandClick"
+                                          showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultActionBegin" actionComplete="defaultActionComplete"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                          toolbarClick="defaultToolbarClick" toolbar="@initialToolBar"
+                                          allowPaging="true" allowResizing="true">
+
+                                    @{
+
+
+                                    }
+                                    <e-grid-columns>
+                                        <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                        <e-grid-column field="payPeriod.name" headerText="Pay Component Type" editType="dropdownedit" edit="dicValueTypeEdit" valueAccessor="@("dictionaryValueAccessor")" textAlign="Center"></e-grid-column>
+                                        <e-grid-column type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="payDate" headerText="Pay Date" allowEditing="false" textAlign="Center"></e-grid-column>
+                                        <e-grid-column field="netIncome" headerText="Net Income" allowEditing="false" textAlign="Center"></e-grid-column>
+                                        <e-grid-column field="netDeductions" headerText="Net Deductions" allowEditing="false" textAlign="Center"></e-grid-column>
+                                        <e-grid-column field="netPay" headerText="Net Pay" allowEditing="false" textAlign="Center"></e-grid-column>
+
+                                        <e-grid-column headerText="Actions" textAlign="Center" commands="payslipCommands"></e-grid-column>
+                                    </e-grid-columns>
+
+                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="false" allowDeleting="false" allowEditing="false"></e-grid-editSettings>
+                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                </ejs-grid>
+                            </div>
+                            <div id="auditTrail" style="display:none;">
+                                @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="timeTab" class="mainTab" style="display: none">
+        <ejs-tab id="timeTabs" animation="ViewBag.animation" heightAdjustMode="None" overflowMode="Scrollable" headerPlacement="Left" cssClass="e-fill classicTab">
+            <e-tab-tabitems>
+                <e-tab-tabitem header="@(new TabHeader { Text = "General" })" content="#generalTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Work Schedule" })" content="#workScheduleTab"></e-tab-tabitem>
+            </e-tab-tabitems>
+        </ejs-tab>
+
+        <div id="generalTab" class="secondaryTab" style="display: none">
+            <div class="customForm">
+                <div class="formHeader">
+                    <span class="headerTitle">General Information</span>
+                </div>
+                <div class="formContent h-fill-available">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px; padding-top: 0">
+                                    <div class="col-sm-4" style="">
+                                        <h4 class="p-t-5 control-label">Time Details:</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Time Zone:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <select id="empT_Timezone" name="TimezoneId" class="form-control" required>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <h4 class="p-t-5 control-label">Holiday Calendar:</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Time With Company:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <label class="p-t-5 control-label">00yrs 00mnths 00dys</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Hiring Date:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="date" id="hiringDate" name="HiringDate" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="workScheduleTab" class="secondaryTab" style="display: none">
+            <div class="customForm">
+                <div class="formHeader">
+                    <span class="headerTitle">Work Schedule Information</span>
+                </div>
+                <div class="formContent h-fill-available">
+                    <div class="">
+                        <div class="control-section">
+                            <div id="workScheduleCS" class="control-section">
+                                <ejs-grid id="WorkScheduleGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultCommandClick"
+                                          showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultActionBegin" actionComplete="defaultActionComplete"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                          toolbarClick="defaultToolbarClick" toolbar="@initialToolBar"
+                                          allowPaging="true" allowResizing="true">
+
+                                    @{
+
+
+                                    }
+                                    <e-grid-columns>
+                                        <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                        <e-grid-column field="payPeriod.name" headerText="Pay Component Type" editType="dropdownedit" edit="dicValueTypeEdit" valueAccessor="@("dictionaryValueAccessor")" textAlign="Center"></e-grid-column>
+                                        <e-grid-column type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="payDate" headerText="Pay Date" allowEditing="false" textAlign="Center"></e-grid-column>
+                                        <e-grid-column field="netIncome" headerText="Net Income" allowEditing="false" textAlign="Center"></e-grid-column>
+                                        <e-grid-column field="netDeductions" headerText="Net Deductions" allowEditing="false" textAlign="Center"></e-grid-column>
+                                        <e-grid-column field="netPay" headerText="Net Pay" allowEditing="false" textAlign="Center"></e-grid-column>
+
+                                        <e-grid-column headerText="Actions" textAlign="Center" commands="payslipCommands"></e-grid-column>
+                                    </e-grid-columns>
+
+                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="false" allowDeleting="false" allowEditing="false"></e-grid-editSettings>
+                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                </ejs-grid>
+                            </div>
+                            <div id="auditTrail" style="display:none;">
+                                @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="academiaSkillsProfileTab" class="mainTab" style="display: none">
+        <ejs-tab id="academiaSkillsProfileTabs" animation="ViewBag.animation" heightAdjustMode="None" overflowMode="Scrollable" headerPlacement="Left" cssClass="e-fill classicTab">
+            <e-tab-tabitems>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Academia" })" content="#academiaTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Skills" })" content="#skillsTab"></e-tab-tabitem>
+            </e-tab-tabitems>
+        </ejs-tab>
+
+        <div id="academiaTab" class="secondaryTab" style="display: none">
+            <div class="customForm">
+                <div class="formHeader">
+                    <span class="headerTitle">Academia Information</span>
+                </div>
+                <div class="formContent h-fill-available">
+                    <div class="">
+                        <div class="control-section">
+                            <div id="academiaCS" class="control-section">
+                                <ejs-grid id="AcademiaGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultCrudCommandClick"
+                                          showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultCrudActionBegin" actionComplete="defaultCrudActionComplete"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                          toolbarClick="defaultCrudToolbarClick" toolbar="@initialCrudToolBar"
+                                          allowPaging="true" allowResizing="true">
+
+                                    @{
+
+
+                                        var academicTypeEdit = new
+                                        {
+                                            @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { DataSource = EnumExtensions.GetDescriptions(typeof(OS_AcademicType)), Query = "new ej.data.Query()", AllowFiltering = true }
+                                        };
+                                        var academicCertificateTypeEdit = new
+                                        {
+                                            @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Created = "academicCertificateTypeCreated", Change = "academicCertificateTypeChanged", DataSource = EnumExtensions.GetDescriptions(typeof(OS_AcademiaCertificateType)), Query = "new ej.data.Query()", AllowFiltering = true }
+                                        };
+                                    }
+                                    <e-grid-columns>
+                                        <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                        <e-grid-column field="academicType" headerText="Academic Type" editType="dropdownedit" edit="academicTypeEdit" textAlign="Center"></e-grid-column>
+                                        <e-grid-column field="institute.value" headerText="Institute" editType="dropdownedit" edit="dicValueTypeEdit" valueAccessor="@("dictionaryValueAccessor")" textAlign="Center"></e-grid-column>
+                                        <e-grid-column field="certificateType" headerText="Certificate Type" editType="dropdownedit" edit="academicCertificateTypeEdit" textAlign="Center"></e-grid-column>
+                                        <e-grid-column field="certificateSubType.value" headerText="Certificate Sub Type" editType="dropdownedit" edit="dicValueTypeEdit" valueAccessor="@("dictionaryValueAccessor")" textAlign="Center"></e-grid-column>
+                                        <e-grid-column field="description" headerText="Description" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        @*<e-grid-column field="kpiEligibility" headerText="KPI Eligibility" visible="false" displayAsCheckBox="true" editType="booleanedit" allowEditing="false" textAlign="Center"></e-grid-column>*@
+
+                                        <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
+                                    </e-grid-columns>
+
+                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" mode="Dialog"></e-grid-editSettings>
+                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                </ejs-grid>
+                            </div>
+                            <div id="auditTrail" style="display:none;">
+                                @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="skillsTab" class="secondaryTab" style="display: none">
+            <div class="customForm">
+                <div class="formHeader">
+                    <span class="headerTitle">Skills Information</span>
+                </div>
+                <div class="formContent h-fill-available">
+                    <div class="">
+                        <div class="control-section">
+                            <div id="skillsCS" class="control-section">
+                                <ejs-grid id="SkillsGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultCrudCommandClick"
+                                          showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultCrudActionBegin" actionComplete="defaultActionComplete"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                          toolbarClick="defaultCrudToolbarClick" toolbar="@initialCrudToolBar"
+                                          allowPaging="true" allowResizing="true">
+
+                                    @{
+
+
+                                        var skillsAquisitionnTypeEdit = new
+                                        {
+@@params = new Syncfusion.EJ2.DropDowns.DropDownList() { DataSource = EnumExtensions.GetDescriptions(typeof(OS_SkillAquisitionType)), Query = "new ej.data.Query()", AllowFiltering = true }
+                                    };
+                                    var skillsTypeEdit = new
+                                    {
+@@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Created = "skillTypeCreated", Change = "skillTypeChanged", DataSource = EnumExtensions.GetDescriptions(typeof(OS_AcademiaCertificateType)), Query = "new ej.data.Query()", AllowFiltering = true }
+                                    };
+                                    }
+                                    <e-grid-columns>
+                                        <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                        <e-grid-column field="aquisition.value" headerText="Aquisition" editType="dropdownedit" edit="skillsAquisitionnTypeEdit" textAlign="Center"></e-grid-column>
+                                        <e-grid-column field="type.value" headerText="Type" editType="dropdownedit" edit="skillsTypeEdit" textAlign="Center"></e-grid-column>
+                                        <e-grid-column field="subType.value" headerText="Sub Type" editType="dropdownedit" edit="dicValueTypeEdit" valueAccessor="@("dictionaryValueAccessor")" textAlign="Center"></e-grid-column>
+                                        <e-grid-column field="description" headerText="Description" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column field="kpiEligibility" headerText="KPI Eligibility" visible="false" displayAsCheckBox="true" editType="booleanedit" allowEditing="false" textAlign="Center"></e-grid-column>
+
+                                        <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
+                                    </e-grid-columns>
+
+                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" mode="Dialog"></e-grid-editSettings>
+                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                </ejs-grid>
+                            </div>
+                            <div id="auditTrail" style="display:none;">
+                                @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+    <div id="loansTab" class="mainTab" style="display: none">
+        <ejs-tab id="loansTabs" animation="ViewBag.animation" heightAdjustMode="None" overflowMode="Scrollable" headerPlacement="Left" cssClass="e-fill classicTab">
+            <e-tab-tabitems>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Loans List" })" content="#loansListTab"></e-tab-tabitem>
+            </e-tab-tabitems>
+        </ejs-tab>
+
+        <div id="loansListTab" class="secondaryTab" style="display: none">
+            <div class="customForm">
+                <div class="formHeader">
+                    <span class="headerTitle">Loans Information</span>
+                </div>
+                <div class="formContent h-fill-available">
+                    <div class="">
+                        <div class="control-section">
+                            <div id="loansCS" class="control-section">
+                                <ejs-grid id="LoansGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultCrudCommandClick"
+                                          showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultCrudActionBegin" actionComplete="defaultCrudActionComplete"
+                                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                          toolbarClick="defaultCrudToolbarClick" toolbar="@initialCrudToolBar"
+                                          allowPaging="true" allowResizing="true">
+
+                                    @{
+
+                                        var loanStatusEdit = new
+                                        {
+                                            @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { DataSource = EnumExtensions.GetDescriptions(typeof(PS_PayGradeStatus)), Query = "new ej.data.Query()", AllowFiltering = true }
+                                        };
+                                    }
+                                    <e-grid-columns>
+                                        <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="loanType.value" headerText="Loan Type" editType="dropdownedit" edit="dicValueTypeEdit" valueAccessor="@("dictionaryValueAccessor")" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="name" headerText="Loan Name" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid Till" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="amount" headerText="Loan Amount" allowEditing="true" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="loanStatus.value" headerText="Loan Status" editType="dropdownedit" edit="loanStatusEdit" textAlign="Center"></e-grid-column>
+
+                                        <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
+                                    </e-grid-columns>
+
+                                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" mode="Dialog"></e-grid-editSettings>
+                                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                </ejs-grid>
+                            </div>
+                            <div id="auditTrail" style="display:none;">
+                                @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 
@@ -1117,6 +1963,24 @@
             console.error(ex);
         }
     }
+    function codeNameValueAccessor(field, data, column) {
+        //show only the file name in grid columns
+        try {
+            let result;
+            if ((Object.byString(data, field))) {
+                let value = codeNameTypes.filter(function (x) { return x.id == Object.byString(data, field) })[0];
+                result = value.code + ' - ';
+                result += value.name;
+            }
+            else {
+                result = data[field]
+            }
+            return result;
+        }
+        catch (ex) {
+            console.error(ex);
+        }
+    }
     function dictionaryValueAccessor(field, data, column) {
         //show only the file name in grid columns
         try {
@@ -1142,6 +2006,319 @@
         else {
             return "—";
         }
+    }
+
+    let payComponentValueTypeDD;
+    function payComponentValueTypeCreated() {
+        payComponentValueTypeDD = this;
+    }
+
+    let curAcademiaCertificateSubTypeId;
+    let academicCertificateTypeDD;
+    let academicCertificateSubTypeDD;
+    function academicCertificateTypeCreated() {
+        academicCertificateTypeDD = this;
+    }
+    function academicCertificateTypeChanged() {
+        let selection = this.itemData;
+        if (selection == '@(EnumExtensions.GetDescription(OS_AcademiaCertificateType.Education))') {
+            academiaProfileGrid.showSpinner();
+            cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.EducationCertificate).done(function (data) {
+                academiaProfileGrid.hideSpinner();
+
+                dictionaryValueTypes.removeIf(function (x) { return data.filter(function (y) { return y.id == x.id }).length > 0 })
+                dictionaryValueTypes = dictionaryValueTypes.concat(data);
+
+                let dataMS = [];
+                for (let i = 0; i < data.length; i++) {
+                    let item = data[i];
+                    dataMS.push({ label: `${item.key} - ${item.value}`, value: item.id, data: item });
+                }
+
+                academicCertificateSubTypeDD.value = null;
+                academicCertificateSubTypeDD.dataSource = dataMS;
+            });
+        }
+        else {
+            //loadDictionaryValues(ValueTypeModules.TrainingCertificate, [academiaProfileGrid], ['certificateSubType.value']);
+
+            academiaProfileGrid.showSpinner();
+            cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.TrainingCertificate).done(function (data) {
+                academiaProfileGrid.hideSpinner();
+
+                dictionaryValueTypes.removeIf(function (x) { return data.filter(function (y) { return y.id == x.id }).length > 0 })
+                dictionaryValueTypes = dictionaryValueTypes.concat(data);
+
+                let dataMS = [];
+                for (let i = 0; i < data.length; i++) {
+                    let item = data[i];
+                    dataMS.push({ label: `${item.key} - ${item.value}`, value: item.id, data: item });
+                }
+
+                academicCertificateSubTypeDD.value = null;
+                academicCertificateSubTypeDD.dataSource = dataMS;
+            });
+        }
+    }
+
+    let curSkillSubTypeId;
+    let skillTypeDD;
+    let skillSubTypeDD;
+    function skillTypeCreated() {
+        skillTypeDD = this;
+    }
+    function skillTypeChanged() {
+        let selection = this.itemData;
+        if (selection == '@(EnumExtensions.GetDescription(OS_SkillType.TypeI))') {
+            //loadDictionaryValues(ValueTypeModules.TypeISkill, [skillsProfileGrid], ['subType.value']);
+
+            skillsProfileGrid.showSpinner();
+            cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.TypeISkill).done(function (data) {
+                skillsProfileGrid.hideSpinner();
+
+                dictionaryValueTypes.removeIf(function (x) { return data.filter(function (y) { return y.id == x.id }).length > 0 })
+                dictionaryValueTypes = dictionaryValueTypes.concat(data);
+
+                let dataMS = [];
+                for (let i = 0; i < data.length; i++) {
+                    let item = data[i];
+                    dataMS.push({ label: `${item.key} - ${item.value}`, value: item.id, data: item });
+                }
+
+                skillSubTypeDD.value = null;
+                skillSubTypeDD.dataSource = dataMS;
+            });
+
+        }
+        else {
+            //loadDictionaryValues(ValueTypeModules.TypeIISkill, [skillsProfileGrid], ['subType.value']);
+            skillsProfileGrid.showSpinner();
+            cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.TypeIISkill).done(function (data) {
+                skillsProfileGrid.hideSpinner();
+
+                dictionaryValueTypes.removeIf(function (x) { return data.filter(function (y) { return y.id == x.id }).length > 0 })
+                dictionaryValueTypes = dictionaryValueTypes.concat(data);
+
+                let dataMS = [];
+                for (let i = 0; i < data.length; i++) {
+                    let item = data[i];
+                    dataMS.push({ label: `${item.key} - ${item.value}`, value: item.id, data: item });
+                }
+
+                skillSubTypeDD.value = null;
+                skillSubTypeDD.dataSource = dataMS;
+            });
+
+        }
+    }
+
+    let payComponentValueTypeAmount;
+    function numericTextBoxEditCreated(args) {
+        //console.log('this');
+        //console.log(this);
+        if (this.element.id == 'BenefitsGridpayComponentType___amount')
+            payComponentValueTypeAmount = this;
+    }
+
+    let payComponentValueTypeComponentTypeDD;
+    let payComponentTypeDD;
+    let payComponentDD;
+    let payFrequencyDD;
+
+    let curPayComponentId;
+    function codeNameTypeCreated(args) {
+        console.log(args);
+        console.log(this);
+        console.log(this.element.id);
+        if (this.element.id == 'BenefitsGridpayComponentType___valueComponentTypeId') {
+            payComponentValueTypeComponentTypeDD = this;
+            if (payComponentTypeDD.itemData) {
+                let data = payComponentTypeDD.itemData.data;
+                payComponentValueTypeComponentTypeDD.dataSource = [{ label: data.valueComponentType.code + ' - ' + data.valueComponentType.name, value: data.valueComponentType.id }];
+                payComponentValueTypeComponentTypeDD.value = data.valueComponentTypeId;
+            }
+        }
+        else if (this.element.id == 'BenefitsGridpayComponentType___name') {
+            payComponentTypeDD = this;
+            if (payComponentTypeDD.itemData)
+                payComponentValueTypeDD.value = payComponentTypeDD.itemData.data.valueTypeDescription;
+        }
+        else if (this.element.id == 'BenefitsGridpayComponentId') {
+            payComponentDD = this;
+            if (payComponentTypeDD.itemData) {
+                let data = payComponentTypeDD.itemData.data;
+
+                cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayComponent.getAllByPayComponentType(data.id).done(function (data) {
+                    let dataMS = [];
+                    for (let i = 0; i < data.length; i++) {
+                        let item = data[i];
+                        dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+                    }
+
+                    codeNameTypes.removeIf(function (x) { return data.filter(function (y) { return y.id == x.id }).length > 0 })
+                    codeNameTypes = codeNameTypes.concat(data);
+
+                    console.log(dataMS);
+                    payComponentDD.dataSource = dataMS;
+                    payComponentDD.value = curPayComponentId;
+                });
+            }
+        }
+        else if (this.element.id == 'BenefitsGridpayFrequencyId') {
+            payFrequencyDD = this;
+            if (payComponentTypeDD.itemData) {
+                let data = payComponentTypeDD.itemData.data;
+                payFrequencyDD.dataSource = [{ label: data.valueComponentType.code + ' - ' + data.valueComponentType.name, value: data.valueComponentType.id }];
+                payFrequencyDD.value = data.valueComponentTypeId;
+            }
+        }
+    }
+
+    function dicValueTypeCreated(args) {
+        console.log(args);
+        console.log(this);
+        console.log(this.element.id);
+        if (this.element.id == 'AcademiaGridcertificateSubType___value') {
+            academicCertificateSubTypeDD = this;
+
+            if (academicCertificateTypeDD.itemData) {
+                let selection = academicCertificateTypeDD.itemData;
+                if (selection == '@(EnumExtensions.GetDescription(OS_AcademiaCertificateType.Education))') {
+                    academiaProfileGrid.showSpinner();
+                    cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.EducationCertificate).done(function (data) {
+                        academiaProfileGrid.hideSpinner();
+
+                        dictionaryValueTypes.removeIf(function (x) { return data.filter(function (y) { return y.id == x.id }).length > 0 })
+                        dictionaryValueTypes = dictionaryValueTypes.concat(data);
+
+                        let dataMS = [];
+                        for (let i = 0; i < data.length; i++) {
+                            let item = data[i];
+                            dataMS.push({ label: `${item.key} - ${item.value}`, value: item.id, data: item });
+                        }
+
+                        academicCertificateSubTypeDD.dataSource = dataMS;
+                        academicCertificateSubTypeDD.value = curAcademiaCertificateSubTypeId;
+                    });
+                } 
+                else {
+                    //loadDictionaryValues(ValueTypeModules.TrainingCertificate, [academiaProfileGrid], ['certificateSubType.value']);
+
+                    academiaProfileGrid.showSpinner();
+                    cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.TrainingCertificate).done(function (data) {
+                        academiaProfileGrid.hideSpinner();
+
+                        dictionaryValueTypes.removeIf(function (x) { return data.filter(function (y) { return y.id == x.id }).length > 0 })
+                        dictionaryValueTypes = dictionaryValueTypes.concat(data);
+
+                        let dataMS = [];
+                        for (let i = 0; i < data.length; i++) {
+                            let item = data[i];
+                            dataMS.push({ label: `${item.key} - ${item.value}`, value: item.id, data: item });
+                        }
+
+                        academicCertificateSubTypeDD.dataSource = dataMS;
+                        academicCertificateSubTypeDD.value = curAcademiaCertificateSubTypeId;
+                    });
+                }
+            }
+        }
+        else if (this.element.id == 'SkillsGridsubType___value') {
+            skillSubTypeDD = this;
+            if (skillTypeDD.itemData) {
+                let selection = skillTypeDD.itemData;
+
+                if (selection == '@(EnumExtensions.GetDescription(OS_SkillType.TypeI))') {
+                    //loadDictionaryValues(ValueTypeModules.TypeISkill, [skillsProfileGrid], ['subType.value']);
+
+                    skillsProfileGrid.showSpinner();
+                    cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.TypeISkill).done(function (data) {
+                        skillsProfileGrid.hideSpinner();
+
+                        dictionaryValueTypes.removeIf(function (x) { return data.filter(function (y) { return y.id == x.id }).length > 0 })
+                        dictionaryValueTypes = dictionaryValueTypes.concat(data);
+
+                        let dataMS = [];
+                        for (let i = 0; i < data.length; i++) {
+                            let item = data[i];
+                            dataMS.push({ label: `${item.key} - ${item.value}`, value: item.id, data: item });
+                        }
+
+                        skillSubTypeDD.dataSource = dataMS;
+                        skillSubTypeDD.value = curSkillSubTypeId;
+                    });
+
+                }
+                else {
+                    //loadDictionaryValues(ValueTypeModules.TypeIISkill, [skillsProfileGrid], ['subType.value']);
+                    skillsProfileGrid.showSpinner();
+                    cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(ValueTypeModules.TypeIISkill).done(function (data) {
+                        skillsProfileGrid.hideSpinner();
+
+                        dictionaryValueTypes.removeIf(function (x) { return data.filter(function (y) { return y.id == x.id }).length > 0 })
+                        dictionaryValueTypes = dictionaryValueTypes.concat(data);
+
+                        let dataMS = [];
+                        for (let i = 0; i < data.length; i++) {
+                            let item = data[i];
+                            dataMS.push({ label: `${item.key} - ${item.value}`, value: item.id, data: item });
+                        }
+
+                        skillSubTypeDD.dataSource = dataMS;
+                        skillSubTypeDD.value = curSkillSubTypeId;
+                    });
+                }
+            }
+        }
+    }
+
+    function codeNameEditChanged(args) {
+        console.log(args);
+        console.log(this);
+
+        let selection = this.itemData;
+        console.log(selection);
+        if (this.element.id == 'BenefitsGridpayComponentType___name') {
+
+            payComponentValueTypeDD.value = selection.data.valueTypeDescription;
+            if (selection.data.valueType == @((int)PS_PayComponentTypeValueType.Amount)) {
+                payComponentValueTypeComponentTypeDD.dataSource = [];
+            } else {
+                payComponentValueTypeComponentTypeDD.dataSource = [{ label: selection.data.valueComponentType.code + ' - ' + selection.data.valueComponentType.name, value: selection.data.valueComponentType.id }];
+                payComponentValueTypeComponentTypeDD.value = selection.data.valueComponentTypeId;
+            }
+            payComponentValueTypeAmount.value = selection.data.amount;
+            payComponentDD.dataSource = [];
+
+            cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayComponent.getAllByPayComponentType(selection.data.id).done(function (data) {
+                let dataMS = [];
+                for (let i = 0; i < data.length; i++) {
+                    let item = data[i];
+                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+                }
+
+                codeNameTypes.removeIf(function (x) { return data.filter(function (y) { return y.id == x.id }).length > 0 })
+                codeNameTypes = codeNameTypes.concat(data);
+
+                console.log(dataMS);
+                payComponentDD.dataSource = dataMS;
+            });
+            //compBenefitsGrid.columns.filter(function (x) { return x.field == 'payComponentType.valueComponentType.name' })[0].value = selection.data.valueComponentType;
+            //compBenefitsGrid.columns.filter(function (x) { return x.field == 'payComponentType.amount' })[0].text = selection.data.amount;
+        }
+        else if (this.element.id == 'BenefitsGridpayComponentId') {
+            payFrequencyDD.dataSource = [{ label: selection.data.payFrequency.code + ' - ' + selection.data.payFrequency.name, value: selection.data.payFrequencyId }];
+            payFrequencyDD.value = selection.data.payFrequencyId;
+
+            payComponentValueTypeAmount.enabled = selection.data.canOverride;
+        }
+    }
+
+    function dicValueEditChanged(args) {
+        console.log(args);
+        console.log(this);
+
+
     }
 
     let elem;
@@ -1291,7 +2468,7 @@
             this.refresh();
         }
     }
-    function defaultPalePrimaryCrudActionBegin(args){
+    function defaultPalePrimaryCrudActionBegin(args) {
         let type = args.requestType;
         if (type == "beginEdit" || type == "add") {
             let dependantColumns = this.columns.filter(function (x) { return x.field == 'dependant.name' });
@@ -1301,7 +2478,40 @@
     function defaultPalePrimaryCrudCommandClick() {
 
     }
-    
+
+    function defaultPrimaryCrudActionComplete(args) {
+        if (args.requestType == "add") {
+
+        }
+        else if (args.requestType == "save") {
+            console.log('save');
+            console.log(this.dataSource);
+
+            let isPrimary = args.data.isPrimary;
+            let isValid = checkValidity(args.data.validityToDate);
+            if (isPrimary) {
+                args.data.isPrimary = isValid;
+            }
+
+            updateAndCheckPrimaryValidity(this.dataSource, args.data);
+
+            let cur = this.dataSource.filter(function (x) { return x.id == args.data.id })[0];
+            args.data.id = getUniqueIdForDS(this.dataSource);
+
+            this.refresh();
+        }
+    }
+    function defaultPrimaryCrudActionBegin(args) {
+        let type = args.requestType;
+        if (type == "beginEdit" || type == "add") {
+            let dependantColumns = this.columns.filter(function (x) { return x.field == 'dependant.name' });
+            attachDependantsReferences(dependantColumns);
+        }
+    }
+    function defaultPrimaryCrudCommandClick() {
+
+    }
+
     function defaultCrudActionComplete(args) {
         if (args.requestType == "add") {
 
@@ -1316,14 +2526,57 @@
             this.refresh();
         }
     }
-    function defaultCrudActionBegin(args){
+    function defaultCrudActionBegin(args) {
         let type = args.requestType;
-        if (type == "beginEdit" || type == "add") {
+        if (type == "beginEdit") {
             let dependantColumns = this.columns.filter(function (x) { return x.field == 'dependant.name' });
             attachDependantsReferences(dependantColumns);
+
+            if (this.element.id.includes('BenefitsGrid')) {
+                console.log('Benefits');
+                console.log(args);
+                curPayComponentId = args.rowData.payComponentId;
+                console.log(curPayComponentId);
+            }
+            else if (this.element.id.includes('SkillsGrid')) {
+                console.log('Skills');
+                console.log(args);
+                curSkillSubTypeId = args.rowData.subType.value;
+                console.log(curSkillSubTypeId);
+            }
+            else if(this.element.id.includes('AcademiaGrid')) {
+                console.log('Academia');
+                console.log(args);
+                curAcademiaCertificateSubTypeId = args.rowData.certificateSubType.value;
+                console.log(curAcademiaCertificateSubTypeId);
+            }
         }
     }
     function defaultCrudCommandClick() {
+
+    }
+
+    function defaultActionComplete(args) {
+        if (args.requestType == "add") {
+
+        }
+        else if (args.requestType == "save") {
+            console.log('save');
+            //console.log(this.dataSource);
+
+            //let cur = this.dataSource.filter(function (x) { return x.id == args.data.id })[0];
+            //args.data.id = getUniqueIdForDS(this.dataSource);
+
+            this.refresh();
+        }
+    }
+    function defaultActionBegin(args) {
+        let type = args.requestType;
+        if (type == "beginEdit" || type == "add") {
+
+        }
+    }
+    function defaultCommandClick() {
 
     }
 

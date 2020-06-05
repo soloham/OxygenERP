@@ -389,6 +389,10 @@ const ValueTypeModules = {
     EmailType: 35,
     PhoneType: 36,
     AddressType: 37,
+    EducationCertificate: 38,
+    TrainingCertificate: 39,
+    TypeISkill: 40,
+    TypeIISkill: 41
 }
 
 function SelectDepartmentPositions(departmentsElmId, positionsElmId, departmentsArr, positionsArr, isEditing, isEditingLoaded, toSelectPositions) {
