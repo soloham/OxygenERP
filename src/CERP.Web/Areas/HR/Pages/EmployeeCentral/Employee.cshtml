@@ -4,12 +4,13 @@
 @using CERP.App.Helpers;
 @using CERP.HR.Setup.OrganizationalManagement.OrganizationStructure;
 @using CERP.HR.Setup.OrganizationalManagement.PayrollStructure;
+@using Syncfusion.EJ2;
 @model CERP.Web.Areas.HR.Pages.EmployeeCentral.EmployeeModel
 @{
-    ViewData["Title"] = "Employees";
+    ViewData["Title"] = "Employee";
     ViewData["IconClass"] = "fa fa-user-tie";
-    ViewData["HeaderTitle"] = "EMPLOYEES";
-    ViewData["SubTitle"] = "List of Employees";
+    ViewData["HeaderTitle"] = "EMPLOYEE";
+    ViewData["SubTitle"] = "List of Employee";
     ViewData["Area"] = "HR";
 
     ViewData["IsList"] = false;
@@ -35,16 +36,16 @@
 
     var integerFieldEdit = new
     {
-        @@params = new Syncfusion.EJ2.Inputs.NumericTextBox() { Created = "numericTextBoxEditCreated", Decimals = 0 }
-    };
-    var dicValueTypeEdit = new
-    {
-        @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Created = "dicValueTypeCreated", Change = "dicValueEditChanged", Fields = new Syncfusion.EJ2.DropDowns.DropDownListFieldSettings() { Text = "label", Value = "value" }, DataSource = new List<object>(), Query = "new ej.data.Query()", AllowFiltering = true }
-    };
-    var codeNameTypeEdit = new
-    {
-        @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Created="codeNameTypeCreated", Change = "codeNameEditChanged", Fields = new Syncfusion.EJ2.DropDowns.DropDownListFieldSettings() { Text = "label", Value = "value" }, DataSource = new List<object>(), Query = "new ej.data.Query()", AllowFiltering = true }
-    };
+@@params = new Syncfusion.EJ2.Inputs.NumericTextBox() { Created = "numericTextBoxEditCreated", Decimals = 0 }
+};
+var dicValueTypeEdit = new
+{
+@@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Created = "dicValueTypeCreated", Change = "dicValueEditChanged", Fields = new Syncfusion.EJ2.DropDowns.DropDownListFieldSettings() { Text = "label", Value = "value" }, DataSource = new List<object>(), Query = "new ej.data.Query()", AllowFiltering = true }
+};
+var codeNameTypeEdit = new
+{
+@@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Created = "codeNameTypeCreated", Change = "codeNameEditChanged", Fields = new Syncfusion.EJ2.DropDowns.DropDownListFieldSettings() { Text = "label", Value = "value" }, DataSource = new List<object>(), Query = "new ej.data.Query()", AllowFiltering = true }
+};
 
 var complexNameEdit = new
 {
@@ -52,17 +53,95 @@ var complexNameEdit = new
 };
 var payComponentValueTypeEdit = new
 {
-@@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Created="payComponentValueTypeCreated", Fields = new Syncfusion.EJ2.DropDowns.DropDownListFieldSettings() { Text = "name", Value = "id" }, DataSource = EnumExtensions.GetDescriptions(typeof(PS_PayComponentTypeValueType)), Query = "new ej.data.Query()", AllowFiltering = true }
+@@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Created = "payComponentValueTypeCreated", Fields = new Syncfusion.EJ2.DropDowns.DropDownListFieldSettings() { Text = "name", Value = "id" }, DataSource = EnumExtensions.GetDescriptions(typeof(PS_PayComponentTypeValueType)), Query = "new ej.data.Query()", AllowFiltering = true }
 };
 }
 
 @section styles {
     <style>
+        
+        .avatar-upload {
+            position: relative;
+        }
+
+            .avatar-upload .avatar-edit {
+                position: absolute;
+                right: 40%;
+                z-index: 1;
+                top: 105%;
+            }
+
+                .avatar-upload .avatar-edit input {
+                    display: none;
+                }
+
+                    .avatar-upload .avatar-edit input + label {
+                        display: inline-block;
+                        width: 34px;
+                        height: 34px;
+                        margin-bottom: 0;
+                        border-radius: 0%;
+                        background: #FFFFFF;
+                        border: 1px solid transparent;
+                        box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.12);
+                        cursor: pointer;
+                        font-weight: normal;
+                        transition: all 0.2s ease-in-out;
+                    }
+
+                        .avatar-upload .avatar-edit input + label:hover {
+                            background: #f1f1f1;
+                            border-color: #d6d6d6;
+                        }
+
+                    .avatar-upload .avatar-edit input#imageCancel + label#remove:after {
+                        content: "\f136";
+                        font-size: 1.35em;
+                        font-family: Material-Design-Iconic-Font;
+                        color: #757575;
+                        position: absolute;
+                        top: 6px;
+                        left: 11px;
+                        text-align: center;
+                        margin: auto;
+                    }
+
+                    .avatar-upload .avatar-edit input#imageUpload + label#upload:after {
+                        content: "\f11f";
+                        font-size: 1.35em;
+                        font-family: Material-Design-Iconic-Font;
+                        color: #757575;
+                        position: absolute;
+                        top: 6px;
+                        right: 11px;
+                        text-align: center;
+                        margin: auto;
+                    }
+
+            .avatar-upload .avatar-preview {
+                height: auto;
+                position: relative;
+                border-radius: 0%;
+                border: 6px solid #F8F8F8;
+                box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+                max-width: 260px;
+            }
+
+                .avatar-upload .avatar-preview > div {
+                    width: 100%;
+                    height: auto;
+                    border-radius: 0%;
+                    background-size: cover;
+                    background-repeat: no-repeat;
+                    background-position: center;
+                }
+
         .e-grid .e-headercell {
             background-color: #ffffff;
             font-weight: 600 !important
             /*font-size: 18px;*/;
         }
+
         .EmployeeHeader {
             height: 400px;
             background-image: url('/images/banner2.jpg');
@@ -355,11 +434,14 @@ var payComponentValueTypeEdit = new
             });
         }
 
-        function populateCodeNameTypes(data, grid, columnIndex) {
+        function populateCodeNameTypes(data, grid, columnIndex, codeProp = null, valueProp = null) {
             let dataMS = [];
             for (let i = 0; i < data.length; i++) {
                 let item = data[i];
-                dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+                let cP = codeProp != null ? codeProp : 'code';
+                let vP = valueProp != null ? valueProp : 'name';
+
+                dataMS.push({ label: `${item[cP]} - ${item[vP]}`, value: item.id, data: item });
             }
             if (typeof columnIndex === typeof '')
                 grid.columns.filter(function (x) { return x.field == columnIndex })[0].edit.params.dataSource = dataMS;
@@ -368,16 +450,19 @@ var payComponentValueTypeEdit = new
 
             console.log(dataMS);
         }
-        function populateMSCodeNameTypes(data, multiselect) {
+        function populateMSCodeNameTypes(data, multiselect, codeProp = null, valueProp = null) {
             let dataMS = [];
             for (let i = 0; i < data.length; i++) {
                 let item = data[i];
-                dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+                let cP = codeProp != null ? codeProp : 'code';
+                let vP = valueProp != null ? valueProp : 'name';
+
+                dataMS.push({ label: `${item[cP]} - ${item[vP]}`, value: item.id, data: item });
             }
             console.log(dataMS);
             $(multiselect).multiselect('dataprovider', dataMS);
         }
-        function loadCodeNameTypes(serviceFuncion, gridsArray = [], columnsArray = [], multiselects = []) {
+        function loadCodeNameTypes(serviceFuncion, gridsArray = [], columnsArray = [], multiselects = [], codeProp = null, valueProp = null, callback = null) {
             $.each(gridsArray, function (i, x) { x.showSpinner(); });
             serviceFuncion().done(function (data) {
                 $.each(gridsArray, function (i, x) { x.hideSpinner(); });
@@ -385,12 +470,24 @@ var payComponentValueTypeEdit = new
                 codeNameTypes.removeIf(function (x) { return data.filter(function (y) { return y.id == x.id }).length > 0 })
                 codeNameTypes = codeNameTypes.concat(data);
 
-                $.each(gridsArray, function (i, x) { populateCodeNameTypes(data, x, columnsArray[i]) });
+                $.each(gridsArray, function (i, x) { populateCodeNameTypes(data, x, columnsArray[i], codeProp, valueProp) });
                 if (multiselects.length > 0)
-                    $.each(multiselects, function (i, x) { populateMSCodeNameTypes(data, x) });
+                    $.each(multiselects, function (i, x) { populateMSCodeNameTypes(data, x, codeProp, valueProp) });
+
+                if (callback) callback();
             });
         }
 
+        let allOrgStructures = [];
+        let allOrgLegalEntities = [];
+        let allBUs = [];
+        let allDivisions = [];
+        let allDepartments = [];
+
+        let curOrgStructure;
+        let curBU;
+        let curDiv;
+        let curDep;
         $(document).ready(function () {
             let options = {
                 buttonWidth: '100%',
@@ -406,6 +503,17 @@ var payComponentValueTypeEdit = new
             $('#empMaritalStatus').multiselect(options);
             $('#empNationality').multiselect(options);
             $('#empPreferredLanguage').multiselect(options);
+
+            $('#empCompany').multiselect(options);
+            $('#empBU').multiselect(options);
+            $('#empDIV').multiselect(options);
+            $('#empDEP').multiselect(options);
+            $('#empLOC').multiselect(options);
+            $('#empTimezone').multiselect(options);
+            $('#empCostCenter').multiselect(options);
+
+            $('#empCBS_PayGrade').multiselect(options);
+            $('#empCBS_PayGrade').multiselect(options);
 
             nationalIdentityGrid = $('#NationalIdentitiesGrid')[0].ej2_instances[0];
 
@@ -481,21 +589,210 @@ var payComponentValueTypeEdit = new
 
             let payGradesGridsArr = [oSJobsGrid];
             let payGradesGridsColsArr = ['payGrade.value'];
-            let payGradesMultiselectsArr = [];
+            let payGradesMultiselectsArr = ['#empCBS_PayGrade'];
+
+            loadCodeNameTypes(cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayGroup.getAllPayGroups, [], [], ['#empCBS_PayGroup']);
 
             loadCodeNameTypes(cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayGrade.getAllPayGrades, payGradesGridsArr, payGradesGridsColsArr, payGradesMultiselectsArr);
 
             loadCodeNameTypes(cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayComponentType.getAllPayComponentTypes, [compBenefitsGrid], ['payComponentType.name']);
 
+            loadCodeNameTypes(cERP.appServices.setup.companySetup.company.getAllCompanies, [], [], ['#empCompany'], 'clientID', 'companyName', function () { $('#empCompany').change(); });
 
-            loadCodeNameTypes(cERP.appServices.hR.organizationalManagement.organizationStructure.oS_OrganizationStructureTemplate.getAllOrganizationStructureTemplates, [], ['empCompany']);
+            //loadCodeNameTypes(cERP.appServices.hR.organizationalManagement.organizationStructure.oS_OrganizationStructureTemplate.getAllOrganizationStructureTemplates, [], ['#empCompany']);
+
+            $('#empCompany').on('change', function (x) {
+                let lEId = $('#empCompany').val();
+
+
+                let orgStructureGridsArr = [];
+                let orgStructureGridsColsArr = [];
+                let orgStructureMultiselectsArr = [];
+                let orgStructureLEMultiselectsArr = [];
+                $.each(orgStructureGridsArr, function (i, x) { x.showSpinner(); });
+                cERP.appServices.hR.organizationalManagement.organizationStructure.oS_OrganizationStructureTemplate.getOrganizationStructureTemplateByCompany(lEId).done(function (data) {
+                    $.each(orgStructureGridsArr, function (i, x) { x.hideSpinner(); });
+
+                    codeNameTypes.removeIf(function (x) { data.id == x.id });
+                    codeNameTypes = codeNameTypes.concat(data);
+
+                    curOrgStructure = data;
+                    
+                    //allOrgLegalEntities = allOrgStructures.map(function (x) { x.legalEntity });
+                    //allBUs = allOrgStructures.map(function (x) { x.organizationStructureTemplateBusinessUnits });
+                    //allDivisions = allOrgStructures.map(function (x) { x.organizationStructureTemplateDivisions });
+                    //allDepartments = allOrgStructures.map(function (x) { x.organizationStructureTemplateDepartments });
+
+                    $.each(orgStructureGridsArr, function (i, x) { populateCodeNameTypes(data, x, orgStructureGridsColsArr[i]) });
+                    if (orgStructureMultiselectsArr.length > 0)
+                        $.each(orgStructureMultiselectsArr, function (i, x) { populateMSCodeNameTypes(data, x) });
+
+                    $.each(orgStructureLEMultiselectsArr, function (i, x) { populateMSCodeNameTypes(allOrgLegalEntities, x) });
+
+                    let bUs = curOrgStructure.organizationStructureTemplateBusinessUnits.map(function (x) {
+                        return x.businessUnitTemplate;
+                    });
+                    let dIvs = curOrgStructure.organizationStructureTemplateDivisions.map(function (x) {
+                        return x.divisionTemplate;
+                    });
+                    let dEps = curOrgStructure.organizationStructureTemplateDepartments.map(function (x) {
+                        return x.departmentTemplate;
+                    });
+
+                    let orgStructureBUMultiselectsArr = ['#empBU'];
+                    $.each(orgStructureBUMultiselectsArr, function (i, x) { populateMSCodeNameTypes(bUs, x) });
+                    let orgStructureDIVMultiselectsArr = ['#empDIV'];
+                    $.each(orgStructureDIVMultiselectsArr, function (i, x) { populateMSCodeNameTypes(dIvs, x) });
+                    let orgStructureDEPMultiselectsArr = ['#empDEP'];
+                    $.each(orgStructureDEPMultiselectsArr, function (i, x) { populateMSCodeNameTypes(dEps, x) });
+
+                    $('#empBU').change();
+                    //if (!curOrgStructure) return;
+                    let posManDG = $('#PosManagementDiagram')[0].ej2_instances[0];
+                    let diagramDS = [];
+                    let ds = JSON.parse(curOrgStructure.extraProperties['Structure'][0]);
+                    for (var i = 0; i < ds.length; i++) {
+                        let node = { id: ds[i].id, unit: ds[i]._unit };
+                        if (ds[i].parentId)
+                            node.parentId = ds[i].parentId;
+                        diagramDS.push(node);
+                    }
+                    posManDG.nodes = [];
+                    posManDG.connectors = [];
+                    posManDG.dataSourceSettings.dataSource.dataSource.data = diagramDS;
+                    posManDG.refresh();
+                });
+            });
+            $('#empBU').on('change', function (x) {
+                let bUId = $('#empBU').val();
+
+                let bU = curOrgStructure.organizationStructureTemplateBusinessUnits.filter(function (x) {
+                    return x.businessUnitTemplateId == bUId;
+                })[0];
+
+                console.log('bu');
+                console.log(bU);
+                if (!bU) return;
+
+                cERP.appServices.hR.organizationalManagement.organizationStructure.oS_OrganizationStructureTemplate.getBusinessUnit(bU.id, curOrgStructure.id).done(function (data) {
+                    curBU = data;
+
+                    let dIvs = curBU.organizationStructureTemplateDivisions.map(function (x) {
+                        return x.divisionTemplate;
+                    });
+                    let dEps = curBU.organizationStructureTemplateDepartments.map(function (x) {
+                        return x.departmentTemplate;
+                    });
+
+                    let orgStructureDIVMultiselectsArr = ['#empDIV'];
+                    $.each(orgStructureDIVMultiselectsArr, function (i, x) { populateMSCodeNameTypes(dIvs, x) });
+                    let orgStructureDEPMultiselectsArr = ['#empDEP'];
+                    $.each(orgStructureDEPMultiselectsArr, function (i, x) { populateMSCodeNameTypes(dEps, x) });
+
+                    $('#empDIV').change();
+                });
+            });
+            $('#empDIV').on('change', function (x) {
+                let divId = $('#empDIV').val();
+
+                let div;
+                if (curBU) {
+                    div = curBU.organizationStructureTemplateDivisions.filter(function (x) {
+                        return x.divisionTemplateId == divId;
+                    })[0];
+                } else {
+                    div = curOrgStructure.organizationStructureTemplateDivisions.filter(function (x) {
+                        return x.divisionTemplateId == divId;
+                    })[0];
+                }
+
+                console.log(div);
+                if (!div) return;
+                cERP.appServices.hR.organizationalManagement.organizationStructure.oS_OrganizationStructureTemplate.getDivision(div.id, curBU ? curBU.id : 0, curOrgStructure.id).done(function (data) {
+                    curDiv = data;
+
+                    //let dIvs = curDiv.organizationStructureTemplateDivisions.map(function (x) {
+                    //    return x.divisionTemplate;
+                    //});
+                    let dEps = curDiv.organizationStructureTemplateDepartments.map(function (x) {
+                        return x.departmentTemplate;
+                    });
+
+                    let orgStructureDEPMultiselectsArr = ['#empDEP'];
+                    $.each(orgStructureDEPMultiselectsArr, function (i, x) { populateMSCodeNameTypes(dEps, x) });
+                });
+
+            });
+
+            $('#empCBS_PayGroup').on('change', function () {
+                let curPGID = $('#empCBS_PayGroup').val();
+
+                //loadCodeNameTypes(cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayGrade.getAllPayGradesByGroup , [], ['#empCBS_PayGrade']);
+            });
+
+            $('#firstName').on('keyup', function () {
+                let firstName = $('#firstName').val();
+                let middleName = $('#middleName').val();
+                let lastName = $('#lastName').val();
+                $('#headerName').text(firstName + ' '+ middleName + ' ' + lastName);
+            });
+            $('#middleName').on('keyup', function () {
+                let firstName = $('#firstName').val();
+                let middleName = $('#middleName').val();
+                let lastName = $('#lastName').val();
+                $('#headerName').text(firstName + ' ' + middleName + ' ' + lastName);
+            });
+            $('#lastName').on('keyup', function () {
+                let firstName = $('#firstName').val();
+                let middleName = $('#middleName').val();
+                let lastName = $('#lastName').val();
+                $('#headerName').text(firstName + ' ' + middleName + ' ' + lastName);
+            });
         });
     </script>
 }
 
 <div class="site-content" style="background-color: rgb(253,253,253);">
     <div id="employeeHeader" class="EmployeeHeader">
-
+        <div class="row" style="height: 100%; margin-left: 0; margin-right: 0">
+            <div class="col-md-1 col-sm-1">
+            
+            </div>
+            <div class="col-md-3 col-sm-4" style="
+                    display: flex;
+                    height: inherit;
+                    justify-content: center;
+                    flex-direction: column;
+                    max-width: 220px;
+                ">
+                <div class="avatar-upload">
+                    <div class="avatar-edit">
+                        <input id="imageCancel" accept=".png, .jpg, .jpeg" onclick="removeImage(this);" />
+                        <label id="remove" for="imageCancel"></label>
+                        <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg" onchange="showpreview(this);" />
+                        <label id="upload" for="imageUpload"></label>
+                    </div>
+                    <div class="avatar-preview" style="border-radius: 50%">
+                        @*<div id="imagePreview" style="background-image: url(/images/@(isEditing && employee != null? employee.ProfilePic : "noimage.jpg"));">
+            </div>*@
+                        <img id="EmpPhoto" src="/Uploads/noimage.jpg" class="img-responsive padding-5" style="cursor:pointer; border-radius: 50%" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8 col-sm-8" style="
+                    display: flex;
+                    height: inherit;
+                    justify-content: flex-start;
+                    flex-direction: column;
+                    max-width: 350px;
+                    padding: 130px 10px;
+                    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    color: white">
+                    <h1 id="headerName" style="font-weight: 500"></h1>
+                    @*<h2>Lorem Ipsum</h2>*@
+            </div>
+        </div>
+        
     </div>
 
     <ejs-tab id="employeeMainTabs" animation="ViewBag.animation" headerPlacement="Top" heightAdjustMode="Content" cssClass="customTab" overflowMode="Scrollable" created="mainTabCreated">
@@ -550,26 +847,6 @@ var payComponentValueTypeEdit = new
                             <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                                 <div class="form-group" style="padding: 15px">
                                     <div class="col-sm-4" style="">
-                                        <label class="p-t-5 control-label pull-right">Last Name:</label>
-                                    </div>
-                                    <div class="col-sm-8" style="">
-                                        <input type="text" id="lastName" name="LastName" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                                <div class="form-group" style="padding: 15px">
-                                    <div class="col-sm-4" style="">
-                                        <label class="p-t-5 control-label pull-right">Last Name AR:</label>
-                                    </div>
-                                    <div class="col-sm-8" style="">
-                                        <input type="text" id="lastNameLocal" name="LastNameLocal" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                                <div class="form-group" style="padding: 15px">
-                                    <div class="col-sm-4" style="">
                                         <label class="p-t-5 control-label pull-right">Middle Name:</label>
                                     </div>
                                     <div class="col-sm-8" style="">
@@ -584,6 +861,26 @@ var payComponentValueTypeEdit = new
                                     </div>
                                     <div class="col-sm-8" style="">
                                         <input type="text" id="middleNameLocal" name="MiddleNameLocal" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Last Name:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="text" id="lastName" name="LastName" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Last Name AR:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="text" id="lastNameLocal" name="LastNameLocal" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                                     </div>
                                 </div>
                             </div>
@@ -1206,7 +1503,38 @@ var payComponentValueTypeEdit = new
         </ejs-tab>
 
         <div id="orgStructureChartTab" class="secondaryTab" style="display: none">
-
+            <div class="customForm">
+                <div class="formHeader">
+                    <span class="headerTitle">Organization Structure Overview</span>
+                </div>
+                <div class="formContent h-fill-available">
+                    <div class="control-section">
+                        <div style="width: 100%;height: 10%">
+                            @*Initializes ToolBar control.*@
+                            @*<ejs-toolbar id="toolbar" clicked="posDGToolbarClick" created="posDGToolbarCreate">
+                                    <e-toolbar-items>
+                                        <e-toolbar-item id="Add" tooltipText="Add" prefixIcon="e-icons e-add" text="Add"></e-toolbar-item>
+                                        <e-toolbar-item type="Separator"></e-toolbar-item>
+                                        <e-toolbar-item id="Edit" tooltipText="Edit" prefixIcon="e-icons e-update" text="Edit"></e-toolbar-item>
+                                        <e-toolbar-item type="Separator"></e-toolbar-item>
+                                        <e-toolbar-item id="Delete" tooltipText="Delete" prefixIcon="e-icons e-delete" text="Delete"></e-toolbar-item>
+                                        <e-toolbar-item type="Separator"></e-toolbar-item>
+                                    </e-toolbar-items>
+                                </ejs-toolbar>*@
+                        </div>
+                        <div style="width: 100%;height: 80%;border-width: 0 1px 1px 1px; border-style: solid; border-color:#D7D7D7">
+                            <div id="diagram-space" class="sb-mobile-diagram">
+                                @*Initializes Diagram control.*@
+                                <ejs-diagram id="PosManagementDiagram" width="100%" height="550px" getNodeDefaults='"getNodeDefaults"' getConnectorDefaults='"getConnectorDefaults"' created="diagramCreated">
+                                    <e-diagram-snapsettings constraints="None"></e-diagram-snapsettings>
+                                    <e-diagram-datasourcesettings id="id" parentId="parentId" dataSource="new DataManager() { Data = new List<object>() }"></e-diagram-datasourcesettings>
+                                    <e-diagram-layout type="HierarchicalTree" enableAnimation="true" horizontalSpacing="60" verticalSpacing="60"></e-diagram-layout>
+                                </ejs-diagram>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div id="orgStructureInfoTab" class="secondaryTab" style="display: none">
             <div class="customForm">
@@ -1625,6 +1953,7 @@ var payComponentValueTypeEdit = new
         <ejs-tab id="timeTabs" animation="ViewBag.animation" heightAdjustMode="None" overflowMode="Scrollable" headerPlacement="Left" cssClass="e-fill classicTab">
             <e-tab-tabitems>
                 <e-tab-tabitem header="@(new TabHeader { Text = "General" })" content="#generalTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Time Offs" })" content="#timeOffsTab"></e-tab-tabitem>
                 <e-tab-tabitem header="@(new TabHeader { Text = "Work Schedule" })" content="#workScheduleTab"></e-tab-tabitem>
             </e-tab-tabitems>
         </ejs-tab>
@@ -1655,10 +1984,25 @@ var payComponentValueTypeEdit = new
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="col-md-6">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="timeOffsTab" class="secondaryTab" style="display: none">
+            <div class="customForm">
+                <div class="formHeader">
+                    <span class="headerTitle">Time Offs Information</span>
+                </div>
+                <div class="formContent h-fill-available">
+                    <div class="row">
+                        <div class="col-md-6">
                             <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                                 <div class="form-group" style="padding: 15px">
                                     <div class="col-sm-4" style="">
-                                        <h4 class="p-t-5 control-label">Holiday Calendar:</h4>
+                                        <h4 class="p-t-5 control-label">Basic Information:</h4>
                                     </div>
                                 </div>
                             </div>
@@ -1679,6 +2023,16 @@ var payComponentValueTypeEdit = new
                                     </div>
                                     <div class="col-sm-8" style="">
                                         <input type="date" id="hiringDate" name="HiringDate" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Yearly Time Off Allowance:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="number" id="yearlyTimeOff" name="YearlyTimeOffAllowance" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
                                     </div>
                                 </div>
                             </div>
@@ -1765,12 +2119,12 @@ var payComponentValueTypeEdit = new
 
                                         var academicTypeEdit = new
                                         {
-                                            @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { DataSource = EnumExtensions.GetDescriptions(typeof(OS_AcademicType)), Query = "new ej.data.Query()", AllowFiltering = true }
-                                        };
-                                        var academicCertificateTypeEdit = new
-                                        {
-                                            @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Created = "academicCertificateTypeCreated", Change = "academicCertificateTypeChanged", DataSource = EnumExtensions.GetDescriptions(typeof(OS_AcademiaCertificateType)), Query = "new ej.data.Query()", AllowFiltering = true }
-                                        };
+@@params = new Syncfusion.EJ2.DropDowns.DropDownList() { DataSource = EnumExtensions.GetDescriptions(typeof(OS_AcademicType)), Query = "new ej.data.Query()", AllowFiltering = true }
+                                    };
+                                    var academicCertificateTypeEdit = new
+                                    {
+@@params = new Syncfusion.EJ2.DropDowns.DropDownList() { Created = "academicCertificateTypeCreated", Change = "academicCertificateTypeChanged", DataSource = EnumExtensions.GetDescriptions(typeof(OS_AcademiaCertificateType)), Query = "new ej.data.Query()", AllowFiltering = true }
+                                    };
                                     }
                                     <e-grid-columns>
                                         <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
@@ -1853,7 +2207,7 @@ var payComponentValueTypeEdit = new
         </div>
 
     </div>
-    
+
     <div id="loansTab" class="mainTab" style="display: none">
         <ejs-tab id="loansTabs" animation="ViewBag.animation" heightAdjustMode="None" overflowMode="Scrollable" headerPlacement="Left" cssClass="e-fill classicTab">
             <e-tab-tabitems>
@@ -1881,8 +2235,8 @@ var payComponentValueTypeEdit = new
 
                                         var loanStatusEdit = new
                                         {
-                                            @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { DataSource = EnumExtensions.GetDescriptions(typeof(PS_PayGradeStatus)), Query = "new ej.data.Query()", AllowFiltering = true }
-                                        };
+@@params = new Syncfusion.EJ2.DropDowns.DropDownList() { DataSource = EnumExtensions.GetDescriptions(typeof(PS_PayGradeStatus)), Query = "new ej.data.Query()", AllowFiltering = true }
+                                    };
                                     }
                                     <e-grid-columns>
                                         <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
@@ -1944,6 +2298,91 @@ var payComponentValueTypeEdit = new
         tab.element.classList.remove('e-accent');
     }
 
+    function diagramCreated() {
+
+    }
+    function getNodeDefaults(obj, data, diagram) {
+        //Initialize shape
+        console.log("Started");
+        console.log(obj);
+        console.log(data);
+        let unitType = obj.data.unit.unitType;
+        let widthConst = 3;
+        if (unitType == 'Business Unit') {
+            obj.annotations = [{
+                /* tslint:disable:no-string-literal */
+                content: obj.data.unit.name, margin: { top: 10, left: 10, right: 10, bottom: 10 },
+                style: { color: 'black' }
+            }];
+            obj.style = {
+                fill: '#20cde8', strokeColor: '#22b3c9', strokeWidth: 3
+            };
+            obj.shape = {
+                type: 'Basic', shape: 'Rectangle'
+            };
+            obj.width = 80 + widthConst * obj.data.unit.name.length;
+            obj.height = 60;
+        }
+        else if (unitType == 'Division') {
+            obj.annotations = [{
+                /* tslint:disable:no-string-literal */
+                content: obj.data.unit.name, margin: { top: 10, left: 10, right: 10, bottom: 10 },
+                style: { color: 'black', size: 20 }
+            }];
+            obj.style = {
+                fill: '#ded11d', strokeColor: '#c7bb1c', strokeWidth: 2
+            };
+            obj.shape = {
+                type: 'Basic', shape: 'Rectangle'
+            };
+            obj.width = 65 + widthConst * obj.data.unit.name.length;
+            obj.height = 45;
+        }
+        else if (unitType == 'Department') {
+            obj.annotations = [{
+                /* tslint:disable:no-string-literal */
+                content: obj.data.unit.name, margin: { top: 10, left: 10, right: 10, bottom: 10 },
+                style: { color: 'black' }
+            }];
+            obj.style = {
+                fill: '#f0b01d', strokeColor: '#d69e1c', strokeWidth: 1
+            };
+            obj.shape = {
+                type: 'Basic', shape: 'Rectangle'
+            };
+            obj.width = 60 + widthConst * obj.data.unit.name.length;
+            obj.height = 40;
+        }
+        else if (unitType == 'Position') {
+            obj.annotations = [{
+                /* tslint:disable:no-string-literal */
+                content: obj.data.unit.name, margin: { top: 10, left: 10, right: 10, bottom: 10 },
+                style: { color: 'black' }
+            }];
+            obj.style = {
+                fill: '#28eb83', strokeColor: '#22c970', strokeWidth: 1
+            };
+            obj.shape = {
+                type: 'Basic', shape: 'Rectangle'
+            };
+            obj.width = 60 + widthConst * obj.data.unit.name.length;
+            obj.height = 40;
+        }
+
+        return obj;
+    }
+    function getConnectorDefaults(connector, diagram) {
+        connector.type = 'Orthogonal';
+        connector.style.fill = '#707070';
+        connector.style.strokeColor = '#707070';
+        connector.targetDecorator = {
+            style: {
+                strokeColor: '#707070',
+                fill: '#707070'
+            },
+        };
+        return connector;
+    }
 
     function fullNameValueAccessor(field, data, column) {
         //show only the file name in grid columns
@@ -2132,6 +2571,7 @@ var payComponentValueTypeEdit = new
         console.log(this.element.id);
         if (this.element.id == 'BenefitsGridpayComponentType___valueComponentTypeId') {
             payComponentValueTypeComponentTypeDD = this;
+
             if (payComponentTypeDD.itemData) {
                 let data = payComponentTypeDD.itemData.data;
                 payComponentValueTypeComponentTypeDD.dataSource = [{ label: data.valueComponentType.code + ' - ' + data.valueComponentType.name, value: data.valueComponentType.id }];
@@ -2200,7 +2640,7 @@ var payComponentValueTypeEdit = new
                         academicCertificateSubTypeDD.dataSource = dataMS;
                         academicCertificateSubTypeDD.value = curAcademiaCertificateSubTypeId;
                     });
-                } 
+                }
                 else {
                     //loadDictionaryValues(ValueTypeModules.TrainingCertificate, [academiaProfileGrid], ['certificateSubType.value']);
 
@@ -2632,5 +3072,39 @@ var payComponentValueTypeEdit = new
         let dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
         dialogObj.hide();
         dialogObj1.hide();
+    }
+
+
+    function removeImage(e) {
+        $('#imageUpload').val('');
+        $('#imageCancel').hide();
+        $('#remove').hide();
+
+        $('#EmpPhoto').attr('src', '/images/noimage.jpg');
+        $('#EmpPhoto').hide();
+        $('#EmpPhoto').fadeIn(650);
+
+    }
+
+    function showpreview(input) {
+        if (input.files && input.files[0]) {
+
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#imageCancel').show();
+                $('#imageCancel').css('display', '');
+                $('#remove').show();
+
+                $('#EmpPhoto').attr('src', e.target.result);
+                $('#EmpPhoto').hide();
+                $('#EmpPhoto').fadeIn(650);
+            }
+            //reader.onload = function (e) {
+            //    $('#EmpPhoto').css('visibility', 'visible');
+            //    $('#EmpPhoto').attr('src', e.target.result);
+            //}
+            reader.readAsDataURL(input.files[0]);
+        }
+
     }
 </script>

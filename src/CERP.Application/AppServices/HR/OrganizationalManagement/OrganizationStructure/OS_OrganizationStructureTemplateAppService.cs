@@ -1,8 +1,11 @@
-﻿using CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructure;
+﻿using AutoMapper.QueryableExtensions;
+using CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructure;
 using CERP.HR.EMPLOYEE.DTOs;
 using CERP.HR.OrganizationalManagement.OrganizationStructure;
 using CERP.HR.Timesheets;
 using CERP.HR.Workshifts;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,24 +46,111 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
         }
         public async Task<OS_OrganizationStructureTemplate_Dto> GetOrganizationStructureTemplateAsync(int id)
         {
-            OS_OrganizationStructureTemplate_Dto obj = ObjectMapper.Map< OS_OrganizationStructureTemplate, OS_OrganizationStructureTemplate_Dto>(await Repository.GetAsync(id, true));
-            return obj;
+            try
+            {
+                OS_OrganizationStructureTemplate_Dto obj = ObjectMapper.Map< OS_OrganizationStructureTemplate, OS_OrganizationStructureTemplate_Dto>(await Repository.GetAsync(id, true));
+                return obj;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        public async Task<OS_OrganizationStructureTemplate_Dto> GetOrganizationStructureTemplateByCompanyAsync(Guid companyId)
+        {
+            try
+            {
+                if (Repository.Any(x => x.LegalEntityId == companyId))
+                {
+                    var legalEntityOrgStructure = await Repository.FirstAsync(y => y.LegalEntityId == companyId);
+                    OS_OrganizationStructureTemplate_Dto obj = ObjectMapper.Map<OS_OrganizationStructureTemplate, OS_OrganizationStructureTemplate_Dto>(await Repository.GetAsync(x => x.Id == legalEntityOrgStructure.Id, true));
+                    return obj;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return null;
+            }
         }
 
         public async Task<List<OS_OrganizationStructureTemplateBusinessUnit_Dto>> GetBusinessUnitsAsync(int osId)
         {
-            List<OS_OrganizationStructureTemplateBusinessUnit_Dto> obj = ObjectMapper.Map<List<OS_OrganizationStructureTemplateBusinessUnit>, List<OS_OrganizationStructureTemplateBusinessUnit_Dto>>(BusinessUnitsRepository.WithDetails().Where(x => x.OrganizationStructureTemplateId == osId).ToList());
-            return obj;
+            try
+            {
+                List<OS_OrganizationStructureTemplateBusinessUnit_Dto> obj = ObjectMapper.Map<List<OS_OrganizationStructureTemplateBusinessUnit>, List<OS_OrganizationStructureTemplateBusinessUnit_Dto>>(BusinessUnitsRepository.WithDetails().Where(x => x.OrganizationStructureTemplateId == osId).ToList());
+                return obj;
+            }
+            catch (Exception ex)
+            {
+
+                return null;
+            }
+        }
+        public async Task<OS_OrganizationStructureTemplateBusinessUnit_Dto> GetBusinessUnitAsync(int buId, int orgStructureId)
+        {
+            try { 
+                OS_OrganizationStructureTemplateBusinessUnit_Dto obj = ObjectMapper.Map<OS_OrganizationStructureTemplateBusinessUnit,OS_OrganizationStructureTemplateBusinessUnit_Dto>(BusinessUnitsRepository.WithDetails().FirstOrDefault(x => x.Id == buId && x.OrganizationStructureTemplateId == orgStructureId));
+                return obj;
+            }
+            catch (Exception ex)
+            {
+
+                return null;
+            }
         }
         public async Task<List<OS_OrganizationStructureTemplateDivision_Dto>> GetDivisionsAsync(int osId)
         {
-            List<OS_OrganizationStructureTemplateDivision_Dto> obj = ObjectMapper.Map<List<OS_OrganizationStructureTemplateDivision>, List<OS_OrganizationStructureTemplateDivision_Dto>>(DivisionsRepository.WithDetails().Where(x => x.OrganizationStructureTemplateId == osId).ToList());
-            return obj;
+            try
+            {
+                List<OS_OrganizationStructureTemplateDivision_Dto> obj = ObjectMapper.Map<List<OS_OrganizationStructureTemplateDivision>, List<OS_OrganizationStructureTemplateDivision_Dto>>(DivisionsRepository.WithDetails().Where(x => x.OrganizationStructureTemplateId == osId).ToList());
+                return obj;
+            }
+            catch (Exception ex)
+            {
+
+                return null;
+            }
+        }
+        public async Task<OS_OrganizationStructureTemplateDivision_Dto> GetDivisionAsync(int divId, int buId, int orgStructureId)
+        {
+            try
+            {
+                OS_OrganizationStructureTemplateDivision_Dto obj = ObjectMapper.Map<OS_OrganizationStructureTemplateDivision, OS_OrganizationStructureTemplateDivision_Dto>(DivisionsRepository.WithDetails().FirstOrDefault(x => x.Id == divId && x.OrganizationStructureTemplateBusinessUnitId == buId && x.OrganizationStructureTemplateId == orgStructureId));
+                return obj;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
         public async Task<List<OS_OrganizationStructureTemplateDepartment_Dto>> GetDepartmentsAsync(int osId)
         {
-            List<OS_OrganizationStructureTemplateDepartment_Dto> obj = ObjectMapper.Map<List<OS_OrganizationStructureTemplateDepartment>, List<OS_OrganizationStructureTemplateDepartment_Dto>>(DepartmentsRepository.WithDetails().Where(x => x.OrganizationStructureTemplateId == osId).ToList());
-            return obj;
+            try
+            {
+                List<OS_OrganizationStructureTemplateDepartment_Dto> obj = ObjectMapper.Map<List<OS_OrganizationStructureTemplateDepartment>, List<OS_OrganizationStructureTemplateDepartment_Dto>>(DepartmentsRepository.WithDetails().Where(x => x.OrganizationStructureTemplateId == osId).ToList());
+                return obj;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        public async Task<OS_OrganizationStructureTemplateDepartment_Dto> GetDepartmentAsync(int depId, int buId, int divId, int orgStructureId)
+        {
+            try
+            {
+                OS_OrganizationStructureTemplateDepartment_Dto obj = ObjectMapper.Map<OS_OrganizationStructureTemplateDepartment, OS_OrganizationStructureTemplateDepartment_Dto>(DepartmentsRepository.WithDetails().FirstOrDefault(x => x.Id == depId && x.OrganizationStructureTemplateBusinessUnitId == buId && x.OrganizationStructureTemplateDivisionId == divId && x.OrganizationStructureTemplateId == orgStructureId));
+                return obj;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
     }
 }

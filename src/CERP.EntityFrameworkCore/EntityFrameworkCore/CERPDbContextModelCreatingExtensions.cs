@@ -417,7 +417,7 @@ namespace CERP.EntityFrameworkCore
             {
                 b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplateBusinessUnitPositions", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
 
-                b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "PositionTemplateId");
+                b.HasKey("OrganizationStructureTemplateId", "OrganizationStructureTemplateBusinessUnitId", "PositionTemplateId");
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
@@ -429,7 +429,7 @@ namespace CERP.EntityFrameworkCore
             {
                 b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplateBusinessUnitCostCenters", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
 
-                b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "CostCenterId");
+                b.HasKey("OrganizationStructureTemplateId", "OrganizationStructureTemplateBusinessUnitId", "CostCenterId");
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
@@ -442,7 +442,7 @@ namespace CERP.EntityFrameworkCore
             {
                 b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplateDivisions", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
 
-                b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId");
+                b.HasKey("OrganizationStructureTemplateId", "OrganizationStructureTemplateBusinessUnitId", "DivisionTemplateId");
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
@@ -461,7 +461,7 @@ namespace CERP.EntityFrameworkCore
             {
                 b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplateDivisionPositions", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
 
-                b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId", "PositionTemplateId");
+                b.HasKey("OrganizationStructureTemplateId", "OrganizationStructureTemplateBusinessUnitId", "OrganizationStructureTemplateDivisionId", "PositionTemplateId");
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
@@ -473,7 +473,7 @@ namespace CERP.EntityFrameworkCore
             {
                 b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplateDivisionCostCenters", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
 
-                b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId", "CostCenterId");
+                b.HasKey("OrganizationStructureTemplateId", "OrganizationStructureTemplateBusinessUnitId", "OrganizationStructureTemplateDivisionId", "CostCenterId");
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
@@ -486,7 +486,7 @@ namespace CERP.EntityFrameworkCore
             {
                 b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplateDepartments", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
 
-                b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId",  "DepartmentTemplateId");
+                b.HasKey("OrganizationStructureTemplateId", "OrganizationStructureTemplateBusinessUnitId", "OrganizationStructureTemplateDivisionId",  "DepartmentTemplateId");
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
@@ -506,7 +506,7 @@ namespace CERP.EntityFrameworkCore
             {
                 b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplateDepartmentPositions", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
 
-                b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId",  "DepartmentTemplateId", "PositionTemplateId");
+                b.HasKey("OrganizationStructureTemplateId", "OrganizationStructureTemplateBusinessUnitId", "OrganizationStructureTemplateDivisionId", "OrganizationStructureTemplateDepartmentId", "PositionTemplateId");
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
@@ -518,7 +518,7 @@ namespace CERP.EntityFrameworkCore
             {
                 b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplateDepartmentCostCenters", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
 
-                b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId",  "DepartmentTemplateId", "CostCenterId");
+                b.HasKey("OrganizationStructureTemplateId", "OrganizationStructureTemplateBusinessUnitId", "OrganizationStructureTemplateDivisionId", "OrganizationStructureTemplateDepartmentId", "CostCenterId");
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
@@ -531,7 +531,7 @@ namespace CERP.EntityFrameworkCore
             {
                 b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplatePositions", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
 
-                b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId",  "DepartmentTemplateId", "PositionTemplateId");
+                b.HasKey("OrganizationStructureTemplateId", "OrganizationStructureTemplateBusinessUnitId", "OrganizationStructureTemplateDivisionId", "OrganizationStructureTemplateDepartmentId", "PositionTemplateId");
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
@@ -549,7 +549,7 @@ namespace CERP.EntityFrameworkCore
             {
                 b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplatePositionJobs", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
 
-                b.HasKey("OrganizationStructureTemplateId", "BusinessUnitTemplateId", "DivisionTemplateId",  "DepartmentTemplateId", "PositionTemplateId", "JobTemplateId");
+                b.HasKey("OrganizationStructureTemplateId", "OrganizationStructureTemplateBusinessUnitId", "OrganizationStructureTemplateDivisionId", "OrganizationStructureTemplateDepartmentId", "OrganizationStructureTemplatePositionId", "JobTemplateId");
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();

@@ -2088,7 +2088,7 @@
                     <div class="control-section">
                         <div style="width: 100%;height: 10%">
                             @*Initializes ToolBar control.*@
-                            <ejs-toolbar id="toolbar" clicked="posDGToolbarClick" created="posDGToolbarCreate">
+                            @*<ejs-toolbar id="toolbar" clicked="posDGToolbarClick" created="posDGToolbarCreate">
                                 <e-toolbar-items>
                                     <e-toolbar-item id="Add" tooltipText="Add" prefixIcon="e-icons e-add" text="Add"></e-toolbar-item>
                                     <e-toolbar-item type="Separator"></e-toolbar-item>
@@ -2097,7 +2097,7 @@
                                     <e-toolbar-item id="Delete" tooltipText="Delete" prefixIcon="e-icons e-delete" text="Delete"></e-toolbar-item>
                                     <e-toolbar-item type="Separator"></e-toolbar-item>
                                 </e-toolbar-items>
-                            </ejs-toolbar>
+                            </ejs-toolbar>*@
                         </div>
                         <div style="width: 100%;height: 80%;border-width: 0 1px 1px 1px; border-style: solid; border-color:#D7D7D7">
                             <div id="diagram-space" class="sb-mobile-diagram">
@@ -2199,30 +2199,6 @@
     function diagramCreated() {
 
     }
-    function osSpecificTabSelected(args) {
-        console.log(args);
-        let structureTG = $('#StructureTreeGrid')[0].ej2_instances[0];
-        let posManDG = $('#PosManagementDiagram')[0].ej2_instances[0];
-        if (args.selectedIndex == 1) {
-            let ds = structureTG.dataSource;
-            if (ds) {
-                let diagramDS = [];
-                for (var i = 0; i < ds.length; i++) {
-                    let node = { id: ds[i].id, unit: ds[i]._unit };
-                    if (ds[i].parentId)
-                        node.parentId = ds[i].parentId;
-                    diagramDS.push(node);
-
-                }
-                posManDG.nodes = [];
-                posManDG.connectors = [];
-                posManDG.dataSourceSettings.dataSource.dataSource.data = diagramDS;
-                posManDG.refresh();
-            }
-            console.log(ds);
-        }
-    }
-
     function getNodeDefaults(obj, data, diagram) {
         //Initialize shape
         console.log("Started");
@@ -2245,8 +2221,7 @@
             obj.width = 80 + widthConst * obj.data.unit.name.length;
             obj.height = 60;
         }
-        else if (unitType == 'Division')
-        {
+        else if (unitType == 'Division') {
             obj.annotations = [{
                 /* tslint:disable:no-string-literal */
                 content: obj.data.unit.name, margin: { top: 10, left: 10, right: 10, bottom: 10 },
@@ -2261,8 +2236,7 @@
             obj.width = 65 + widthConst * obj.data.unit.name.length;
             obj.height = 45;
         }
-        else if (unitType == 'Department')
-        {
+        else if (unitType == 'Department') {
             obj.annotations = [{
                 /* tslint:disable:no-string-literal */
                 content: obj.data.unit.name, margin: { top: 10, left: 10, right: 10, bottom: 10 },
@@ -2277,8 +2251,7 @@
             obj.width = 60 + widthConst * obj.data.unit.name.length;
             obj.height = 40;
         }
-        else if (unitType == 'Position')
-        {
+        else if (unitType == 'Position') {
             obj.annotations = [{
                 /* tslint:disable:no-string-literal */
                 content: obj.data.unit.name, margin: { top: 10, left: 10, right: 10, bottom: 10 },
@@ -2307,6 +2280,30 @@
             },
         };
         return connector;
+    }
+
+    function osSpecificTabSelected(args) {
+        console.log(args);
+        let structureTG = $('#StructureTreeGrid')[0].ej2_instances[0];
+        let posManDG = $('#PosManagementDiagram')[0].ej2_instances[0];
+        if (args.selectedIndex == 1) {
+            let ds = structureTG.dataSource;
+            if (ds) {
+                let diagramDS = [];
+                for (var i = 0; i < ds.length; i++) {
+                    let node = { id: ds[i].id, unit: ds[i]._unit };
+                    if (ds[i].parentId)
+                        node.parentId = ds[i].parentId;
+                    diagramDS.push(node);
+
+                }
+                posManDG.nodes = [];
+                posManDG.connectors = [];
+                posManDG.dataSourceSettings.dataSource.dataSource.data = diagramDS;
+                posManDG.refresh();
+            }
+            console.log(ds);
+        }
     }
 
     var diagram;

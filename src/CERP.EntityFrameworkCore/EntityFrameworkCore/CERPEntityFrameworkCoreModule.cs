@@ -216,6 +216,9 @@ namespace CERP.EntityFrameworkCore
                                                        .Include(p => p.OrganizationStructureTemplateBusinessUnits)
                                                         .ThenInclude(p => p.Location)
                                                        .Include(p => p.OrganizationStructureTemplateBusinessUnits)
+                                                        .ThenInclude(p => p.OrganizationStructureTemplateBusinessUnitAssociatedPositions)
+                                                        .ThenInclude(p => p.PositionTemplate)
+                                                       .Include(p => p.OrganizationStructureTemplateBusinessUnits)
                                                         .ThenInclude(p => p.OrganizationStructureTemplateBusinessUnitPositions)
                                                         .ThenInclude(p => p.PositionTemplate)
 
@@ -235,22 +238,24 @@ namespace CERP.EntityFrameworkCore
                                                         .ThenInclude(p => p.OrganizationStructureTemplateDepartmentPositions)
                                                         .ThenInclude(p => p.PositionTemplate);
                 });
+
                 options.Entity<OS_OrganizationStructureTemplateBusinessUnit>(opt =>
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.BusinessUnitTemplate)
                                                         .Include(p => p.OrganizationStructureTemplateDivisions)
-                                                        .ThenInclude(p => p.DivisionTemplate);
-                });
-                options.Entity<OS_OrganizationStructureTemplateBusinessUnit>(opt =>
-                {
-                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.BusinessUnitTemplate)
-                                                       .Include(p => p.Location)
+                                                        .ThenInclude(p => p.DivisionTemplate)
+                                                       .Include(p => p.OrganizationStructureTemplateDepartments)
+                                                        .ThenInclude(p => p.DepartmentTemplate)
                                                        .Include(p => p.OrganizationStructureTemplateBusinessUnitPositions)
                                                         .ThenInclude(p => p.PositionTemplate);
                 });
                 options.Entity<OS_OrganizationStructureTemplateDivision>(opt =>
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.DivisionTemplate)
+                                                        //.Include(p => p.OrganizationStructureTemplateDivisions)
+                                                        //.ThenInclude(p => p.DivisionTemplate)
+                                                       .Include(p => p.OrganizationStructureTemplateDepartments)
+                                                        .ThenInclude(p => p.DepartmentTemplate)
                                                        //.Include(p => p.Location)
                                                        .Include(p => p.OrganizationStructureTemplateDivisionPositions)
                                                         .ThenInclude(p => p.PositionTemplate);

@@ -83,10 +83,10 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public OS_PositionTemplate PositionTemplate { get; set; }
         public int PositionTemplateId { get; set; }
 
-        [ForeignKey("OrganizationStructureTemplateId, BusinessUnitTemplateId")]
+        [ForeignKey("OrganizationStructureTemplateId, OrganizationStructureTemplateBusinessUnitId")]
         public OS_OrganizationStructureTemplateBusinessUnit OrganizationStructureTemplateBusinessUnit { get; set; }
         public int OrganizationStructureTemplateId { get; set; }
-        public int BusinessUnitTemplateId { get; set; }
+        public int OrganizationStructureTemplateBusinessUnitId { get; set; }
 
         [CustomAudited]
         public DateTime ValidityFromDate { get; set; }
@@ -101,10 +101,10 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public DictionaryValue CostCenter { get; set; }
         public Guid CostCenterId { get; set; }
 
-        [ForeignKey("OrganizationStructureTemplateId, BusinessUnitTemplateId")]
+        [ForeignKey("OrganizationStructureTemplateId, OrganizationStructureTemplateBusinessUnitId")]
         public OS_OrganizationStructureTemplateBusinessUnit OrganizationStructureTemplateBusinessUnit { get; set; }
         public int OrganizationStructureTemplateId { get; set; }
-        public int BusinessUnitTemplateId { get; set; }
+        public int OrganizationStructureTemplateBusinessUnitId { get; set; }
 
         [CustomAudited]
         public int Percentage { get; set; }
@@ -115,9 +115,9 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public OS_DivisionTemplate DivisionTemplate { get; set; }
         public int DivisionTemplateId { get; set; }
 
-        [ForeignKey("OrganizationStructureTemplateId, BusinessUnitTemplateId")]
+        [ForeignKey("OrganizationStructureTemplateId, OrganizationStructureTemplateBusinessUnitId")]
         public OS_OrganizationStructureTemplateBusinessUnit OrganizationStructureTemplateBusinessUnit { get; set; }
-        public int BusinessUnitTemplateId { get; set; }
+        public int OrganizationStructureTemplateBusinessUnitId { get; set; }
         public int OrganizationStructureTemplateId { get; set; }
 
         //public LocationTemplate Location { get; set; }
@@ -142,11 +142,11 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public OS_PositionTemplate PositionTemplate { get; set; }
         public int PositionTemplateId { get; set; }
 
-        [ForeignKey("OrganizationStructureTemplateId, BusinessUnitTemplateId, DivisionTemplateId")]
+        [ForeignKey("OrganizationStructureTemplateId, OrganizationStructureTemplateBusinessUnitId, OrganizationStructureTemplateDivisionId")]
         public OS_OrganizationStructureTemplateDivision OrganizationStructureTemplateDivision { get; set; }
         public int OrganizationStructureTemplateId { get; set; }
-        public int BusinessUnitTemplateId { get; set; }
-        public int DivisionTemplateId { get; set; }
+        public int OrganizationStructureTemplateBusinessUnitId { get; set; }
+        public int OrganizationStructureTemplateDivisionId { get; set; }
 
 
         [CustomAudited]
@@ -163,11 +163,11 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public Guid CostCenterId { get; set; }
 
 
-        [ForeignKey("OrganizationStructureTemplateId, BusinessUnitTemplateId, DivisionTemplateId")]
+        [ForeignKey("OrganizationStructureTemplateId, OrganizationStructureTemplateBusinessUnitId, OrganizationStructureTemplateDivisionId")]
         public OS_OrganizationStructureTemplateDivision OrganizationStructureTemplateDivision { get; set; }
         public int OrganizationStructureTemplateId { get; set; }
-        public int BusinessUnitTemplateId { get; set; }
-        public int DivisionTemplateId { get; set; }
+        public int OrganizationStructureTemplateBusinessUnitId { get; set; }
+        public int OrganizationStructureTemplateDivisionId { get; set; }
 
 
         [CustomAudited]
@@ -180,14 +180,14 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public int DepartmentTemplateId { get; set; }
 
 
-        [ForeignKey("OrganizationStructureTemplateId, BusinessUnitTemplateId")]
+        [ForeignKey("OrganizationStructureTemplateId, OrganizationStructureTemplateBusinessUnitId")]
         public OS_OrganizationStructureTemplateBusinessUnit OrganizationStructureTemplateBusinessUnit { get; set; }
-        public int BusinessUnitTemplateId { get; set; }
+        public int OrganizationStructureTemplateBusinessUnitId { get; set; }
         public int OrganizationStructureTemplateId { get; set; }
 
-        [ForeignKey("OrganizationStructureTemplateId, BusinessUnitTemplateId, DivisionTemplateId")]
+        [ForeignKey("OrganizationStructureTemplateId, OrganizationStructureTemplateBusinessUnitId, OrganizationStructureTemplateDivisionId")]
         public OS_OrganizationStructureTemplateDivision? OrganizationStructureTemplateDivision { get; set; }
-        public int DivisionTemplateId { get; set; }
+        public int OrganizationStructureTemplateDivisionId { get; set; }
 
         //[ForeignKey("OrganizationStructureTemplateId, BusinessUnitTemplateId, DivisionTemplateId, DepartmentTemplateId, HeadDepartmentTemplateId")]
         //public OS_OrganizationStructureTemplateDepartment? OrganizationStructureTemplateHeadDepartment { get; set; }
@@ -212,13 +212,13 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public OS_PositionTemplate PositionTemplate { get; set; }
         public int PositionTemplateId { get; set; }
 
-        [ForeignKey("OrganizationStructureTemplateId, BusinessUnitTemplateId, DivisionTemplateId, DepartmentTemplateId")]
+        [ForeignKey("OrganizationStructureTemplateId, OrganizationStructureTemplateBusinessUnitId, OrganizationStructureTemplateDivisionId, OrganizationStructureTemplateDepartmentId")]
         public OS_OrganizationStructureTemplateDepartment OrganizationStructureTemplateDepartment { get; set; }
-        public int DepartmentTemplateId { get; set; }
+        public int OrganizationStructureTemplateDepartmentId { get; set; }
         public int HeadDepartmentTemplateId { get; set; }
-        public int DivisionTemplateId { get; set; }
+        public int OrganizationStructureTemplateDivisionId { get; set; }
         public int OrganizationStructureTemplateId { get; set; }
-        public int BusinessUnitTemplateId { get; set; }
+        public int OrganizationStructureTemplateBusinessUnitId { get; set; }
 
 
 
@@ -236,13 +236,13 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public Guid CostCenterId { get; set; }
 
 
-        [ForeignKey("OrganizationStructureTemplateId, BusinessUnitTemplateId, DivisionTemplateId, DepartmentTemplateId")]
+        [ForeignKey("OrganizationStructureTemplateId, OrganizationStructureTemplateBusinessUnitId, OrganizationStructureTemplateDivisionId, OrganizationStructureTemplateDepartmentId")]
         public OS_OrganizationStructureTemplateDepartment OrganizationStructureTemplateDepartment { get; set; }
-        public int DepartmentTemplateId { get; set; }
+        public int OrganizationStructureTemplateDepartmentId { get; set; }
         public int HeadDepartmentTemplateId { get; set; }
-        public int DivisionTemplateId { get; set; }
+        public int OrganizationStructureTemplateDivisionId { get; set; }
         public int OrganizationStructureTemplateId { get; set; }
-        public int BusinessUnitTemplateId { get; set; }
+        public int OrganizationStructureTemplateBusinessUnitId { get; set; }
 
 
         [CustomAudited]
@@ -254,21 +254,21 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public OS_PositionTemplate PositionTemplate { get; set; }
         public int PositionTemplateId { get; set; }
 
-        [ForeignKey("OrganizationStructureTemplateId, BusinessUnitTemplateId")]
+        [ForeignKey("OrganizationStructureTemplateId, OrganizationStructureTemplateBusinessUnitId")]
         public OS_OrganizationStructureTemplateBusinessUnit OrganizationStructureTemplateBusinessUnit { get; set; }
-        public int BusinessUnitTemplateId { get; set; }
+        public int OrganizationStructureTemplateBusinessUnitId { get; set; }
         public int OrganizationStructureTemplateId { get; set; }
 
-        [ForeignKey("OrganizationStructureTemplateId, BusinessUnitTemplateId, DivisionTemplateId")]
+        [ForeignKey("OrganizationStructureTemplateId, OrganizationStructureTemplateBusinessUnitId, OrganizationStructureTemplateDivisionId")]
         public OS_OrganizationStructureTemplateDivision? OrganizationStructureTemplateDivision { get; set; }
-        public int DivisionTemplateId { get; set; }
+        public int OrganizationStructureTemplateDivisionId { get; set; }
 
-        [ForeignKey("OrganizationStructureTemplateId, BusinessUnitTemplateId, DivisionTemplateId,  DepartmentTemplateId")]
+        [ForeignKey("OrganizationStructureTemplateId, OrganizationStructureTemplateBusinessUnitId, OrganizationStructureTemplateDivisionId,  OrganizationStructureTemplateDepartmentId")]
         public OS_OrganizationStructureTemplateDepartment? OrganizationStructureTemplateDepartment { get; set; }
         public int HeadDepartmentTemplateId { get; set; }
-        public int DepartmentTemplateId { get; set; }
+        public int OrganizationStructureTemplateDepartmentId { get; set; }
 
-        //[ForeignKey("OrganizationStructureTemplateId, BusinessUnitTemplateId, DivisionTemplateId,  DepartmentTemplateId, PositionTemplateId, HeadPositionTemplateId")]
+        //[ForeignKey("OrganizationStructureTemplateId, OrganizationStructureTemplateBusinessUnitId, OrganizationStructureTemplateDivisionId,  OrganizationStructureTemplateDepartmentId, PositionTemplateId, HeadPositionTemplateId")]
         //public OS_OrganizationStructureTemplatePosition? OrganizationStructureTemplateHeadPosition { get; set; }
         //public int HeadPositionTemplateId { get; set; }
 
@@ -288,15 +288,15 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public int JobTemplateId { get; set; }
 
 
-        [ForeignKey("OrganizationStructureTemplateId, BusinessUnitTemplateId, DivisionTemplateId,  DepartmentTemplateId, PositionTemplateId")]
+        [ForeignKey("OrganizationStructureTemplateId, OrganizationStructureTemplateBusinessUnitId, OrganizationStructureTemplateDivisionId,  OrganizationStructureTemplateDepartmentId, OrganizationStructureTemplatePositionId")]
         public OS_OrganizationStructureTemplatePosition OrganizationStructureTemplatePosition { get; set; }
-        public int PositionTemplateId { get; set; }
+        public int OrganizationStructureTemplatePositionId { get; set; }
         public int HeadPositionTemplateId { get; set; }
-        public int DepartmentTemplateId { get; set; }
+        public int OrganizationStructureTemplateDepartmentId { get; set; }
         public int HeadDepartmentTemplateId { get; set; }
-        public int DivisionTemplateId { get; set; }
+        public int OrganizationStructureTemplateDivisionId { get; set; }
         public int OrganizationStructureTemplateId { get; set; }
-        public int BusinessUnitTemplateId { get; set; }
+        public int OrganizationStructureTemplateBusinessUnitId { get; set; }
 
         public DictionaryValue Level { get; set; }
         [CustomAudited]
