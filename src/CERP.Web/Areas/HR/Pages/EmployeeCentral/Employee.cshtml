@@ -5,6 +5,8 @@
 @using CERP.HR.Setup.OrganizationalManagement.OrganizationStructure;
 @using CERP.HR.Setup.OrganizationalManagement.PayrollStructure;
 @using Syncfusion.EJ2;
+@using Syncfusion.EJ2.Charts;
+@addTagHelper *, Syncfusion.EJ2
 @model CERP.Web.Areas.HR.Pages.EmployeeCentral.EmployeeModel
 @{
     ViewData["Title"] = "Employee";
@@ -59,7 +61,7 @@ var payComponentValueTypeEdit = new
 
 @section styles {
     <style>
-        
+
         .avatar-upload {
             position: relative;
         }
@@ -488,6 +490,7 @@ var payComponentValueTypeEdit = new
         let curBU;
         let curDiv;
         let curDep;
+
         $(document).ready(function () {
             let options = {
                 buttonWidth: '100%',
@@ -553,24 +556,12 @@ var payComponentValueTypeEdit = new
             loansGrid = $('#LoansGrid')[0].ej2_instances[0];
 
             loadDictionaryValues(ValueTypeModules.IDType, [nationalIdentityGrid, dependantNationalIndentitiesGrid], [1, 2]);
+
             loadDictionaryValues(ValueTypeModules.Country,
-                [
-                    passportTravelGrid,
-                    homeAddressesGrid,
-                    emergencyContactsGrid,
-                    dependantBiosGrid,
-                    dependantPassportTravelDocsGrid,
-                    bankPaymentTypesGrid
-                ],
-                [
-                    2,
-                    8,
-                    11,
-                    3,
-                    'issuingCountry.value',
-                    7
-                ],
+                [passportTravelGrid, homeAddressesGrid, emergencyContactsGrid, dependantBiosGrid, dependantPassportTravelDocsGrid, bankPaymentTypesGrid],
+                [2, 8, 11, 3, 'issuingCountry.value', 7],
                 ['#empBirthCountry', '#empNationality']);
+
             loadDictionaryValues(ValueTypeModules.Relationship, [emergencyContactsGrid, dependantsGrid], [1, 5]);
 
             loadDictionaryValues(ValueTypeModules.Gender, [], [], ['#empGender']);
@@ -617,7 +608,7 @@ var payComponentValueTypeEdit = new
                     codeNameTypes = codeNameTypes.concat(data);
 
                     curOrgStructure = data;
-                    
+
                     //allOrgLegalEntities = allOrgStructures.map(function (x) { x.legalEntity });
                     //allBUs = allOrgStructures.map(function (x) { x.organizationStructureTemplateBusinessUnits });
                     //allDivisions = allOrgStructures.map(function (x) { x.organizationStructureTemplateDivisions });
@@ -734,7 +725,7 @@ var payComponentValueTypeEdit = new
                 let firstName = $('#firstName').val();
                 let middleName = $('#middleName').val();
                 let lastName = $('#lastName').val();
-                $('#headerName').text(firstName + ' '+ middleName + ' ' + lastName);
+                $('#headerName').text(firstName + ' ' + middleName + ' ' + lastName);
             });
             $('#middleName').on('keyup', function () {
                 let firstName = $('#firstName').val();
@@ -748,6 +739,208 @@ var payComponentValueTypeEdit = new
                 let lastName = $('#lastName').val();
                 $('#headerName').text(firstName + ' ' + middleName + ' ' + lastName);
             });
+
+            $('#createEmployeeBtn').on('click', function () {
+                Swal.showLoading();
+
+                let employeeData = {};
+                let empPersonalInformation = {};
+
+                let generalInfo;
+                let isGI = ValidateForm('generalInfoTab');
+                if (isGI) {
+                    let details = $('#generalInfoTab').find("textarea, input, select").serializeArray();
+                    generalInfo = objectifyForm(details);
+
+                    empPersonalInformation.generalInfo = generalInfo;
+                }
+                else {
+                    Swal.hideLoading();
+
+                    if (isEditingEmployee)
+                        swal.fire("Failed", "Employee couldn't be created, please fix all errors and try again.", "error");
+                    else
+                        swal.fire("Failed", "Employee couldn't be created, please fix all errors and try again.", "error");
+
+                    let items = $('#employeeMainTabs')[0].ej2_instances[0].items;
+                    let item = items.filter(function (x) { return x.content.includes('personalInfoTab') })[0];
+                    let itemIndex = items.indexOf(item);
+
+                    $('#employeeMainTabs')[0].ej2_instances[0].select(itemIndex);
+
+                    let subItems = $('#personalInfoTabs')[0].ej2_instances[0].items;
+                    let subItem = subItems.filter(function (x) { return x.content.includes('generalInfoTab') })[0];
+                    let subItemIndex = subItems.indexOf(subItem);
+                    $('#personalInfoTabs')[0].ej2_instances[0].select(subItemIndex);
+                }
+
+                let bioInfo;
+                let isBI = ValidateForm('bioInfoTab');
+                if (isBI) {
+                    let details = $('#bioInfoTab').find("textarea, input, select").serializeArray();
+                    bioInfo = objectifyForm(details);
+
+                    empPersonalInformation.bioInfo = bioInfo;
+                }
+
+                let identityInfo = {
+                    nationalIdentities: nationalIdentityGrid.dataSource,
+                    passportTravelDocs: passportTravelGrid.dataSource
+                };
+                let isIdentityI = {
+                    isNationalIdentity: identityInfo.nationalIdentities.length > 0,
+                    isPassportTravelDocs: identityInfo.passportTravelDocs.length > 0
+                }
+                if (isIdentityI.isNationalIdentity && isIdentityI.isPassportTravelDocs) {
+                    empPersonalInformation.identityInfo = identityInfo;
+                }
+
+                let contactsInfo = {
+                    emailAddresses: emailAddressesGrid.dataSource,
+                    phoneNumbers: phoneAddressesGrid.dataSource,
+                    homeAddresses: homeAddressesGrid.dataSource,
+                    emergencyContacts: emergencyContactsGrid.dataSource
+                };
+                let isContactsInfo = {
+                    isEmailAddresses: contactsInfo.emailAddresses.length > 0,
+                    isPhoneNumbers: contactsInfo.phoneNumbers.length > 0,
+                    isHomeAddresses: contactsInfo.homeAddresses.length > 0,
+                    isEmergencyContacts: contactsInfo.emergencyContacts.length > 0
+                }
+                isContactsInfo.isAll = isContactsInfo.isEmailAddresses && isContactsInfo.isPhoneNumbers && isContactsInfo.isHomeAddresses && isContactsInfo.isEmergencyContacts
+                if (isContactsInfo.isAll) {
+                    empPersonalInformation.contactsInfo = contactsInfo;
+                }
+
+                let dependantsInfo = dependantsGrid.dataSource;
+                let dependantsBioInfo = dependantBiosGrid.dataSource;
+                let dependantsIdsInfo = dependantsIdentityInfo.dataSource;
+                let isDependantsInfo = {issueDependants: []};
+                for (var i = 0; i < dependantsInfo; i++) {
+                    let dependant = dependantsInfo[i];
+
+                    let dependantBios = dependantsBioInfo.filter(function (x) { return x.dependant.id == dependant.id });
+                    let isBio = dependantBios.length > 0;
+
+                    let dependantIds = dependantsIdsInfo.filter(function (x) { return x.dependant.id == dependant.id });
+                    let isID = dependantIds.length > 0;
+
+                    if (!isBio || !isID)
+                        isDependantsInfo.issueDependants.push({ id: dependant.id, isBio, isID });
+
+                    dependant.dependantBios = dependantBios;
+                    dependant.dependantIds = dependantIds;
+                }
+                if (isDependantsInfo.issueDependants.length == 0) {
+                    empPersonalInformation.dependantsInfo = dependantsInfo;
+                }
+
+                console.log(empPersonalInformation);
+                employeeData.personalInformation = empPersonalInformation;
+
+                let empOrganizationalInformation = {};
+                
+                let structureInfo;
+                let isStructureI = ValidateForm('orgStructureInfoTab');
+                if (isStructureI) {
+                    let details = $('#orgStructureInfoTab').find("textarea, input, select").serializeArray();
+                    structureInfo = objectifyForm(details);
+
+                    empOrganizationalInformation.structureInfo = structureInfo;
+                }
+                
+                console.log(empOrganizationalInformation);
+                employeeData.organizationalInformation = empOrganizationalInformation;
+
+                let empCompensationInformation = {};
+                
+                let basicSalaryInfo;
+                let isBasicSalaryI = ValidateForm('basicSalaryTab');
+                if (isBasicSalaryI) {
+                    let details = $('#basicSalaryTab').find("textarea, input, select").serializeArray();
+                    basicSalaryInfo = objectifyForm(details);
+
+                    empCompensationInformation.basicSalaryInfo = basicSalaryInfo;
+                }
+
+                let benefitsInfo = compBenefitsGrid.dataSource;
+                let isBenefitsI = benefitsInfo.length > 0;
+                if (isBenefitsI) {
+                    empCompensationInformation.benefitsInfo = benefitsInfo;
+                }
+
+                let paymentDetailsInfo = {
+                    cashPaymentTypes: cashPaymentTypesGrid.dataSource,
+                    chequePaymentTypes: chequePaymentTypesGrid.dataSource,
+                    bankPaymentTypes: bankPaymentTypesGrid.dataSource
+                };
+                let isPaymentDetailsInfo = {
+                    isCashPaymentTypes: paymentDetailsInfo.cashPaymentTypes.length > 0,
+                    isChequePaymentTypes: paymentDetailsInfo.chequePaymentTypes.length > 0,
+                    isBankPaymentTypes: paymentDetailsInfo.bankPaymentTypes.length > 0
+                }
+                isPaymentDetailsInfo.isAll = isPaymentDetailsInfo.isCashPaymentTypes && isPaymentDetailsInfo.isChequePaymentTypes && isPaymentDetailsInfo.isBankPaymentTypes && isPaymentDetailsInfo.isEmergencyPaymentDetails
+                if (isPaymentDetailsInfo.isAll) {
+                    empCompensationInformation.paymentDetailsInfo = paymentDetailsInfo;
+                }
+
+                console.log(empCompensationInformation);
+                employeeData.compensationInformation = empCompensationInformation;
+
+                let empTimeInformation = {};
+
+                let timeGeneralInfo;
+                let isTGeneralI = ValidateForm('timeGeneralTab');
+                if (isTGeneralI) {
+                    let details = $('#timeGeneralTab').find("textarea, input, select").serializeArray();
+                    timeGeneralInfo = objectifyForm(details);
+
+                    empTimeInformation.generalInfo = timeGeneralInfo;
+                }
+
+                let timeOffsInfo;
+                let isTOffsI = ValidateForm('timeOffsTab');
+                if (isTOffsI) {
+                    let details = $('#timeOffsTab').find("textarea, input, select").serializeArray();
+                    timeOffsInfo = objectifyForm(details);
+
+                    empTimeInformation.timeOffsInfo = timeOffsInfo;
+                }
+
+                console.log(empTimeInformation);
+                employeeData.timeInformation = empTimeInformation;
+                
+                let empAcademiaSkillsInformation = {};
+
+                let academiaInfo = academiaProfileGrid.dataSource;
+                let isAcademiaI = academiaInfo.length > 0;
+                if (isAcademiaI) {
+                    empAcademiaSkillsInformation.academiaInfo = academiaInfo;
+                }
+                let skillsInfo = skillsProfileGrid.dataSource;
+                let isSkillsI = skillsInfo.length > 0;
+                if (isSkillsI) {
+                    empAcademiaSkillsInformation.skillsInfo = skillsInfo;
+                }
+
+                console.log(empAcademiaSkillsInformation);
+                employeeData.academiaSkillsInformation = empAcademiaSkillsInformation;
+                
+                
+                let empLoansInformation = {};
+
+                let loansInfo = loansProfileGrid.dataSource;
+                let isLoansI = loansInfo.length > 0;
+                if (isLoansI) {
+                    empLoansInformation.loansInfo = loansInfo;
+                }
+
+                console.log(empLoansInformation);
+                employeeData.loansInformation = empLoansInformation;
+
+
+                console.log(employeeData);
+            });
         });
     </script>
 }
@@ -756,7 +949,7 @@ var payComponentValueTypeEdit = new
     <div id="employeeHeader" class="EmployeeHeader">
         <div class="row" style="height: 100%; margin-left: 0; margin-right: 0">
             <div class="col-md-1 col-sm-1">
-            
+
             </div>
             <div class="col-md-3 col-sm-4" style="
                     display: flex;
@@ -774,12 +967,12 @@ var payComponentValueTypeEdit = new
                     </div>
                     <div class="avatar-preview" style="border-radius: 50%">
                         @*<div id="imagePreview" style="background-image: url(/images/@(isEditing && employee != null? employee.ProfilePic : "noimage.jpg"));">
-            </div>*@
+                            </div>*@
                         <img id="EmpPhoto" src="/Uploads/noimage.jpg" class="img-responsive padding-5" style="cursor:pointer; border-radius: 50%" />
                     </div>
                 </div>
             </div>
-            <div class="col-md-8 col-sm-8" style="
+            <div class="col-md-5 col-sm-5" style="
                     display: flex;
                     height: inherit;
                     justify-content: flex-start;
@@ -788,11 +981,28 @@ var payComponentValueTypeEdit = new
                     padding: 130px 10px;
                     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                     color: white">
-                    <h1 id="headerName" style="font-weight: 500"></h1>
-                    @*<h2>Lorem Ipsum</h2>*@
+                <h1 id="headerName" style="font-weight: 500"></h1>
+                @*<h2>Lorem Ipsum</h2>*@
+            </div>
+            <div class="col-md-3 col-sm-3">
+
+            </div>
+            <div class="col-md-2 col-sm-2" style="
+                        display: flex;
+                        height: 400px;
+                        justify-content: flex-end;
+                        flex-direction: column;
+                        max-width: 350px;
+                        padding: 90px 10px;
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        color: white;">
+                <div id="full-background">
+                  
+                </div>
+                <button id="createEmployeeBtn" class="btn btn-primary btn-block" style="font-weight: 500">CREATE EMPLOYEE</button>
             </div>
         </div>
-        
+
     </div>
 
     <ejs-tab id="employeeMainTabs" animation="ViewBag.animation" headerPlacement="Top" heightAdjustMode="Content" cssClass="customTab" overflowMode="Scrollable" created="mainTabCreated">
@@ -816,7 +1026,7 @@ var payComponentValueTypeEdit = new
                 <e-tab-tabitem header="@(new TabHeader { Text = "Dependants Information" })" content="#dependantsInfoTab"></e-tab-tabitem>
             </e-tab-tabitems>
         </ejs-tab>
-        <div id="generalInfoTab" class="secondaryTab" style="display: none">
+        <div id="generalInfoTab" role="form" class="secondaryTab areaForm" data-toggle="validator" style="display: none">
             <div class="customForm">
                 <div class="formHeader">
                     <span class="headerTitle">General Information</span>
@@ -830,7 +1040,7 @@ var payComponentValueTypeEdit = new
                                         <label class="p-t-5 control-label pull-right">First Name:</label>
                                     </div>
                                     <div class="col-sm-8" style="">
-                                        <input type="text" id="firstName" name="FirstName" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        <input type="text" id="firstName" name="FirstName" class="form-control" required>
                                     </div>
                                 </div>
                             </div>
@@ -840,7 +1050,7 @@ var payComponentValueTypeEdit = new
                                         <label class="p-t-5 control-label pull-right">First Name AR:</label>
                                     </div>
                                     <div class="col-sm-8" style="">
-                                        <input type="text" id="firstNameLocal" name="FirstNameLocal" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        <input type="text" id="firstNameLocal" name="FirstNameLocal" class="form-control">
                                     </div>
                                 </div>
                             </div>
@@ -850,7 +1060,7 @@ var payComponentValueTypeEdit = new
                                         <label class="p-t-5 control-label pull-right">Middle Name:</label>
                                     </div>
                                     <div class="col-sm-8" style="">
-                                        <input type="text" id="middleName" name="MiddleName" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        <input type="text" id="middleName" name="MiddleName" class="form-control" required>
                                     </div>
                                 </div>
                             </div>
@@ -860,7 +1070,7 @@ var payComponentValueTypeEdit = new
                                         <label class="p-t-5 control-label pull-right">Middle Name AR:</label>
                                     </div>
                                     <div class="col-sm-8" style="">
-                                        <input type="text" id="middleNameLocal" name="MiddleNameLocal" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        <input type="text" id="middleNameLocal" name="MiddleNameLocal" class="form-control">
                                     </div>
                                 </div>
                             </div>
@@ -870,7 +1080,7 @@ var payComponentValueTypeEdit = new
                                         <label class="p-t-5 control-label pull-right">Last Name:</label>
                                     </div>
                                     <div class="col-sm-8" style="">
-                                        <input type="text" id="lastName" name="LastName" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        <input type="text" id="lastName" name="LastName" class="form-control" required>
                                     </div>
                                 </div>
                             </div>
@@ -880,7 +1090,7 @@ var payComponentValueTypeEdit = new
                                         <label class="p-t-5 control-label pull-right">Last Name AR:</label>
                                     </div>
                                     <div class="col-sm-8" style="">
-                                        <input type="text" id="lastNameLocal" name="LastNameLocal" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        <input type="text" id="lastNameLocal" name="LastNameLocal" class="form-control">
                                     </div>
                                 </div>
                             </div>
@@ -890,7 +1100,7 @@ var payComponentValueTypeEdit = new
                                         <label class="p-t-5 control-label pull-right">Title:</label>
                                     </div>
                                     <div class="col-sm-8" style="">
-                                        <input type="text" id="empTitle" name="Title" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        <input type="text" id="empTitle" name="Title" class="form-control" required>
                                     </div>
                                 </div>
                             </div>
@@ -900,7 +1110,7 @@ var payComponentValueTypeEdit = new
                                         <label class="p-t-5 control-label pull-right">Preferred Name:</label>
                                     </div>
                                     <div class="col-sm-8" style="">
-                                        <input type="text" id="empPreferredName" name="PreferredName" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        <input type="text" id="empPreferredName" name="PreferredName" class="form-control" required>
                                     </div>
                                 </div>
                             </div>
@@ -910,7 +1120,7 @@ var payComponentValueTypeEdit = new
                                         <label class="p-t-5 control-label pull-right">Initials:</label>
                                     </div>
                                     <div class="col-sm-8" style="">
-                                        <input type="text" id="empInitials" name="Initials" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        <input type="text" id="empInitials" name="Initials" class="form-control" required>
                                     </div>
                                 </div>
                             </div>
@@ -923,7 +1133,7 @@ var payComponentValueTypeEdit = new
                                         <label class="p-t-5 control-label pull-right">Gender:</label>
                                     </div>
                                     <div class="col-sm-8" style="">
-                                        <select id="empGender" name="Gender" class="form-control" required>
+                                        <select id="empGender" name="GenderId" class="form-control" required>
                                         </select>
                                     </div>
                                 </div>
@@ -934,7 +1144,7 @@ var payComponentValueTypeEdit = new
                                         <label class="p-t-5 control-label pull-right">Display Name:</label>
                                     </div>
                                     <div class="col-sm-8" style="">
-                                        <input type="text" id="empDisplayName" name="DisplayName" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        <input type="text" id="empDisplayName" name="DisplayName" class="form-control" required>
                                     </div>
                                 </div>
                             </div>
@@ -950,7 +1160,7 @@ var payComponentValueTypeEdit = new
                                             } else {
                                                 $('#empMarriedSinceField').slideUp(100);
                                             }
-                                        " name="MaritalStatus" class="form-control" required>
+                                        " name="MaritalStatusId" class="form-control" required>
                                         </select>
                                     </div>
                                 </div>
@@ -961,7 +1171,7 @@ var payComponentValueTypeEdit = new
                                         <label class="p-t-5 control-label pull-right">Married Since:</label>
                                     </div>
                                     <div class="col-sm-8" style="">
-                                        <input type="month" id="empMarriedSince" name="MarriedSince" class="form-control" required>
+                                        <input type="month" id="empMarriedSince" name="MarriedSince" class="form-control">
                                     </div>
                                 </div>
                             </div>
@@ -971,7 +1181,7 @@ var payComponentValueTypeEdit = new
                                         <label class="p-t-5 control-label pull-right">Preferred Language:</label>
                                     </div>
                                     <div class="col-sm-8" style="">
-                                        <select id="empPreferredLanguage" name="PreferredLanguage" class="form-control" required>
+                                        <select id="empPreferredLanguage" name="PreferredLanguageId" class="form-control" required>
                                         </select>
                                     </div>
                                 </div>
@@ -982,7 +1192,7 @@ var payComponentValueTypeEdit = new
                                         <label class="p-t-5 control-label pull-right">Nationality:</label>
                                     </div>
                                     <div class="col-sm-8" style="">
-                                        <select id="empNationality" name="Nationality" class="form-control" required>
+                                        <select id="empNationality" name="NationalityId" class="form-control" required>
                                         </select>
                                     </div>
                                 </div>
@@ -992,7 +1202,7 @@ var payComponentValueTypeEdit = new
                 </div>
             </div>
         </div>
-        <div id="bioInfoTab" class="secondaryTab" style="display: none">
+        <div id="bioInfoTab" role="form" class="secondaryTab areaForm" data-toggle="validator" style="display: none">
             <div class="customForm">
                 <div class="formHeader">
                     <span class="headerTitle">Biographical Information</span>
@@ -1006,7 +1216,7 @@ var payComponentValueTypeEdit = new
                                         <label class="p-t-5 control-label pull-right">Date of Birth:</label>
                                     </div>
                                     <div class="col-sm-8" style="">
-                                        <input type="date" id="dateOfBirth" name="DateOfBirth" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        <input type="date" id="dateOfBirth" name="DateOfBirth" class="form-control" required>
                                     </div>
                                 </div>
                             </div>
@@ -1027,7 +1237,7 @@ var payComponentValueTypeEdit = new
                                         <label class="p-t-5 control-label pull-right">Place of Birth:</label>
                                     </div>
                                     <div class="col-sm-8" style="">
-                                        <input type="text" id="birthPlace" name="PlaceOfBirth" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        <input type="text" id="birthPlace" name="PlaceOfBirth" class="form-control" required>
                                     </div>
                                 </div>
                             </div>
@@ -1037,7 +1247,7 @@ var payComponentValueTypeEdit = new
                                         <label class="p-t-5 control-label pull-right">Attachments:</label>
                                     </div>
                                     <div class="col-sm-8" style="">
-                                        <input type="file" id="bioAttachment" name="BioAttachment" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        <input type="file" id="bioAttachment" name="BioAttachment" class="form-control" required>
                                     </div>
                                 </div>
                             </div>
@@ -1173,7 +1383,7 @@ var payComponentValueTypeEdit = new
                                         <e-grid-column validationRules="@(new { required=true})" field="emailType.value" headerText="Email Type" editType="dropdownedit" edit="dicValueTypeEdit" valueAccessor="@("dictionaryValueAccessor")" textAlign="Center"></e-grid-column>
                                         <e-grid-column validationRules="@(new { required=true})" field="emailAddress" headerText="Email Address" allowEditing="true" textAlign="Center"></e-grid-column>
                                         @*<e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
-                                            <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>*@
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>*@
                                         <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
                                         @*<e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>*@
 
@@ -1210,7 +1420,7 @@ var payComponentValueTypeEdit = new
                                         <e-grid-column validationRules="@(new { required=true})" field="phoneNumber" headerText="Phone Number" allowEditing="true" textAlign="Center"></e-grid-column>
                                         <e-grid-column validationRules="@(new { required=true})" field="extention" headerText="Extension" allowEditing="true" textAlign="Center"></e-grid-column>
                                         @*<e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
-                                            <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>*@
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>*@
                                         <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
                                         @*<e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>*@
 
@@ -1252,7 +1462,7 @@ var payComponentValueTypeEdit = new
                                         <e-grid-column validationRules="@(new { required=true})" field="postalCode" headerText="Postal Code" allowEditing="true" textAlign="Center"></e-grid-column>
                                         <e-grid-column validationRules="@(new { required=true})" field="country.value" valueAccessor="@("dictionaryValueAccessor")" headerText="Country" editType="dropdownedit" edit="dicValueTypeEdit" textAlign="Center"></e-grid-column>
                                         @*<e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
-                                            <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>*@
+                                        <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>*@
                                         <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
                                         @*<e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>*@
 
@@ -1380,7 +1590,7 @@ var payComponentValueTypeEdit = new
                                     }
                                     <e-grid-columns>
                                         <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
-                                        <e-grid-column validationRules="@(new { required=true})" field="dependant.name" valueAccessor="@("fullNameValueAccessor")" headerText="Dependant" editType="dropdownedit" edit="complexNameEdit" textAlign="Center"></e-grid-column>
+                                        <e-grid-column validationRules="@(new { required=true})" field="dependant.id" valueAccessor="@("fullNameValueAccessor")" headerText="Dependant" editType="dropdownedit" edit="complexNameEdit" textAlign="Center"></e-grid-column>
                                         <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="dateOfBirth" headerText="Date of Birth" allowEditing="true" textAlign="Center"></e-grid-column>
                                         <e-grid-column validationRules="@(new { required=true})" field="birthCountry.value" valueAccessor="@("dictionaryValueAccessor")" headerText="Issuing Country" editType="dropdownedit" edit="dicValueTypeEdit" textAlign="Center"></e-grid-column>
                                         <e-grid-column validationRules="@(new { required=true})" field="placeOfBirth" headerText="Place of Birth" allowEditing="true" textAlign="Center"></e-grid-column>
@@ -1423,7 +1633,7 @@ var payComponentValueTypeEdit = new
                                         }
                                         <e-grid-columns>
                                             <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
-                                            <e-grid-column validationRules="@(new { required=true})" field="dependant.name" valueAccessor="@("fullNameValueAccessor")" headerText="Dependant" editType="dropdownedit" edit="complexNameEdit" textAlign="Center"></e-grid-column>
+                                            <e-grid-column validationRules="@(new { required=true})" field="dependant.id" valueAccessor="@("fullNameValueAccessor")" headerText="Dependant" editType="dropdownedit" edit="complexNameEdit" textAlign="Center"></e-grid-column>
                                             <e-grid-column validationRules="@(new { required=true})" field="idType.value" headerText="ID Type" editType="dropdownedit" edit="dicValueTypeEdit" valueAccessor="@("dictionaryValueAccessor")" textAlign="Center"></e-grid-column>
                                             <e-grid-column validationRules="@(new { required=true})" field="idNumber" headerText="ID Number" allowEditing="true" textAlign="Center"></e-grid-column>
                                             <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
@@ -1536,7 +1746,7 @@ var payComponentValueTypeEdit = new
                 </div>
             </div>
         </div>
-        <div id="orgStructureInfoTab" class="secondaryTab" style="display: none">
+        <div id="orgStructureInfoTab" role="form" class="secondaryTab areaForm" data-toggle="validator" style="display: none">
             <div class="customForm">
                 <div class="formHeader">
                     <span class="headerTitle">Organization Information</span>
@@ -1952,13 +2162,13 @@ var payComponentValueTypeEdit = new
     <div id="timeTab" class="mainTab" style="display: none">
         <ejs-tab id="timeTabs" animation="ViewBag.animation" heightAdjustMode="None" overflowMode="Scrollable" headerPlacement="Left" cssClass="e-fill classicTab">
             <e-tab-tabitems>
-                <e-tab-tabitem header="@(new TabHeader { Text = "General" })" content="#generalTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "General" })" content="#timeGeneralTab"></e-tab-tabitem>
                 <e-tab-tabitem header="@(new TabHeader { Text = "Time Offs" })" content="#timeOffsTab"></e-tab-tabitem>
                 <e-tab-tabitem header="@(new TabHeader { Text = "Work Schedule" })" content="#workScheduleTab"></e-tab-tabitem>
             </e-tab-tabitems>
         </ejs-tab>
 
-        <div id="generalTab" class="secondaryTab" style="display: none">
+        <div id="timeGeneralTab" class="secondaryTab" style="display: none">
             <div class="customForm">
                 <div class="formHeader">
                     <span class="headerTitle">General Information</span>
@@ -2022,7 +2232,7 @@ var payComponentValueTypeEdit = new
                                         <label class="p-t-5 control-label pull-right">Hiring Date:</label>
                                     </div>
                                     <div class="col-sm-8" style="">
-                                        <input type="date" id="hiringDate" name="HiringDate" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        <input type="date" id="hiringDate" name="HiringDate" class="form-control" required>
                                     </div>
                                 </div>
                             </div>
@@ -2032,7 +2242,7 @@ var payComponentValueTypeEdit = new
                                         <label class="p-t-5 control-label pull-right">Yearly Time Off Allowance:</label>
                                     </div>
                                     <div class="col-sm-8" style="">
-                                        <input type="number" id="yearlyTimeOff" name="YearlyTimeOffAllowance" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        <input type="number" id="yearlyTimeOff" name="YearlyTimeOffAllowance" class="form-control" required>
                                     </div>
                                 </div>
                             </div>
@@ -2884,7 +3094,7 @@ var payComponentValueTypeEdit = new
     function defaultPrimaryFilesCrudActionBegin(args) {
         let type = args.requestType;
         if (type == "beginEdit" || type == "add") {
-            let dependantColumns = this.columns.filter(function (x) { return x.field == 'dependant.name' });
+            let dependantColumns = this.columns.filter(function (x) { return x.field == 'dependant.id' });
             attachDependantsReferences(dependantColumns);
         }
     }
@@ -2911,7 +3121,7 @@ var payComponentValueTypeEdit = new
     function defaultPalePrimaryCrudActionBegin(args) {
         let type = args.requestType;
         if (type == "beginEdit" || type == "add") {
-            let dependantColumns = this.columns.filter(function (x) { return x.field == 'dependant.name' });
+            let dependantColumns = this.columns.filter(function (x) { return x.field == 'dependant.id' });
             attachDependantsReferences(dependantColumns);
         }
     }
@@ -2944,7 +3154,7 @@ var payComponentValueTypeEdit = new
     function defaultPrimaryCrudActionBegin(args) {
         let type = args.requestType;
         if (type == "beginEdit" || type == "add") {
-            let dependantColumns = this.columns.filter(function (x) { return x.field == 'dependant.name' });
+            let dependantColumns = this.columns.filter(function (x) { return x.field == 'dependant.id' });
             attachDependantsReferences(dependantColumns);
         }
     }
@@ -2969,7 +3179,7 @@ var payComponentValueTypeEdit = new
     function defaultCrudActionBegin(args) {
         let type = args.requestType;
         if (type == "beginEdit") {
-            let dependantColumns = this.columns.filter(function (x) { return x.field == 'dependant.name' });
+            let dependantColumns = this.columns.filter(function (x) { return x.field == 'dependant.id' });
             attachDependantsReferences(dependantColumns);
 
             if (this.element.id.includes('BenefitsGrid')) {
@@ -3045,7 +3255,7 @@ var payComponentValueTypeEdit = new
     function defaultFilesCrudActionBegin(args) {
         let type = args.requestType;
         if (type == "beginEdit" || type == "add") {
-            let dependantColumns = this.columns.filter(function (x) { return x.field == 'dependant.name' });
+            let dependantColumns = this.columns.filter(function (x) { return x.field == 'dependant.id' });
             console.log(dependantColumns);
             attachDependantsReferences(dependantColumns);
         }
