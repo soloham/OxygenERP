@@ -4,7 +4,7 @@ using CERP.FM;
 using CERP.FM.COA;
 using CERP.HR.Attendance;
 using CERP.HR.Documents;
-using CERP.HR.Employees;
+using CERP.HR.EmployeeCentral.Employee;
 using CERP.HR.Holidays;
 using CERP.HR.Leaves;
 using CERP.HR.Loans;
@@ -30,7 +30,7 @@ namespace CERP.EntityFrameworkCore
         public static void ConfigureCERP(this ModelBuilder builder)
         {
             Check.NotNull(builder, nameof(builder));
-
+            
             /* Configure your own tables/entities inside here */
 
             //builder.Entity<YourEntity>(b =>
@@ -934,35 +934,301 @@ namespace CERP.EntityFrameworkCore
             });
             #endregion
             #endregion
-            #endregion
-
+            #region EmployeeCentral
+            #region Employee
             builder.Entity<Employee>(b =>
             {
-                b.ToTable(CERPConsts.HRDbTablePrefix + "Employees", CERPConsts.HR_DbSchema);
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "Employees", CERPConsts.HR_EmployeeCentral_DbSchema);
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
-                b.HasOne(p => p.EmployeeStatus).WithMany().OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(p => p.POB).WithMany().OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(p => p.Nationality).WithMany().OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(p => p.Gender).WithMany().OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(p => p.MaritalStatus).WithMany().OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(p => p.BloodGroup).WithMany().OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(p => p.Religion).WithMany().OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(p => p.EmployeeType).WithMany().OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(p => p.ContractStatus).WithMany().OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(p => p.ContractType).WithMany().OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(p => p.EmployeeStatus).WithMany().OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(p => p.Department).WithMany().OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(p => p.SIType).WithMany().OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(p => p.IndemnityType).WithMany().OnDelete(DeleteBehavior.Restrict);
+                // GENERAL INFO
+                b.HasOne(p => p.Nationality).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(p => p.Gender).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(p => p.MaritalStatus).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(p => p.PreferredLanguage).WithMany().OnDelete(DeleteBehavior.NoAction);
 
-                b.HasOne(p => p.Position).WithOne(pos => pos.Employee).OnDelete(DeleteBehavior.Restrict);
+                // BIO INFO
+                b.HasOne(p => p.BirthCountry).WithMany().OnDelete(DeleteBehavior.NoAction);
+
+                // IDENTITY INFO
+                //b.HasMany(p => p.NationalIdentities).WithOne().OnDelete(DeleteBehavior.Cascade);
+                //b.HasMany(p => p.PassportTravelDocuments).WithOne().OnDelete(DeleteBehavior.Cascade);
+
+                // CONTACT INFO
+
+                // DEPENDANTS INFO
+                b.HasMany(p => p.Dependants).WithOne().OnDelete(DeleteBehavior.Cascade);
+
+                // ORGANIZATION INFO
+                b.HasOne(p => p.Department).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(p => p.CostCenter).WithMany().OnDelete(DeleteBehavior.NoAction);
+
+                // BASIC SALARY
+                b.HasOne(p => p.PayGroup).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(p => p.PayGrade).WithMany().OnDelete(DeleteBehavior.NoAction);
+
+                // BENEFITS
+                b.HasMany(p => p.EmployeeBenefits).WithOne().OnDelete(DeleteBehavior.Cascade);
+
+                // PAYMENT DETAILS
+                b.HasMany(p => p.CashPaymentTypes).WithOne().OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(p => p.ChequePaymentTypes).WithOne().OnDelete(DeleteBehavior.Cascade);
+                b.HasMany(p => p.BankPaymentTypes).WithOne().OnDelete(DeleteBehavior.Cascade);
+
+                // TIME DETAILS
+                // - GENERAL DETAILS
+                b.HasOne(p => p.Timezone).WithMany().OnDelete(DeleteBehavior.NoAction);
+
+                // ACADEMIA & SKILLS PROFILE
+                // - ACADEMIA PROFILE
+                b.HasMany(p => p.AcademiaProfile);
+                // - SKILLS PROFILE
+                b.HasMany(p => p.SkillsProfile);
+
+                // ACADEMIA & SKILLS PROFILE
+                // - LOANS LIST
+                b.HasMany(p => p.EmployeeLoans).WithOne().OnDelete(DeleteBehavior.Cascade);
+
+                // SELF SERVICE
                 b.HasOne(p => p.Portal).WithOne(p => p.Employee).OnDelete(DeleteBehavior.Restrict);
             });
+            builder.Entity<Benefit>(b =>
+            {
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "Benefits", CERPConsts.HR_EmployeeCentral_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.PayComponent).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.PayFrequency).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<Dependant>(b =>
+            {
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "Dependants", CERPConsts.HR_EmployeeCentral_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.RelationshipType).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.BirthCountry).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<EmployeeLoan>(b =>
+            {
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "EmployeeLoans", CERPConsts.HR_EmployeeCentral_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.LoanType).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.LoanStatus).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            #endregion
+            #region Identities
+            builder.Entity<NationalIdentity>(b =>
+            {
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "NationalIdentities", CERPConsts.HR_Identities_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.IdType).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<EmployeeNationalIdentity>(b =>
+            {
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "EmployeeNationalIdentities", CERPConsts.HR_EmployeeCentral_DbSchema);
+
+                b.HasKey("EmployeeId", "NationalIdentityId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.Employee).WithMany(x => x.NationalIdentities).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.NationalIdentity).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<DependantNationalIdentity>(b =>
+            {
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "DependantNationalIdentities", CERPConsts.HR_EmployeeCentral_DbSchema);
+
+                b.HasKey("DependantId", "NationalIdentityId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.Dependant).WithMany(x => x.NationalIdentities).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.NationalIdentity).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+
+            builder.Entity<PassportTravelDocument>(b =>
+            {
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "PassportTravelDocuments", CERPConsts.HR_Identities_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.DocumentType).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<EmployeePassportTravelDocument>(b =>
+            {
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "EmployeePassportTravelDocuments", CERPConsts.HR_EmployeeCentral_DbSchema);
+
+                b.HasKey("EmployeeId", "PassportTravelDocumentId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.Employee).WithMany(x => x.PassportTravelDocuments).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.PassportTravelDocument).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<DependantPassportTravelDocument>(b =>
+            {
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "DependantPassportTravelDocuments", CERPConsts.HR_EmployeeCentral_DbSchema);
+
+                b.HasKey("DependantId", "PassportTravelDocumentId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.Dependant).WithMany(x => x.PassportTravelDocuments).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.PassportTravelDocument).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            #endregion
+            #region Payment Types
+            builder.Entity<BankPaymentType>(b =>
+            {
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "BankPaymentTypes", CERPConsts.HR_PaymentTypes_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.Bank).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.Country).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<CashPaymentType>(b =>
+            {
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "CashPaymentTypes", CERPConsts.HR_PaymentTypes_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.CollectionLocation).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<ChequePaymentType>(b =>
+            {
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "ChequePaymentTypes", CERPConsts.HR_PaymentTypes_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+            });
+            #endregion
+            #region Contact Info
+            builder.Entity<Contact>(b =>
+            {
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "Contacts", CERPConsts.HR_Contacts_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.RelationshipType).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.Country).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<EmployeeContact>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_PayrollStructure_DbTablePrefix}EmployeeContacts", CERPConsts.HR_EmployeeCentral_DbSchema);
+
+                b.HasKey("EmployeeId", "ContactId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.Employee).WithMany(x => x.Contacts).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.Contact).WithMany().OnDelete(DeleteBehavior.Cascade);
+            });
+            #endregion
+            #region Addresses Info
+            builder.Entity<EmailAddress>(b =>
+            {
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "EmailAddresses", CERPConsts.HR_Addresses_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(p => p.EmailType).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<EmployeeEmailAddress>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_PayrollStructure_DbTablePrefix}EmployeeEmailAddresses", CERPConsts.HR_EmployeeCentral_DbSchema);
+
+                b.HasKey("EmployeeId", "EmailAddressId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.Employee).WithMany(x => x.EmailAddresses).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.EmailAddress).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<PhoneAddress>(b =>
+            {
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "PhoneAddresses", CERPConsts.HR_Addresses_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(p => p.PhoneType).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<EmployeePhoneAddress>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_PayrollStructure_DbTablePrefix}EmployeePhoneAddresses", CERPConsts.HR_EmployeeCentral_DbSchema);
+
+                b.HasKey("EmployeeId", "PhoneAddressId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.Employee).WithMany(x => x.PhoneAddresses).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.PhoneAddress).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<HomeAddress>(b =>
+            {
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "HomeAddresses", CERPConsts.HR_Addresses_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(p => p.AddressType).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(p => p.Country).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<EmployeeHomeAddress>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_PayrollStructure_DbTablePrefix}EmployeeHomeAddresses", CERPConsts.HR_EmployeeCentral_DbSchema);
+
+                b.HasKey("EmployeeId", "HomeAddressId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.Employee).WithMany(x => x.HomeAddresses).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.HomeAddress).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            #endregion
+            #endregion
+            #endregion
+
 
             builder.Entity<Department>(b =>
             {
@@ -1012,11 +1278,11 @@ namespace CERP.EntityFrameworkCore
                 b.Property(x => x.Title)
                     .IsRequired();
 
-                b.HasOne(p => p.Employee).WithOne(e => e.Position).OnDelete(DeleteBehavior.Restrict);
+                //b.HasOne(p => p.Employee).WithOne(e => e.Position).OnDelete(DeleteBehavior.Restrict);
             });
             builder.Entity<WorkShift>(b =>
             {
-                b.ToTable(CERPConsts.HRDbTablePrefix + "WorkShifts", CERPConsts.HR_DbSchema);
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "WorkShifts", CERPConsts.HR_DbSchema);
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
@@ -1032,7 +1298,7 @@ namespace CERP.EntityFrameworkCore
             });
             builder.Entity<DeductionMethod>(b =>
             {
-                b.ToTable(CERPConsts.HRDbTablePrefix + "DeductionMethods", CERPConsts.HR_DbSchema);
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "DeductionMethods", CERPConsts.HR_DbSchema);
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
@@ -1048,7 +1314,7 @@ namespace CERP.EntityFrameworkCore
             });
             builder.Entity<Document>(b =>
             {
-                b.ToTable(CERPConsts.HRDbTablePrefix + "Documents", CERPConsts.HR_DbSchema);
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "Documents", CERPConsts.HR_DbSchema);
 
                 b.ConfigureAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
@@ -1076,7 +1342,7 @@ namespace CERP.EntityFrameworkCore
 
             builder.Entity<Timesheet>(b =>
             {
-                b.ToTable(CERPConsts.HRDbTablePrefix + "Timesheets", CERPConsts.HR_DbSchema);
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "Timesheets", CERPConsts.HR_DbSchema);
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
@@ -1112,7 +1378,7 @@ namespace CERP.EntityFrameworkCore
             });
             builder.Entity<TimesheetWeekSummary>(b =>
             {
-                b.ToTable(CERPConsts.HRDbTablePrefix + "WeeklyTimesheets", CERPConsts.HR_DbSchema);
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "WeeklyTimesheets", CERPConsts.HR_DbSchema);
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();
@@ -1155,7 +1421,7 @@ namespace CERP.EntityFrameworkCore
             });
             builder.Entity<TimesheetWeekJobSummary>(b =>
             {
-                b.ToTable(CERPConsts.HRDbTablePrefix + "WeeklyTimesheetsJobs", CERPConsts.HR_DbSchema);
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "WeeklyTimesheetsJobs", CERPConsts.HR_DbSchema);
 
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureSoftDelete();

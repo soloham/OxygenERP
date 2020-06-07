@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
-using CERP.HR.Employees;
+using CERP.HR.EmployeeCentral.Employee;
 using Volo.Abp.Application.Dtos;
 using CERP.HR.Employees.DTOs;
 using CERP.HR.Employees.UV_DTOs;
@@ -43,8 +43,9 @@ namespace CERP.AppServices.HR.EmployeeService
         }
         public List<Employee_Dto> GetEmployeesByPositionId(Guid positionId, params System.Linq.Expressions.Expression<Func<Employee, object>>[] details)
         {
-            var result = Repository.WithDetails(details).Where(x => x.PositionId == positionId);
-            return result.Select(MapToGetListOutputDto).ToList();
+            //var result = Repository.WithDetails(details).Where(x => x.PositionId == positionId);
+            //return result.Select(MapToGetListOutputDto).ToList();
+            return new List<Employee_Dto>();
         }
 
     }

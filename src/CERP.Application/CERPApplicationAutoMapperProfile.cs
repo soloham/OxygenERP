@@ -11,8 +11,9 @@ using CERP.FM.DTOs;
 using CERP.FM.UV_DTOs;
 using CERP.HR.Attendance;
 using CERP.HR.Documents;
+using CERP.HR.EmployeeCentral.DTOs;
 using CERP.HR.EMPLOYEE.DTOs;
-using CERP.HR.Employees;
+using CERP.HR.EmployeeCentral.Employee;
 using CERP.HR.Employees.DTOs;
 using CERP.HR.Employees.UV_DTOs;
 using CERP.HR.Holidays;
@@ -134,20 +135,15 @@ namespace CERP
             CreateMap<DictionaryValueType, DictionaryValueType_Dto>().ForMember(d => d.Values, opt => opt.Ignore());
             CreateMap<DictionaryValueType_Dto, DictionaryValueType>().ForMember(d => d.Values, opt => opt.Ignore());
 
-            CreateMap<Employee, Employee_Dto>();
-            CreateMap<Employee_Dto, Employee>();
-            CreateMap<Employee_UV_Dto, Employee_Dto>();
-            CreateMap<Employee_Dto, Employee_UV_Dto>();
-            CreateMap<Employee_UV_Dto, Employee>();
 
             CreateMap<AppUser, AppUser_Dto>();
             CreateMap<AppUser_Dto, AppUser>();
 
-            CreateMap<PhysicalID, PhysicalID_Dto>().ForMember(d => d.Employee, opt => opt.Ignore());
-            CreateMap<PhysicalID_Dto, PhysicalID>().ForMember(d => d.Employee, opt => opt.Ignore());
-            CreateMap<PhysicalID_UV_Dto, PhysicalID_Dto>().ForMember(d => d.Employee, opt => opt.Ignore());
-            CreateMap<PhysicalID_Dto, PhysicalID_UV_Dto>().ForMember(d => d.Employee, opt => opt.Ignore());
-            CreateMap<PhysicalID_UV_Dto, PhysicalID>().ForMember(d => d.Employee, opt => opt.Ignore());
+            //CreateMap<PhysicalID, PhysicalID_Dto>().ForMember(d => d.Employee, opt => opt.Ignore());
+            //CreateMap<PhysicalID_Dto, PhysicalID>().ForMember(d => d.Employee, opt => opt.Ignore());
+            //CreateMap<PhysicalID_UV_Dto, PhysicalID_Dto>().ForMember(d => d.Employee, opt => opt.Ignore());
+            //CreateMap<PhysicalID_Dto, PhysicalID_UV_Dto>().ForMember(d => d.Employee, opt => opt.Ignore());
+            //CreateMap<PhysicalID_UV_Dto, PhysicalID>().ForMember(d => d.Employee, opt => opt.Ignore());
             //CreateMap<DictionaryValue_UV_Dto, DictionaryValue>();
 
             #region HR
@@ -263,6 +259,47 @@ namespace CERP
             CreateMap<PS_PayFrequency, PS_PayFrequency_Dto>();
             CreateMap<PS_PayFrequency_Dto, PS_PayFrequency>();
             #endregion
+            #endregion
+            #region Employee Central
+
+            #region Employee
+            CreateMap<Employee, Employee_Dto>();
+            CreateMap<Employee_Dto, Employee>();
+
+            CreateMap<EmailAddress, EmailAddress_Dto>();
+            CreateMap<EmailAddress_Dto, EmailAddress>();
+
+            CreateMap<HomeAddress, HomeAddress_Dto>();
+            CreateMap<HomeAddress_Dto, HomeAddress>();
+
+            CreateMap<PhoneAddress, PhoneAddress_Dto>();
+            CreateMap<PhoneAddress_Dto, PhoneAddress>();
+
+            #endregion
+            #region Contact
+            CreateMap<Contact, Contact_Dto>();
+            CreateMap<Contact_Dto, Contact>();
+            #endregion
+
+            #region Identities
+            CreateMap<NationalIdentity, NationalIdentity_Dto>();
+            CreateMap<NationalIdentity_Dto, NationalIdentity>();
+
+            CreateMap<PassportTravelDocument, PassportTravelDocument_Dto>();
+            CreateMap<PassportTravelDocument_Dto, PassportTravelDocument>();
+            #endregion
+
+            #region Payment Types
+            CreateMap<BankPaymentType, BankPaymentType_Dto>();
+            CreateMap<BankPaymentType_Dto, BankPaymentType>();
+
+            CreateMap<CashPaymentType, CashPaymentType_Dto>();
+            CreateMap<CashPaymentType_Dto, CashPaymentType>();
+
+            CreateMap<ChequePaymentType, ChequePaymentType_Dto>();
+            CreateMap<ChequePaymentType_Dto, ChequePaymentType>();
+            #endregion
+
             #endregion
             #endregion
 

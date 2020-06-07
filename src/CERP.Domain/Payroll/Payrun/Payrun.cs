@@ -1,6 +1,6 @@
 ﻿using CERP.App;
 using CERP.Base;
-using CERP.HR.Employees;
+using CERP.HR.EmployeeCentral.Employee;
 using CERP.HR.Timesheets;
 using CERP.Setup;
 using System;

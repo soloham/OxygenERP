@@ -1,4 +1,4 @@
-﻿using CERP.HR.Employees;
+﻿using CERP.HR.EmployeeCentral.Employee;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;

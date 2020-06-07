@@ -1,5 +1,5 @@
 ﻿using CERP.Base;
-using CERP.HR.Employees;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

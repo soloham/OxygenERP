@@ -9,7 +9,7 @@ namespace CERP.HR.Timesheets
     public class Timesheet : FullAuditedAggregateTenantRoot<int>
     {
         [ForeignKey("EmployeeId")]
-        public virtual Employees.Employee Employee { get; set; }
+        public virtual EmployeeCentral.Employee.Employee Employee { get; set; }
         public Guid EmployeeId { get; set; }
 
         public int Year { get; set; }
@@ -38,7 +38,7 @@ namespace CERP.HR.Timesheets
         public int TimesheetId { get; set; }
 
         [ForeignKey("EmployeeId")]
-        public virtual Employees.Employee Employee { get; set; }
+        public virtual EmployeeCentral.Employee.Employee Employee { get; set; }
         public Guid EmployeeId { get; set; }
 
         public int Year { get; set; }
@@ -70,7 +70,7 @@ namespace CERP.HR.Timesheets
 
 
         [ForeignKey("EmployeeId")]
-        public virtual Employees.Employee Employee { get; set; }
+        public virtual EmployeeCentral.Employee.Employee Employee { get; set; }
         public Guid EmployeeId { get; set; }
 
         public int Year { get; set; }

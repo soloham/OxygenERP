@@ -135,12 +135,12 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
             dynamic employeeDynamic = new ExpandoObject();
 
             dynamicDSRow.basicSalary = payrunDetail.BasicSalary;
-            dynamicDSRow.getCompanyName = payrunDetail.Employee.Department.Company.CompanyName;
-            dynamicDSRow.getCompanyAddress = payrunDetail.Employee.Department.Company.CompanyLocations.ToArray()[0].Location.LocationName;
+            //dynamicDSRow.getCompanyName = payrunDetail.Employee.Department.Company.CompanyName;
+            //dynamicDSRow.getCompanyAddress = payrunDetail.Employee.Department.Company.CompanyLocations.ToArray()[0].Location.LocationName;
             dynamicDSRow.getEmployeeReferenceId = payrunDetail.Employee.GetReferenceId;
             dynamicDSRow.getEmployeeName = payrunDetail.Employee.Name;
-            dynamicDSRow.getEmployeeDepartmentName = payrunDetail.Employee.Department.Name;
-            dynamicDSRow.getEmployeePositionTitle = payrunDetail.Employee.Position.Title;
+            //dynamicDSRow.getEmployeeDepartmentName = payrunDetail.Employee.Department.Name;
+            //dynamicDSRow.getEmployeePositionTitle = payrunDetail.Employee.Position.Title;
 
             dynamicDSRow.getPeriod = $"{payrunDetail.Month.ToString().PadLeft(2, '0')}/{payrunDetail.Year.ToString().PadLeft(2, '0')}";
 

@@ -3,7 +3,7 @@ using CERP.Base;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CERP.HR.Employees
+namespace CERP.HR.EmployeeCentral.Employee
 {
     public class PhysicalID : AuditedAggregateTenantRoot<int>
     {

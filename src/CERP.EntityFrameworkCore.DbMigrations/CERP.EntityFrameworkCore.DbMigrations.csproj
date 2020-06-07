@@ -178,6 +178,10 @@
     <Compile Remove="Migrations\20200601221152_OrganizationStructure_TREE_OS_OM_DIV_BU_CompositeKeyComplex_BU_DIV_DEP_POS_Recursion_Fix.Designer.cs" />
     <Compile Remove="Migrations\20200601231106_OrganizationStructure_TREE_OS_OM_DIV_BU_CompositeKeyComplex_BU_DIV_DEP_POS_Recursion_HeadRequirementFix3.cs" />
     <Compile Remove="Migrations\20200601231106_OrganizationStructure_TREE_OS_OM_DIV_BU_CompositeKeyComplex_BU_DIV_DEP_POS_Recursion_HeadRequirementFix3.Designer.cs" />
+    <Compile Remove="Migrations\20200607125557_EmployeeCenrtal_Employee_Initial.cs" />
+    <Compile Remove="Migrations\20200607125557_EmployeeCenrtal_Employee_Initial.Designer.cs" />
+    <Compile Remove="Migrations\20200607130626_EmployeeCenrtal_Employee_Initial.cs" />
+    <Compile Remove="Migrations\20200607130626_EmployeeCenrtal_Employee_Initial.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

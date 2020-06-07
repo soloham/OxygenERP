@@ -1,5 +1,4 @@
 ﻿using CERP.Base;
-using CERP.HR.Employees;
 using CERP.HR.Employees.DTOs;
 using CERP.Setup;
 using System;

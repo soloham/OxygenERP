@@ -2,7 +2,7 @@
 using CERP.Attributes;
 using CERP.Base;
 using CERP.FM;
-using CERP.HR.Employees;
+using CERP.HR.EmployeeCentral.Employee;
 using CERP.HR.OrganizationalManagement.OrganizationStructure;
 using CERP.HR.Setup.OrganizationalManagement.OrganizationStructure;
 using System;

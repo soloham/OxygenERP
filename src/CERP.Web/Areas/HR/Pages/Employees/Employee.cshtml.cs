@@ -20,7 +20,7 @@ using CERP.Helpers;
 using CERP.HR.Documents;
 using CERP.HR.EMPLOYEE.DTOs;
 using CERP.HR.EMPLOYEE.RougeDTOs;
-using CERP.HR.Employees;
+using CERP.HR.EmployeeCentral.Employee;
 using CERP.HR.Employees.DTOs;
 using CERP.HR.Employees.UV_DTOs;
 using CERP.Identity;
@@ -43,6 +43,8 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
 using Volo.Abp.Json;
 using Volo.Abp.Settings;
+using Contact = CERP.HR.EMPLOYEE.RougeDTOs.Contact;
+using Dependant = CERP.HR.EMPLOYEE.RougeDTOs.Dependant;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
 namespace CERP.Web.Areas.HR.Pages.Employees
@@ -160,7 +162,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                                                 IList<PhysicalId<Guid>> physicalIDs, 
                                                 IList<BasicSalaryRDTO> basicSalaries, 
                                                 IList<AllowanceRDTO> allowances, 
-                                                IList<BanksRDTO> banks, 
+                                                IList<BanksRDTO> banks,
                                                 Contact primaryContact, 
                                                 NationalAddress nationalAddress, 
                                                 IList<Contact> secondaryContacts, 
@@ -368,7 +370,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                         entityChangeInfo.EntityTenantId = empAdded.TenantId;
                         entityChangeInfo.ChangeTime = DateTime.Now;
                         entityChangeInfo.ChangeType = EntityChangeType.Created;
-                        entityChangeInfo.EntityTypeFullName = typeof(Employee).FullName;
+                        //entityChangeInfo.EntityTypeFullName = typeof(Employee).FullName;
 
                         AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
                     }
@@ -510,151 +512,151 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                         entityChangeInfo.EntityTenantId = emp.TenantId;
                         entityChangeInfo.ChangeTime = DateTime.Now;
                         entityChangeInfo.ChangeType = EntityChangeType.Updated;
-                        entityChangeInfo.EntityTypeFullName = typeof(Employee).FullName;
+                        //entityChangeInfo.EntityTypeFullName = typeof(Employee).FullName;
                         
                         entityChangeInfo.PropertyChanges = new List<EntityPropertyChangeInfo>();
                         List<EntityPropertyChangeInfo> entityPropertyChanges = new List<EntityPropertyChangeInfo>();
-                        var auditProps = typeof(Employee).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+                        //var auditProps = typeof(Employee).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
 
-                        Employee mappedInput = ObjectMapper.Map<Employee_UV_Dto, Employee>(employee);
-                        foreach (var prop in auditProps)
-                        {
-                            EntityPropertyChangeInfo propertyChange = new EntityPropertyChangeInfo();
-                            object origVal = prop.GetValue(emp);
-                            propertyChange.OriginalValue = origVal == null ? "" : origVal.ToString();
-                            object newVal = prop.GetValue(mappedInput);
-                            propertyChange.NewValue = newVal == null ? "" : newVal.ToString();
-                            if (propertyChange.OriginalValue == propertyChange.NewValue) continue;
+                        //Employee mappedInput = ObjectMapper.Map<Employee_UV_Dto, Employee>(employee);
+                        //foreach (var prop in auditProps)
+                        //{
+                        //    EntityPropertyChangeInfo propertyChange = new EntityPropertyChangeInfo();
+                        //    object origVal = prop.GetValue(emp);
+                        //    propertyChange.OriginalValue = origVal == null ? "" : origVal.ToString();
+                        //    object newVal = prop.GetValue(mappedInput);
+                        //    propertyChange.NewValue = newVal == null ? "" : newVal.ToString();
+                        //    if (propertyChange.OriginalValue == propertyChange.NewValue) continue;
 
-                            propertyChange.PropertyName = prop.Name;
+                        //    propertyChange.PropertyName = prop.Name;
 
-                            if(prop.Name.EndsWith("Id"))
-                            {
-                                try
-                                {
-                                    string valuePropName = prop.Name.TrimEnd('d', 'I');
-                                    propertyChange.PropertyName = valuePropName;
+                        //    if(prop.Name.EndsWith("Id"))
+                        //    {
+                        //        try
+                        //        {
+                        //            string valuePropName = prop.Name.TrimEnd('d', 'I');
+                        //            propertyChange.PropertyName = valuePropName;
 
-                                    var valueProp = typeof(Employee).GetProperty(valuePropName);
+                        //            var valueProp = typeof(Employee).GetProperty(valuePropName);
 
-                                    DictionaryValue _origValObj = (DictionaryValue)valueProp.GetValue(emp);
-                                    if (_origValObj == null) _origValObj = await DictionaryValuesRepo.GetAsync((Guid)origVal);
-                                    string _origVal = _origValObj.Value;
-                                    propertyChange.OriginalValue = origVal == null ? "" : _origVal;
-                                    DictionaryValue _newValObj = (DictionaryValue)valueProp.GetValue(mappedInput);
-                                    if (_newValObj == null) _newValObj = await DictionaryValuesRepo.GetAsync((Guid)newVal);
-                                    string _newVal = _newValObj.Value;
-                                    propertyChange.NewValue = _newValObj == null ? "" : _newVal;
-                                }
-                                catch(Exception ex)
-                                {
+                        //            DictionaryValue _origValObj = (DictionaryValue)valueProp.GetValue(emp);
+                        //            if (_origValObj == null) _origValObj = await DictionaryValuesRepo.GetAsync((Guid)origVal);
+                        //            string _origVal = _origValObj.Value;
+                        //            propertyChange.OriginalValue = origVal == null ? "" : _origVal;
+                        //            DictionaryValue _newValObj = (DictionaryValue)valueProp.GetValue(mappedInput);
+                        //            if (_newValObj == null) _newValObj = await DictionaryValuesRepo.GetAsync((Guid)newVal);
+                        //            string _newVal = _newValObj.Value;
+                        //            propertyChange.NewValue = _newValObj == null ? "" : _newVal;
+                        //        }
+                        //        catch(Exception ex)
+                        //        {
 
-                                }
-                            }
+                        //        }
+                        //    }
 
-                            propertyChange.PropertyTypeFullName = prop.Name.GetType().FullName;
+                        //    propertyChange.PropertyTypeFullName = prop.Name.GetType().FullName;
 
-                            entityChangeInfo.PropertyChanges.Add(propertyChange);
-                        }
+                        //    entityChangeInfo.PropertyChanges.Add(propertyChange);
+                        //}
 
-                        #region ExtraProperties
-                        List<EmployeeExtraPropertyHistory> allExtraPropertyHistories = new List<EmployeeExtraPropertyHistory>();
-                        if (emp.ExtraProperties != employee.ExtraProperties)
-                        {
-                            GeneralInfo oldGeneralInfo = emp.GetProperty<GeneralInfo>("generalInfo");
-                            List<EmployeeExtraPropertyHistory> physicalIdsHistory = new List<EmployeeExtraPropertyHistory>();
-                            var generalInfoPhysicalIdAuditProps = typeof(PhysicalID).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
-                            List<PhysicalId<Guid>> NewPhysicalIds = generalInfo.PhysicalIds.Where(x => !oldGeneralInfo.PhysicalIds.Any(y => y.Id == x.Id)).ToList();
-                            List<PhysicalId<Guid>> UpdatedPhysicalIds = generalInfo.PhysicalIds.Where(x => oldGeneralInfo.PhysicalIds.Any(y => y.Id == x.Id)).ToList();
-                            List<PhysicalId<Guid>> DeletedPhysicalIds = oldGeneralInfo.PhysicalIds.Where(x => !generalInfo.PhysicalIds.Any(y => y.Id == x.Id)).ToList();
-                            for (int i = 0; i < NewPhysicalIds.Count; i++)
-                            {
-                                PhysicalId<Guid> curPhId = generalInfo.PhysicalIds[i];
+                        //#region ExtraProperties
+                        //List<EmployeeExtraPropertyHistory> allExtraPropertyHistories = new List<EmployeeExtraPropertyHistory>();
+                        //if (emp.ExtraProperties != employee.ExtraProperties)
+                        //{
+                        //    GeneralInfo oldGeneralInfo = emp.GetProperty<GeneralInfo>("generalInfo");
+                        //    List<EmployeeExtraPropertyHistory> physicalIdsHistory = new List<EmployeeExtraPropertyHistory>();
+                        //    var generalInfoPhysicalIdAuditProps = typeof(PhysicalID).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+                        //    List<PhysicalId<Guid>> NewPhysicalIds = generalInfo.PhysicalIds.Where(x => !oldGeneralInfo.PhysicalIds.Any(y => y.Id == x.Id)).ToList();
+                        //    List<PhysicalId<Guid>> UpdatedPhysicalIds = generalInfo.PhysicalIds.Where(x => oldGeneralInfo.PhysicalIds.Any(y => y.Id == x.Id)).ToList();
+                        //    List<PhysicalId<Guid>> DeletedPhysicalIds = oldGeneralInfo.PhysicalIds.Where(x => !generalInfo.PhysicalIds.Any(y => y.Id == x.Id)).ToList();
+                        //    for (int i = 0; i < NewPhysicalIds.Count; i++)
+                        //    {
+                        //        PhysicalId<Guid> curPhId = generalInfo.PhysicalIds[i];
 
-                                EmployeeExtraPropertyHistory newPhIdHistory = new EmployeeExtraPropertyHistory(2, "Physical Id", curPhId.IDNumber, "Created");
-                                physicalIdsHistory.Add(newPhIdHistory);
-                            }
-                            for (int i = 0; i < UpdatedPhysicalIds.Count; i++)
-                            {
-                                PhysicalId<Guid> curPhId = generalInfo.PhysicalIds[i];
-                                PhysicalId<Guid> oldPhId = oldGeneralInfo.PhysicalIds.First(x => x.Id == curPhId.Id);
+                        //        EmployeeExtraPropertyHistory newPhIdHistory = new EmployeeExtraPropertyHistory(2, "Physical Id", curPhId.IDNumber, "Created");
+                        //        physicalIdsHistory.Add(newPhIdHistory);
+                        //    }
+                        //    for (int i = 0; i < UpdatedPhysicalIds.Count; i++)
+                        //    {
+                        //        PhysicalId<Guid> curPhId = generalInfo.PhysicalIds[i];
+                        //        PhysicalId<Guid> oldPhId = oldGeneralInfo.PhysicalIds.First(x => x.Id == curPhId.Id);
    
-                                EmployeeExtraPropertyHistory updatedPhIdHistory = new EmployeeExtraPropertyHistory(2, "Physical Id", curPhId.IDNumber, "Updated");
-                                foreach (var prop in generalInfoPhysicalIdAuditProps)
-                                {
-                                    updatedPhIdHistory.PropertyChanges = new List<EmployeeTypePropertyChange>();
+                        //        EmployeeExtraPropertyHistory updatedPhIdHistory = new EmployeeExtraPropertyHistory(2, "Physical Id", curPhId.IDNumber, "Updated");
+                        //        foreach (var prop in generalInfoPhysicalIdAuditProps)
+                        //        {
+                        //            updatedPhIdHistory.PropertyChanges = new List<EmployeeTypePropertyChange>();
 
-                                    EmployeeTypePropertyChange propertyChange = new EmployeeTypePropertyChange();
+                        //            EmployeeTypePropertyChange propertyChange = new EmployeeTypePropertyChange();
 
-                                    object origVal = prop.GetValue(oldPhId);
-                                    propertyChange.OriginalValue = origVal == null ? "" : origVal.ToString();
-                                    object newVal = prop.GetValue(curPhId);
-                                    propertyChange.NewValue = newVal == null ? "" : newVal.ToString();
-                                    if (propertyChange.OriginalValue == propertyChange.NewValue) continue;
+                        //            object origVal = prop.GetValue(oldPhId);
+                        //            propertyChange.OriginalValue = origVal == null ? "" : origVal.ToString();
+                        //            object newVal = prop.GetValue(curPhId);
+                        //            propertyChange.NewValue = newVal == null ? "" : newVal.ToString();
+                        //            if (propertyChange.OriginalValue == propertyChange.NewValue) continue;
 
-                                    propertyChange.PropertyName = prop.Name;
+                        //            propertyChange.PropertyName = prop.Name;
 
-                                    if (prop.Name.EndsWith("Id"))
-                                    {
-                                        try
-                                        {
-                                            string valuePropName = prop.Name.TrimEnd('d', 'I');
-                                            propertyChange.PropertyName = valuePropName;
+                        //            if (prop.Name.EndsWith("Id"))
+                        //            {
+                        //                try
+                        //                {
+                        //                    string valuePropName = prop.Name.TrimEnd('d', 'I');
+                        //                    propertyChange.PropertyName = valuePropName;
 
-                                            var valueProp = typeof(PhysicalID).GetProperty(valuePropName);
+                        //                    var valueProp = typeof(PhysicalID).GetProperty(valuePropName);
 
-                                            DictionaryValue _origValObj = (DictionaryValue)valueProp.GetValue(oldPhId);
-                                            if (_origValObj == null) _origValObj = await DictionaryValuesRepo.GetAsync((Guid)origVal);
-                                            string _origVal = _origValObj.Value;
-                                            propertyChange.OriginalValue = origVal == null ? "" : _origVal;
-                                            DictionaryValue _newValObj = (DictionaryValue)valueProp.GetValue(curPhId);
-                                            if (_newValObj == null) _newValObj = await DictionaryValuesRepo.GetAsync((Guid)newVal);
-                                            string _newVal = _newValObj.Value;
-                                            propertyChange.NewValue = _newValObj == null ? "" : _newVal;
-                                        }
-                                        catch (Exception ex)
-                                        {
+                        //                    DictionaryValue _origValObj = (DictionaryValue)valueProp.GetValue(oldPhId);
+                        //                    if (_origValObj == null) _origValObj = await DictionaryValuesRepo.GetAsync((Guid)origVal);
+                        //                    string _origVal = _origValObj.Value;
+                        //                    propertyChange.OriginalValue = origVal == null ? "" : _origVal;
+                        //                    DictionaryValue _newValObj = (DictionaryValue)valueProp.GetValue(curPhId);
+                        //                    if (_newValObj == null) _newValObj = await DictionaryValuesRepo.GetAsync((Guid)newVal);
+                        //                    string _newVal = _newValObj.Value;
+                        //                    propertyChange.NewValue = _newValObj == null ? "" : _newVal;
+                        //                }
+                        //                catch (Exception ex)
+                        //                {
 
-                                        }
-                                    }
+                        //                }
+                        //            }
 
-                                    propertyChange.PropertyTypeFullName = prop.Name.GetType().FullName;
+                        //            propertyChange.PropertyTypeFullName = prop.Name.GetType().FullName;
 
-                                    updatedPhIdHistory.PropertyChanges.Add(propertyChange);
-                                }
-                                physicalIdsHistory.Add(updatedPhIdHistory);
-                            }
-                            for (int i = 0; i < DeletedPhysicalIds.Count; i++)
-                            {
-                                PhysicalId<Guid> curPhId = generalInfo.PhysicalIds[i];
+                        //            updatedPhIdHistory.PropertyChanges.Add(propertyChange);
+                        //        }
+                        //        physicalIdsHistory.Add(updatedPhIdHistory);
+                        //    }
+                        //    for (int i = 0; i < DeletedPhysicalIds.Count; i++)
+                        //    {
+                        //        PhysicalId<Guid> curPhId = generalInfo.PhysicalIds[i];
 
-                                EmployeeExtraPropertyHistory deletedPhIdHistory = new EmployeeExtraPropertyHistory(2, "Physical Id", curPhId.IDNumber, "Deleted");
-                                physicalIdsHistory.Add(deletedPhIdHistory);
-                            }
+                        //        EmployeeExtraPropertyHistory deletedPhIdHistory = new EmployeeExtraPropertyHistory(2, "Physical Id", curPhId.IDNumber, "Deleted");
+                        //        physicalIdsHistory.Add(deletedPhIdHistory);
+                        //    }
 
-                            allExtraPropertyHistories.AddRange(physicalIdsHistory);
+                        //    allExtraPropertyHistories.AddRange(physicalIdsHistory);
 
-                            var financialDetailsAuditProps = typeof(FinancialDetails).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
-                            FinancialDetails oldFinancialDetails = emp.GetProperty<FinancialDetails>("financialDetails");
+                        //    var financialDetailsAuditProps = typeof(FinancialDetails).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+                        //    FinancialDetails oldFinancialDetails = emp.GetProperty<FinancialDetails>("financialDetails");
 
-                            var contactInformationAuditProps = typeof(ContactInformation).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
-                            ContactInformation oldContactInformation = emp.GetProperty<ContactInformation>("contactInformation");
+                        //    var contactInformationAuditProps = typeof(ContactInformation).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+                        //    ContactInformation oldContactInformation = emp.GetProperty<ContactInformation>("contactInformation");
 
-                            var qualificationDetailAuditProps = typeof(QualificationDetail).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
-                            QualificationDetail oldQualificationDetail = emp.GetProperty<QualificationDetail>("qualificationDetail");
+                        //    var qualificationDetailAuditProps = typeof(QualificationDetail).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+                        //    QualificationDetail oldQualificationDetail = emp.GetProperty<QualificationDetail>("qualificationDetail");
 
-                            var experienceDetailAuditProps = typeof(ExperienceDetail).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
-                            ExperienceDetail oldExperienceDetail = emp.GetProperty<ExperienceDetail>("experienceDetail");
+                        //    var experienceDetailAuditProps = typeof(ExperienceDetail).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+                        //    ExperienceDetail oldExperienceDetail = emp.GetProperty<ExperienceDetail>("experienceDetail");
 
-                            var dependantsDetailAuditProps = typeof(DependantsDetail).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
-                            DependantsDetail oldDependantsDetail = emp.GetProperty<DependantsDetail>("dependantsDetail");
+                        //    var dependantsDetailAuditProps = typeof(DependantsDetail).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+                        //    DependantsDetail oldDependantsDetail = emp.GetProperty<DependantsDetail>("dependantsDetail");
 
-                            var workShiftDetailAuditProps = typeof(WorkShiftDetail).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
-                            WorkShiftDetail oldWorkShiftDetail = emp.GetProperty<WorkShiftDetail>("workShiftDetail");
+                        //    var workShiftDetailAuditProps = typeof(WorkShiftDetail).GetProperties().Where(x => Attribute.IsDefined(x, typeof(CustomAuditedAttribute))).ToList();
+                        //    WorkShiftDetail oldWorkShiftDetail = emp.GetProperty<WorkShiftDetail>("workShiftDetail");
 
-                            entityChangeInfo.SetProperty("extraPropertiesHistory", allExtraPropertyHistories);
-                        }
-                        #endregion
+                        //    entityChangeInfo.SetProperty("extraPropertiesHistory", allExtraPropertyHistories);
+                        //}
+                        //#endregion
 
                         AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
                     }
@@ -690,41 +692,41 @@ namespace CERP.Web.Areas.HR.Pages.Employees
 
                     emp.UpdateExtraProperties(employee.ExtraProperties);
 
-                    emp.DepartmentId = employee.DepartmentId;
-                    emp.PositionId = employee.PositionId;
-                    emp.EmployeeStatusId = employee.EmployeeStatusId;
-                    emp.ContractStatusId = employee.ContractStatusId;
-                    emp.ContractTypeId = employee.ContractTypeId;
-                    emp.ReligionId = employee.ReligionId;
-                    emp.BloodGroupId = employee.BloodGroupId;
-                    emp.MaritalStatusId = employee.MaritalStatusId;
-                    emp.GenderId = employee.GenderId;
-                    emp.NationalityId = employee.NationalityId;
-                    emp.POB_ID = employee.POB_ID;
-                    emp.SocialInsuranceId = employee.SocialInsuranceId;
-                    emp.SITypeId = employee.SITypeId;
-                    emp.IndemnityTypeId = employee.IndemnityTypeId;
+                    //emp.DepartmentId = employee.DepartmentId;
+                    //emp.PositionId = employee.PositionId;
+                    //emp.EmployeeStatusId = employee.EmployeeStatusId;
+                    //emp.ContractStatusId = employee.ContractStatusId;
+                    //emp.ContractTypeId = employee.ContractTypeId;
+                    //emp.ReligionId = employee.ReligionId;
+                    //emp.BloodGroupId = employee.BloodGroupId;
+                    //emp.MaritalStatusId = employee.MaritalStatusId;
+                    //emp.GenderId = employee.GenderId;
+                    //emp.NationalityId = employee.NationalityId;
+                    //emp.POB_ID = employee.POB_ID;
+                    //emp.SocialInsuranceId = employee.SocialInsuranceId;
+                    //emp.SITypeId = employee.SITypeId;
+                    //emp.IndemnityTypeId = employee.IndemnityTypeId;
 
-                    emp.JoiningDate = employee.JoiningDate;
-                    emp.JoiningHDate = employee.JoiningHDate;
-                    emp.ContractStartDate = employee.ContractStartDate;
-                    emp.ContractStartHDate = employee.ContractStartHDate;
-                    emp.ContractEndDate = employee.ContractEndDate;
-                    emp.ContractEndHDate = employee.ContractEndHDate;
+                    //emp.JoiningDate = employee.JoiningDate;
+                    //emp.JoiningHDate = employee.JoiningHDate;
+                    //emp.ContractStartDate = employee.ContractStartDate;
+                    //emp.ContractStartHDate = employee.ContractStartHDate;
+                    //emp.ContractEndDate = employee.ContractEndDate;
+                    //emp.ContractEndHDate = employee.ContractEndHDate;
 
-                    emp.VacationDays = employee.VacationDays;
-                    emp.NoOfDependents = employee.NoOfDependents;
-                    emp.DOB = employee.DOB;
-                    emp.DOB_H = employee.DOB_H;
+                    //emp.VacationDays = employee.VacationDays;
+                    //emp.NoOfDependents = employee.NoOfDependents;
+                    //emp.DOB = employee.DOB;
+                    //emp.DOB_H = employee.DOB_H;
 
-                    emp.FirstName = employee.FirstName;
-                    emp.FirstNameLocalized = employee.FirstNameLocalized;
-                    emp.MiddleName = employee.MiddleName;
-                    emp.MiddleNameLocalized = employee.MiddleNameLocalized;
-                    emp.LastName = employee.LastName;
-                    emp.LastNameLocalized = employee.LastNameLocalized;
-                    emp.FamilyName = employee.FamilyName;
-                    emp.FamilyNameLocalized = employee.FamilyNameLocalized;
+                    //emp.FirstName = employee.FirstName;
+                    //emp.FirstNameLocalized = employee.FirstNameLocalized;
+                    //emp.MiddleName = employee.MiddleName;
+                    //emp.MiddleNameLocalized = employee.MiddleNameLocalized;
+                    //emp.LastName = employee.LastName;
+                    //emp.LastNameLocalized = employee.LastNameLocalized;
+                    //emp.FamilyName = employee.FamilyName;
+                    //emp.FamilyNameLocalized = employee.FamilyNameLocalized;
 
                     if (emp.ProfilePic != null && emp.ProfilePic != "noimage.jpg" && employee.ProfilePic != emp.ProfilePic)
                     {
@@ -738,18 +740,18 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                     }
                     emp.ProfilePic = employee.ProfilePic;
 
-                    emp.Position = null;
-                    emp.EmployeeStatus = null;
-                    emp.ContractStatus = null;
-                    emp.ContractType = null;
-                    emp.Religion = null;
-                    emp.BloodGroup = null;
-                    emp.MaritalStatus = null;
-                    emp.Gender = null;
-                    emp.Nationality = null;
-                    emp.POB = null;
+                    //emp.Position = null;
+                    //emp.EmployeeStatus = null;
+                    //emp.ContractStatus = null;
+                    //emp.ContractType = null;
+                    //emp.Religion = null;
+                    //emp.BloodGroup = null;
+                    //emp.MaritalStatus = null;
+                    //emp.Gender = null;
+                    //emp.Nationality = null;
+                    //emp.POB = null;
 
-                    var empBack = await employeeAppService.Repository.UpdateAsync(emp);
+                    //var empBack = await employeeAppService.Repository.UpdateAsync(emp);
                 }
             }
             catch(Exception ex)

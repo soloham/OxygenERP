@@ -32,7 +32,8 @@ using Volo.Abp.VirtualFileSystem;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.AspNetCore.MultiTenancy;
 using Volo.Abp.Auditing;
-using CERP.HR.Employees;
+using CERP.HR.EmployeeCentral.Employee;
+using CERP.HR.EmployeeCentral.Employee;
 
 namespace CERP.Web
 {

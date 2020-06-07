@@ -121,7 +121,7 @@ namespace CERP.Web.Areas.HR.Pages.Setup
             List<dynamic> employees = new List<dynamic>();
             for (int i = 0; i < _positionIds.Length; i++)
             {
-                List<Employee_Dto> result = EmployeeAppService.GetEmployeesByPositionId(_positionIds[i], x => x.Department, x => x.Position);
+                List<Employee_Dto> result = EmployeeAppService.GetEmployeesByPositionId(_positionIds[i], x => x.Department);
                 List<dynamic> dynamicResult = new List<dynamic>();
                 for (int j = 0; j < result.Count; j++)
                 {

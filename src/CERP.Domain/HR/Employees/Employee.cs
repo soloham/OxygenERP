@@ -1,6 +1,9 @@
 ﻿using CERP.App;
 using CERP.Attributes;
 using CERP.Base;
+using CERP.HR.Documents;
+using CERP.HR.OrganizationalManagement.OrganizationStructure;
+using CERP.HR.OrganizationalManagement.PayrollStructure;
 using CERP.HR.Workshifts;
 using CERP.Setup;
 using CERP.Users;
@@ -9,7 +12,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp.Auditing;
 
-namespace CERP.HR.Employees
+namespace CERP.HR.EmployeeCentral.Employee
 {
     [DisableAuditing]
     public class Employee : FullAuditedAggregateTenantRoot<Guid>
@@ -24,6 +27,8 @@ namespace CERP.HR.Employees
         }
         [NotMapped]
         public string GetReferenceId { get => Id.ToString().Substring(0, 4); }
+
+        #region Personal Information
 
         #region General Info
         [NotMapped]
@@ -41,116 +46,136 @@ namespace CERP.HR.Employees
         [CustomAudited]
         public string LastNameLocalized { get; set; }
         [CustomAudited]
-        public string FamilyName { get; set; }
+        public string Initials { get; set; }
         [CustomAudited]
-        public string FamilyNameLocalized { get; set; }
+        public string PreferredName { get; set; }
         [CustomAudited]
-        public string DOB { get; set; }
-        [CustomAudited]
-        public string DOB_H { get; set; }
+        public string DisplayName { get; set; }
 
-
-        [ForeignKey("POB_ID")]
-        public DictionaryValue POB { get; set; }
-        [CustomAudited]
-        public Guid POB_ID { get; set; }
-
-        [ForeignKey("NationalityId")]
-        public DictionaryValue Nationality { get; set; }
-        [CustomAudited]
-        public Guid NationalityId { get; set; }
-
-        [ForeignKey("GenderId")]
         public DictionaryValue Gender { get; set; }
         [CustomAudited]
         public Guid GenderId { get; set; }
-
-        [ForeignKey("MaritalStatusId")]
         public DictionaryValue MaritalStatus { get; set; }
         [CustomAudited]
         public Guid MaritalStatusId { get; set; }
         [CustomAudited]
-        public int NoOfDependents { get; set; }
-
-        [ForeignKey("BloodGroupId")]
-        public DictionaryValue? BloodGroup { get; set; }
+        public string MarriedSince { get; set; }
+        public DictionaryValue PreferredLanguage { get; set; }
         [CustomAudited]
-        public Guid? BloodGroupId { get; set; }
-
-        [ForeignKey("ReligionId")]
-        public DictionaryValue Religion { get; set; }
+        public Guid PreferredLanguageId { get; set; }
+        public DictionaryValue Nationality { get; set; }
         [CustomAudited]
-        public Guid ReligionId { get; set; }
-
-        [ForeignKey("EmployeeTypeId")]
-        public DictionaryValue EmployeeType { get; set; }
-        [CustomAudited]
-        public Guid EmployeeTypeId { get; set; }
+        public Guid NationalityId { get; set; }
         #endregion
 
-        #region ID & Residence
+        #region Bio Info
         [CustomAudited]
-        public string SocialInsuranceId { get; set; }
+        public string DateOfBirth { get; set; }
 
-        [ForeignKey("SITypeId")]
-        public DictionaryValue SIType { get; set; }
+        public DictionaryValue BirthCountry { get; set; }
         [CustomAudited]
-        public Guid? SITypeId { get; set; }
-
-        [ForeignKey("IndemnityTypeId")]
-        public DictionaryValue IndemnityType { get; set; }
+        public Guid BirthCountryId { get; set; }
         [CustomAudited]
-        public Guid? IndemnityTypeId { get; set; }
+        public string PlaceOfBirth { get; set; }
+        [CustomAudited]
+        public string BioAttachment { get; set; }
         #endregion
 
-        #region Contract Details
-        [CustomAudited]
-        public string JoiningDate { get; set; }
-        [CustomAudited]
-        public string JoiningHDate { get; set; }
-        [CustomAudited]
-        public string ContractStartDate { get; set; }
-        [CustomAudited]
-        public string ContractStartHDate { get; set; }
-        [CustomAudited]
-        public string ContractEndDate { get; set; }
-        [CustomAudited]
-        public string ContractEndHDate { get; set; }
-        [CustomAudited]
-        public int VacationDays { get; set; }
-        [ForeignKey("ContractStatusId")]
-        public DictionaryValue ContractStatus { get; set; }
-        [CustomAudited]
-        public Guid ContractStatusId { get; set; }
-        [ForeignKey("ContractTypeId")]
-        public DictionaryValue ContractType { get; set; }
-        [CustomAudited]
-        public Guid ContractTypeId { get; set; }
-        [ForeignKey("EmployeeStatusId")]
-        public DictionaryValue EmployeeStatus { get; set; }
-        [CustomAudited]
-        public Guid EmployeeStatusId { get; set; }
-        [ForeignKey("DepartmentId")]
-        public Department Department { get; set; }
-        [CustomAudited]
-        public Guid DepartmentId { get; set; }
-        [ForeignKey("PositionId")]
-        public Position Position { get; set; }
-        [CustomAudited]
-        public Guid PositionId { get; set; }
-        [ForeignKey("ReportingToId")]
-        public Employee? ReportingTo { get; set; }
-        [CustomAudited]
-        public Guid? ReportingToId { get; set; }
+        #region Identity Info
+        public virtual ICollection<EmployeeNationalIdentity> NationalIdentities { get; set; }
+        public virtual ICollection<EmployeePassportTravelDocument> PassportTravelDocuments { get; set; }
         #endregion
 
-        #region Workshifts
-        [ForeignKey("WorkShiftId")]
-        public WorkShift WorkShift { get; set; }
-        [CustomAudited]
-        public int WorkShiftId { get; set; }
+        #region Contact Info
+        public virtual ICollection<EmployeeEmailAddress> EmailAddresses { get; set; }
+        public virtual ICollection<EmployeePhoneAddress> PhoneAddresses { get; set; }
+        public virtual ICollection<EmployeeHomeAddress> HomeAddresses { get; set; }
+        public virtual ICollection<EmployeeContact> Contacts { get; set; }
+        #endregion
+
+        #region Dependants Info
+        public virtual ICollection<Dependant> Dependants { get; set; }
+        #endregion
 
         #endregion
+
+        #region Employment Info
+
+        #region Organization Info
+        public OS_OrganizationStructureTemplateDepartment Department { get; set; }
+        [CustomAudited]
+        public int DeparmentId { get; set; }
+
+        //public DictionaryValue Timezone { get; set; }
+        //[CustomAudited]
+        //public Guid TimezoneId { get; set; }
+
+        public DictionaryValue CostCenter { get; set; }
+        [CustomAudited]
+        public Guid CostCenterId { get; set; }
+        #endregion
+
+        #endregion
+
+        #region Compensation Info
+
+        #region Basic Salary Info
+        public PS_PayGroup PayGroup { get; set; }
+        [CustomAudited]
+        public int PayGroupId { get; set; }
+        public PS_PayGrade PayGrade { get; set; }
+        [CustomAudited]
+        public int PayGradeId { get; set; }
+        #endregion
+
+        #region Benefits Info
+        public virtual ICollection<Benefit> EmployeeBenefits { get; set; }
+        #endregion
+        #region Payment Details
+        public virtual ICollection<CashPaymentType> CashPaymentTypes { get; set; }
+        public virtual ICollection<ChequePaymentType> ChequePaymentTypes { get; set; }
+        public virtual ICollection<BankPaymentType> BankPaymentTypes { get; set; }
+        #endregion
+
+        #endregion
+
+        #region Time Details
+
+        #region General Details
+        public DictionaryValue Timezone { get; set; }
+        [CustomAudited]
+        public Guid TimezoneId { get; set; }
+        #endregion
+        #region Time Offs Info
+        [CustomAudited]
+        public string HiringDate { get; set; }
+        [CustomAudited]
+        public int YearlyTimeOffAllowance { get; set; }
+        #endregion
+
+        #endregion
+
+
+        #region Academia & Skills Profile
+
+        #region Academia Profile
+        public virtual ICollection<OS_AcademiaTemplate> AcademiaProfile { get; set; }
+        #endregion
+        #region Skills Profile
+        public virtual ICollection<OS_SkillTemplate> SkillsProfile { get; set; }
+        #endregion
+
+        #endregion
+
+        #region Loans Information
+
+        #region Loans List
+        public virtual ICollection<EmployeeLoan> EmployeeLoans { get; set; }
+        #endregion
+
+        #endregion
+
+
         [CustomAudited]
         public string ProfilePic { get; set; }
 
@@ -163,5 +188,48 @@ namespace CERP.HR.Employees
         {
             ExtraProperties = (Dictionary<string, object>)extraProperties;
         }
+    }
+
+    public class EmployeeNationalIdentity : AuditedAggregateTenantRoot<int>
+    {
+        public Employee Employee { get; set; }
+        public int EmployeeId { get; set; }
+        public NationalIdentity NationalIdentity { get; set; }
+        public int NationalIdentityId { get; set; }
+    }
+    public class EmployeePassportTravelDocument : AuditedAggregateTenantRoot<int>
+    {
+        public Employee Employee { get; set; }
+        public int EmployeeId { get; set; }
+        public PassportTravelDocument PassportTravelDocument { get; set; }
+        public int PassportTravelDocumentId { get; set; }
+    }
+    public class EmployeeEmailAddress : AuditedAggregateTenantRoot<int>
+    {
+        public Employee Employee { get; set; }
+        public int EmployeeId { get; set; }
+        public EmailAddress EmailAddress { get; set; }
+        public int EmailAddressId { get; set; }
+    }
+    public class EmployeePhoneAddress : AuditedAggregateTenantRoot<int>
+    {
+        public Employee Employee { get; set; }
+        public int EmployeeId { get; set; }
+        public PhoneAddress PhoneAddress { get; set; }
+        public int PhoneAddressId { get; set; }
+    }
+    public class EmployeeHomeAddress : AuditedAggregateTenantRoot<int>
+    {
+        public Employee Employee { get; set; }
+        public int EmployeeId { get; set; }
+        public HomeAddress HomeAddress { get; set; }
+        public int HomeAddressId { get; set; }
+    }
+    public class EmployeeContact : AuditedAggregateTenantRoot<int>
+    {
+        public Employee Employee { get; set; }
+        public int EmployeeId { get; set; }
+        public Contact Contact { get; set; }
+        public int ContactId { get; set; }
     }
 }

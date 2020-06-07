@@ -1,4 +1,4 @@
-﻿using CERP.HR.Employees;
+﻿using CERP.HR.EmployeeCentral.Employee;
 using CERP.HR.Workshifts;
 using CERP.Setup;
 using System;

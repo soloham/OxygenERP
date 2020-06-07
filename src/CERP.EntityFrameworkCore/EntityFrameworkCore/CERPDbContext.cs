@@ -7,7 +7,7 @@ using Volo.Abp.Users.EntityFrameworkCore;
 using CERP.FM.COA;
 using CERP.FM;
 using CERP.App;
-using CERP.HR.Employees;
+using CERP.HR.EmployeeCentral.Employee;
 using CERP.Setup;
 using CERP.HR.Workshifts;
 using CERP.HR.Documents;
@@ -129,14 +129,48 @@ namespace CERP.EntityFrameworkCore
         public DbSet<PS_PayGroup> PayGroups { get; set; }
         public DbSet<PS_PayRange> PayRanges { get; set; }
         public DbSet<PS_PayGrade> PayGrades { get; set; }
+
         public DbSet<PS_PayGradeComponent> PayGradeComponents { get; set; }
         public DbSet<PS_PayComponent> PayComponents { get; set; }
         public DbSet<PS_PayComponentType> PayComponentTypes { get; set; }
         public DbSet<PS_PayFrequency> PayFrequencies { get; set; }
         #endregion
+
+        #region Employee Central
+        #region Employee
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<EmployeeLoan> EmployeeLoans { get; set; }
+        public DbSet<Benefit> Benefits { get; set; }
+        public DbSet<Dependant> Dependants { get; set; }
+        #endregion
+        #region Addresses
+        public DbSet<EmailAddress> EmailAddresses { get; set; }
+        public DbSet<EmployeeEmailAddress> EmployeeEmailAddresses { get; set; }
+        public DbSet<HomeAddress> HomeAddresses { get; set; }
+        public DbSet<EmployeeHomeAddress> EmployeeHomeAddresses { get; set; }
+        public DbSet<PhoneAddress> PhoneAddresses { get; set; }
+        public DbSet<EmployeePhoneAddress> EmployeePhoneAddresses { get; set; }
+        #endregion
+        #region Contact
+        public DbSet<Contact> Contacts { get; set; }
+        public DbSet<EmployeeContact> EmployeeContacts { get; set; }
+        #endregion
+        #region Identities
+        public DbSet<NationalIdentity> NationalIdentities { get; set; }
+        public DbSet<EmployeeNationalIdentity> EmployeeNationalIdentities { get; set; }
+        public DbSet<DependantNationalIdentity> DependantNationalIdentities { get; set; }
+        public DbSet<PassportTravelDocument> PassportTravelDocuments { get; set; }
+        public DbSet<EmployeePassportTravelDocument> EmployeePassportTravelDocuments { get; set; }
+        public DbSet<DependantPassportTravelDocument> DependantPassportTravelDocuments { get; set; }
+        #endregion
+        #region Payment Types
+        public DbSet<BankPaymentType> BankPaymentTypes { get; set; }
+        public DbSet<CashPaymentType> CashPaymentTypes { get; set; }
+        public DbSet<ChequePaymentType> ChequePaymentTypes { get; set; }
+        #endregion
+        #endregion
         #endregion
 
-        public DbSet<Employee> Employees { get; set; }
         public DbSet<Document> Documents { get; set; }
         public DbSet<WorkShift> WorkShifts { get; set; }
         public DbSet<DeductionMethod> DeductionMethods { get; set; }

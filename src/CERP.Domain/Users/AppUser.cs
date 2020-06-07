@@ -1,4 +1,4 @@
-﻿using CERP.HR.Employees;
+﻿using CERP.HR.EmployeeCentral.Employee;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
