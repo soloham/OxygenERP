@@ -456,8 +456,8 @@
                 var contractDetails = $('#form-step-2').find("select, textarea, input").serializeArray();
                 form = form.concat(contractDetails);
 
-                var fileInput = $('#imageUpload')[0];
                 var params = objectifyForm(form);
+                var fileInput = $('#imageUpload')[0];
                 var profilePic = fileInput.files[0];
                 var formData = new FormData();
                 formData.append("ProfilePicture", profilePic);

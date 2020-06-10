@@ -62,7 +62,7 @@ namespace CERP.FM.COA.DTOs
         public bool FA { get; set; }
         public bool Customer { get; set; }
 
-        public virtual ICollection<COA_SubLedgerRequirement_Account_Dto> SubLedgerRequirementAccounts { get; set; }
+        public List<COA_SubLedgerRequirement_Account_Dto> SubLedgerRequirementAccounts { get; set; }
 
         public bool? ActiveStatus { get; set; }
     }

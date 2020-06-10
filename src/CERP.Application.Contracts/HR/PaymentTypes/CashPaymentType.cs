@@ -17,15 +17,9 @@ namespace CERP.HR.Documents
         }
 
         public LocationTemplate_Dto CollectionLocation { get; set; }
-        [CustomAudited]
-        public int CollectionLocationId { get; set; }
-
-        [CustomAudited]
+        public Guid CollectionLocationId { get; set; }
         public string ValidityFromDate { get; set; }
-        [CustomAudited]
         public string ValidityToDate { get; set; }
-
-        [CustomAudited]
         public bool IsPrimary { get; set; }
     }
 }

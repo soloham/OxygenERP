@@ -13,7 +13,7 @@
     ViewData["CreateNewText"] = "Edit Timesheet";
     ViewData["CreateNewLink"] = "/Timesheets/Edit";
 
-    List<Employee_Dto> employees = Model.GetEmployees();
+    //List<Employee_Dto> employees = Model.GetEmployees();
 
     var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
 
@@ -186,12 +186,12 @@
                     <div class="col-md-3">
                         <h4>Employee</h4>
                         <select id="employeeId" name="EmployeeId" class="form-control">
-                            @foreach (var item in employees)
+                            @*@foreach (var item in employees)
                             {
                                 @: <option @(ViewData["defEmpId"] != null && (Guid)ViewData["defEmpId"] == item.Id ? "selected" : "") value="@item.Id">
                                     @:     @item.FirstName @item.MiddleName @item.LastName
                                 @: </option>
-                            }
+                            }*@
                         </select>
                     </div>
                 </div>

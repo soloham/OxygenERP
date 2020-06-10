@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CERP.AppServices.HR.EmployeeService;
 using CERP.HR.EMPLOYEE.RougeDTOs;
-using CERP.HR.Employees.DTOs;
+using CERP.HR.EmployeeCentral.DTOs.Employee;
 using CERP.Web.Pages;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -38,40 +38,40 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
 
         public void OnGet()
         {
-            List<Employee_Dto> Employees = employeeAppService.GetAllEmployees();
-            Employees.ForEach(x => x.ProfilePic = x.ProfilePic == "" ? x.ProfilePic = "noimage.jpg" : x.ProfilePic);
-            List<PhysicalId<Guid>> physicalIDs = (Employees.Count > 0) ? (List<PhysicalId<Guid>>)Employees.SelectMany(x => (JsonSerializer.Deserialize<GeneralInfo>(x.ExtraProperties["generalInfo"].ToString()).PhysicalIds)).ToList() : new List<PhysicalId<Guid>>();
+            //List<Employee_Dto> Employees = employeeAppService.GetAllEmployees();
+            //Employees.ForEach(x => x.ProfilePic = x.ProfilePic == "" ? x.ProfilePic = "noimage.jpg" : x.ProfilePic);
+            //List<PhysicalId<Guid>> physicalIDs = (Employees.Count > 0) ? (List<PhysicalId<Guid>>)Employees.SelectMany(x => (JsonSerializer.Deserialize<GeneralInfo>(x.ExtraProperties["generalInfo"].ToString()).PhysicalIds)).ToList() : new List<PhysicalId<Guid>>();
 
-            SecondaryDetailsGrid = new Grid()
-            {
-                DataSource = physicalIDs,
-                Load = "onLoad",
-                QueryString = "EmployeeId",
-                EditSettings = new Syncfusion.EJ2.Grids.GridEditSettings() { },
-                AllowExcelExport = true,
-                //AllowGrouping = true,
-                AllowPdfExport = true,
-                HierarchyPrintMode = HierarchyGridPrintMode.All,
-                AllowSelection = true,
-                AllowFiltering = false,
-                AllowSorting = true,
-                AllowMultiSorting = true,
-                AllowResizing = true,
-                GridLines = GridLine.Both,
-                SearchSettings = new GridSearchSettings() { },
-                //Toolbar = new List<object>() { "ExcelExport", "CsvExport", "Print", "Search",new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } },
-                ContextMenuItems = new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending", "Copy", "Edit", "Delete", "Save", "Cancel", "PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage", "LastPage", "NextPage" },
-                Columns = GetSecondaryGridColumns()
+            //SecondaryDetailsGrid = new Grid()
+            //{
+            //    DataSource = physicalIDs,
+            //    Load = "onLoad",
+            //    QueryString = "EmployeeId",
+            //    EditSettings = new Syncfusion.EJ2.Grids.GridEditSettings() { },
+            //    AllowExcelExport = true,
+            //    //AllowGrouping = true,
+            //    AllowPdfExport = true,
+            //    HierarchyPrintMode = HierarchyGridPrintMode.All,
+            //    AllowSelection = true,
+            //    AllowFiltering = false,
+            //    AllowSorting = true,
+            //    AllowMultiSorting = true,
+            //    AllowResizing = true,
+            //    GridLines = GridLine.Both,
+            //    SearchSettings = new GridSearchSettings() { },
+            //    //Toolbar = new List<object>() { "ExcelExport", "CsvExport", "Print", "Search",new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } },
+            //    ContextMenuItems = new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending", "Copy", "Edit", "Delete", "Save", "Cancel", "PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage", "LastPage", "NextPage" },
+            //    Columns = GetSecondaryGridColumns()
 
-            };
-            //List<COA_Account_Dto> COAs = (await _coaAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
+            //};
+            ////List<COA_Account_Dto> COAs = (await _coaAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
 
-            ViewData["Employees_DS"] = Employees;
-            ViewData["alertbutton"] = new
-            {
-                content = "OK",
-                isPrimary = true
-            };
+            //ViewData["Employees_DS"] = Employees;
+            //ViewData["alertbutton"] = new
+            //{
+            //    content = "OK",
+            //    isPrimary = true
+            //};    
         }
         public dynamic GetDataAuditTrailModel()
         {
@@ -164,7 +164,7 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
             List<dynamic> tertiaryDS = new List<dynamic>();
             var employeeLogs = AuditLogsRepo.WithDetails().Where(x => x.Url == "/HR/Employee" && x.EntityChanges != null && x.EntityChanges.Count > 0).ToList();
 
-            List<Employee_Dto> Employees = employeeAppService.GetAllEmployees();
+            List<Employee_Dto> Employees = await employeeAppService.GetAllEmployees();
             TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
 
             for (int i = 0; i < employeeLogs.Count; i++)

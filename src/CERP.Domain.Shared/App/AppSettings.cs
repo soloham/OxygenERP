@@ -96,6 +96,10 @@ namespace CERP
         [Description("Type I Skills")]
         TypeISkill,
         [Description("Type II Skills")]
-        TypeIISkill
+        TypeIISkill,
+        [Description("Timezone")]
+        Timezone,
+        [Description("Salutation")]
+        Salutation
     }
 }

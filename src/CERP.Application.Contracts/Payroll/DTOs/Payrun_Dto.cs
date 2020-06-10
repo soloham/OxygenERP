@@ -33,8 +33,8 @@ namespace CERP.Payroll.DTOs
         public decimal TotalDeductions { get; set; }
         public decimal NetTotal { get; set; }
 
-        public virtual ICollection<PayrunDetail_Dto> PayrunDetails { get; set; }
-        public virtual ICollection<Payslip_Dto> Payslips { get; set; }
+        public List<PayrunDetail_Dto> PayrunDetails { get; set; }
+        public List<Payslip_Dto> Payslips { get; set; }
 
         public string Note { get; set; }
         public string AttachmentFile { get; set; }
@@ -65,7 +65,7 @@ namespace CERP.Payroll.DTOs
         [Required]
         public Guid EmployeeId { get; set; }
 
-        public virtual ICollection<PayrunAllowanceSummary_Dto> PayrunAllowancesSummaries { get; set; }
+        public List<PayrunAllowanceSummary_Dto> PayrunAllowancesSummaries { get; set; }
 
         public Timesheet_Dto EmployeeTimesheet { get; set; }
         [Required]

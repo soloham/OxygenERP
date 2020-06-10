@@ -46,7 +46,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\HR\Pages\Employees\Employee.cshtml.cs" />
     <Compile Remove="Pages\Account\Register.cshtml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Areas\HR\Pages\Employees\Employee.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -89,6 +94,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Areas\HR\Pages\Employees\Create.cshtml" />
+    <None Include="Areas\HR\Pages\Employees\List.cshtml" />
+    <None Include="Areas\HR\Pages\Employees\_DialogEditPartial.cshtml" />
+    <None Include="Areas\HR\Pages\Employees\_EmployeeContactInfoPartial.cshtml" />
+    <None Include="Areas\HR\Pages\Employees\_EmployeeContractDetailsPartial.cshtml" />
+    <None Include="Areas\HR\Pages\Employees\_EmployeeDependentsDetailsPartial.cshtml" />
+    <None Include="Areas\HR\Pages\Employees\_EmployeeExperienceDetailsPartial.cshtml" />
+    <None Include="Areas\HR\Pages\Employees\_EmployeeFinancialDetailsPartial.cshtml" />
+    <None Include="Areas\HR\Pages\Employees\_EmployeeGeneralInfoPartial.cshtml" />
+    <None Include="Areas\HR\Pages\Employees\_EmployeeIdAndResidencePartial.cshtml" />
+    <None Include="Areas\HR\Pages\Employees\_EmployeeSelfPortalDetailsPartial.cshtml" />
+    <None Include="Areas\HR\Pages\Employees\_EmployeeWorkShiftsDetailsPartial.cshtml" />
     <None Include="wwwroot\js\bootstrap-datetimepicker.js" />
     <None Include="wwwroot\js\bootstrap-notify.js" />
     <None Include="wwwroot\js\bootstrap-selectpicker.js" />

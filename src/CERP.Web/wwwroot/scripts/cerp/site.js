@@ -392,7 +392,9 @@ const ValueTypeModules = {
     EducationCertificate: 38,
     TrainingCertificate: 39,
     TypeISkill: 40,
-    TypeIISkill: 41
+    TypeIISkill: 41,
+    Timezone: 42,
+    Salutation: 43
 }
 
 function SelectDepartmentPositions(departmentsElmId, positionsElmId, departmentsArr, positionsArr, isEditing, isEditingLoaded, toSelectPositions) {
@@ -562,7 +564,7 @@ function FillFormByObject(obj, form) {
 
             if (type == 'date') {
                 let val = new Date(obj[propName]);
-                let month = ('0' + (val.getMonth()+1)).slice(-2);
+                let month = ('0' + (val.getMonth() + 1)).slice(-2);
                 let date = ('0' + (val.getDate())).slice(-2);
                 let dateVal = `${val.getUTCFullYear()}-${month}-${date}`;
                 console.log(dateVal.toString());
@@ -595,8 +597,14 @@ function FillFormByObject(obj, form) {
                 let melm = $('#' + elm.id);
                 $(melm)[0].checked = (obj[propName] != true || obj[propName] == false) ? obj[propName] == 'on' ? true : false : obj[propName];
             }
-            else
-                elm.value = obj[propName];
+            else {
+                try {
+                    elm.value = obj[propName];
+                }
+                catch{
+
+                }
+            }
         }
     }
 }

@@ -167,6 +167,10 @@ namespace CERP.EntityFrameworkCore
         public DbSet<BankPaymentType> BankPaymentTypes { get; set; }
         public DbSet<CashPaymentType> CashPaymentTypes { get; set; }
         public DbSet<ChequePaymentType> ChequePaymentTypes { get; set; }
+        #region Academia Skills Profile
+        public DbSet<EC_AcademiaTemplate> AcademiaTemplates { get; set; }
+        public DbSet<EC_SkillTemplate> SkillsTemplates { get; set; }
+        #endregion
         #endregion
         #endregion
         #endregion
@@ -209,7 +213,7 @@ namespace CERP.EntityFrameworkCore
         public CERPDbContext(DbContextOptions<CERPDbContext> options)
             : base(options)
         {
-            
+            //options.UseLazyLoadingProxies();
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

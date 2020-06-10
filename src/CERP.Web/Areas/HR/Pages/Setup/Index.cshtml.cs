@@ -115,32 +115,32 @@ namespace CERP.Web.Areas.HR.Pages.Setup
             }
             return new JsonResult(positions);
         }
-        public JsonResult OnGetEmployees(string positionIds)
-        {
-            Guid[] _positionIds = JsonSerializer.Deserialize<Guid[]>(positionIds);
-            List<dynamic> employees = new List<dynamic>();
-            for (int i = 0; i < _positionIds.Length; i++)
-            {
-                List<Employee_Dto> result = EmployeeAppService.GetEmployeesByPositionId(_positionIds[i], x => x.Department);
-                List<dynamic> dynamicResult = new List<dynamic>();
-                for (int j = 0; j < result.Count; j++)
-                {
-                    Employee_Dto empDto = result[j];
+        //public JsonResult OnGetEmployees(string positionIds)
+        //{
+        //    Guid[] _positionIds = JsonSerializer.Deserialize<Guid[]>(positionIds);
+        //    List<dynamic> employees = new List<dynamic>();
+        //    for (int i = 0; i < _positionIds.Length; i++)
+        //    {
+        //        List<Employee_Dto> result = EmployeeAppService.GetEmployeesByPositionId(_positionIds[i], x => x.Department);
+        //        List<dynamic> dynamicResult = new List<dynamic>();
+        //        for (int j = 0; j < result.Count; j++)
+        //        {
+        //            Employee_Dto empDto = result[j];
 
-                    dynamic res = new ExpandoObject();
-                    res.id = empDto.Id;
-                    res.name = empDto.Name;
-                    res.posId = empDto.PositionId;
-                    res.posTitle = empDto.Position.Title;
-                    res.depId = empDto.DepartmentId;
-                    res.depName = empDto.Department.Name;
+        //            dynamic res = new ExpandoObject();
+        //            res.id = empDto.Id;
+        //            res.name = empDto.Name;
+        //            res.posId = empDto.PositionId;
+        //            res.posTitle = empDto.Position.Title;
+        //            res.depId = empDto.DepartmentId;
+        //            res.depName = empDto.Department.Name;
 
-                    dynamicResult.Add(res);
-                }
-                employees.AddRange(dynamicResult);
-            }
-            return new JsonResult(employees);
-        }
+        //            dynamicResult.Add(res);
+        //        }
+        //        employees.AddRange(dynamicResult);
+        //    }
+        //    return new JsonResult(employees);
+        //}
         public async Task<IActionResult> OnPostAttendanceSystem(bool use)
         {
             var attendances = await AttendanceAppService.GetAllAsync();

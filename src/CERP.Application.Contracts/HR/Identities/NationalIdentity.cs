@@ -15,20 +15,11 @@ namespace CERP.HR.Documents
         }
 
         public DictionaryValue_Dto IdType { get; set; }
-        [CustomAudited]
         public Guid IdTypeId { get; set; }
-
-        [CustomAudited]
         public string IDNumber { get; set; }
-        [CustomAudited]
         public string IDAttachment { get; set; }
-
-        [CustomAudited]
         public bool IsPrimary { get; set; }
-
-        [CustomAudited]
         public string ValidityFromDate { get; set; }
-        [CustomAudited]
         public string ValidityToDate { get; set; }
     }
 }

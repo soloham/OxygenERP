@@ -64,12 +64,12 @@ namespace CERP.Web.Areas.HR.Pages.Documents
             List<Document_Dto> documents = documentAppService.GetAllDocuments();
             ViewData["Documents_DS"] = JsonSerializer.Serialize(documents);
         }
-        public IActionResult OnGetOwners(string ownerType)
+        public async Task<IActionResult> OnGetOwners(string ownerType)
         {
             int docCount = documentAppService.Repository.Count();
             if (ownerType == "Employee")
             {
-                var employees = employeeAppService.GetAllEmployees();
+                var employees = await employeeAppService.GetAllEmployees();
                 List<KeyValuePair<Guid, string>> keyValuePairs = new List<KeyValuePair<Guid, string>>();
                 for (int i = 0; i < employees.Count; i++)
                 {

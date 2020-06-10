@@ -115,7 +115,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                 employee.ExtraProperties.Add("qualificationDetail", qualificationDetail);
                 employee.ExtraProperties.Add("dependantsDetail", dependantsDetail);
                 employee.ExtraProperties.Add("workShiftDetail", workShiftDetail);
-                Employee_Dto empAdded = await employeeAppService.CreateEmployee(employee);
+                //Employee_Dto empAdded = await employeeAppService.CreateEmployee(employee);
             }
             catch(Exception ex)
             {

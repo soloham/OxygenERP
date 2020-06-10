@@ -45,7 +45,7 @@ namespace CERP.HR.Leaves
                 return result;
             } 
         }
-        public virtual ICollection<LeaveRequestTemplateDepartment_Dto> Departments { get; set; }
+        public List<LeaveRequestTemplateDepartment_Dto> Departments { get; set; }
         public string GetAllPositions
         {
             get
@@ -67,7 +67,7 @@ namespace CERP.HR.Leaves
                 return result;
             }
         }
-        public virtual ICollection<LeaveRequestTemplatePosition_Dto> Positions { get; set; }
+        public List<LeaveRequestTemplatePosition_Dto> Positions { get; set; }
         public string GetAllEmploymentTypes
         {
             get
@@ -89,7 +89,7 @@ namespace CERP.HR.Leaves
                 return result;
             }
         }
-        public virtual ICollection<LeaveRequestTemplateEmploymentType_Dto> EmploymentTypes { get; set; }
+        public List<LeaveRequestTemplateEmploymentType_Dto> EmploymentTypes { get; set; }
         public string GetAllEmployeeStatuses
         {
             get
@@ -111,7 +111,7 @@ namespace CERP.HR.Leaves
                 return result;
             }
         }
-        public virtual ICollection<LeaveRequestTemplateEmployeeStatus_Dto> EmployeeStatuses { get; set; }
+        public List<LeaveRequestTemplateEmployeeStatus_Dto> EmployeeStatuses { get; set; }
         public string GetAllHolidays
         {
             get
@@ -133,7 +133,7 @@ namespace CERP.HR.Leaves
                 return result;
             }
         }
-        public virtual ICollection<LeaveRequestTemplateHoliday_Dto> Holidays { get; set; }
+        public List<LeaveRequestTemplateHoliday_Dto> Holidays { get; set; }
 
         public virtual ApprovalRouteTemplate_Dto ApprovalRouteTemplate { get; set; }
         public int ApprovalRouteTemplateId { get; set; }

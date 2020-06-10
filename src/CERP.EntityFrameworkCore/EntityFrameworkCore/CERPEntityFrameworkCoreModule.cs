@@ -14,6 +14,7 @@ using CERP.Setup;
 using CERP.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -49,7 +50,6 @@ namespace CERP.EntityFrameworkCore
                 /* Remove "includeAllEntities: true" to create
                  * default repositories only for aggregate roots */
                 options.AddDefaultRepositories(includeAllEntities: true);
-
 
                 options.Entity<Company>(opt =>
                 {
@@ -90,7 +90,7 @@ namespace CERP.EntityFrameworkCore
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.ApprovalRouteTemplateItems)
                                                         .ThenInclude(x => x.ApprovalRouteItemEmployees)
                                                         .ThenInclude(x => x.Employee)
-                                                        .ThenInclude(x => x.Department)
+                                                        .ThenInclude(x => x.OrganizationStructureTemplateDepartment)
                                                        .Include(p => p.ApprovalRouteTemplateItems)
                                                         .ThenInclude(x => x.ApprovalRouteItemEmployees)
                                                         .ThenInclude(x => x.Employee)
@@ -100,7 +100,7 @@ namespace CERP.EntityFrameworkCore
                                                         .ThenInclude(x => x.TaskTemplateItems)
                                                         .ThenInclude(x => x.TaskEmployees)
                                                         .ThenInclude(x => x.Employee)
-                                                        .ThenInclude(x => x.Department)
+                                                        .ThenInclude(x => x.OrganizationStructureTemplateDepartment)
                                                        .Include(p => p.ApprovalRouteTemplateItems)
                                                         .ThenInclude(x => x.TaskTemplate)
                                                         .ThenInclude(x => x.TaskTemplateItems)
@@ -112,7 +112,7 @@ namespace CERP.EntityFrameworkCore
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(x => x.ApprovalRouteItemEmployees)
                                                         .ThenInclude(x => x.Employee)
-                                                        .ThenInclude(x => x.Department)
+                                                        .ThenInclude(x => x.OrganizationStructureTemplateDepartment)
                                                        .Include(x => x.ApprovalRouteItemEmployees)
                                                         .ThenInclude(x => x.Employee);
                                                         //.ThenInclude(x => x.Position);
@@ -120,7 +120,7 @@ namespace CERP.EntityFrameworkCore
                 options.Entity<ApprovalRouteTemplateItemEmployee>(opt =>
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(x => x.Employee)
-                                                        .ThenInclude(x => x.Department)
+                                                        .ThenInclude(x => x.OrganizationStructureTemplateDepartment)
                                                        .Include(x => x.Employee);
                                                         //.ThenInclude(x => x.Position);
                 });
@@ -130,7 +130,7 @@ namespace CERP.EntityFrameworkCore
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.TaskTemplateItems)
                                                         .ThenInclude(x => x.TaskEmployees)
                                                         .ThenInclude(x => x.Employee)
-                                                        .ThenInclude(x => x.Department)
+                                                        .ThenInclude(x => x.OrganizationStructureTemplateDepartment)
                                                        .Include(p => p.TaskTemplateItems)
                                                         .ThenInclude(x => x.TaskEmployees)
                                                         .ThenInclude(x => x.Employee);
@@ -140,7 +140,7 @@ namespace CERP.EntityFrameworkCore
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(x => x.TaskEmployees)
                                                         .ThenInclude(x => x.Employee)
-                                                        .ThenInclude(x => x.Department)
+                                                        .ThenInclude(x => x.OrganizationStructureTemplateDepartment)
                                                        .Include(x => x.TaskEmployees)
                                                         .ThenInclude(x => x.Employee);
                                                         //.ThenInclude(x => x.Position);
@@ -170,12 +170,52 @@ namespace CERP.EntityFrameworkCore
                 options.Entity<Employee>(opt =>
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.Gender)
-                                                       .Include(p => p.Nationality)
+                                                       .Include(p => p.Title)
                                                        .Include(p => p.MaritalStatus)
-                                                       //.Include(p => p.Position).ThenInclude(x => x.Department)
+                                                       .Include(p => p.PreferredLanguage)
+                                                       .Include(p => p.Nationality)
+                                                       .Include(p => p.BirthCountry)
+                                                       .Include(p => p.CostCenter)
+                                                       .Include(p => p.PayGroup)
+                                                       .Include(p => p.PayGrade)
+                                                       .Include(p => p.Timezone)
+                                                       .Include(p => p.OrganizationStructureTemplateDepartment)
                                                        .Include(p => p.Portal);
-                                                       //.Include(p => p.SIType)
-                                                       //.Include(p => p.IndemnityType);
+
+                                                       //.Include(x => x.NationalIdentities)
+                                                       //     .ThenInclude(x => x.NationalIdentity)
+                                                       // .Include(x => x.PassportTravelDocuments)
+                                                       //     .ThenInclude(x => x.PassportTravelDocument)
+
+                                                       // .Include(x => x.Dependants)
+                                                       //     .ThenInclude(x => x.NationalIdentities)
+                                                       //     .ThenInclude(x => x.NationalIdentity)
+                                                       // .Include(x => x.Dependants)
+                                                       //     .ThenInclude(x => x.PassportTravelDocuments)
+                                                       //     .ThenInclude(x => x.PassportTravelDocument)
+
+                                                       // .Include(x => x.OrganizationStructureTemplateDepartment)
+                                                       //     .ThenInclude(x => x.DepartmentTemplate)
+
+                                                       // .Include(x => x.EmailAddresses)
+                                                       //     .ThenInclude(x => x.EmailAddress)
+                                                       // .Include(x => x.PhoneAddresses)
+                                                       //     .ThenInclude(x => x.PhoneAddress)
+                                                       // .Include(x => x.HomeAddresses)
+                                                       //     .ThenInclude(x => x.HomeAddress)
+                                                       // .Include(x => x.Contacts)
+                                                       //     .ThenInclude(x => x.Contact)
+
+                                                       // .Include(x => x.EmployeeBenefits)
+
+                                                       // .Include(x => x.CashPaymentTypes)
+                                                       // .Include(x => x.ChequePaymentTypes)
+                                                       // .Include(x => x.BankPaymentTypes)
+
+                                                       // .Include(x => x.AcademiaProfile)
+                                                       // .Include(x => x.SkillsProfile)
+
+                                                       // .Include(x => x.EmployeeLoans);
                 });
 
                 options.Entity<AppUser>(opt =>
@@ -213,23 +253,23 @@ namespace CERP.EntityFrameworkCore
                                                         .ThenInclude(p => p.PositionTemplate)
                                                        .Include(p => p.OrganizationStructureTemplateBusinessUnits)
                                                         .ThenInclude(p => p.OrganizationStructureTemplateBusinessUnitPositions)
-                                                        .ThenInclude(p => p.PositionTemplate)
-
-                                                       .Include(p => p.OrganizationStructureTemplateDivisions)
-                                                        .ThenInclude(p => p.DivisionTemplate)
-                                                       .Include(p => p.OrganizationStructureTemplateDivisions)
-                                                        //.ThenInclude(p => p.Location)
-                                                       .Include(p => p.OrganizationStructureTemplateDivisions)
-                                                        .ThenInclude(p => p.OrganizationStructureTemplateDivisionPositions)
-                                                        .ThenInclude(p => p.PositionTemplate)
-
-                                                       .Include(p => p.OrganizationStructureTemplateDepartments)
-                                                        .ThenInclude(p => p.DepartmentTemplate)
-                                                       .Include(p => p.OrganizationStructureTemplateDepartments)
-                                                        //.ThenInclude(p => p.Location)
-                                                       .Include(p => p.OrganizationStructureTemplateDepartments)
-                                                        .ThenInclude(p => p.OrganizationStructureTemplateDepartmentPositions)
                                                         .ThenInclude(p => p.PositionTemplate);
+
+                                                       //.Include(p => p.OrganizationStructureTemplateDivisions)
+                                                       // .ThenInclude(p => p.DivisionTemplate)
+                                                       //.Include(p => p.OrganizationStructureTemplateDivisions)
+                                                        //.ThenInclude(p => p.Location)
+                                                       //.Include(p => p.OrganizationStructureTemplateDivisions)
+                                                       // .ThenInclude(p => p.OrganizationStructureTemplateDivisionPositions)
+                                                       // .ThenInclude(p => p.PositionTemplate)
+
+                                                       //.Include(p => p.OrganizationStructureTemplateDepartments)
+                                                       // .ThenInclude(p => p.DepartmentTemplate)
+                                                       //.Include(p => p.OrganizationStructureTemplateDepartments)
+                                                        //.ThenInclude(p => p.Location)
+                                                       //.Include(p => p.OrganizationStructureTemplateDepartments)
+                                                       // .ThenInclude(p => p.OrganizationStructureTemplateDepartmentPositions)
+                                                       // .ThenInclude(p => p.PositionTemplate);
                 });
 
                 options.Entity<OS_OrganizationStructureTemplateBusinessUnit>(opt =>
@@ -240,7 +280,8 @@ namespace CERP.EntityFrameworkCore
                                                        .Include(p => p.OrganizationStructureTemplateDepartments)
                                                         .ThenInclude(p => p.DepartmentTemplate)
                                                        .Include(p => p.OrganizationStructureTemplateBusinessUnitPositions)
-                                                        .ThenInclude(p => p.PositionTemplate);
+                                                        .ThenInclude(p => p.PositionTemplate)
+                                                       .Include(p => p.Location);
                 });
                 options.Entity<OS_OrganizationStructureTemplateDivision>(opt =>
                 {
@@ -440,7 +481,7 @@ namespace CERP.EntityFrameworkCore
                                                         .ThenInclude(p => p.AllowanceType)
                                                        .Include(p => p.PayrunDetails)
                                                         .ThenInclude(p => p.Employee)
-                                                        .ThenInclude(x => x.Department)
+                                                        .ThenInclude(x => x.OrganizationStructureTemplateDepartment)
                                                         //.ThenInclude(x => x.Company)
                                                        .Include(p => p.PayrunDetails)
                                                         .ThenInclude(p => p.Employee)
@@ -462,7 +503,7 @@ namespace CERP.EntityFrameworkCore
                 options.Entity<PayrunDetail>(opt =>
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.Employee)
-                                                        .ThenInclude(x => x.Department)
+                                                        .ThenInclude(x => x.OrganizationStructureTemplateDepartment)
                                                         //.ThenInclude(x => x.Company)
                                                        .Include(p => p.Employee)
                                                         //.ThenInclude(p => p.Position)
@@ -494,7 +535,7 @@ namespace CERP.EntityFrameworkCore
                                                         .ThenInclude(p => p.ApprovalRouteTemplateItems)
                                                         .ThenInclude(p => p.ApprovalRouteItemEmployees)
                                                         .ThenInclude(p => p.Employee)
-                                                        .ThenInclude(p => p.Department)
+                                                        .ThenInclude(p => p.OrganizationStructureTemplateDepartment)
                                                        .Include(p => p.ApprovalRouteTemplate)
                                                         .ThenInclude(p => p.ApprovalRouteTemplateItems)
                                                         .ThenInclude(p => p.ApprovalRouteItemEmployees)
@@ -506,7 +547,7 @@ namespace CERP.EntityFrameworkCore
                                                         .ThenInclude(p => p.TaskTemplateItems)
                                                         .ThenInclude(p => p.TaskEmployees)
                                                         .ThenInclude(p => p.Employee)
-                                                        .ThenInclude(p => p.Department)
+                                                        .ThenInclude(p => p.OrganizationStructureTemplateDepartment)
                                                        .Include(p => p.ApprovalRouteTemplate)
                                                         .ThenInclude(p => p.ApprovalRouteTemplateItems)
                                                         .ThenInclude(p => p.TaskTemplate)
@@ -531,7 +572,7 @@ namespace CERP.EntityFrameworkCore
                                                         .ThenInclude(p => p.ApprovalRouteTemplateItems)
                                                         .ThenInclude(p => p.ApprovalRouteItemEmployees)
                                                         .ThenInclude(p => p.Employee)
-                                                        .ThenInclude(p => p.Department)
+                                                        .ThenInclude(p => p.OrganizationStructureTemplateDepartment)
                                                        .Include(p => p.ApprovalRouteTemplate)
                                                         .ThenInclude(p => p.ApprovalRouteTemplateItems)
                                                         .ThenInclude(p => p.ApprovalRouteItemEmployees)
@@ -543,7 +584,7 @@ namespace CERP.EntityFrameworkCore
                                                         .ThenInclude(p => p.TaskTemplateItems)
                                                         .ThenInclude(p => p.TaskEmployees)
                                                         .ThenInclude(p => p.Employee)
-                                                        .ThenInclude(p => p.Department)
+                                                        .ThenInclude(p => p.OrganizationStructureTemplateDepartment)
                                                        .Include(p => p.ApprovalRouteTemplate)
                                                         .ThenInclude(p => p.ApprovalRouteTemplateItems)
                                                         .ThenInclude(p => p.TaskTemplate)

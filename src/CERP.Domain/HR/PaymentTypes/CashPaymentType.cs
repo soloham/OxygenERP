@@ -17,7 +17,7 @@ namespace CERP.HR.Documents
 
         public LocationTemplate CollectionLocation { get; set; }
         [CustomAudited]
-        public int CollectionLocationId { get; set; }
+        public Guid CollectionLocationId { get; set; }
 
         [CustomAudited]
         public string ValidityFromDate { get; set; }

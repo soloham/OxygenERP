@@ -19,13 +19,16 @@ namespace CERP.HR.Documents
         public PS_PayComponent PayComponent { get; set; }
         [CustomAudited]
         public int PayComponentId { get; set; }
+        //public PS_PayComponentType PayComponentType { get; set; }
+        //[CustomAudited]
+        //public int PayComponentTypeId { get; set; }
 
         [CustomAudited]
         public string PayComponentComponentTypeAmount { get; set; }
 
-        public PS_PayFrequency PayFrequency { get; set; }
-        [CustomAudited]
-        public int PayFrequencyId { get; set; }
+        //public PS_PayFrequency PayFrequency { get; set; }
+        //[CustomAudited]
+        //public int PayFrequencyId { get; set; }
 
 
         [CustomAudited]

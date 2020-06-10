@@ -6,12 +6,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using CERP.AppServices.HR.EmployeeService;
 using CERP.HR.EMPLOYEE.RougeDTOs;
-using CERP.HR.Employees.DTOs;
+using CERP.HR.EmployeeCentral.DTOs.Employee;
+using CERP.HR.EmployeeCentral.Employee;
 using CERP.Web.Pages;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.OpenApi.Extensions;
 using Syncfusion.EJ2.Grids;
+using Volo.Abp.Auditing;
 using Volo.Abp.AuditLogging;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
@@ -27,51 +29,54 @@ namespace CERP.Web.Areas.HR.Pages.Employees
 
         public Grid SecondaryDetailsGrid = new Grid();
 
+        public IAuditingManager AuditingManager { get; set; }
         public IJsonSerializer JsonSerializer { get; set; }
 
-        public ListModel(EmployeeAppService _employeeAppService, IJsonSerializer jsonSerializer, IAuditLogRepository auditLogsRepo)
+        public ListModel(EmployeeAppService _employeeAppService, IJsonSerializer jsonSerializer, IAuditLogRepository auditLogsRepo, IAuditingManager auditingManager)
         {
             employeeAppService = _employeeAppService;
             JsonSerializer = jsonSerializer;
             AuditLogsRepo = auditLogsRepo;
+            AuditingManager = auditingManager;
         }
 
         public void OnGet()
         {
-            List<Employee_Dto> Employees = employeeAppService.GetAllEmployees();
-            Employees.ForEach(x => x.ProfilePic = x.ProfilePic == "" ? x.ProfilePic = "noimage.jpg" : x.ProfilePic);
-            List<PhysicalId<Guid>> physicalIDs = (Employees.Count > 0) ? (List<PhysicalId<Guid>>)Employees.SelectMany(x => (JsonSerializer.Deserialize<GeneralInfo>(x.ExtraProperties["generalInfo"].ToString()).PhysicalIds)).ToList() : new List<PhysicalId<Guid>>();
-
-            SecondaryDetailsGrid = new Grid()
-            {
-                DataSource = physicalIDs,
-                Load = "onLoad",
-                QueryString = "EmployeeId",
-                EditSettings = new Syncfusion.EJ2.Grids.GridEditSettings() { },
-                AllowExcelExport = true,
-                //AllowGrouping = true,
-                AllowPdfExport = true,
-                HierarchyPrintMode = HierarchyGridPrintMode.All,
-                AllowSelection = true,
-                AllowFiltering = false,
-                AllowSorting = true,
-                AllowMultiSorting = true,
-                AllowResizing = true,
-                GridLines = GridLine.Both,
-                SearchSettings = new GridSearchSettings() { },
-                //Toolbar = new List<object>() { "ExcelExport", "CsvExport", "Print", "Search",new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" } },
-                ContextMenuItems = new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending", "Copy", "Edit", "Delete", "Save", "Cancel", "PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage", "LastPage", "NextPage" },
-                Columns = GetSecondaryGridColumns()
-
-            };
-            //List<COA_Account_Dto> COAs = (await _coaAppService.GetListAsync(new Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto())).Items.ToList();
-
-            ViewData["Employees_DS"] = Employees;
             ViewData["alertbutton"] = new
             {
                 content = "OK",
                 isPrimary = true
             };
+        }
+        public async Task<IActionResult> OnDelete()
+        {
+            List<Employee_Dto> entitites = JsonSerializer.Deserialize<List<Employee_Dto>>(Request.Form["info"]);
+            try
+            {
+                for (int i = 0; i < entitites.Count; i++)
+                {
+                    Employee_Dto entity = entitites[i];
+                    //await BusinessUnitTemplatesAppService.Repository.DeleteAsync(leaveRequest.);
+                    await employeeAppService.DeleteAsync(entity.Id);
+
+                    if (AuditingManager.Current != null)
+                    {
+                        EntityChangeInfo entityChangeInfo = new EntityChangeInfo();
+                        entityChangeInfo.EntityId = entity.Id.ToString();
+                        entityChangeInfo.EntityTenantId = entity.TenantId;
+                        entityChangeInfo.ChangeTime = DateTime.Now;
+                        entityChangeInfo.ChangeType = EntityChangeType.Deleted;
+                        entityChangeInfo.EntityTypeFullName = typeof(Employee).FullName;
+
+                        AuditingManager.Current.Log.EntityChanges.Add(entityChangeInfo);
+                    }
+                }
+                return StatusCode(200);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500);
+            }
         }
         public dynamic GetDataAuditTrailModel()
         {
@@ -164,93 +169,94 @@ namespace CERP.Web.Areas.HR.Pages.Employees
             List<dynamic> tertiaryDS = new List<dynamic>();
             var employeeLogs = AuditLogsRepo.WithDetails().Where(x => x.Url == "/HR/Employee" && x.EntityChanges != null && x.EntityChanges.Count > 0).ToList();
 
-            List<Employee_Dto> Employees = employeeAppService.GetAllEmployees();
-            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            //List<Employee_Dto> Employees = employeeAppService.GetAllEmployees();
+            //TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
 
-            for (int i = 0; i < employeeLogs.Count; i++)
-            {
-                AuditLog auditLog = employeeLogs[i];
-                if (auditLog.EntityChanges == null || auditLog.EntityChanges.Count == 0) continue;
-                var entityChanges = auditLog.EntityChanges.ToList();
-                for (int j = 0; j < entityChanges.Count; j++)
-                {
-                    EntityChange entityChange = entityChanges[j];
+            //for (int i = 0; i < employeeLogs.Count; i++)
+            //{
+            //    AuditLog auditLog = employeeLogs[i];
+            //    if (auditLog.EntityChanges == null || auditLog.EntityChanges.Count == 0) continue;
+            //    var entityChanges = auditLog.EntityChanges.ToList();
+            //    for (int j = 0; j < entityChanges.Count; j++)
+            //    {
+            //        EntityChange entityChange = entityChanges[j];
 
-                    dynamic changeRow = new ExpandoObject();
-                    changeRow.AuditLogId = entityChange.Id;
-                    changeRow.EntityChangeId = entityChange.Id;
+            //        dynamic changeRow = new ExpandoObject();
+            //        changeRow.AuditLogId = entityChange.Id;
+            //        changeRow.EntityChangeId = entityChange.Id;
 
-                    Employee_Dto emp = Employees.First(x => x.Id.ToString() == entityChange.EntityId);
-                    changeRow.Id = emp.GetReferenceId;
-                    changeRow.EmpName = emp.Name;
-                    changeRow.Date = entityChange.ChangeTime.ToShortDateString();
-                    changeRow.Time = entityChange.ChangeTime.ToShortTimeString();
-                    changeRow.User = auditLog.UserName;
-                    changeRow.Status = entityChange.ChangeType.GetDisplayName();
+            //        Employee_Dto emp = Employees.First(x => x.Id.ToString() == entityChange.EntityId);
+            //        changeRow.Id = emp.GetReferenceId;
+            //        changeRow.EmpName = emp.Name;
+            //        changeRow.Date = entityChange.ChangeTime.ToShortDateString();
+            //        changeRow.Time = entityChange.ChangeTime.ToShortTimeString();
+            //        changeRow.User = auditLog.UserName;
+            //        changeRow.Status = entityChange.ChangeType.GetDisplayName();
 
-                    DS.Add(changeRow);
+            //        DS.Add(changeRow);
 
-                    dynamic generalTypeRow = new ExpandoObject();
-                    generalTypeRow.EntityChangeId = entityChange.Id;
-                    generalTypeRow.TypeId = 1;
-                    generalTypeRow.Type = "General";
-                    generalTypeRow.Name = "";
-                    generalTypeRow.Status = "Updated";
+            //        dynamic generalTypeRow = new ExpandoObject();
+            //        generalTypeRow.EntityChangeId = entityChange.Id;
+            //        generalTypeRow.TypeId = 1;
+            //        generalTypeRow.Type = "General";
+            //        generalTypeRow.Name = "";
+            //        generalTypeRow.Status = "Updated";
 
-                    secondaryDS.Add(generalTypeRow);
+            //        secondaryDS.Add(generalTypeRow);
 
-                    var generalPropertyChanges = entityChange.PropertyChanges.ToList();
+            //        var generalPropertyChanges = entityChange.PropertyChanges.ToList();
 
-                    for (int k = 0; k < generalPropertyChanges.Count; k++)
-                    {
-                        EntityPropertyChange propertyChange = generalPropertyChanges[k];
-                        dynamic propertyChangeRow = new ExpandoObject();
-                        propertyChangeRow.TypeId = 1;
-                        propertyChangeRow.EntityChangeId = propertyChange.EntityChangeId;
-                        propertyChangeRow.Field = textInfo.ToTitleCase(propertyChange.PropertyName.ToSentenceCase());
-                        propertyChangeRow.NewValue = propertyChange.NewValue != "null" && propertyChange.NewValue != "\"\""? propertyChange.NewValue.TrimStart('"').TrimEnd('"') : "—";
-                        propertyChangeRow.OriginalValue = propertyChange.OriginalValue != "null" && propertyChange.OriginalValue != "\"\"" ? propertyChange.OriginalValue.TrimStart('"').TrimEnd('"') : "—"; ;
+            //        for (int k = 0; k < generalPropertyChanges.Count; k++)
+            //        {
+            //            EntityPropertyChange propertyChange = generalPropertyChanges[k];
+            //            dynamic propertyChangeRow = new ExpandoObject();
+            //            propertyChangeRow.TypeId = 1;
+            //            propertyChangeRow.EntityChangeId = propertyChange.EntityChangeId;
+            //            propertyChangeRow.Field = textInfo.ToTitleCase(propertyChange.PropertyName.ToSentenceCase());
+            //            propertyChangeRow.NewValue = propertyChange.NewValue != "null" && propertyChange.NewValue != "\"\""? propertyChange.NewValue.TrimStart('"').TrimEnd('"') : "—";
+            //            propertyChangeRow.OriginalValue = propertyChange.OriginalValue != "null" && propertyChange.OriginalValue != "\"\"" ? propertyChange.OriginalValue.TrimStart('"').TrimEnd('"') : "—"; ;
 
-                        tertiaryDS.Add(propertyChangeRow);
-                    }
+            //            tertiaryDS.Add(propertyChangeRow);
+            //        }
 
-                    List<EmployeeExtraPropertyHistory> extraPropertyHistories = entityChange.GetProperty<List<EmployeeExtraPropertyHistory>>("extraPropertiesHistory");
-                    if (extraPropertyHistories != null && extraPropertyHistories.Count > 0)
-                    {
-                        foreach (EmployeeExtraPropertyHistory extraPropertyHistory in extraPropertyHistories)
-                        {
-                            dynamic typeRow = new ExpandoObject();
-                            typeRow.EntityChangeId = entityChange.Id;
-                            typeRow.TypeId = extraPropertyHistory.TypeId;
-                            typeRow.Type = extraPropertyHistory.Type;
-                            typeRow.Name = extraPropertyHistory.Name;
-                            typeRow.Status = extraPropertyHistory.Status;
+            //        List<EmployeeExtraPropertyHistory> extraPropertyHistories = entityChange.GetProperty<List<EmployeeExtraPropertyHistory>>("extraPropertiesHistory");
+            //        if (extraPropertyHistories != null && extraPropertyHistories.Count > 0)
+            //        {
+            //            foreach (EmployeeExtraPropertyHistory extraPropertyHistory in extraPropertyHistories)
+            //            {
+            //                dynamic typeRow = new ExpandoObject();
+            //                typeRow.EntityChangeId = entityChange.Id;
+            //                typeRow.TypeId = extraPropertyHistory.TypeId;
+            //                typeRow.Type = extraPropertyHistory.Type;
+            //                typeRow.Name = extraPropertyHistory.Name;
+            //                typeRow.Status = extraPropertyHistory.Status;
 
-                            secondaryDS.Add(typeRow);
+            //                secondaryDS.Add(typeRow);
 
-                            var propertyChanges = extraPropertyHistory.PropertyChanges.ToList();
+            //                var propertyChanges = extraPropertyHistory.PropertyChanges.ToList();
 
-                            for (int k = 0; k < propertyChanges.Count; k++)
-                            {
-                                EmployeeTypePropertyChange propertyChange = propertyChanges[k];
-                                dynamic propertyChangeRow = new ExpandoObject();
-                                propertyChangeRow.TypeId = extraPropertyHistory.TypeId;
-                                propertyChangeRow.EntityChangeId = typeRow.EntityChangeId;
-                                propertyChangeRow.Field = textInfo.ToTitleCase(propertyChange.PropertyName.ToSentenceCase());
-                                propertyChangeRow.NewValue = propertyChange.NewValue != "null" && propertyChange.NewValue != "\"\"" ? propertyChange.NewValue.TrimStart('"').TrimEnd('"') : "—";
-                                propertyChangeRow.OriginalValue = propertyChange.OriginalValue != "null" && propertyChange.OriginalValue != "\"\"" ? propertyChange.OriginalValue.TrimStart('"').TrimEnd('"') : "—"; ;
+            //                for (int k = 0; k < propertyChanges.Count; k++)
+            //                {
+            //                    EmployeeTypePropertyChange propertyChange = propertyChanges[k];
+            //                    dynamic propertyChangeRow = new ExpandoObject();
+            //                    propertyChangeRow.TypeId = extraPropertyHistory.TypeId;
+            //                    propertyChangeRow.EntityChangeId = typeRow.EntityChangeId;
+            //                    propertyChangeRow.Field = textInfo.ToTitleCase(propertyChange.PropertyName.ToSentenceCase());
+            //                    propertyChangeRow.NewValue = propertyChange.NewValue != "null" && propertyChange.NewValue != "\"\"" ? propertyChange.NewValue.TrimStart('"').TrimEnd('"') : "—";
+            //                    propertyChangeRow.OriginalValue = propertyChange.OriginalValue != "null" && propertyChange.OriginalValue != "\"\"" ? propertyChange.OriginalValue.TrimStart('"').TrimEnd('"') : "—"; ;
 
-                                tertiaryDS.Add(propertyChangeRow);
-                            }
-                        }
-                    }
-                }
-            }
-            result.ds = DS;
-            result.secondaryDS = secondaryDS;
-            result.tertiaryDS = tertiaryDS;
+            //                    tertiaryDS.Add(propertyChangeRow);
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+            //result.ds = DS;
+            //result.secondaryDS = secondaryDS;
+            //result.tertiaryDS = tertiaryDS;
 
-            var secondaryGrid = new JsonResult(result);
+            //var secondaryGrid = new JsonResult(result);
+            var secondaryGrid = new JsonResult(new { });
             return secondaryGrid;
         }
 

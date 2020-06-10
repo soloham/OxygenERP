@@ -14,7 +14,7 @@ using CERP.HR.Documents;
 using CERP.HR.EmployeeCentral.DTOs;
 using CERP.HR.EMPLOYEE.DTOs;
 using CERP.HR.EmployeeCentral.Employee;
-using CERP.HR.Employees.DTOs;
+using CERP.HR.EmployeeCentral.DTOs.Employee;
 using CERP.HR.Employees.UV_DTOs;
 using CERP.HR.Holidays;
 using CERP.HR.Leaves;
@@ -29,6 +29,7 @@ using CERP.Payroll.Payrun;
 using CERP.Setup;
 using CERP.Setup.DTOs;
 using CERP.Users;
+using System.Linq;
 
 namespace CERP
 {
@@ -149,34 +150,34 @@ namespace CERP
             #region HR
             #region Organizational Management
             #region Organization Structure
-            CreateMap<OS_OrganizationStructureTemplate, OS_OrganizationStructureTemplate_Dto>();
-            CreateMap<OS_OrganizationStructureTemplate_Dto, OS_OrganizationStructureTemplate>();
+            CreateMap<OS_OrganizationStructureTemplate, OS_OrganizationStructureTemplate_Dto>().MaxDepth(1);
+            CreateMap<OS_OrganizationStructureTemplate_Dto, OS_OrganizationStructureTemplate>().MaxDepth(1);
 
-            CreateMap<OS_OrganizationStructureTemplateBusinessUnit, OS_OrganizationStructureTemplateBusinessUnit_Dto>();
-            CreateMap<OS_OrganizationStructureTemplateBusinessUnit_Dto, OS_OrganizationStructureTemplateBusinessUnit>();
-            CreateMap<OS_OrganizationStructureTemplateBusinessUnitPosition, OS_OrganizationStructureTemplateBusinessUnitPosition_Dto>();
-            CreateMap<OS_OrganizationStructureTemplateBusinessUnitPosition_Dto, OS_OrganizationStructureTemplateBusinessUnitPosition>();
-            CreateMap<OS_OrganizationStructureTemplateBusinessUnitCostCenter, OS_OrganizationStructureTemplateBusinessUnitCostCenter_Dto>();
-            CreateMap<OS_OrganizationStructureTemplateBusinessUnitCostCenter_Dto, OS_OrganizationStructureTemplateBusinessUnitCostCenter>();
+            CreateMap<OS_OrganizationStructureTemplateBusinessUnit, OS_OrganizationStructureTemplateBusinessUnit_Dto>().MaxDepth(1);
+            CreateMap<OS_OrganizationStructureTemplateBusinessUnit_Dto, OS_OrganizationStructureTemplateBusinessUnit>().MaxDepth(1);
+            CreateMap<OS_OrganizationStructureTemplateBusinessUnitPosition, OS_OrganizationStructureTemplateBusinessUnitPosition_Dto>().MaxDepth(1);
+            CreateMap<OS_OrganizationStructureTemplateBusinessUnitPosition_Dto, OS_OrganizationStructureTemplateBusinessUnitPosition>().MaxDepth(1);
+            CreateMap<OS_OrganizationStructureTemplateBusinessUnitCostCenter, OS_OrganizationStructureTemplateBusinessUnitCostCenter_Dto>().MaxDepth(1);
+            CreateMap<OS_OrganizationStructureTemplateBusinessUnitCostCenter_Dto, OS_OrganizationStructureTemplateBusinessUnitCostCenter>().MaxDepth(1);
 
-            CreateMap<OS_OrganizationStructureTemplateDivision, OS_OrganizationStructureTemplateDivision_Dto>();
-            CreateMap<OS_OrganizationStructureTemplateDivision_Dto, OS_OrganizationStructureTemplateDivision>();
-            CreateMap<OS_OrganizationStructureTemplateDivisionPosition, OS_OrganizationStructureTemplateDivisionPosition_Dto>();
-            CreateMap<OS_OrganizationStructureTemplateDivisionPosition_Dto, OS_OrganizationStructureTemplateDivisionPosition>();
-            CreateMap<OS_OrganizationStructureTemplateDivisionCostCenter, OS_OrganizationStructureTemplateDivisionCostCenter_Dto>();
-            CreateMap<OS_OrganizationStructureTemplateDivisionCostCenter_Dto, OS_OrganizationStructureTemplateDivisionCostCenter>();
+            CreateMap<OS_OrganizationStructureTemplateDivision, OS_OrganizationStructureTemplateDivision_Dto>().MaxDepth(1);
+            CreateMap<OS_OrganizationStructureTemplateDivision_Dto, OS_OrganizationStructureTemplateDivision>().MaxDepth(1);
+            CreateMap<OS_OrganizationStructureTemplateDivisionPosition, OS_OrganizationStructureTemplateDivisionPosition_Dto>().MaxDepth(1);
+            CreateMap<OS_OrganizationStructureTemplateDivisionPosition_Dto, OS_OrganizationStructureTemplateDivisionPosition>().MaxDepth(1);
+            CreateMap<OS_OrganizationStructureTemplateDivisionCostCenter, OS_OrganizationStructureTemplateDivisionCostCenter_Dto>().MaxDepth(1);
+            CreateMap<OS_OrganizationStructureTemplateDivisionCostCenter_Dto, OS_OrganizationStructureTemplateDivisionCostCenter>().MaxDepth(1);
 
-            CreateMap<OS_OrganizationStructureTemplateDepartment, OS_OrganizationStructureTemplateDepartment_Dto>();
-            CreateMap<OS_OrganizationStructureTemplateDepartment_Dto, OS_OrganizationStructureTemplateDepartment>();
-            CreateMap<OS_OrganizationStructureTemplateDepartmentPosition, OS_OrganizationStructureTemplateDepartmentPosition_Dto>();
-            CreateMap<OS_OrganizationStructureTemplateDepartmentPosition_Dto, OS_OrganizationStructureTemplateDepartmentPosition>();
-            CreateMap<OS_OrganizationStructureTemplateDepartmentCostCenter, OS_OrganizationStructureTemplateDepartmentCostCenter_Dto>();
-            CreateMap<OS_OrganizationStructureTemplateDepartmentCostCenter_Dto, OS_OrganizationStructureTemplateDepartmentCostCenter>();
+            CreateMap<OS_OrganizationStructureTemplateDepartment, OS_OrganizationStructureTemplateDepartment_Dto>().MaxDepth(1);
+            CreateMap<OS_OrganizationStructureTemplateDepartment_Dto, OS_OrganizationStructureTemplateDepartment>().MaxDepth(1);
+            CreateMap<OS_OrganizationStructureTemplateDepartmentPosition, OS_OrganizationStructureTemplateDepartmentPosition_Dto>().MaxDepth(1);
+            CreateMap<OS_OrganizationStructureTemplateDepartmentPosition_Dto, OS_OrganizationStructureTemplateDepartmentPosition>().MaxDepth(1);
+            CreateMap<OS_OrganizationStructureTemplateDepartmentCostCenter, OS_OrganizationStructureTemplateDepartmentCostCenter_Dto>().MaxDepth(1);
+            CreateMap<OS_OrganizationStructureTemplateDepartmentCostCenter_Dto, OS_OrganizationStructureTemplateDepartmentCostCenter>().MaxDepth(1);
 
-            CreateMap<OS_OrganizationStructureTemplatePosition, OS_OrganizationStructureTemplatePosition_Dto>();
-            CreateMap<OS_OrganizationStructureTemplatePosition_Dto, OS_OrganizationStructureTemplatePosition>();
-            CreateMap<OS_OrganizationStructureTemplatePositionJob, OS_OrganizationStructureTemplatePositionJob_Dto>();
-            CreateMap<OS_OrganizationStructureTemplatePositionJob_Dto, OS_OrganizationStructureTemplatePositionJob>();
+            CreateMap<OS_OrganizationStructureTemplatePosition, OS_OrganizationStructureTemplatePosition_Dto>().MaxDepth(1);
+            CreateMap<OS_OrganizationStructureTemplatePosition_Dto, OS_OrganizationStructureTemplatePosition>().MaxDepth(1);
+            CreateMap<OS_OrganizationStructureTemplatePositionJob, OS_OrganizationStructureTemplatePositionJob_Dto>().MaxDepth(1);
+            CreateMap<OS_OrganizationStructureTemplatePositionJob_Dto, OS_OrganizationStructureTemplatePositionJob>().MaxDepth(1);
 
 
             CreateMap<OS_DivisionTemplate, OS_DivisionTemplate_Dto>();
@@ -266,27 +267,50 @@ namespace CERP
             CreateMap<Employee, Employee_Dto>();
             CreateMap<Employee_Dto, Employee>();
 
+            CreateMap<Dependant, Dependant_Dto>();
+            CreateMap<Dependant_Dto, Dependant>();
+
             CreateMap<EmailAddress, EmailAddress_Dto>();
             CreateMap<EmailAddress_Dto, EmailAddress>();
+            CreateMap<EmployeeEmailAddress, EmployeeEmailAddress_Dto>();
+            CreateMap<EmployeeEmailAddress_Dto, EmployeeEmailAddress>();
 
             CreateMap<HomeAddress, HomeAddress_Dto>();
             CreateMap<HomeAddress_Dto, HomeAddress>();
+            CreateMap<EmployeeHomeAddress, EmployeeHomeAddress_Dto>();
+            CreateMap<EmployeeHomeAddress_Dto, EmployeeHomeAddress>();
 
             CreateMap<PhoneAddress, PhoneAddress_Dto>();
             CreateMap<PhoneAddress_Dto, PhoneAddress>();
-
+            CreateMap<EmployeePhoneAddress, EmployeePhoneAddress_Dto>();
+            CreateMap<EmployeePhoneAddress_Dto, EmployeePhoneAddress>();
             #endregion
             #region Contact
             CreateMap<Contact, Contact_Dto>();
             CreateMap<Contact_Dto, Contact>();
+            CreateMap<EmployeeContact, EmployeeContact_Dto>();
+            CreateMap<EmployeeContact_Dto, EmployeeContact>();
             #endregion
 
             #region Identities
             CreateMap<NationalIdentity, NationalIdentity_Dto>();
             CreateMap<NationalIdentity_Dto, NationalIdentity>();
+            CreateMap<EmployeeNationalIdentity, EmployeeNationalIdentity_Dto>();
+            CreateMap<EmployeeNationalIdentity_Dto, EmployeeNationalIdentity>();
+            CreateMap<DependantNationalIdentity, DependantNationalIdentity_Dto>();
+            CreateMap<DependantNationalIdentity_Dto, DependantNationalIdentity>();
 
             CreateMap<PassportTravelDocument, PassportTravelDocument_Dto>();
             CreateMap<PassportTravelDocument_Dto, PassportTravelDocument>();
+            CreateMap<EmployeePassportTravelDocument, EmployeePassportTravelDocument_Dto>();
+            CreateMap<EmployeePassportTravelDocument_Dto, EmployeePassportTravelDocument>();
+            CreateMap<DependantPassportTravelDocument, DependantPassportTravelDocument_Dto>();
+            CreateMap<DependantPassportTravelDocument_Dto, DependantPassportTravelDocument>();
+            #endregion
+
+            #region Benefits Info
+            CreateMap<Benefit, Benefit_Dto>();
+            CreateMap<Benefit_Dto, Benefit>();
             #endregion
 
             #region Payment Types
@@ -298,6 +322,19 @@ namespace CERP
 
             CreateMap<ChequePaymentType, ChequePaymentType_Dto>();
             CreateMap<ChequePaymentType_Dto, ChequePaymentType>();
+            #endregion
+
+            #region Academia & Skills Profile
+            CreateMap<EC_AcademiaTemplate, EC_AcademiaTemplate_Dto>();
+            CreateMap<EC_AcademiaTemplate_Dto, EC_AcademiaTemplate>();
+
+            CreateMap<EC_SkillTemplate, EC_SkillTemplate_Dto>();
+            CreateMap<EC_SkillTemplate_Dto, EC_SkillTemplate>();
+            #endregion
+
+            #region Loans List
+            CreateMap<EmployeeLoan, EmployeeLoan_Dto>();
+            CreateMap<EmployeeLoan_Dto, EmployeeLoan>();
             #endregion
 
             #endregion

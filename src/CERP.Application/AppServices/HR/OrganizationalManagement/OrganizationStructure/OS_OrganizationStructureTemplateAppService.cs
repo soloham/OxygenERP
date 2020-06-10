@@ -62,8 +62,9 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
             {
                 if (Repository.Any(x => x.LegalEntityId == companyId))
                 {
-                    var legalEntityOrgStructure = await Repository.FirstAsync(y => y.LegalEntityId == companyId);
-                    OS_OrganizationStructureTemplate_Dto obj = ObjectMapper.Map<OS_OrganizationStructureTemplate, OS_OrganizationStructureTemplate_Dto>(await Repository.GetAsync(x => x.Id == legalEntityOrgStructure.Id, true));
+                    //return null;
+                    var legalEntityOrgStructure = await Repository.GetAsync(y => y.LegalEntityId == companyId);
+                    OS_OrganizationStructureTemplate_Dto obj = MapToGetOutputDto(legalEntityOrgStructure);
                     return obj;
                 }
                 else

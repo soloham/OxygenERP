@@ -1,9 +1,11 @@
 ﻿using CERP.App;
+using CERP.App.Helpers;
 using CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructure;
 using CERP.ApplicationContracts.HR.OrganizationalManagement.PayrollStructure;
 using CERP.Attributes;
 using CERP.Base;
 using CERP.HR.Documents;
+using CERP.HR.Setup.OrganizationalManagement.OrganizationStructure;
 using CERP.Setup;
 using CERP.Users;
 using System;
@@ -32,68 +34,52 @@ namespace CERP.HR.EmployeeCentral.DTOs.Employee
         #region General Info
         [NotMapped]
         public string Name { get => FirstName + " " + LastName; }
-        [CustomAudited]
         public string FirstName { get; set; }
-        [CustomAudited]
         public string FirstNameLocalized { get; set; }
-        [CustomAudited]
         public string MiddleName { get; set; }
-        [CustomAudited]
         public string MiddleNameLocalized { get; set; }
-        [CustomAudited]
         public string LastName { get; set; }
-        [CustomAudited]
         public string LastNameLocalized { get; set; }
-        [CustomAudited]
         public string Initials { get; set; }
-        [CustomAudited]
         public string PreferredName { get; set; }
-        [CustomAudited]
         public string DisplayName { get; set; }
+        public DictionaryValue_Dto Title { get; set; }
+        public Guid TitleId { get; set; }
 
         public DictionaryValue_Dto Gender { get; set; }
-        [CustomAudited]
         public Guid GenderId { get; set; }
         public DictionaryValue_Dto MaritalStatus { get; set; }
-        [CustomAudited]
         public Guid MaritalStatusId { get; set; }
-        [CustomAudited]
         public string MarriedSince { get; set; }
         public DictionaryValue_Dto PreferredLanguage { get; set; }
-        [CustomAudited]
         public Guid PreferredLanguageId { get; set; }
         public DictionaryValue_Dto Nationality { get; set; }
-        [CustomAudited]
         public Guid NationalityId { get; set; }
         #endregion
 
         #region Bio Info
-        [CustomAudited]
         public string DateOfBirth { get; set; }
 
         public DictionaryValue_Dto BirthCountry { get; set; }
-        [CustomAudited]
         public Guid BirthCountryId { get; set; }
-        [CustomAudited]
         public string PlaceOfBirth { get; set; }
-        [CustomAudited]
         public string BioAttachment { get; set; }
         #endregion
 
         #region Identity Info
-        public virtual ICollection<EmployeeNationalIdentity_Dto> NationalIdentities { get; set; }
-        public virtual ICollection<EmployeePassportTravelDocument_Dto> PassportTravelDocuments { get; set; }
+        public List<EmployeeNationalIdentity_Dto> NationalIdentities { get; set; }
+        public List<EmployeePassportTravelDocument_Dto> PassportTravelDocuments { get; set; }
         #endregion
 
         #region Contact Info
-        public virtual ICollection<EmployeeEmailAddress_Dto> EmailAddresses { get; set; }
-        public virtual ICollection<EmployeePhoneAddress_Dto> PhoneAddresses { get; set; }
-        public virtual ICollection<EmployeeHomeAddress_Dto> HomeAddresses { get; set; }
-        public virtual ICollection<EmployeeContact_Dto> Contacts { get; set; }
+        public List<EmployeeEmailAddress_Dto> EmailAddresses { get; set; }
+        public List<EmployeePhoneAddress_Dto> PhoneAddresses { get; set; }
+        public List<EmployeeHomeAddress_Dto> HomeAddresses { get; set; }
+        public List<EmployeeContact_Dto> Contacts { get; set; }
         #endregion
 
         #region Dependants Info
-        public virtual ICollection<Dependant_Dto> Dependants { get; set; }
+        public List<Dependant_Dto> Dependants { get; set; }
         #endregion
 
         #endregion
@@ -101,16 +87,19 @@ namespace CERP.HR.EmployeeCentral.DTOs.Employee
         #region Employment Info
 
         #region Organization Info
-        public OS_OrganizationStructureTemplateDepartment_Dto Department { get; set; }
-        [CustomAudited]
-        public int DeparmentId { get; set; }
+        public OS_OrganizationStructureTemplateDepartment_Dto OrganizationStructureTemplateDepartment { get; set; }
+        public int DepartmentTemplateId { get; set; }
+        public int HeadDepartmentTemplateId { get; set; }
+        public int OrganizationStructureTemplateDivisionId { get; set; }
+        public int OrganizationStructureTemplateId { get; set; }
+        public int OrganizationStructureTemplateBusinessUnitId { get; set; }
+        public Guid LegalEntityId { get; set; }
 
         //public DictionaryValue_Dto Timezone { get; set; }
         //[CustomAudited]
         //public Guid TimezoneId { get; set; }
 
         public DictionaryValue_Dto CostCenter { get; set; }
-        [CustomAudited]
         public Guid CostCenterId { get; set; }
         #endregion
 
@@ -120,20 +109,18 @@ namespace CERP.HR.EmployeeCentral.DTOs.Employee
 
         #region Basic Salary Info
         public PS_PayGroup_Dto PayGroup { get; set; }
-        [CustomAudited]
         public int PayGroupId { get; set; }
         public PS_PayGrade_Dto PayGrade { get; set; }
-        [CustomAudited]
         public int PayGradeId { get; set; }
         #endregion
 
         #region Benefits Info
-        public virtual ICollection<Benefit_Dto> EmployeeBenefits { get; set; }
+        public List<Benefit_Dto> EmployeeBenefits { get; set; }
         #endregion
         #region Payment Details
-        public virtual ICollection<CashPaymentType_Dto> CashPaymentTypes { get; set; }
-        public virtual ICollection<ChequePaymentType_Dto> ChequePaymentTypes { get; set; }
-        public virtual ICollection<BankPaymentType_Dto> BankPaymentTypes { get; set; }
+        public List<CashPaymentType_Dto> CashPaymentTypes { get; set; }
+        public List<ChequePaymentType_Dto> ChequePaymentTypes { get; set; }
+        public List<BankPaymentType_Dto> BankPaymentTypes { get; set; }
         #endregion
 
         #endregion
@@ -142,26 +129,22 @@ namespace CERP.HR.EmployeeCentral.DTOs.Employee
 
         #region General Details
         public DictionaryValue_Dto Timezone { get; set; }
-        [CustomAudited]
         public Guid TimezoneId { get; set; }
         #endregion
         #region Time Offs Info
-        [CustomAudited]
         public string HiringDate { get; set; }
-        [CustomAudited]
         public int YearlyTimeOffAllowance { get; set; }
         #endregion
 
         #endregion
 
-
         #region Academia & Skills Profile
 
         #region Academia Profile
-        public virtual ICollection<OS_AcademiaTemplate_Dto> AcademiaProfile { get; set; }
+        public List<EC_AcademiaTemplate_Dto> AcademiaProfile { get; set; }
         #endregion
         #region Skills Profile
-        public virtual ICollection<OS_SkillTemplate_Dto> SkillsProfile { get; set; }
+        public List<EC_SkillTemplate_Dto> SkillsProfile { get; set; }
         #endregion
 
         #endregion
@@ -169,18 +152,15 @@ namespace CERP.HR.EmployeeCentral.DTOs.Employee
         #region Loans Information
 
         #region Loans List
-        public virtual ICollection<EmployeeLoan_Dto> EmployeeLoans { get; set; }
+        public List<EmployeeLoan_Dto> EmployeeLoans { get; set; }
         #endregion
 
         #endregion
 
-
-        [CustomAudited]
         public string ProfilePic { get; set; }
 
         [ForeignKey("PortalId")]
         public virtual AppUser_Dto Portal { get; set; }
-        [CustomAudited]
         public Guid? PortalId { get; set; }
     }
 
@@ -225,5 +205,69 @@ namespace CERP.HR.EmployeeCentral.DTOs.Employee
         public int EmployeeId { get; set; }
         public Contact_Dto Contact { get; set; }
         public int ContactId { get; set; }
+    }
+    public class EC_AcademiaTemplate_Dto : AuditedEntityTenantDto<int>
+    {
+        public EC_AcademiaTemplate_Dto()
+        {
+        }
+
+        //public string Code { get; set; }
+
+        public string Name { get; set; }
+        public string NameLocalized { get; set; }
+
+        public DictionaryValue_Dto Institute { get; set; }
+        public Guid InstituteId { get; set; }
+
+        public string AcademicTypeDescription { get => EnumExtensions.GetDescription(AcademicType); set { try { AcademicType = EnumExtensions.GetValueFromDescription<OS_AcademicType>(value); } catch { } } }
+        public OS_AcademicType AcademicType { get; set; }
+        public string AcademiaCertificateTypeDescription { get => EnumExtensions.GetDescription(AcademiaCertificateType); set { try { AcademiaCertificateType = EnumExtensions.GetValueFromDescription<OS_AcademiaCertificateType>(value); } catch { } } }
+        public OS_AcademiaCertificateType AcademiaCertificateType { get; set; }
+
+        public DictionaryValue_Dto AcademiaCertificateSubType { get; set; }
+        public Guid AcademiaCertificateSubTypeId { get; set; }
+
+        public string Description { get; set; }
+        //public bool DoesKPI { get; set; }
+
+        public int PassoutYear { get; set; }
+
+        //public string ReviewPeriodDescription { get => EnumExtensions.GetDescription(ReviewPeriod); set => ReviewPeriod = EnumExtensions.GetValueFromDescription<OS_ReviewPeriod>(value); }
+        //public OS_ReviewPeriod ReviewPeriod { get; set; }
+        //public int? ReviewPeriodDays { get; set; }
+    }
+    public class EC_SkillTemplate_Dto : AuditedEntityTenantDto<int>
+    {
+        public EC_SkillTemplate_Dto()
+        {
+        }
+        
+        //public string Code { get; set; }
+
+        //public string Name { get; set; }
+        //public string NameLocalized { get; set; }
+
+        public string SkillAquisitionTypeDescription { get => EnumExtensions.GetDescription(SkillAquisitionType); set => SkillAquisitionType = EnumExtensions.GetValueFromDescription<OS_SkillAquisitionType>(value); }
+        public OS_SkillAquisitionType SkillAquisitionType { get; set; }
+        public string SkillTypeDescription { get => EnumExtensions.GetDescription(SkillType); set => SkillType = EnumExtensions.GetValueFromDescription<OS_SkillType>(value); }
+        public OS_SkillType SkillType { get; set; }
+
+        public DictionaryValue_Dto SkillSubType { get; set; }
+        public Guid SkillSubTypeId { get; set; }
+
+        public string Description { get; set; }
+
+        public bool DoesKPI { get; set; }
+
+        //public string ReviewPeriodDescription { get => EnumExtensions.GetDescription(ReviewPeriod); set => ReviewPeriod = EnumExtensions.GetValueFromDescription<OS_ReviewPeriod>(value); }
+        //public OS_ReviewPeriod ReviewPeriod { get; set; }
+        //public int? ReviewPeriodDays { get; set; }
+
+        //public string SkillUpdatePeriodDescription { get => EnumExtensions.GetDescription(SkillUpdatePeriod); set => SkillUpdatePeriod = EnumExtensions.GetValueFromDescription<OS_SkillUpdatePeriod>(value); }
+        //public OS_SkillUpdatePeriod SkillUpdatePeriod { get; set; }
+
+        //public virtual OS_CompensationMatrixTemplate_Dto CompensationMatrix { get; set; }
+        //public int CompensationMatrixId { get; set; }
     }
 }

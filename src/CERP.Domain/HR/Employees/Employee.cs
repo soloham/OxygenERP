@@ -4,6 +4,7 @@ using CERP.Base;
 using CERP.HR.Documents;
 using CERP.HR.OrganizationalManagement.OrganizationStructure;
 using CERP.HR.OrganizationalManagement.PayrollStructure;
+using CERP.HR.Setup.OrganizationalManagement.OrganizationStructure;
 using CERP.HR.Workshifts;
 using CERP.Setup;
 using CERP.Users;
@@ -51,6 +52,9 @@ namespace CERP.HR.EmployeeCentral.Employee
         public string PreferredName { get; set; }
         [CustomAudited]
         public string DisplayName { get; set; }
+        public DictionaryValue Title { get; set; }
+        [CustomAudited]
+        public Guid TitleId { get; set; }
 
         public DictionaryValue Gender { get; set; }
         [CustomAudited]
@@ -102,13 +106,19 @@ namespace CERP.HR.EmployeeCentral.Employee
         #region Employment Info
 
         #region Organization Info
-        public OS_OrganizationStructureTemplateDepartment Department { get; set; }
+        public OS_OrganizationStructureTemplateDepartment OrganizationStructureTemplateDepartment { get; set; }
+        [CustomAudited] 
+        public int DepartmentTemplateId { get; set; }
+        [CustomAudited] 
+        public int HeadDepartmentTemplateId { get; set; }
+        [CustomAudited] 
+        public int OrganizationStructureTemplateDivisionId { get; set; }
+        [CustomAudited] 
+        public int OrganizationStructureTemplateId { get; set; }
+        [CustomAudited] 
+        public int OrganizationStructureTemplateBusinessUnitId { get; set; }
         [CustomAudited]
-        public int DeparmentId { get; set; }
-
-        //public DictionaryValue Timezone { get; set; }
-        //[CustomAudited]
-        //public Guid TimezoneId { get; set; }
+        public Guid LegalEntityId { get; set; }
 
         public DictionaryValue CostCenter { get; set; }
         [CustomAudited]
@@ -159,10 +169,10 @@ namespace CERP.HR.EmployeeCentral.Employee
         #region Academia & Skills Profile
 
         #region Academia Profile
-        public virtual ICollection<OS_AcademiaTemplate> AcademiaProfile { get; set; }
+        public virtual ICollection<EC_AcademiaTemplate> AcademiaProfile { get; set; }
         #endregion
         #region Skills Profile
-        public virtual ICollection<OS_SkillTemplate> SkillsProfile { get; set; }
+        public virtual ICollection<EC_SkillTemplate> SkillsProfile { get; set; }
         #endregion
 
         #endregion
@@ -231,5 +241,64 @@ namespace CERP.HR.EmployeeCentral.Employee
         public int EmployeeId { get; set; }
         public Contact Contact { get; set; }
         public int ContactId { get; set; }
+    }
+    public class EC_AcademiaTemplate : AuditedAggregateTenantRoot<int>
+    {
+        public EC_AcademiaTemplate()
+        {
+        }
+
+        //public string Code { get; set; }
+
+        public string Name { get; set; }
+        public string NameLocalized { get; set; }
+
+        public DictionaryValue Institute { get; set; }
+        public Guid InstituteId { get; set; }
+
+        public OS_AcademicType AcademicType { get; set; }
+        public OS_AcademiaCertificateType AcademiaCertificateType { get; set; }
+
+        public DictionaryValue AcademiaCertificateSubType { get; set; }
+        public Guid AcademiaCertificateSubTypeId { get; set; }
+
+        public string Description { get; set; }
+        //public bool DoesKPI { get; set; }
+
+        public int PassoutYear { get; set; }
+
+        //public string ReviewPeriodDescription { get => EnumExtensions.GetDescription(ReviewPeriod); set => ReviewPeriod = EnumExtensions.GetValueFromDescription<OS_ReviewPeriod>(value); }
+        //public OS_ReviewPeriod ReviewPeriod { get; set; }
+        //public int? ReviewPeriodDays { get; set; }
+    }
+    public class EC_SkillTemplate : AuditedAggregateTenantRoot<int>
+    {
+        public EC_SkillTemplate()
+        {
+        }
+
+        //public string Code { get; set; }
+
+        //public string Name { get; set; }
+        //public string NameLocalized { get; set; }
+
+        public OS_SkillAquisitionType SkillAquisitionType { get; set; }
+        public OS_SkillType SkillType { get; set; }
+
+        public DictionaryValue SkillSubType { get; set; }
+        public Guid SkillSubTypeId { get; set; }
+
+        public string Description { get; set; }
+
+        public bool DoesKPI { get; set; }
+
+        //public string ReviewPeriodDescription { get => EnumExtensions.GetDescription(ReviewPeriod); set => ReviewPeriod = EnumExtensions.GetValueFromDescription<OS_ReviewPeriod>(value); }
+        //public OS_ReviewPeriod ReviewPeriod { get; set; }
+        //public int? ReviewPeriodDays { get; set; }
+
+        //public OS_SkillUpdatePeriod SkillUpdatePeriod { get; set; }
+
+        //public virtual OS_CompensationMatrixTemplate_Dto CompensationMatrix { get; set; }
+        //public int CompensationMatrixId { get; set; }
     }
 }

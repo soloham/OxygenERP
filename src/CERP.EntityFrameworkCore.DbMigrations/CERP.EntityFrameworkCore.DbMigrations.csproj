@@ -182,6 +182,18 @@
     <Compile Remove="Migrations\20200607125557_EmployeeCenrtal_Employee_Initial.Designer.cs" />
     <Compile Remove="Migrations\20200607130626_EmployeeCenrtal_Employee_Initial.cs" />
     <Compile Remove="Migrations\20200607130626_EmployeeCenrtal_Employee_Initial.Designer.cs" />
+    <Compile Remove="Migrations\20200608075935_EmployeeCentral_EmployeeLoan_LoanStatus.cs" />
+    <Compile Remove="Migrations\20200608075935_EmployeeCentral_EmployeeLoan_LoanStatus.Designer.cs" />
+    <Compile Remove="Migrations\20200608093915_EmployeeCentral.cs" />
+    <Compile Remove="Migrations\20200608093915_EmployeeCentral.Designer.cs" />
+    <Compile Remove="Migrations\20200609144805_EmployeeCentral_Employee_LegalEntityId_Type.cs" />
+    <Compile Remove="Migrations\20200609144805_EmployeeCentral_Employee_LegalEntityId_Type.Designer.cs" />
+    <Compile Remove="Migrations\20200610085120_Employee-Central_Employee_Objects.cs" />
+    <Compile Remove="Migrations\20200610085120_Employee-Central_Employee_Objects.Designer.cs" />
+    <Compile Remove="Migrations\20200610164636_EmployeeCentral_Employee_Salutation.cs" />
+    <Compile Remove="Migrations\20200610164636_EmployeeCentral_Employee_Salutation.Designer.cs" />
+    <Compile Remove="Migrations\20200610170748_EmployeeCentral_Employee_Salutation.cs" />
+    <Compile Remove="Migrations\20200610170748_EmployeeCentral_Employee_Salutation.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -5,6 +5,7 @@ using CERP.ApplicationContracts.HR.OrganizationalManagement.PayrollStructure;
 using CERP.Attributes;
 using CERP.Base;
 using CERP.FM.DTOs;
+using CERP.HR.EmployeeCentral.DTOs.Employee;
 using CERP.HR.Setup.OrganizationalManagement.OrganizationStructure;
 using CERP.Setup.DTOs;
 using System;
@@ -36,10 +37,9 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public Company_Dto LegalEntity { get; set; }
         public Guid LegalEntityId { get; set; }
 
-
         public List<OS_OrganizationStructureTemplateBusinessUnit_Dto> OrganizationStructureTemplateBusinessUnits { get; set; }
-        public List<OS_OrganizationStructureTemplateDivision_Dto> OrganizationStructureTemplateDivisions { get; set; }
-        public List<OS_OrganizationStructureTemplateDepartment_Dto> OrganizationStructureTemplateDepartments { get; set; }
+        //public List<OS_OrganizationStructureTemplateDivision_Dto> OrganizationStructureTemplateDivisions { get; set; }
+        //public List<OS_OrganizationStructureTemplateDepartment_Dto> OrganizationStructureTemplateDepartments { get; set; }
         public List<OS_OrganizationStructureTemplatePosition_Dto> OrganizationStructureTemplatePositions { get; set; }
     }
 
@@ -48,7 +48,7 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public OS_BusinessUnitTemplate_Dto BusinessUnitTemplate { get; set; }
         public int BusinessUnitTemplateId { get; set; }
 
-        public OS_OrganizationStructureTemplate_Dto OrganizationStructureTemplate { get; set; }
+        //public OS_OrganizationStructureTemplate_Dto OrganizationStructureTemplate { get; set; }
         public int OrganizationStructureTemplateId { get; set; }
 
         public LocationTemplate_Dto Location { get; set; }
@@ -75,7 +75,7 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public OS_PositionTemplate_Dto PositionTemplate { get; set; }
         public int PositionTemplateId { get; set; }
 
-        public OS_OrganizationStructureTemplateBusinessUnit_Dto OrganizationStructureTemplateBusinessUnit { get; set; }
+        //public OS_OrganizationStructureTemplateBusinessUnit_Dto OrganizationStructureTemplateBusinessUnit { get; set; }
         public int OrganizationStructureTemplateBusinessUnitId { get; set; }
         public int OrganizationStructureTemplateId { get; set; }
 
@@ -88,7 +88,7 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public DictionaryValue_Dto CostCenter { get; set; }
         public Guid CostCenterId { get; set; }
 
-        public OS_OrganizationStructureTemplateBusinessUnit_Dto OrganizationStructureTemplateBusinessUnit { get; set; }
+        //public OS_OrganizationStructureTemplateBusinessUnit_Dto OrganizationStructureTemplateBusinessUnit { get; set; }
         public int OrganizationStructureTemplateBusinessUnitId { get; set; }
         public int OrganizationStructureTemplateId { get; set; }
 
@@ -128,7 +128,7 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public OS_PositionTemplate_Dto PositionTemplate { get; set; }
         public int PositionTemplateId { get; set; }
 
-        public OS_OrganizationStructureTemplateDivision_Dto OrganizationStructureTemplateDivision { get; set; }
+        //public OS_OrganizationStructureTemplateDivision_Dto OrganizationStructureTemplateDivision { get; set; }
         public int OrganizationStructureTemplateId { get; set; }
         public int OrganizationStructureTemplateBusinessUnitId { get; set; }
         public int OrganizationStructureTemplateDivisionId { get; set; }
@@ -142,7 +142,7 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public DictionaryValue_Dto CostCenter { get; set; }
         public Guid CostCenterId { get; set; }
 
-        public OS_OrganizationStructureTemplateDivision_Dto OrganizationStructureTemplateDivision { get; set; }
+        //public OS_OrganizationStructureTemplateDivision_Dto OrganizationStructureTemplateDivision { get; set; }
         public int OrganizationStructureTemplateId { get; set; }
         public int OrganizationStructureTemplateBusinessUnitId { get; set; }
         public int OrganizationStructureTemplateDivisionTemplateId { get; set; }
@@ -170,6 +170,8 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public DateTime ValidityFromDate { get; set; }
         public DateTime ValidityToDate { get; set; }
 
+        public List<Employee_Dto> Employees { get; set; }
+
         public List<OS_OrganizationStructureTemplateDepartment_Dto> OrganizationStructureTemplateDepartments { get; set; }
         //public List<OS_OrganizationStructureTemplatePosition_Dto> OrganizationStructureTemplatePositions { get; set; }
 
@@ -184,7 +186,7 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public OS_PositionTemplate_Dto PositionTemplate { get; set; }
         public int PositionTemplateId { get; set; }
 
-        public OS_OrganizationStructureTemplateDepartment_Dto OrganizationStructureTemplateDepartment { get; set; }
+        //public OS_OrganizationStructureTemplateDepartment_Dto OrganizationStructureTemplateDepartment { get; set; }
         public int OrganizationStructureTemplateDepartmentId { get; set; }
         public int HeadDepartmentTemplateId { get; set; }
         public int OrganizationStructureTemplateDivisionId { get; set; }
@@ -200,7 +202,7 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public DictionaryValue_Dto CostCenter { get; set; }
         public Guid CostCenterId { get; set; }
 
-        public OS_OrganizationStructureTemplateDepartment_Dto OrganizationStructureTemplateDepartment { get; set; }
+        //public OS_OrganizationStructureTemplateDepartment_Dto OrganizationStructureTemplateDepartment { get; set; }
         public int OrganizationStructureTemplateDepartmentId { get; set; }
         public int HeadDepartmentTemplateId { get; set; }
         public int OrganizationStructureTemplateDivisionId { get; set; }
@@ -236,7 +238,7 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         public OS_JobTemplate_Dto JobTemplate { get; set; }
         public int JobTemplateId { get; set; }
 
-        public OS_OrganizationStructureTemplatePosition_Dto OrganizationStructureTemplatePosition { get; set; }
+        //public OS_OrganizationStructureTemplatePosition_Dto OrganizationStructureTemplatePosition { get; set; }
         public int OrganizationStructureTemplatePositionId { get; set; }
         public int HeadPositionTemplateId { get; set; }
         public int OrganizationStructureTemplateDepartmenteId { get; set; }

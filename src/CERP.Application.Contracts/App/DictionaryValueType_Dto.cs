@@ -29,7 +29,7 @@ namespace CERP.App
         public bool ActiveStatus { get; set; }
         public bool Locked { get; set; }
 
-        public virtual ICollection<DictionaryValue_Dto> Values { get; set; }
+        public List<DictionaryValue_Dto> Values { get; set; }
 
         public Company_Dto Company { get; set; }
         public Guid? CompanyId { get; set; }

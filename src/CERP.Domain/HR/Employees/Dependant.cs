@@ -32,6 +32,8 @@ namespace CERP.HR.Documents
         [CustomAudited]
         public Guid BirthCountryId { get; set; }
         [CustomAudited]
+        public string DateOfBirth { get; set; }
+        [CustomAudited]
         public string PlaceOfBirth { get; set; }
         [CustomAudited]
         public string BioAttachment { get; set; }

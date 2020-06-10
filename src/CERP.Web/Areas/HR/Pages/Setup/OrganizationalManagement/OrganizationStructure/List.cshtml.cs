@@ -228,8 +228,8 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                         //organizationStructureTemplate_Dto.SubOrganizationStructureTemplates.ForEach(x => { x.Id = 0; x.SubOrganizationStructureTemplateId = x.SubOrganizationStructureTemplate.Id; x.SubOrganizationStructureTemplate = null; });
                         organizationStructureTemplate_Dto.SetProperty("Structure", FormData["structure"]);
                         organizationStructureTemplate_Dto.OrganizationStructureTemplateBusinessUnits = new List<OS_OrganizationStructureTemplateBusinessUnit_Dto>();
-                        organizationStructureTemplate_Dto.OrganizationStructureTemplateDivisions = new List<OS_OrganizationStructureTemplateDivision_Dto>();
-                        organizationStructureTemplate_Dto.OrganizationStructureTemplateDepartments = new List<OS_OrganizationStructureTemplateDepartment_Dto>();
+                        //organizationStructureTemplate_Dto.OrganizationStructureTemplateDivisions = new List<OS_OrganizationStructureTemplateDivision_Dto>();
+                        //organizationStructureTemplate_Dto.OrganizationStructureTemplateDepartments = new List<OS_OrganizationStructureTemplateDepartment_Dto>();
                         organizationStructureTemplate_Dto.OrganizationStructureTemplatePositions = new List<OS_OrganizationStructureTemplatePosition_Dto>();
                         
                         var OrganizationStructureTemplateBusinessUnits = new List<OS_OrganizationStructureTemplateBusinessUnit_Dto>();

@@ -54,10 +54,10 @@ namespace CERP.Web.Areas.HR.Pages.TimeSheets
             //}
         }
 
-        public List<Employee_Dto> GetEmployees()
-        {
-            return EmployeeAppService.GetAllEmployees();
-        }
+        //public List<Employee_Dto> GetEmployees()
+        //{
+        //    return EmployeeAppService.GetAllEmployees();
+        //}
 
         public IActionResult OnGetWeeksheet(SearchVM searchVM)
         {

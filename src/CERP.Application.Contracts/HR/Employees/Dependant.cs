@@ -16,28 +16,20 @@ namespace CERP.HR.Documents
         }
 
         public DictionaryValue_Dto RelationshipType { get; set; }
-        [CustomAudited]
         public Guid RelationshipTypeId { get; set; }
-
-        [CustomAudited]
         public string FirstName { get; set; }
-        [CustomAudited]
         public string FirstNameLocalized { get; set; }
-        [CustomAudited]
         public string MiddleName { get; set; }
-        [CustomAudited]
         public string LastName { get; set; }
 
         public DictionaryValue_Dto BirthCountry { get; set; }
-        [CustomAudited]
         public Guid BirthCountryId { get; set; }
-        [CustomAudited]
+        public string DateOfBirth { get; set; }
         public string PlaceOfBirth { get; set; }
-        [CustomAudited]
         public string BioAttachment { get; set; }
 
-        public virtual ICollection<DependantNationalIdentity_Dto> NationalIdentities { get; set; }
-        public virtual ICollection<DependantPassportTravelDocument_Dto> PassportTravelDocuments { get; set; }
+        public List<DependantNationalIdentity_Dto> NationalIdentities { get; set; }
+        public List<DependantPassportTravelDocument_Dto> PassportTravelDocuments { get; set; }
     }
 
     public class DependantNationalIdentity_Dto : AuditedEntityTenantDto<int> 

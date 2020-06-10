@@ -21,7 +21,7 @@ namespace CERP.Payroll.DTOs
         [Required]
         public double BasicSalary { get; set; }
         [Required]
-        public virtual ICollection<PayrunAllowanceSummary_Dto> PayrunEOSBAllowancesSummaries { get; set; }
+        public List<PayrunAllowanceSummary_Dto> PayrunEOSBAllowancesSummaries { get; set; }
 
         [Required]
         public double GrossSalary { get; set; }

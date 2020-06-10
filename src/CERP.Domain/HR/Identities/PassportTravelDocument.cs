@@ -1,6 +1,7 @@
 ﻿using CERP.App;
 using CERP.Attributes;
 using CERP.Base;
+using CERP.HR.Employee.Enums;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp;
@@ -14,9 +15,7 @@ namespace CERP.HR.Documents
 
         }
 
-        public DictionaryValue DocumentType { get; set; }
-        [CustomAudited]
-        public Guid DocumentTypeId { get; set; }
+        public IdentityDocumentType DocumentType { get; set; }
         public DictionaryValue IssuingCountry { get; set; }
         [CustomAudited]
         public Guid IssuingCountryId { get; set; }

@@ -13,6 +13,7 @@
         public const string HR_EmployeeCentral_DbTablePrefix = "";
         public const string HR_Identities_DbTablePrefix = "";
         public const string HR_PaymentTypes_DbTablePrefix = "";
+        public const string HR_Profiles_DbTablePrefix = "";
         public const string HR_Contacts_DbTablePrefix = "";
         public const string HR_Addresses_DbTablePrefix = "";
 
@@ -30,6 +31,7 @@
         public const string HR_EmployeeCentral_DbSchema = "HR.EmployeeCentral";
         public const string HR_Identities_DbSchema = "HR.Objects.Identities";
         public const string HR_PaymentTypes_DbSchema = "HR.Objects.PaymentTypes";
+        public const string HR_Profiles_DbSchema = "HR.Objects.Profiles";
         public const string HR_Contacts_DbSchema = "HR.Objects.Contacts";
         public const string HR_Addresses_DbSchema = "HR.Objects.Addresses";
 

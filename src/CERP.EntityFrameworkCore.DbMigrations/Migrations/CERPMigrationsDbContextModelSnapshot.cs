@@ -15,7 +15,7 @@ namespace CERP.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.3")
+                .HasAnnotation("ProductVersion", "3.1.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -1262,9 +1262,6 @@ namespace CERP.Migrations
                     b.Property<int>("PayComponentId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PayFrequencyId")
-                        .HasColumnType("int");
-
                     b.Property<Guid?>("TenantId")
                         .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
@@ -1281,8 +1278,6 @@ namespace CERP.Migrations
 
                     b.HasIndex("PayComponentId");
 
-                    b.HasIndex("PayFrequencyId");
-
                     b.ToTable("Benefits","HR.EmployeeCentral");
                 });
 
@@ -1293,10 +1288,7 @@ namespace CERP.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CollectionLocationId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("CollectionLocationId1")
+                    b.Property<Guid>("CollectionLocationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -1338,7 +1330,7 @@ namespace CERP.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CollectionLocationId1");
+                    b.HasIndex("CollectionLocationId");
 
                     b.HasIndex("EmployeeId");
 
@@ -1454,7 +1446,7 @@ namespace CERP.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneAddress")
+                    b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PostalCode")
@@ -1502,6 +1494,9 @@ namespace CERP.Migrations
 
                     b.Property<Guid?>("CreatorId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DateOfBirth")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("EmployeeId")
                         .HasColumnType("uniqueidentifier");
@@ -1781,6 +1776,9 @@ namespace CERP.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnName("ConcurrencyStamp")
@@ -1805,14 +1803,14 @@ namespace CERP.Migrations
                     b.Property<Guid?>("LastModifierId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double>("LoanAmount")
-                        .HasColumnType("float");
-
-                    b.Property<Guid>("LoanStatusId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("LoanStatus")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("LoanTypeId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnName("TenantId")
@@ -1827,8 +1825,6 @@ namespace CERP.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
-
-                    b.HasIndex("LoanStatusId");
 
                     b.HasIndex("LoanTypeId");
 
@@ -1984,8 +1980,8 @@ namespace CERP.Migrations
                     b.Property<string>("DocumentNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("DocumentTypeId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("DocumentType")
+                        .HasColumnType("int");
 
                     b.Property<string>("ExtraProperties")
                         .HasColumnName("ExtraProperties")
@@ -2014,8 +2010,6 @@ namespace CERP.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DocumentTypeId");
 
                     b.HasIndex("IssuingCountryId");
 
@@ -2073,6 +2067,135 @@ namespace CERP.Migrations
                     b.ToTable("PhoneAddresses","HR.Objects.Addresses");
                 });
 
+            modelBuilder.Entity("CERP.HR.EmployeeCentral.Employee.EC_AcademiaTemplate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<Guid>("AcademiaCertificateSubTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AcademiaCertificateType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AcademicType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("InstituteId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameLocalized")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PassoutYear")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AcademiaCertificateSubTypeId");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("InstituteId");
+
+                    b.ToTable("AcademiaProfiles","HR.Objects.Profiles");
+                });
+
+            modelBuilder.Entity("CERP.HR.EmployeeCentral.Employee.EC_SkillTemplate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("DoesKPI")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("SkillAquisitionType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("SkillSubTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("SkillType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("SkillSubTypeId");
+
+                    b.ToTable("SkillProfiles","HR.Objects.Profiles");
+                });
+
             modelBuilder.Entity("CERP.HR.EmployeeCentral.Employee.Employee", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2112,19 +2235,7 @@ namespace CERP.Migrations
                         .HasColumnName("DeletionTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DeparmentId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("DepartmentOrganizationStructureTemplateBusinessUnitId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("DepartmentOrganizationStructureTemplateDivisionId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("DepartmentOrganizationStructureTemplateId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("DepartmentTemplateId")
+                    b.Property<int>("DepartmentTemplateId")
                         .HasColumnType("int");
 
                     b.Property<string>("DisplayName")
@@ -2142,6 +2253,9 @@ namespace CERP.Migrations
 
                     b.Property<Guid>("GenderId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("HeadDepartmentTemplateId")
+                        .HasColumnType("int");
 
                     b.Property<string>("HiringDate")
                         .HasColumnType("nvarchar(max)");
@@ -2169,6 +2283,9 @@ namespace CERP.Migrations
                     b.Property<string>("LastNameLocalized")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("LegalEntityId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("MaritalStatusId")
                         .HasColumnType("uniqueidentifier");
 
@@ -2183,6 +2300,27 @@ namespace CERP.Migrations
 
                     b.Property<Guid>("NationalityId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("OrganizationStructureTemplateBusinessUnitId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrganizationStructureTemplateDepartmentDepartmentTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrganizationStructureTemplateDepartmentOrganizationStructureTemplateBusinessUnitId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrganizationStructureTemplateDepartmentOrganizationStructureTemplateDivisionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrganizationStructureTemplateDepartmentOrganizationStructureTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrganizationStructureTemplateDivisionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrganizationStructureTemplateId")
+                        .HasColumnType("int");
 
                     b.Property<int>("PayGradeId")
                         .HasColumnType("int");
@@ -2212,6 +2350,9 @@ namespace CERP.Migrations
                     b.Property<Guid>("TimezoneId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("TitleId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("YearlyTimeOffAllowance")
                         .HasColumnType("int");
 
@@ -2235,7 +2376,9 @@ namespace CERP.Migrations
 
                     b.HasIndex("TimezoneId");
 
-                    b.HasIndex("DepartmentOrganizationStructureTemplateId", "DepartmentOrganizationStructureTemplateBusinessUnitId", "DepartmentOrganizationStructureTemplateDivisionId", "DepartmentTemplateId");
+                    b.HasIndex("TitleId");
+
+                    b.HasIndex("OrganizationStructureTemplateDepartmentOrganizationStructureTemplateId", "OrganizationStructureTemplateDepartmentOrganizationStructureTemplateBusinessUnitId", "OrganizationStructureTemplateDepartmentOrganizationStructureTemplateDivisionId", "OrganizationStructureTemplateDepartmentDepartmentTemplateId");
 
                     b.ToTable("Employees","HR.EmployeeCentral");
                 });
@@ -3234,9 +3377,6 @@ namespace CERP.Migrations
                     b.Property<bool>("DoesKPI")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("EmployeeId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("ExtraProperties")
                         .HasColumnName("ExtraProperties")
                         .HasColumnType("nvarchar(max)");
@@ -3274,8 +3414,6 @@ namespace CERP.Migrations
                     b.HasIndex("AcademiaCertificateSubTypeId");
 
                     b.HasIndex("CompensationMatrixId");
-
-                    b.HasIndex("EmployeeId");
 
                     b.HasIndex("InstituteId");
 
@@ -4333,9 +4471,6 @@ namespace CERP.Migrations
                     b.Property<int?>("OS_OrganizationStructureTemplateDepartmentOrganizationStructureTemplateId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("OS_OrganizationStructureTemplateId")
-                        .HasColumnType("int");
-
                     b.Property<Guid?>("TenantId")
                         .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
@@ -4349,8 +4484,6 @@ namespace CERP.Migrations
                     b.HasKey("OrganizationStructureTemplateId", "OrganizationStructureTemplateBusinessUnitId", "OrganizationStructureTemplateDivisionId", "DepartmentTemplateId");
 
                     b.HasIndex("DepartmentTemplateId");
-
-                    b.HasIndex("OS_OrganizationStructureTemplateId");
 
                     b.HasIndex("OS_OrganizationStructureTemplateDepartmentOrganizationStructureTemplateId", "OS_OrganizationStructureTemplateDepartmentOrganizationStructureTemplateBusinessUnitId", "OS_OrganizationStructureTemplateDepartmentOrganizationStructureTemplateDivisionId", "OS_OrganizationStructureTemplateDepartmentDepartmentTemplateId");
 
@@ -4514,9 +4647,6 @@ namespace CERP.Migrations
                     b.Property<Guid?>("LastModifierId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("OS_OrganizationStructureTemplateId")
-                        .HasColumnType("int");
-
                     b.Property<Guid?>("TenantId")
                         .HasColumnName("TenantId")
                         .HasColumnType("uniqueidentifier");
@@ -4530,8 +4660,6 @@ namespace CERP.Migrations
                     b.HasKey("OrganizationStructureTemplateId", "OrganizationStructureTemplateBusinessUnitId", "DivisionTemplateId");
 
                     b.HasIndex("DivisionTemplateId");
-
-                    b.HasIndex("OS_OrganizationStructureTemplateId");
 
                     b.ToTable("OrganizationStructureTemplateDivisions","HR.OrganizationalManagement.OrganizationStructure");
                 });
@@ -4995,9 +5123,6 @@ namespace CERP.Migrations
                     b.Property<bool>("DoesKPI")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("EmployeeId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("ExtraProperties")
                         .HasColumnName("ExtraProperties")
                         .HasColumnType("nvarchar(max)");
@@ -5039,8 +5164,6 @@ namespace CERP.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CompensationMatrixId");
-
-                    b.HasIndex("EmployeeId");
 
                     b.HasIndex("SkillSubTypeId");
 
@@ -5583,7 +5706,7 @@ namespace CERP.Migrations
 
                     b.HasIndex("FrequencyId");
 
-                    b.ToTable("PayGroupes","HR.OrganizationalManagement.PayrollStructure");
+                    b.ToTable("PayGroups","HR.OrganizationalManagement.PayrollStructure");
                 });
 
             modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayRange", b =>
@@ -9155,20 +9278,15 @@ namespace CERP.Migrations
                         .HasForeignKey("PayComponentId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayFrequency", "PayFrequency")
-                        .WithMany()
-                        .HasForeignKey("PayFrequencyId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("CERP.HR.Documents.CashPaymentType", b =>
                 {
                     b.HasOne("CERP.Setup.LocationTemplate", "CollectionLocation")
                         .WithMany()
-                        .HasForeignKey("CollectionLocationId1")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .HasForeignKey("CollectionLocationId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("CERP.HR.EmployeeCentral.Employee.Employee", null)
                         .WithMany("CashPaymentTypes")
@@ -9230,7 +9348,7 @@ namespace CERP.Migrations
                     b.HasOne("CERP.HR.Documents.NationalIdentity", "NationalIdentity")
                         .WithMany()
                         .HasForeignKey("NationalIdentityId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -9245,7 +9363,7 @@ namespace CERP.Migrations
                     b.HasOne("CERP.HR.Documents.PassportTravelDocument", "PassportTravelDocument")
                         .WithMany()
                         .HasForeignKey("PassportTravelDocumentId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -9286,12 +9404,6 @@ namespace CERP.Migrations
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("CERP.App.DictionaryValue", "LoanStatus")
-                        .WithMany()
-                        .HasForeignKey("LoanStatusId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("CERP.App.DictionaryValue", "LoanType")
                         .WithMany()
                         .HasForeignKey("LoanTypeId")
@@ -9325,12 +9437,6 @@ namespace CERP.Migrations
 
             modelBuilder.Entity("CERP.HR.Documents.PassportTravelDocument", b =>
                 {
-                    b.HasOne("CERP.App.DictionaryValue", "DocumentType")
-                        .WithMany()
-                        .HasForeignKey("DocumentTypeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("CERP.App.DictionaryValue", "IssuingCountry")
                         .WithMany()
                         .HasForeignKey("IssuingCountryId")
@@ -9343,6 +9449,40 @@ namespace CERP.Migrations
                     b.HasOne("CERP.App.DictionaryValue", "PhoneType")
                         .WithMany()
                         .HasForeignKey("PhoneTypeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CERP.HR.EmployeeCentral.Employee.EC_AcademiaTemplate", b =>
+                {
+                    b.HasOne("CERP.App.DictionaryValue", "AcademiaCertificateSubType")
+                        .WithMany()
+                        .HasForeignKey("AcademiaCertificateSubTypeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.HR.EmployeeCentral.Employee.Employee", null)
+                        .WithMany("AcademiaProfile")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("CERP.App.DictionaryValue", "Institute")
+                        .WithMany()
+                        .HasForeignKey("InstituteId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CERP.HR.EmployeeCentral.Employee.EC_SkillTemplate", b =>
+                {
+                    b.HasOne("CERP.HR.EmployeeCentral.Employee.Employee", null)
+                        .WithMany("SkillsProfile")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("CERP.App.DictionaryValue", "SkillSubType")
+                        .WithMany()
+                        .HasForeignKey("SkillSubTypeId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
@@ -9403,9 +9543,15 @@ namespace CERP.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDepartment", "Department")
+                    b.HasOne("CERP.App.DictionaryValue", "Title")
                         .WithMany()
-                        .HasForeignKey("DepartmentOrganizationStructureTemplateId", "DepartmentOrganizationStructureTemplateBusinessUnitId", "DepartmentOrganizationStructureTemplateDivisionId", "DepartmentTemplateId")
+                        .HasForeignKey("TitleId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateDepartment", "OrganizationStructureTemplateDepartment")
+                        .WithMany("Employees")
+                        .HasForeignKey("OrganizationStructureTemplateDepartmentOrganizationStructureTemplateId", "OrganizationStructureTemplateDepartmentOrganizationStructureTemplateBusinessUnitId", "OrganizationStructureTemplateDepartmentOrganizationStructureTemplateDivisionId", "OrganizationStructureTemplateDepartmentDepartmentTemplateId")
                         .OnDelete(DeleteBehavior.NoAction);
                 });
 
@@ -9461,7 +9607,7 @@ namespace CERP.Migrations
                     b.HasOne("CERP.HR.Documents.NationalIdentity", "NationalIdentity")
                         .WithMany()
                         .HasForeignKey("NationalIdentityId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -9475,7 +9621,7 @@ namespace CERP.Migrations
                     b.HasOne("CERP.HR.Documents.PassportTravelDocument", "PassportTravelDocument")
                         .WithMany()
                         .HasForeignKey("PassportTravelDocumentId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -9684,10 +9830,6 @@ namespace CERP.Migrations
                         .HasForeignKey("CompensationMatrixId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("CERP.HR.EmployeeCentral.Employee.Employee", null)
-                        .WithMany("AcademiaProfile")
-                        .HasForeignKey("EmployeeId");
 
                     b.HasOne("CERP.App.DictionaryValue", "Institute")
                         .WithMany()
@@ -9938,10 +10080,6 @@ namespace CERP.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplate", null)
-                        .WithMany("OrganizationStructureTemplateDepartments")
-                        .HasForeignKey("OS_OrganizationStructureTemplateId");
-
                     b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateBusinessUnit", "OrganizationStructureTemplateBusinessUnit")
                         .WithMany("OrganizationStructureTemplateDepartments")
                         .HasForeignKey("OrganizationStructureTemplateId", "OrganizationStructureTemplateBusinessUnitId")
@@ -9996,10 +10134,6 @@ namespace CERP.Migrations
                         .HasForeignKey("DivisionTemplateId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplate", null)
-                        .WithMany("OrganizationStructureTemplateDivisions")
-                        .HasForeignKey("OS_OrganizationStructureTemplateId");
 
                     b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplateBusinessUnit", "OrganizationStructureTemplateBusinessUnit")
                         .WithMany("OrganizationStructureTemplateDivisions")
@@ -10142,10 +10276,6 @@ namespace CERP.Migrations
                         .HasForeignKey("CompensationMatrixId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("CERP.HR.EmployeeCentral.Employee.Employee", null)
-                        .WithMany("SkillsProfile")
-                        .HasForeignKey("EmployeeId");
 
                     b.HasOne("CERP.App.DictionaryValue", "SkillSubType")
                         .WithMany()

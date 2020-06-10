@@ -14,16 +14,9 @@ namespace CERP.HR.Documents
         {
 
         }
-
-        [CustomAudited]
         public string NameOnCheque { get; set; }
-
-        [CustomAudited]
         public string ValidityFromDate { get; set; }
-        [CustomAudited]
         public string ValidityToDate { get; set; }
-
-        [CustomAudited]
         public bool IsPrimary { get; set; }
     }
 }

@@ -70,7 +70,7 @@ namespace CERP.FM.COA.UV_DTOs
         public bool AllowReceipt { get; set; }
 
         [Required]
-        public virtual ICollection<COA_SubLedgerRequirement_Account_Dto> SubLedgerRequirementAccounts { get; set; }
+        public List<COA_SubLedgerRequirement_Account_Dto> SubLedgerRequirementAccounts { get; set; }
 
         public bool? ActiveStatus { get; set; }
     }

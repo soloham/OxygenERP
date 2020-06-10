@@ -1,6 +1,8 @@
 ﻿using CERP.App;
+using CERP.App.Helpers;
 using CERP.Attributes;
 using CERP.Base;
+using CERP.HR.EmployeeCentral.Employee;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -16,18 +18,12 @@ namespace CERP.HR.Documents
         }
 
         public DictionaryValue_Dto LoanType { get; set; }
-        [CustomAudited]
         public Guid LoanTypeId { get; set; }
-        public DictionaryValue_Dto LoanStatus { get; set; }
-        [CustomAudited]
-        public Guid LoanStatusId { get; set; }
-
-        [CustomAudited]
-        public double LoanAmount { get; set; }
-
-        [CustomAudited]
+        public string LoanStatusDescription { get => EnumExtensions.GetDescription(LoanStatus); set { try { LoanStatus = EnumExtensions.GetValueFromDescription<EC_LoanStatus>(value); } catch { } } }
+        public EC_LoanStatus LoanStatus { get; set; }
+        public string Name { get; set; }
+        public double Amount { get; set; }
         public string ValidityFromDate { get; set; }
-        [CustomAudited]
         public string ValidityToDate { get; set; }
     }
 }

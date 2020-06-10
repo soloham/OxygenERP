@@ -10,7 +10,7 @@ namespace CERP.Payroll.DTOs
     {
         public double SI_UpperLimit { get; set; }
 
-        public virtual ICollection<SIContributionCategory_Dto> ContributionCategories { get; set; }
+        public List<SIContributionCategory_Dto> ContributionCategories { get; set; }
     }
 
     public class SIContributionCategory_Dto : AuditedEntityTenantDto<int>
@@ -20,7 +20,7 @@ namespace CERP.Payroll.DTOs
         public string Title { get; set; }
         public bool IsExpense { get; set; }
 
-        public virtual ICollection<SIContribution_Dto> SIContributions { get; set; }
+        public List<SIContribution_Dto> SIContributions { get; set; }
 
         public SIContributionCategory_Dto()
         {
@@ -53,7 +53,7 @@ namespace CERP.Payroll.DTOs
         public string EmpSIId { get; set; }
 
         public double BasicSalary { get; set; }
-        public virtual ICollection<PayrunAllowanceSummary_Dto> PayrunSIAllowancesSummaries { get; set; }
+        public List<PayrunAllowanceSummary_Dto> PayrunSIAllowancesSummaries { get; set; }
 
         public double TotalSISalary { get; set; }
         public DateTime PayrunDate { get; set; }

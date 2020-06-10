@@ -46,8 +46,8 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public Guid LegalEntityId { get; set; }
 
         public virtual ICollection<OS_OrganizationStructureTemplateBusinessUnit> OrganizationStructureTemplateBusinessUnits { get; set; }
-        public virtual ICollection<OS_OrganizationStructureTemplateDivision> OrganizationStructureTemplateDivisions { get; set; }
-        public virtual ICollection<OS_OrganizationStructureTemplateDepartment> OrganizationStructureTemplateDepartments { get; set; }
+        //public virtual ICollection<OS_OrganizationStructureTemplateDivision> OrganizationStructureTemplateDivisions { get; set; }
+        //public virtual ICollection<OS_OrganizationStructureTemplateDepartment> OrganizationStructureTemplateDepartments { get; set; }
         public virtual ICollection<OS_OrganizationStructureTemplatePosition> OrganizationStructureTemplatePositions { get; set; }
     }
 
@@ -200,6 +200,8 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public DateTime ValidityFromDate { get; set; }
         [CustomAudited]
         public DateTime ValidityToDate { get; set; }
+
+        public virtual ICollection<EmployeeCentral.Employee.Employee> Employees { get; set; }
 
         public virtual ICollection<OS_OrganizationStructureTemplateDepartment> OrganizationStructureTemplateDepartments { get; set; }
 

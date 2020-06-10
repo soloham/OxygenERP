@@ -44,7 +44,7 @@ namespace CERP.HR.Loans
                 return result;
             } 
         }
-        public virtual ICollection<LoanRequestTemplateDepartment_Dto> Departments { get; set; }
+        public List<LoanRequestTemplateDepartment_Dto> Departments { get; set; }
         public string GetAllPositions
         {
             get
@@ -66,7 +66,7 @@ namespace CERP.HR.Loans
                 return result;
             }
         }
-        public virtual ICollection<LoanRequestTemplatePosition_Dto> Positions { get; set; }
+        public List<LoanRequestTemplatePosition_Dto> Positions { get; set; }
         public string GetAllEmploymentTypes
         {
             get
@@ -88,7 +88,7 @@ namespace CERP.HR.Loans
                 return result;
             }
         }
-        public virtual ICollection<LoanRequestTemplateEmploymentType_Dto> EmploymentTypes { get; set; }
+        public List<LoanRequestTemplateEmploymentType_Dto> EmploymentTypes { get; set; }
         public string GetAllEmployeeStatuses
         {
             get
@@ -110,7 +110,7 @@ namespace CERP.HR.Loans
                 return result;
             }
         }
-        public virtual ICollection<LoanRequestTemplateEmployeeStatus_Dto> EmployeeStatuses { get; set; }
+        public List<LoanRequestTemplateEmployeeStatus_Dto> EmployeeStatuses { get; set; }
 
         public int MinEmployeeDependants { get; set; }
         public double MaxIndemnityLimit { get; set; }

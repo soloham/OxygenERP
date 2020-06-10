@@ -21,7 +21,7 @@ namespace CERP.HR.Documents
         [CustomAudited]
         public string Name { get; set; }
         [CustomAudited]
-        public string PhoneAddress { get; set; }
+        public string PhoneNumber { get; set; }
         [CustomAudited]
         public string EmailAddress { get; set; }
         [CustomAudited]

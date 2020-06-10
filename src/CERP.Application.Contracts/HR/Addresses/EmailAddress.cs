@@ -15,13 +15,8 @@ namespace CERP.HR.Documents
         }
 
         public DictionaryValue_Dto EmailType { get; set; }
-        [CustomAudited]
         public Guid EmailTypeId { get; set; }
-
-        [CustomAudited]
         public string Email { get; set; }
-
-        [CustomAudited]
         public bool IsPrimary { get; set; }
     }
 }

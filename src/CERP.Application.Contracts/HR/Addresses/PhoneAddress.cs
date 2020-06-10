@@ -15,15 +15,9 @@ namespace CERP.HR.Documents
         }
 
         public DictionaryValue_Dto PhoneType { get; set; }
-        [CustomAudited]
         public Guid PhoneTypeId { get; set; }
-
-        [CustomAudited]
         public string PhoneNumber { get; set; }
-        [CustomAudited]
         public string Extension { get; set; }
-
-        [CustomAudited]
         public bool IsPrimary { get; set; }
     }
 }

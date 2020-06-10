@@ -209,144 +209,145 @@ namespace CERP.Web.Areas.Payroll.Pages.Run
                 Payrun_Dto payrun = PayrunAppService.GetPayrun(month, year, CompanyId);
                 bool exists = payrun != null;
 
-                List<Employee_Dto> employees = EmployeeAppService.GetAllEmployees().Where(x => x.EmployeeStatus.Key != AppSettings.TerminatedEmployeeStatusKey).ToList();
+                //List<Employee_Dto> employees = EmployeeAppService.GetAllEmployees().Where(x => x.EmployeeStatus.Key != AppSettings.TerminatedEmployeeStatusKey).ToList();
 
-                List<PayrunDetail_Dto> payrunDetails = new List<PayrunDetail_Dto>();
+                //List<PayrunDetail_Dto> payrunDetails = new List<PayrunDetail_Dto>();
 
-                DateTime curDateTime = new DateTime(year, month, DateTime.Now.Day);
-                for (int i = 0; i < employees.Count; i++)
-                {
-                    bool isNewEmployee = false;
+                //DateTime curDateTime = new DateTime(year, month, DateTime.Now.Day);
+                //for (int i = 0; i < employees.Count; i++)
+                //{
+                //    bool isNewEmployee = false;
 
-                    Employee_Dto curEmployee = employees[i];
-                    PayrunDetail_Dto empPayrunDetailPrevious = payrunPrevious == null ? null : payrunPrevious.PayrunDetails.SingleOrDefault(x => x.EmployeeId == curEmployee.Id);
-                    Timesheet_Dto empTimesheet = null;
-                    try
-                    {
-                        empTimesheet = timesheetAppService.GetTimesheet(year, month, curEmployee.Id);
-                    }
-                    catch (Exception ex)
-                    {
-                        return new NotFoundObjectResult(new { message = $"Timesheet of the employee {curEmployee.Name} for the period {month.ToString().PadLeft(2, '0')}/{year.ToString().PadLeft(2, '0')}<br/>doesn't exist." });
-                    }
-                    if (empTimesheet == null)
-                    {
-                        return new BadRequestObjectResult(new { message = $"Timesheet of the employee {curEmployee.Name}<br/>for the period {month.ToString().PadLeft(2, '0')}/{year.ToString().PadLeft(2, '0')}<br/>doesn't exist." });
-                    }
-                    isNewEmployee = payrunPrevious != null && empPayrunDetailPrevious == null;
+                //    Employee_Dto curEmployee = employees[i];
+                //    PayrunDetail_Dto empPayrunDetailPrevious = payrunPrevious == null ? null : payrunPrevious.PayrunDetails.SingleOrDefault(x => x.EmployeeId == curEmployee.Id);
+                //    Timesheet_Dto empTimesheet = null;
+                //    try
+                //    {
+                //        empTimesheet = timesheetAppService.GetTimesheet(year, month, curEmployee.Id);
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        return new NotFoundObjectResult(new { message = $"Timesheet of the employee {curEmployee.Name} for the period {month.ToString().PadLeft(2, '0')}/{year.ToString().PadLeft(2, '0')}<br/>doesn't exist." });
+                //    }
+                //    if (empTimesheet == null)
+                //    {
+                //        return new BadRequestObjectResult(new { message = $"Timesheet of the employee {curEmployee.Name}<br/>for the period {month.ToString().PadLeft(2, '0')}/{year.ToString().PadLeft(2, '0')}<br/>doesn't exist." });
+                //    }
+                //    isNewEmployee = payrunPrevious != null && empPayrunDetailPrevious == null;
 
-                    PayrunDetail_Dto empPayrunDetail = new PayrunDetail_Dto();
-                    empPayrunDetail.PayrunAllowancesSummaries = new List<PayrunAllowanceSummary_Dto>();
+                //    PayrunDetail_Dto empPayrunDetail = new PayrunDetail_Dto();
+                //    empPayrunDetail.PayrunAllowancesSummaries = new List<PayrunAllowanceSummary_Dto>();
 
-                    empPayrunDetail.Year = year;
-                    empPayrunDetail.Month = month;
-                    empPayrunDetail.EmployeeId = curEmployee.Id;
-                    empPayrunDetail.EmployeeTimesheetId = empTimesheet.Id;
+                //    empPayrunDetail.Year = year;
+                //    empPayrunDetail.Month = month;
+                //    empPayrunDetail.EmployeeId = curEmployee.Id;
+                //    empPayrunDetail.EmployeeTimesheetId = empTimesheet.Id;
 
-                    //Gross Variables
-                    decimal grossEarnings = 0;
-                    decimal grossDeductions = 0;
+                //    //Gross Variables
+                //    decimal grossEarnings = 0;
+                //    decimal grossDeductions = 0;
 
-                    FinancialDetails financialDetails = JsonSerializer.Deserialize<FinancialDetails>(curEmployee.ExtraProperties["financialDetails"].ToString());
-                    financialDetails.Initialize(DicValuesRepo);
+                //    FinancialDetails financialDetails = JsonSerializer.Deserialize<FinancialDetails>(curEmployee.ExtraProperties["financialDetails"].ToString());
+                //    financialDetails.Initialize(DicValuesRepo);
 
-                    //Calculate Basic Salary
-                    double curBasicSalary = financialDetails.GetBasicSalaryAt(curDateTime);
-                    empPayrunDetail.BasicSalary = (decimal)curBasicSalary;
-                    grossEarnings += empPayrunDetail.BasicSalary;
+                //    //Calculate Basic Salary
+                //    double curBasicSalary = financialDetails.GetBasicSalaryAt(curDateTime);
+                //    empPayrunDetail.BasicSalary = (decimal)curBasicSalary;
+                //    grossEarnings += empPayrunDetail.BasicSalary;
 
-                    //Calculate Allowances
-                    List<AllowanceRDTO> allowances = financialDetails.GetActiveAllowncesAt(curDateTime);
-                    for (int j = 0; j < allowances.Count; j++)
-                    {
-                        PayrunAllowanceSummary_Dto payrunAllowanceSummaryPrevious = empPayrunDetailPrevious == null ? null : empPayrunDetailPrevious.PayrunAllowancesSummaries.SingleOrDefault(x => x.AllowanceTypeId == allowances[i].AllowanceTypeId);
+                //    //Calculate Allowances
+                //    List<AllowanceRDTO> allowances = financialDetails.GetActiveAllowncesAt(curDateTime);
+                //    for (int j = 0; j < allowances.Count; j++)
+                //    {
+                //        PayrunAllowanceSummary_Dto payrunAllowanceSummaryPrevious = empPayrunDetailPrevious == null ? null : empPayrunDetailPrevious.PayrunAllowancesSummaries.SingleOrDefault(x => x.AllowanceTypeId == allowances[i].AllowanceTypeId);
 
-                        PayrunAllowanceSummary_Dto payrunAllowanceSummary = new PayrunAllowanceSummary_Dto();
+                //        PayrunAllowanceSummary_Dto payrunAllowanceSummary = new PayrunAllowanceSummary_Dto();
 
-                        payrunAllowanceSummary.Value = (decimal)allowances[j].Amount;
-                        payrunAllowanceSummary.AllowanceTypeId = allowances[j].AllowanceTypeId;
-                        payrunAllowanceSummary.EmployeeId = curEmployee.Id;
+                //        payrunAllowanceSummary.Value = (decimal)allowances[j].Amount;
+                //        payrunAllowanceSummary.AllowanceTypeId = allowances[j].AllowanceTypeId;
+                //        payrunAllowanceSummary.EmployeeId = curEmployee.Id;
 
-                        if (payrunAllowanceSummaryPrevious != null)
-                        {
-                            if (payrunAllowanceSummary.Value > payrunAllowanceSummaryPrevious.Value)
-                            {
-                                decimal allowanceDiff = payrunAllowanceSummary.Value - payrunAllowanceSummaryPrevious.Value;
-                                payrunAllowanceSummary.Value = allowanceDiff;
+                //        if (payrunAllowanceSummaryPrevious != null)
+                //        {
+                //            if (payrunAllowanceSummary.Value > payrunAllowanceSummaryPrevious.Value)
+                //            {
+                //                decimal allowanceDiff = payrunAllowanceSummary.Value - payrunAllowanceSummaryPrevious.Value;
+                //                payrunAllowanceSummary.Value = allowanceDiff;
 
-                                grossEarnings += payrunAllowanceSummary.Value;
-                            }
-                            else
-                            {
-                                decimal allowanceDiff = payrunAllowanceSummaryPrevious.Value - payrunAllowanceSummary.Value;
-                                payrunAllowanceSummary.Value = allowanceDiff;
+                //                grossEarnings += payrunAllowanceSummary.Value;
+                //            }
+                //            else
+                //            {
+                //                decimal allowanceDiff = payrunAllowanceSummaryPrevious.Value - payrunAllowanceSummary.Value;
+                //                payrunAllowanceSummary.Value = allowanceDiff;
 
-                                grossDeductions += payrunAllowanceSummary.Value;
-                            }
-                        }
-                        else
-                        {
-                            grossEarnings += payrunAllowanceSummary.Value;
-                        }
+                //                grossDeductions += payrunAllowanceSummary.Value;
+                //            }
+                //        }
+                //        else
+                //        {
+                //            grossEarnings += payrunAllowanceSummary.Value;
+                //        }
 
-                        empPayrunDetail.PayrunAllowancesSummaries.Add(payrunAllowanceSummary);
-                    }
+                //        empPayrunDetail.PayrunAllowancesSummaries.Add(payrunAllowanceSummary);
+                //    }
 
-                    //Calculate GOSI
-                    decimal gosiAmount = 0;
-                    DictionaryValue_Dto employeeType = curEmployee.EmployeeType;
-                    if (employeeType.Key == AppSettings.PermanantEmployeeTypeKey.ToString())
-                    {
-                        if (curEmployee.Nationality.Value.Contains("Saudi") || curEmployee.Nationality.Value.Contains("KSA"))
-                        {
-                            double gosi10Perc = curBasicSalary / 100 * 10;
-                            double gosi11Perc = curBasicSalary / 100 * 11;
-                            //empPayrunDetail.BasicSalary -= (decimal)gosi10Perc;
+                //    //Calculate GOSI
+                //    decimal gosiAmount = 0;
+                //    DictionaryValue_Dto employeeType = curEmployee.EmployeeType;
+                //    if (employeeType.Key == AppSettings.PermanantEmployeeTypeKey.ToString())
+                //    {
+                //        if (curEmployee.Nationality.Value.Contains("Saudi") || curEmployee.Nationality.Value.Contains("KSA"))
+                //        {
+                //            double gosi10Perc = curBasicSalary / 100 * 10;
+                //            double gosi11Perc = curBasicSalary / 100 * 11;
+                //            //empPayrunDetail.BasicSalary -= (decimal)gosi10Perc;
 
-                            gosiAmount = (decimal)(gosi11Perc - gosi10Perc);
-                        }
-                        else
-                        {
-                            double gosi2Perc = curBasicSalary / 100 * 2;
-                            //double gosi11Perc = curBasicSalary / 100 * 11;
-                            //empPayrunDetail.BasicSalary -= (decimal)gosi2Perc;
+                //            gosiAmount = (decimal)(gosi11Perc - gosi10Perc);
+                //        }
+                //        else
+                //        {
+                //            double gosi2Perc = curBasicSalary / 100 * 2;
+                //            //double gosi11Perc = curBasicSalary / 100 * 11;
+                //            //empPayrunDetail.BasicSalary -= (decimal)gosi2Perc;
 
-                            gosiAmount = (decimal)gosi2Perc;
-                        }
-                    }
-                    empPayrunDetail.GOSIAmount = gosiAmount;
-                    grossDeductions += gosiAmount;
+                //            gosiAmount = (decimal)gosi2Perc;
+                //        }
+                //    }
+                //    empPayrunDetail.GOSIAmount = gosiAmount;
+                //    grossDeductions += gosiAmount;
 
-                    empPayrunDetail.GrossEarnings = grossEarnings;
-                    empPayrunDetail.GrossDeductions = grossDeductions;
-                    empPayrunDetail.NetAmount = grossEarnings - grossDeductions;
+                //    empPayrunDetail.GrossEarnings = grossEarnings;
+                //    empPayrunDetail.GrossDeductions = grossDeductions;
+                //    empPayrunDetail.NetAmount = grossEarnings - grossDeductions;
 
-                    empPayrunDetail.DifferAmount = empPayrunDetail.NetAmount;
+                //    empPayrunDetail.DifferAmount = empPayrunDetail.NetAmount;
 
-                    empPayrunDetail.Indemnity = empPayrunDetail.GetIndemnity();
+                //    empPayrunDetail.Indemnity = empPayrunDetail.GetIndemnity();
 
-                    payrunDetails.Add(empPayrunDetail);
-                }
+                //    payrunDetails.Add(empPayrunDetail);
+                //}
 
-                if (payrun == null) payrun = new Payrun_Dto();
+                //if (payrun == null) payrun = new Payrun_Dto();
 
-                //payrunDetails.ForEach(x => x.Indemnity = x.GetIndemnity());
-                payrun.PayrunDetails = payrunDetails;
-                payrun.Year = year;
-                payrun.Month = month;
-                payrun.CompanyId = CompanyId;
+                ////payrunDetails.ForEach(x => x.Indemnity = x.GetIndemnity());
+                //payrun.PayrunDetails = payrunDetails;
+                //payrun.Year = year;
+                //payrun.Month = month;
+                //payrun.CompanyId = CompanyId;
 
-                payrun.TotalEarnings = payrunDetails.Sum(x => x.GrossEarnings);
-                payrun.TotalDeductions = payrunDetails.Sum(x => x.GrossDeductions);
-                payrun.NetTotal = payrun.TotalEarnings - payrun.TotalDeductions;
+                //payrun.TotalEarnings = payrunDetails.Sum(x => x.GrossEarnings);
+                //payrun.TotalDeductions = payrunDetails.Sum(x => x.GrossDeductions);
+                //payrun.NetTotal = payrun.TotalEarnings - payrun.TotalDeductions;
 
-                Payrun_Dto payrunGenerated = null;
-                if (!exists)
-                    payrunGenerated = await PayrunAppService.CreateAsync(payrun);
-                //else
-                //    payrunGenerated = await PayrunAppService.UpdateAsync(payrun.Id, payrun);
+                //Payrun_Dto payrunGenerated = null;
+                //if (!exists)
+                //    payrunGenerated = await PayrunAppService.CreateAsync(payrun);
+                ////else
+                ////    payrunGenerated = await PayrunAppService.UpdateAsync(payrun.Id, payrun);
 
-                return new JsonResult(payrunGenerated);
+                //return new JsonResult(payrunGenerated);
+                return new JsonResult(new { });
             }
             catch (Exception ex)
             {

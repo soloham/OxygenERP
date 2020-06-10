@@ -32,7 +32,7 @@ namespace CERP.HR.EMPLOYEE.DTOs
         public string GetMonth { get => Convert.ToDateTime(Month.ToString() + "/1/1990").ToString("MMMM"); }
         public int Month { get; set; }
 
-        public virtual ICollection<TimesheetWeekSummary_Dto> WeeklySummaries { get; set; }
+        public List<TimesheetWeekSummary_Dto> WeeklySummaries { get; set; }
 
         public int Week1Hours { get; set; }
         public int Week2Hours { get; set; }
@@ -77,7 +77,7 @@ namespace CERP.HR.EMPLOYEE.DTOs
         public int Month { get; set; }
         public int Week { get; set; }
 
-        public virtual ICollection<TimesheetWeekJobSummary_Dto> WeeklyJobSummaries { get; set; }
+        public List<TimesheetWeekJobSummary_Dto> WeeklyJobSummaries { get; set; }
 
         public int SumSun { get; set; }
         public int SumMon { get; set; }

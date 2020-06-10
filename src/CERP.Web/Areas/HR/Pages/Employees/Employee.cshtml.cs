@@ -134,7 +134,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
             IsEditing = false;
             if (EmployeeId != null && EmployeeId != Guid.Empty)
             {
-                EmployeeToEdit = await employeeAppService.GetAsync(EmployeeId);
+                //EmployeeToEdit = await employeeAppService.GetAsync(EmployeeId);
 
                 GeneralInfo = JsonSerializer.Deserialize<GeneralInfo>(EmployeeToEdit.ExtraProperties["generalInfo"].ToString());
                 GeneralInfo.Initialize(DictionaryValuesRepo, documentAppService);
@@ -337,7 +337,7 @@ namespace CERP.Web.Areas.HR.Pages.Employees
                     {
                         employee.ProfilePic = "noimage.jpg";
                     }
-                    empAdded = await employeeAppService.CreateEmployee(employee);
+                    //empAdded = await employeeAppService.CreateEmployee(employee);
 
                     //customEntityChange.EntityId = empAdded.Id.ToString();
                     //customEntityChange.TenantId = CurrentUser.TenantId.ToString();
