@@ -178,6 +178,9 @@ namespace CERP.EntityFrameworkCore
                                                        .Include(p => p.CostCenter)
                                                        .Include(p => p.PayGroup)
                                                        .Include(p => p.PayGrade)
+                                                       .Include(p => p.EmployeeSubGroup)
+                                                       .Include(p => p.EmployeeGroup)
+                                                       .Include(p => p.EmploymentType)
                                                        .Include(p => p.Timezone)
                                                        .Include(p => p.OrganizationStructureTemplateDepartment)
                                                        .Include(p => p.Portal);

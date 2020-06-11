@@ -937,6 +937,16 @@ namespace CERP.EntityFrameworkCore
             #endregion
             #endregion
             #region EmployeeCentral
+            #region Objects
+            builder.Entity<PrimaryValidityAttachment>(b =>
+            {
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "PrimaryValidityAttachments", CERPConsts.HR_Attributes_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+            });
+            #endregion
             #region Employee
             builder.Entity<Employee>(b =>
             {
@@ -956,9 +966,15 @@ namespace CERP.EntityFrameworkCore
 
                 // BIO INFO
                 b.HasOne(p => p.BirthCountry).WithMany().OnDelete(DeleteBehavior.NoAction);
+                //b.HasMany(p => p.EmployeeDisabilities).WithOne().OnDelete(DeleteBehavior.Cascade);
 
                 // IDENTITY INFO
-                //b.HasMany(p => p.NationalIdentities).WithOne().OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(p => p.NationalIdentities).WithOne().IsRequired(false).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(p => p.IqamaLabourOfficeValidities).WithOne().IsRequired(false).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(p => p.IqamaNumberValidities).WithOne().IsRequired(false).IsRequired(false).OnDelete(DeleteBehavior.NoAction);
+
+                //b.HasOne(p => p.IqamaSponsorType).WithMany().IsRequired(false).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(p => p.NationalIdentityType).WithMany().OnDelete(DeleteBehavior.NoAction);
                 //b.HasMany(p => p.PassportTravelDocuments).WithOne().OnDelete(DeleteBehavior.Cascade);
 
                 // CONTACT INFO
@@ -969,8 +985,11 @@ namespace CERP.EntityFrameworkCore
                 // ORGANIZATION INFO
                 b.HasOne(p => p.OrganizationStructureTemplateDepartment).WithMany(x => x.Employees).OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(p => p.CostCenter).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(p => p.EmployeeSubGroup).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(p => p.EmployeeGroup).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(p => p.EmploymentType).WithMany().OnDelete(DeleteBehavior.NoAction);
 
-                // BASIC SALARY
+                // BASIC CONTRACT DETAILS
                 b.HasOne(p => p.PayGroup).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(p => p.PayGrade).WithMany().OnDelete(DeleteBehavior.NoAction);
 
@@ -1034,6 +1053,28 @@ namespace CERP.EntityFrameworkCore
                 //b.HasOne(x => x.LoanStatus).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
             #endregion
+            #region Bio
+            builder.Entity<Disability>(b =>
+            {
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "Disabilities", CERPConsts.HR_Attributes_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+            });
+            builder.Entity<EmployeeDisability>(b =>
+            {
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "EmployeeDisabilities", CERPConsts.HR_EmployeeCentral_DbSchema);
+
+                b.HasKey("EmployeeId", "DisabilityId");
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.Employee).WithMany(x => x.EmployeeDisabilities).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.Disability).WithMany().OnDelete(DeleteBehavior.Cascade);
+            });
+            #endregion
             #region Identities
             builder.Entity<NationalIdentity>(b =>
             {
@@ -1044,18 +1085,28 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureConcurrencyStamp();
 
                 b.HasOne(x => x.IdType).WithMany().OnDelete(DeleteBehavior.NoAction);
-            });
-            builder.Entity<EmployeeNationalIdentity>(b =>
+            }); 
+            builder.Entity<EmployeeSponsorLegalEntity>(b =>
             {
-                b.ToTable(CERPConsts.HR_DbTablePrefix + "EmployeeNationalIdentities", CERPConsts.HR_EmployeeCentral_DbSchema);
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "EmployeeSponsorLegalEntities", CERPConsts.HR_EmployeeCentral_DbSchema);
 
-                b.HasKey("EmployeeId", "NationalIdentityId");
+                b.HasKey("EmployeeId", "LegalEntityId");
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
-                b.HasOne(x => x.Employee).WithMany(x => x.NationalIdentities).OnDelete(DeleteBehavior.Cascade);
-                b.HasOne(x => x.NationalIdentity).WithMany().OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.Employee).WithMany(x => x.EmployeeSponsorLegalEntities).IsRequired(false).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.LegalEntity).WithMany().OnDelete(DeleteBehavior.Cascade);
+            });
+            builder.Entity<EmployeePrimaryValidityAttachment>(b =>
+            {
+                b.ToTable(CERPConsts.HR_DbTablePrefix + "EmployeePrimaryValidityAttachments", CERPConsts.HR_EmployeeCentral_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasMany(x => x.PrimaryValidityAttachments).WithOne(x => x.EmployeePrimaryValidityAttachment).OnDelete(DeleteBehavior.Cascade);
             });
             builder.Entity<DependantNationalIdentity>(b =>
             {
@@ -1066,9 +1117,10 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
-                b.HasOne(x => x.Dependant).WithMany(x => x.NationalIdentities).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.Dependant).WithMany(x => x.NationalIdentities).OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(x => x.NationalIdentity).WithMany().OnDelete(DeleteBehavior.Cascade);
             });
+            
 
             builder.Entity<PassportTravelDocument>(b =>
             {
@@ -1089,7 +1141,7 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
-                b.HasOne(x => x.Employee).WithMany(x => x.PassportTravelDocuments).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.Employee).WithMany(x => x.PassportTravelDocuments).OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(x => x.PassportTravelDocument).WithMany().OnDelete(DeleteBehavior.Cascade);
             });
             builder.Entity<DependantPassportTravelDocument>(b =>
@@ -1101,7 +1153,7 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
 
-                b.HasOne(x => x.Dependant).WithMany(x => x.PassportTravelDocuments).OnDelete(DeleteBehavior.Cascade);
+                b.HasOne(x => x.Dependant).WithMany(x => x.PassportTravelDocuments).OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(x => x.PassportTravelDocument).WithMany().OnDelete(DeleteBehavior.Cascade);
             });
             #endregion

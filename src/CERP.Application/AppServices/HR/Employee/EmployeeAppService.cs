@@ -15,10 +15,10 @@ namespace CERP.AppServices.HR.EmployeeService
 {
     public class EmployeeAppService : CrudAppService<Employee, Employee_Dto, Guid, PagedAndSortedResultRequestDto, Employee_Dto, Employee_Dto>
     {
-        public EmployeeAppService(IRepository<Employee, Guid> repository, IRepository<EmployeeNationalIdentity> employeeNationalIdentitiesRepo, IRepository<EmployeePassportTravelDocument> employeePassportTravelDocumentsRepo, IRepository<Dependant> dependantsRepo, IRepository<EmployeeEmailAddress> employeeEmailAddressesRepo, IRepository<EmployeePhoneAddress> employeePhoneAddressesRepo, IRepository<EmployeeHomeAddress> employeeHomeAddressesRepo, IRepository<EmployeeContact> employeeContactsRepo, IRepository<Benefit> benefitsRepo, IRepository<CashPaymentType> cashPaymentTypesRepo, IRepository<ChequePaymentType> chequePaymentTypesRepo, IRepository<BankPaymentType> bankPaymentTypesRepo, IRepository<EC_AcademiaTemplate> eC_AcademiaTemplatesRepo, IRepository<EC_SkillTemplate> eC_SkillTemplatesRepo, IRepository<EmployeeLoan> employeeLoansRepo, IRepository<DependantPassportTravelDocument> dependantPassportTravelDocumentsRepo, IRepository<DependantNationalIdentity> dependantNationalIdentitiesRepo, IRepository<NationalIdentity> nationalIdentitiesRepo, IRepository<PassportTravelDocument> passportTravelDocumentsRepo, IRepository<EmailAddress> emailAddressesRepo, IRepository<PhoneAddress> phoneAddressesRepo, IRepository<HomeAddress> homeAddressesRepo, IRepository<Contact> contactsRepo) : base(repository)
+        public EmployeeAppService(IRepository<Employee, Guid> repository, IRepository<EmployeePrimaryValidityAttachment> employeeNationalIdentitiesRepo, IRepository<EmployeePassportTravelDocument> employeePassportTravelDocumentsRepo, IRepository<Dependant> dependantsRepo, IRepository<EmployeeEmailAddress> employeeEmailAddressesRepo, IRepository<EmployeePhoneAddress> employeePhoneAddressesRepo, IRepository<EmployeeHomeAddress> employeeHomeAddressesRepo, IRepository<EmployeeContact> employeeContactsRepo, IRepository<Benefit> benefitsRepo, IRepository<CashPaymentType> cashPaymentTypesRepo, IRepository<ChequePaymentType> chequePaymentTypesRepo, IRepository<BankPaymentType> bankPaymentTypesRepo, IRepository<EC_AcademiaTemplate> eC_AcademiaTemplatesRepo, IRepository<EC_SkillTemplate> eC_SkillTemplatesRepo, IRepository<EmployeeLoan> employeeLoansRepo, IRepository<DependantPassportTravelDocument> dependantPassportTravelDocumentsRepo, IRepository<DependantNationalIdentity> dependantNationalIdentitiesRepo, IRepository<NationalIdentity> nationalIdentitiesRepo, IRepository<PassportTravelDocument> passportTravelDocumentsRepo, IRepository<EmailAddress> emailAddressesRepo, IRepository<PhoneAddress> phoneAddressesRepo, IRepository<HomeAddress> homeAddressesRepo, IRepository<Contact> contactsRepo, IRepository<EmployeeDisability> employeeDisabilitiesRepo, IRepository<Disability> disabilitiesRepo, IRepository<PrimaryValidityAttachment> primaryValidityAttachmentsRepo, IRepository<EmployeeSponsorLegalEntity> employeeSponsorLegalEntitysRepo, IRepository<EmployeePrimaryValidityAttachment> employeePrimaryValidityAttachmentsRepo) : base(repository)
         {
             Repository = repository;
-            EmployeeNationalIdentitiesRepo = employeeNationalIdentitiesRepo;
+            EmployeePrimaryValidityAttachmentsRepo = employeeNationalIdentitiesRepo;
             EmployeePassportTravelDocumentsRepo = employeePassportTravelDocumentsRepo;
             DependantsRepo = dependantsRepo;
             EmployeeEmailAddressesRepo = employeeEmailAddressesRepo;
@@ -40,12 +40,24 @@ namespace CERP.AppServices.HR.EmployeeService
             PhoneAddressesRepo = phoneAddressesRepo;
             HomeAddressesRepo = homeAddressesRepo;
             ContactsRepo = contactsRepo;
+            EmployeeDisabilitiesRepo = employeeDisabilitiesRepo;
+            DisabilitiesRepo = disabilitiesRepo;
+            PrimaryValidityAttachmentsRepo = primaryValidityAttachmentsRepo;
+            EmployeeSponsorLegalEntitysRepo = employeeSponsorLegalEntitysRepo;
+            EmployeePrimaryValidityAttachmentsRepo = employeePrimaryValidityAttachmentsRepo;
         }
 
         public IRepository<Employee, Guid> Repository { get; }
+
+        public IRepository<EmployeeDisability> EmployeeDisabilitiesRepo { get; }
+        public IRepository<Disability> DisabilitiesRepo { get; }
+
+        public IRepository<PrimaryValidityAttachment> PrimaryValidityAttachmentsRepo { get; }
+
         public IRepository<NationalIdentity> NationalIdentitiesRepo { get; }
         public IRepository<PassportTravelDocument> PassportTravelDocumentsRepo { get; }
-        public IRepository<EmployeeNationalIdentity> EmployeeNationalIdentitiesRepo { get; }
+        public IRepository<EmployeePrimaryValidityAttachment> EmployeePrimaryValidityAttachmentsRepo { get; }
+        public IRepository<EmployeeSponsorLegalEntity> EmployeeSponsorLegalEntitysRepo { get; }
         public IRepository<EmployeePassportTravelDocument> EmployeePassportTravelDocumentsRepo { get; }
         public IRepository<Dependant> DependantsRepo { get; }
         public IRepository<DependantPassportTravelDocument> DependantPassportTravelDocumentsRepo { get; }
@@ -97,6 +109,9 @@ namespace CERP.AppServices.HR.EmployeeService
                         .Include(p => p.PayGroup)
                         .Include(p => p.PayGrade)
                         .Include(p => p.Timezone)
+                        .Include(p => p.EmployeeSubGroup)
+                        .Include(p => p.EmployeeGroup)
+                        .Include(p => p.EmploymentType)
                         //.Include(p => p.OrganizationStructureTemplateDepartment)
                         .Include(p => p.Portal)
 
@@ -109,52 +124,71 @@ namespace CERP.AppServices.HR.EmployeeService
             }
             return employees;
         }
-        public async Task<Employee_Dto> GetFullEmployee(Guid Id) 
+        public async Task<Employee_Dto> GetFullEmployee(Guid Id, int concurrency = 1) 
         {
             Employee_Dto employee = null;
             try
             {
-                Employee entity = await Task.Run(() => Repository
-                .Include(x => x.NationalIdentities)
-                     .ThenInclude(x => x.NationalIdentity)
-                 .Include(x => x.PassportTravelDocuments)
-                     .ThenInclude(x => x.PassportTravelDocument)
+                if (concurrency == 1)
+                {
+                    Employee entity = await Task.Run(() => Repository
+                    .Include(x => x.NationalIdentities)
+                         .ThenInclude(x => x.PrimaryValidityAttachments)
+                     .Include(x => x.PassportTravelDocuments)
+                         .ThenInclude(x => x.PassportTravelDocument)
 
-                 .Include(x => x.Dependants)
-                     .ThenInclude(x => x.NationalIdentities)
-                     .ThenInclude(x => x.NationalIdentity)
-                 .Include(x => x.Dependants)
-                     .ThenInclude(x => x.PassportTravelDocuments)
-                     .ThenInclude(x => x.PassportTravelDocument)
+                     .Include(x => x.EmployeeDisabilities)
+                        .ThenInclude(x => x.Disability)
 
-                 .Include(x => x.OrganizationStructureTemplateDepartment)
-                     .ThenInclude(x => x.DepartmentTemplate)
+                     .Include(x => x.EmployeeSponsorLegalEntities)
 
-                 .Include(x => x.EmailAddresses)
-                     .ThenInclude(x => x.EmailAddress)
-                 .Include(x => x.PhoneAddresses)
-                     .ThenInclude(x => x.PhoneAddress)
-                 .Include(x => x.HomeAddresses)
-                     .ThenInclude(x => x.HomeAddress)
-                 .Include(x => x.Contacts)
-                     .ThenInclude(x => x.Contact)
+                     .Include(x => x.OrganizationStructureTemplateDepartment)
+                         .ThenInclude(x => x.DepartmentTemplate)
 
-                 .Include(x => x.EmployeeBenefits)
-                    .ThenInclude(x => x.PayComponent)
+                     .Include(x => x.EmailAddresses)
+                         .ThenInclude(x => x.EmailAddress)
+                     .Include(x => x.PhoneAddresses)
+                         .ThenInclude(x => x.PhoneAddress)
+                     .Include(x => x.HomeAddresses)
+                         .ThenInclude(x => x.HomeAddress)
+                     .Include(x => x.Contacts)
+                         .ThenInclude(x => x.Contact)
 
-                 .Include(x => x.CashPaymentTypes)
-                    .ThenInclude(x => x.CollectionLocation)
-                 .Include(x => x.ChequePaymentTypes)
-                 .Include(x => x.BankPaymentTypes)
+                     .Include(x => x.EmployeeBenefits)
+                        .ThenInclude(x => x.PayComponent)
 
-                 .Include(x => x.AcademiaProfile)
-                    .ThenInclude(x => x.AcademiaCertificateSubType)
-                 .Include(x => x.SkillsProfile)
-                    .ThenInclude(x => x.SkillSubType)
+                     .Include(x => x.CashPaymentTypes)
+                        .ThenInclude(x => x.CollectionLocation)
+                     .Include(x => x.ChequePaymentTypes)
+                     .Include(x => x.BankPaymentTypes)
 
-                 .Include(x => x.EmployeeLoans)
-                 .First(x => x.Id == Id));
-                employee = base.MapToGetOutputDto(entity);
+                     .Include(x => x.AcademiaProfile)
+                        .ThenInclude(x => x.AcademiaCertificateSubType)
+                     .Include(x => x.SkillsProfile)
+                        .ThenInclude(x => x.SkillSubType)
+
+                     .Include(x => x.EmployeeLoans)
+                     .First(x => x.Id == Id));
+                    employee = base.MapToGetOutputDto(entity);
+                }
+                else
+                {
+                    Employee entity = await Task.Run(() => Repository
+                     .Include(x => x.Dependants)
+                         .ThenInclude(x => x.NationalIdentities)
+                         .ThenInclude(x => x.NationalIdentity)
+                     .Include(x => x.Dependants)
+                         .ThenInclude(x => x.PassportTravelDocuments)
+                         .ThenInclude(x => x.PassportTravelDocument)
+                     .Include(x => x.Dependants)
+
+                     .Include(x => x.IqamaNumberValidities)
+                         .ThenInclude(x => x.PrimaryValidityAttachments)
+                     .Include(x => x.IqamaLabourOfficeValidities)
+                         .ThenInclude(x => x.PrimaryValidityAttachments)
+                     .First(x => x.Id == Id));
+                    employee = base.MapToGetOutputDto(entity);
+                }
             }
             catch(Exception ex)
             {

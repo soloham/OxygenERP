@@ -17,7 +17,7 @@ namespace CERP.HR.Documents
         public DictionaryValue_Dto IdType { get; set; }
         public Guid IdTypeId { get; set; }
         public string IDNumber { get; set; }
-        public string IDAttachment { get; set; }
+        public string Attachment { get; set; }
         public bool IsPrimary { get; set; }
         public string ValidityFromDate { get; set; }
         public string ValidityToDate { get; set; }

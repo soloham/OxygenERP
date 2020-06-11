@@ -70,6 +70,7 @@ Syncfusion.EJ2.Navigations.TabTabAnimationSettings verticalAnimation = new TabTa
     Previous = new TabTabActionSettings() { Effect = "SlideBottomIn", Duration = 500 }
 }; //new { name = "SlideLeftIn" };
 
+List<EC_IqamaSponsorType> iqamaSponsorTypes = Enum.GetValues(typeof(EC_IqamaSponsorType)).Cast<EC_IqamaSponsorType>().ToList();
 }
 
 @section styles {
@@ -490,7 +491,7 @@ Syncfusion.EJ2.Navigations.TabTabAnimationSettings verticalAnimation = new TabTa
             ${for(action_btn of card_action_btn.action_btns)} ${if(action_btn.tag === 'a')}
             <a href="${action_btn.href}" target="${action_btn.target}">${action_btn.text}</a>
             ${else}
-            <button class="e-card-btn" onclick=`${action_btn.action}`>${action_btn.text}</button>
+            <button class="e-card-btn" onclick=${action_btn.action}>${action_btn.text}</button>
             ${/if} ${/for}
         </div>
         ${/if}
@@ -512,6 +513,10 @@ Syncfusion.EJ2.Navigations.TabTabAnimationSettings verticalAnimation = new TabTa
     let fullNameValueObjects = [];
     let codeNameTypes = [];
 
+    let disabilitiesGrid;
+
+    let iqamaRenewValidityGrid;
+    let labourOfficeRenewValidityGrid;
     let nationalIdentityGrid;
     let passportTravelGrid;
     let emailAddressesGrid;
@@ -536,6 +541,7 @@ Syncfusion.EJ2.Navigations.TabTabAnimationSettings verticalAnimation = new TabTa
     let skillsProfileGrid;
 
     let loansGrid;
+        let isNotNational;
 
     function populateDictionaryValues(data, grid, columnIndex) {
         let dataMS = [];
@@ -565,7 +571,7 @@ Syncfusion.EJ2.Navigations.TabTabAnimationSettings verticalAnimation = new TabTa
         //console.log(dataMS);
         $(multiselect).multiselect('dataprovider', dataMS);
     }
-    function loadDictionaryValues(valueType, gridsArray = [], columnsArray = [], multiselects = []) {
+    function loadDictionaryValues(valueType, gridsArray = [], columnsArray = [], multiselects = [], callback = null) {
             $.each(gridsArray, function (i, x) { x.showSpinner(); });
     cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(valueType).done(function (data) {
                 $.each(gridsArray, function (i, x) { x.hideSpinner(); });
@@ -575,7 +581,8 @@ Syncfusion.EJ2.Navigations.TabTabAnimationSettings verticalAnimation = new TabTa
 
                 $.each(gridsArray, function (i, x) { populateDictionaryValues(data, x, columnsArray[i]) });
         if (multiselects.length > 0)
-                    $.each(multiselects, function (i, x) { populateMSDictionaryValues(data, x) });
+            $.each(multiselects, function (i, x) { populateMSDictionaryValues(data, x) });
+        if (callback) callback(data);
     });
 }
 
@@ -651,6 +658,7 @@ console.log(columnIndex);
             FillFormByObject(curEmployee, $('#personalInfoTab'));
             FillFormByObject(curEmployee, $('#timeTab'));
             FillFormByObject(curEmployee, $('#compensationTab'));
+            //FillFormByObject(curEmployee, $('#identityInfoTab'));
             if (loadedOrgStructureInfo && $('#empCompany').val() != curEmployee.legalEntityId) {
                 $('#empCompany').multiselect('deselectAll');
                 $('#empCompany').multiselect('select', curEmployee.legalEntityId);
@@ -664,7 +672,6 @@ console.log(columnIndex);
         cERP.appServices.hR.employeeService.employee.getFullEmployee('@Model.Id').done(function (data) {
             curEmployee.nationalIdentities = data.nationalIdentities;
             curEmployee.passportTravelDocuments = data.passportTravelDocuments;
-            curEmployee.dependants = data.dependants;
             curEmployee.organizationStructureTemplateDepartment = data.organizationStructureTemplateDepartment;
             curEmployee.emailAddresses = data.emailAddresses;
             curEmployee.phoneAddresses = data.phoneAddresses;
@@ -674,8 +681,11 @@ console.log(columnIndex);
             curEmployee.cashPaymentTypes = data.cashPaymentTypes;
             curEmployee.chequePaymentTypes = data.chequePaymentTypes;
             curEmployee.bankPaymentTypes = data.bankPaymentTypes;
+
             curEmployee.academiaProfile = data.academiaProfile;
             curEmployee.skillsProfile = data.skillsProfile;
+            curEmployee.employeeDisabilities = data.employeeDisabilities;
+            curEmployee.employeeSponsorLegalEntities = data.employeeSponsorLegalEntities;
             curEmployee.employeeLoans = data.employeeLoans;
 
             let clonedData = rfdc()(curEmployee);
@@ -683,46 +693,18 @@ console.log(columnIndex);
             fullNameValueObjects = fullNameValueObjects.filter(function (x) { return  clonedData.dependants.filter(function (y) { return y.id == x.id }).length > 0 });
             fullNameValueObjects = fullNameValueObjects.concat(clonedData.dependants);
 
-            nationalIdentityGrid.dataSource = clonedData.nationalIdentities.map(function (x) { return x.nationalIdentity });
-            passportTravelGrid.dataSource = clonedData.passportTravelDocuments.map(function (x) { return x.passportTravelDocument });
+            console.log(clonedData.employeeDisabilities);
+            disabilitiesGrid.dataSource = clonedData.employeeDisabilities.map(function (x) { return x.disability });
+
+            if(clonedData.nationalIdentities)
+                nationalIdentityGrid.dataSource = clonedData.nationalIdentities.primaryValidityAttachments;
+            if (clonedData.passportTravelDocuments)
+                passportTravelGrid.dataSource = clonedData.passportTravelDocuments.map(function (x) { return x.passportTravelDocument });
 
             emailAddressesGrid.dataSource = clonedData.emailAddresses.map(function (x) { return x.emailAddress });
             phoneAddressesGrid.dataSource = clonedData.phoneAddresses.map(function (x) { return x.phoneAddress });
             homeAddressesGrid.dataSource = clonedData.homeAddresses.map(function (x) { return x.homeAddress });
             emergencyContactsGrid.dataSource = clonedData.contacts.map(function (x) { return x.contact });
-
-            dependantsGrid.dataSource = clonedData.dependants;
-            dependantNationalIndentitiesGrid.dataSource = clonedData.dependants.map(function (x) { return x.nationalIdentities.map(function (y) { return { dependantId: y.dependantId, ...y.nationalIdentity } }) }).flat();
-            dependantPassportTravelDocsGrid.dataSource = clonedData.dependants.map(function (x) { return x.passportTravelDocuments.map(function (y) { return { dependantId: y.dependantId, ...y.passportTravelDocument } }) }).flat();
-
-            let dependantsBook = [];
-
-            for (var i = 0; i < clonedData.dependants.length; i++) {
-                let curDependant = clonedData.dependants[i];
-                let data = {
-                    header_title: curDependant.firstName + ' ' + curDependant.lastName,
-                    header_subtitle: dictionaryValueAccessor('relationshipTypeId', curDependant),
-                    header_birthCountry: dictionaryValueAccessor('birthCountryId', curDependant),
-                    header_dateOfBirth: curDependant.dateOfBirth,
-                    header_placeOfBirth: curDependant.placeOfBirth,
-                    cardImage: false,//{ url: '../css/card/Tile_2.png', tag: 'client' },
-                    cardContent: false,//'Node.js is a wildly popular platform for writing web applications that has revolutionized web development in many ways.',
-                    card_action_btn: {
-                        action_btns: [{ tag: '', target: '_blank', text: 'Edit', action: editDependant(clonedData.dependants[i]) }],
-                        isVertical: true
-                    },
-                    isHorizontal: false
-                };
-                dependantsBook.push(data);
-            }
-            console.log('Dependants Book');
-            console.log(dependantsBook);
-            cardObj = dependantsBook;
-            cardRendering(cardObj);
-            //$.each(clonedData.employeeBenefits, function (i, x) {
-            //    x.payComponentTypeId = 7;
-            //});
-            //clonedData.employeeBenefits[0].payComponentTypeId = 7;
             if (!loadedCompBenefits) {
                 console.log('SETTING AT RANDEVU 1');
                 compBenefitsGrid.dataSource = clonedData.employeeBenefits;
@@ -735,7 +717,6 @@ console.log(columnIndex);
 
             chequePaymentTypesGrid.dataSource = clonedData.chequePaymentTypes;
             bankPaymentTypesGrid.dataSource = clonedData.bankPaymentTypes;
-
             dictionaryValueTypes.removeIf(function (x) { return clonedData.academiaProfile.filter(function (y) { return y.academiaCertificateSubTypeId == x.id }).length > 0 })
             dictionaryValueTypes = dictionaryValueTypes.concat(clonedData.academiaProfile.map(function (x) { return x.academiaCertificateSubType }));
             academiaProfileGrid.dataSource = clonedData.academiaProfile;
@@ -746,19 +727,79 @@ console.log(columnIndex);
 
             loansGrid.dataSource = clonedData.employeeLoans;
 
+            if (curEmployee.employeeSponsorLegalEntities) {
+                $('#empIqamaSponsorLegalEntitiesId').multiselect('select', curEmployee.employeeSponsorLegalEntities.map(function (x) { return x.legalEntityId }));
+            }
+
+            cERP.appServices.hR.employeeService.employee.getFullEmployee('@Model.Id', 2).done(function (data) {
+                curEmployee.dependants = data.dependants;
+
+                curEmployee.iqamaNumberValidities = data.iqamaNumberValidities;
+                curEmployee.iqamaLabourOfficeValidities = data.iqamaLabourOfficeValidities;
+               
+                let clonedData = rfdc()(curEmployee);
+
+                fullNameValueObjects = fullNameValueObjects.filter(function (x) { return clonedData.dependants.filter(function (y) { return y.id == x.id }).length > 0 });
+                fullNameValueObjects = fullNameValueObjects.concat(clonedData.dependants);
+
+                dependantsGrid.dataSource = clonedData.dependants;
+                dependantNationalIndentitiesGrid.dataSource = clonedData.dependants.map(function (x) { return x.nationalIdentities.map(function (y) { return { dependantId: y.dependantId, ...y.nationalIdentity } }) }).flat();
+                dependantPassportTravelDocsGrid.dataSource = clonedData.dependants.map(function (x) { return x.passportTravelDocuments.map(function (y) { return { dependantId: y.dependantId, ...y.passportTravelDocument } }) }).flat();
+
+                let dependantsBook = [];
+
+                for (var i = 0; i < clonedData.dependants.length; i++) {
+                    let curDependant = clonedData.dependants[i];
+                    let data = {
+                        relationshipTypeId: curDependant.relationshipTypeId,
+                        header_title: curDependant.firstName + ' ' + curDependant.lastName,
+                        header_subtitle: dictionaryValueAccessor('relationshipTypeId', curDependant),
+                        header_birthCountry: dictionaryValueAccessor('birthCountryId', curDependant),
+                        header_dateOfBirth: curDependant.dateOfBirth,
+                        header_placeOfBirth: curDependant.placeOfBirth,
+                        cardImage: false,//{ url: '../css/card/Tile_2.png', tag: 'client' },
+                        cardContent: false,//'Node.js is a wildly popular platform for writing web applications that has revolutionized web development in many ways.',
+                        card_action_btn: {
+                            action_btns: [{ tag: '', target: '_blank', text: 'Edit', action: editDependant(clonedData.dependants[i]) }],
+                            isVertical: true
+                        },
+                        isHorizontal: false
+                    };
+                    dependantsBook.push(data);
+                }
+                console.log('Dependants Book');
+                console.log(dependantsBook);
+                cardObj = dependantsBook;
+                cardRendering(cardObj);
+                //$.each(clonedData.employeeBenefits, function (i, x) {
+                //    x.payComponentTypeId = 7;
+                //});
+                //clonedData.employeeBenefits[0].payComponentTypeId = 7;
+
+                if (clonedData.iqamaNumberValidities)
+                    iqamaRenewValidityGrid.dataSource = clonedData.iqamaNumberValidities.primaryValidityAttachments;
+                if (clonedData.iqamaLabourOfficeValidities)
+                    labourOfficeRenewValidityGrid.dataSource = clonedData.iqamaLabourOfficeValidities.primaryValidityAttachments;
+               
 
             });
+        });
     }
 
-    let options = {
-        buttonWidth: '100%',
-        includeSelectAllOption: true,
-        enableFiltering: false,
-        enableClickableOptGroups: true,
-        includeResetOption: true,
-        includeResetDivider: true,
-        enableCollapsibleOptGroups: true
-    };
+        let accordion = $('#identityInfoAccordion')[0].ej2_instances[0];
+        accordion.hideItem(0, true);
+        let options = {
+            buttonWidth: '100%',
+            includeSelectAllOption: true,
+            enableFiltering: false,
+            enableClickableOptGroups: true,
+            includeResetOption: true,
+            includeResetDivider: true,
+            enableCollapsibleOptGroups: true
+        };
+        $.each($('.mltslct'), function (i, x) { $(x).multiselect(options); });
+
+        $('#empIqamaSponsorType').change();
 
     $('#empBirthCountry').multiselect(options);
     $('#empGender').multiselect(options);
@@ -778,7 +819,57 @@ console.log(columnIndex);
     $('#empCBS_PayGrade').multiselect(options);
     $('#empCBS_PayGrade').multiselect(options);
 
-    nationalIdentityGrid = $('#NationalIdentitiesGrid')[0].ej2_instances[0];
+        disabilitiesGrid = $('#DisabilitiesGrid')[0].ej2_instances[0];
+
+        iqamaRenewValidityGrid = $('#IqamaRenewValidityGrid')[0].ej2_instances[0];
+        labourOfficeRenewValidityGrid = $('#LabourOfficeRenewValidityGrid')[0].ej2_instances[0];
+        nationalIdentityGrid = $('#NationalIdentitiesGrid')[0].ej2_instances[0];
+        $('#empNationality').on('change', function () {
+            let ties = dictionaryValueTypes.filter(function (x) { return x.id == $('#empNationality').val() });
+            if (ties.length == 0) return;
+            let nationality = ties[0].value;
+        let accordion = $('#identityInfoAccordion')[0].ej2_instances[0];
+
+        try {
+            console.log(nationality);
+            if (nationality.includes('Saudi')) {
+                accordion.hideItem(0, true);
+                accordion.hideItem(1, false);
+                let value = dictionaryValueTypes.filter(function (x) { return x.value.includes('National Identity') })[0].id;
+                //nationalIdentitiesGrid.columns[1].value = value;
+                $('#empNationalIdentityTypeId').multiselect('select', value);
+                $('#natIdNumberField').text('National ID Number:');
+                isNotNational = false;
+            }
+            else if (nationality.includes('UAE') ||
+                nationality.includes('United Arab Emirates') ||
+                nationality.includes('Bahrain') ||
+                nationality.includes('Qatar') ||
+                nationality.includes('Oman') ||
+                nationality.includes('Kuwait')) {
+
+                accordion.hideItem(0, true);
+                accordion.hideItem(1, false);
+                let value = dictionaryValueTypes.filter(function (x) { return x.value.includes('GCC') })[0].id;
+                //nationalIdentitiesGrid.columns[1].value = value;
+                
+                $('#empNationalIdentityTypeId').multiselect('select', value);
+                $('#natIdNumberField').text('GCC ID Number:');
+                isNotNational = false;
+            }
+            else {
+                accordion.hideItem(0, false);
+                accordion.hideItem(1, true);
+                let value = dictionaryValueTypes.filter(function (x) { return x.value.includes('Iqama') })[0].id;
+                //nationalIdentitiesGrid.columns[1].value = value;
+                $('#empNationalIdentityTypeId').multiselect('select', value);
+                isNotNational = true;
+            }
+        }
+        catch (ex) {
+            console.log({ nationality, ex });
+        }
+    });
 
     passportTravelGrid = $('#PassportTravelsGrid')[0].ej2_instances[0];
 
@@ -815,14 +906,19 @@ console.log(columnIndex);
 
     loansGrid = $('#LoansGrid')[0].ej2_instances[0];
 
-    loadDictionaryValues(ValueTypeModules.IDType, [nationalIdentityGrid, dependantNationalIndentitiesGrid], [1, 2]);
+        loadDictionaryValues(ValueTypeModules.IDType, [nationalIdentityGrid, dependantNationalIndentitiesGrid], [1, 2], ['#empNationalIdentityTypeId'], function () {
+            $('#empNationalIdentityTypeId').multiselect('disable');
+        });
 
     loadDictionaryValues(ValueTypeModules.Country,
-        [passportTravelGrid, homeAddressesGrid, emergencyContactsGrid, dependantsGrid, dependantPassportTravelDocsGrid, bankPaymentTypesGrid],
-        [2, 8, 11, 'birthCountryId', 'issuingCountryId', 7],
-        ['#empBirthCountry', '#empNationality']);
+        [passportTravelGrid, homeAddressesGrid, emergencyContactsGrid, dependantsGrid, dependantsGrid, dependantPassportTravelDocsGrid, bankPaymentTypesGrid],
+        [2, 8, 11, 'birthCountryId', 'nationalityId', 'issuingCountryId', 7],
+        ['#empBirthCountry', '#empNationality'], function (data) { $('#empNationality').change() });
 
-    loadDictionaryValues(ValueTypeModules.Relationship, [emergencyContactsGrid, dependantsGrid], [1, 5]);
+    loadDictionaryValues(ValueTypeModules.Relationship, [emergencyContactsGrid, dependantsGrid], [1, 5], [], function (data) {
+        filterCategory = data;
+        multiselectComp.dataSource = filterCategory;
+    });
 
     loadDictionaryValues(ValueTypeModules.Gender, [], [], ['#empGender']);
     loadDictionaryValues(ValueTypeModules.MaritalStatus, [], [], ['#empMaritalStatus']);
@@ -839,6 +935,9 @@ console.log(columnIndex);
     loadDictionaryValues(ValueTypeModules.LoanType, [loansGrid], [1]);
 
     loadDictionaryValues(ValueTypeModules.CostCenter, [], [], ['#empCostCenter']);
+    loadDictionaryValues(ValueTypeModules.EmployeeGroup, [], [], ['#empEmployeeGroup']);
+    loadDictionaryValues(ValueTypeModules.EmployeeSubGroup, [], [], ['#empEmployeeSubGroup']);
+        loadDictionaryValues(ValueTypeModules.EmploymentType, [], [], ['#empEmploymentType']);
 
     loadDictionaryValues(ValueTypeModules.AcademicInstitution, [academiaProfileGrid], ['instituteId']);
 
@@ -867,7 +966,7 @@ console.log(columnIndex);
     });
     //loadCodeNameTypes(cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayComponentType.getAllPayComponentTypes, [compBenefitsGrid], ['payComponentTypeId']);
 
-        loadCodeNameTypes(cERP.appServices.setup.companySetup.company.getAllCompanies, [], [], ['#empCompany'], 'clientID', 'companyName', function () {
+        loadCodeNameTypes(cERP.appServices.setup.companySetup.company.getAllCompanies, [], [], ['#empCompany', '#empIqamaSponsorLegalEntitiesId'], 'clientID', 'companyName', function () {
             if (isEditingEmployee && typeof curEmployee != 'undefined' && $('#empCompany').val() != curEmployee.legalEntityId)
             {
                 $('#empCompany').multiselect('deselectAll');
@@ -1270,14 +1369,31 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                 empPersonalInformation.bioInfo = bioInfo;
             }
 
+            let disabilityInfo = {
+                disabilities: disabilitiesGrid.dataSource.map(function (x) { return { disability: { ...x } }}),
+            };
+            //let isIdentityI = {
+            //    isNationalIdentity: identityInfo.nationalIdentities.length > 0,
+            //    isPassportTravelDocs: identityInfo.passportTravelDocs.length > 0
+            //}
+            //if (isIdentityI.isNationalIdentity && isIdentityI.isPassportTravelDocs) {
+            //    empPersonalInformation.identityInfo = identityInfo;
+            //}
+            empPersonalInformation.disabilityInfo = disabilityInfo;
+
+            let identityDetails = $('#identityInfoTab').find("textarea, input, select").serializeArray();
             let identityInfo = {
-                nationalIdentities: nationalIdentityGrid.dataSource,
-                passportTravelDocs: passportTravelGrid.dataSource
+                raw: objectifyForm(identityDetails),
+                nationalIdentities: nationalIdentityGrid.dataSource.map(function (x) { return { ...x }}),
+                iqamaNumberValidities: iqamaRenewValidityGrid.dataSource.map(function (x) { return { ...x }}),
+                iqamaLabourOfficeValidities: labourOfficeRenewValidityGrid.dataSource.map(function (x) { return { ...x }}),
+                passportTravelDocs: passportTravelGrid.dataSource.map(function (x) { return { ...x } })
             };
             let isIdentityI = {
                 isNationalIdentity: identityInfo.nationalIdentities.length > 0,
                 isPassportTravelDocs: identityInfo.passportTravelDocs.length > 0
             }
+            empPersonalInformation.identityInfo = [];
             if (isIdentityI.isNationalIdentity && isIdentityI.isPassportTravelDocs) {
                 empPersonalInformation.identityInfo = identityInfo;
             }
@@ -1294,10 +1410,11 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                 isHomeAddresses: contactsInfo.homeAddresses.length > 0,
                 isEmergencyContacts: contactsInfo.emergencyContacts.length > 0
             }
-            isContactsInfo.isAll = isContactsInfo.isEmailAddresses && isContactsInfo.isPhoneNumbers && isContactsInfo.isHomeAddresses && isContactsInfo.isEmergencyContacts
-            if (isContactsInfo.isAll) {
-                empPersonalInformation.contactsInfo = contactsInfo;
-            }
+            //isContactsInfo.isAll = isContactsInfo.isEmailAddresses && isContactsInfo.isPhoneNumbers && isContactsInfo.isHomeAddresses && isContactsInfo.isEmergencyContacts
+            //if (isContactsInfo.isAll) {
+            //    empPersonalInformation.contactsInfo = contactsInfo;
+            //}
+            empPersonalInformation.contactsInfo = contactsInfo;
 
             console.log('------------');
             console.log('dependantsInfo');
@@ -1346,6 +1463,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                 console.log('----DEP-E---');
                 console.log(dependant);
             }
+            empPersonalInformation.dependantsInfo = [];
             if (isDependantsInfo.issueDependants.length == 0) {
                 empPersonalInformation.dependantsInfo = dependantsInfo;
             }
@@ -1362,6 +1480,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
             console.log('structureInfo');
             let structureInfo;
             let isStructureI = ValidateForm('orgStructureInfoTab');
+            empOrganizationalInformation.structureInfo = {};
             if (isStructureI) {
                 let details = $('#orgStructureInfoTab').find("textarea, input, select").serializeArray();
                 structureInfo = objectifyForm(details);
@@ -1380,6 +1499,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
             console.log('basicSalaryInfo');
             let basicSalaryInfo;
             let isBasicSalaryI = ValidateForm('basicSalaryTab');
+            empCompensationInformation.basicSalaryInfo = {};
             if (isBasicSalaryI) {
                 let details = $('#basicSalaryTab').find("textarea, input, select").serializeArray();
                 basicSalaryInfo = objectifyForm(details);
@@ -1391,6 +1511,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
             console.log('benefitsInfo');
             let benefitsInfo = compBenefitsGrid.dataSource;
             let isBenefitsI = benefitsInfo.length > 0;
+            empCompensationInformation.benefitsInfo = [];
             if (isBenefitsI) {
                 empCompensationInformation.benefitsInfo = benefitsInfo;
             }
@@ -1408,9 +1529,10 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                 isBankPaymentTypes: paymentDetailsInfo.bankPaymentTypes.length > 0
             }
             isPaymentDetailsInfo.isAll = true;//isPaymentDetailsInfo.isCashPaymentTypes && isPaymentDetailsInfo.isChequePaymentTypes && isPaymentDetailsInfo.isBankPaymentTypes && isPaymentDetailsInfo.isEmergencyPaymentDetails
-            if (isPaymentDetailsInfo.isAll) {
-                empCompensationInformation.paymentDetailsInfo = paymentDetailsInfo;
-            }
+            //if (isPaymentDetailsInfo.isAll) {
+            //    empCompensationInformation.paymentDetailsInfo = paymentDetailsInfo;
+            //}
+            empCompensationInformation.paymentDetailsInfo = paymentDetailsInfo;
 
             console.log(empCompensationInformation);
             employeeData.compensationInformation = empCompensationInformation;
@@ -1452,6 +1574,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
             console.log('academiaInfo');
             let academiaInfo = academiaProfileGrid.dataSource;
             let isAcademiaI = academiaInfo.length > 0;
+            empAcademiaSkillsInformation.academiaProfile = [];
             if (isAcademiaI) {
                 empAcademiaSkillsInformation.academiaProfile = academiaInfo;
             }
@@ -1459,6 +1582,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
             console.log('skillsInfo');
             let skillsInfo = skillsProfileGrid.dataSource;
             let isSkillsI = skillsInfo.length > 0;
+            empAcademiaSkillsInformation.skillsProfile = [];
             if (isSkillsI) {
                 empAcademiaSkillsInformation.skillsProfile = skillsInfo;
             }
@@ -1475,6 +1599,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
             console.log('loansInfo');
             let loansInfo = loansGrid.dataSource;
             let isLoansI = loansInfo.length > 0;
+            empLoansInformation.loansInfo = [];
             if (isLoansI) {
                 empLoansInformation.loansInfo = loansInfo;
             }
@@ -1490,8 +1615,12 @@ let profilePic = $('#profileImageUpload')[0].files[0];
             let employeeVM = {
                 ...employeeData.personalInformation.generalInfo,
                 ...employeeData.personalInformation.bioInfo,
-
-                nationalIdentities: employeeData.personalInformation.identityInfo.nationalIdentities.map(function (x) { return { nationalIdentity: x } }),
+                ...employeeData.personalInformation.identityInfo.raw,
+                nationalIdentityTypeId: $('#empNationalIdentityTypeId').val(),
+                
+                nationalIdentities: { primaryValidityAttachments: employeeData.personalInformation.identityInfo.nationalIdentities },
+                iqamaNumberValidities: { primaryValidityAttachments: employeeData.personalInformation.identityInfo.iqamaNumberValidities },
+                iqamaLabourOfficeValidities: { primaryValidityAttachments: employeeData.personalInformation.identityInfo.iqamaLabourOfficeValidities },
                 passportTravelDocuments: employeeData.personalInformation.identityInfo.passportTravelDocs.map(function (x) { return { passportTravelDocument: x } }),
 
                 emailAddresses: employeeData.personalInformation.contactsInfo.emailAddresses.map(function (x) { return { emailAddress: x } }),
@@ -1505,6 +1634,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
 
                 ...employeeData.compensationInformation.basicSalaryInfo,
                 employeeBenefits: employeeData.compensationInformation.benefitsInfo,
+                employeeDisabilities: employeeData.personalInformation.disabilityInfo.disabilities,
                 ...employeeData.compensationInformation.paymentDetailsInfo,
 
                 ...employeeData.timeInformation.generalInfo,
@@ -1514,6 +1644,9 @@ let profilePic = $('#profileImageUpload')[0].files[0];
 
                 employeeLoans: employeeData.loansInformation.loansInfo,
             };
+            employeeVM.employeeSponsorLegalEntities = [];
+            if (isNotNational)
+                employeeVM.employeeSponsorLegalEntities = $('#empIqamaSponsorLegalEntitiesId').val().map(function (x) { return { legalEntityId: x } });
 
             if (isEditingEmployee) employeeVM.id = curEmployee.id;
             let employee = JSON.stringify(employeeVM);
@@ -1525,10 +1658,20 @@ let profilePic = $('#profileImageUpload')[0].files[0];
             formData.append("ProfilePicture", profilePic);
             formData.append("BioAttachment", bioAttachment);
 
-            for (var i = 0; i < employeeVM.nationalIdentities.length; i++) {
-                let object = employeeVM.nationalIdentities[i].nationalIdentity;
+            for (var i = 0; i < employeeVM.nationalIdentities.primaryValidityAttachments.length; i++) {
+                let object = employeeVM.nationalIdentities.primaryValidityAttachments[i];
                 if (typeof object.files !== 'undefined' && object.files.length > 0)
                     formData.append(`ENatId_${object.id}_Attachment`, object.files[0].rawFile);
+            }
+            for (var i = 0; i < employeeVM.iqamaNumberValidities.primaryValidityAttachments.length; i++) {
+                let object = employeeVM.iqamaNumberValidities.primaryValidityAttachments[i];
+                if (typeof object.files !== 'undefined' && object.files.length > 0)
+                    formData.append(`EIQN_${object.id}_Attachment`, object.files[0].rawFile);
+            }
+            for (var i = 0; i < employeeVM.iqamaLabourOfficeValidities.primaryValidityAttachments.length; i++) {
+                let object = employeeVM.iqamaLabourOfficeValidities.primaryValidityAttachments[i];
+                if (typeof object.files !== 'undefined' && object.files.length > 0)
+                    formData.append(`EIQLN_${object.id}_Attachment`, object.files[0].rawFile);
             }
             for (var i = 0; i < employeeVM.passportTravelDocuments.length; i++) {
                 let object = employeeVM.passportTravelDocuments[i].passportTravelDocument;
@@ -1587,23 +1730,17 @@ let profilePic = $('#profileImageUpload')[0].files[0];
         var multiSelectData = [];
         var searchData = [];
         var searchValCount = 0;
-        var filterCategory = [{ Name: 'Client-Side', Code: 'client' }, { Name: 'Server-Side', Code: 'server' }, { Name: 'Front-End', Code: 'ui' }];
+        filterCategory = [];
         var emptyData = true;
-        //var multiselectComp = new ej.dropdowns.MultiSelect({
-        //    dataSource: filterCategory,
-        //    fields: { text: 'Name', value: 'Code' },
-        //    placeholder: 'Search by categories',
-        //    tagging: multiSelectFun,
-        //    removed: multiSelectRemove,
-        //});
-        //multiselectComp.appendTo('#local');
+        multiselectComp = new ej.dropdowns.MultiSelect({
+            dataSource: filterCategory,
+            fields: { text: 'value', value: 'id' },
+            placeholder: 'Search by relationships',
+            tagging: multiSelectFun,
+            removed: multiSelectRemove,
+        });
+        multiselectComp.appendTo('#dependantsSelection');
         
-        function destroyAllCard() {
-            var cards = document.querySelectorAll('.card-control-section .e-card');
-            [].slice.call(cards).forEach(function (el) {
-                ej.base.detach(el);
-            });
-        }
         function multiSelectRemove(e) {
             var cardDa = searchData.length > 0 ? searchData : (multiSelectData.length > 0 ? multiSelectData : cardObj);
             if (multiselectComp.value && multiselectComp.value.length === 0 && searchValCount === 0) {
@@ -1636,14 +1773,14 @@ let profilePic = $('#profileImageUpload')[0].files[0];
             }
         }
         function multiSelectFun(e) {
-            var keywords = e.itemData.Code.split(',');
+            var keywords = e.itemData.id.split(',');
             var dublicate;
             var cardDa = searchData.length > 0 ? searchData : cardObj;
             if (multiselectComp.value && multiselectComp.value.length === 0 && searchValCount === 0) {
                 multiSelectData = [];
             }
             keywords.forEach(function (key) {
-                dublicate = new ej.data.DataManager(cardDa).executeLocal(new ej.data.Query().where('cardImage.tag', 'Contains', key, true));
+                dublicate = new ej.data.DataManager(cardDa).executeLocal(new ej.data.Query().where('relationshipTypeId', 'equal', key, true));
                 if (dublicate.length === 0) {
                     multiSelectData = [];
                     destroyAllCard();
@@ -1682,7 +1819,15 @@ let profilePic = $('#profileImageUpload')[0].files[0];
             searchFilter(inputVal);
         };
     });
+        var filterCategory;
+        var multiselectComp;
         var cardTemplateFn;
+        function destroyAllCard() {
+            var cards = document.querySelectorAll('.card-control-section .e-card');
+            [].slice.call(cards).forEach(function (el) {
+                ej.base.detach(el);
+            });
+        }
         function cardRendering(cardObj) {
             var errorContent = document.querySelector('.tile_layout .row.error');
             if (cardObj.length > 0) {
@@ -1970,72 +2115,65 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                         <span class="headerTitle">Biographical Information</span>
                     </div>
                     <div class="formContent h-fill-available">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                                    <div class="form-group" style="padding: 15px">
-                                        <div class="col-sm-4" style="">
-                                            <label class="p-t-5 control-label pull-right">Date of Birth:</label>
-                                        </div>
-                                        <div class="col-sm-8" style="">
-                                            <input type="date" id="dateOfBirth" name="DateOfBirth" class="form-control" required>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                                    <div class="form-group" style="padding: 15px">
-                                        <div class="col-sm-4" style="">
-                                            <label class="p-t-5 control-label pull-right">Country of Birth:</label>
-                                        </div>
-                                        <div class="col-sm-8" style="">
-                                            <select id="empBirthCountry" name="BirthCountryId" class="form-control" required>
-                                            </select>
+                        <ejs-accordion id="bioInfoAccordion">
+                            <e-accordion-accordionitems>
+                                <e-accordion-accordionitem expanded="true" header="General Details" content="#bioGeneralDetails"></e-accordion-accordionitem>
+                                <e-accordion-accordionitem header="Disablitites Information" content="#bioDisabilitiestDetails"></e-accordion-accordionitem>
+                            </e-accordion-accordionitems>
+                        </ejs-accordion>
+                        <div id="bioGeneralDetails" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right">Date of Birth:</label>
+                                            </div>
+                                            <div class="col-sm-8" style="">
+                                                <input type="date" id="dateOfBirth" name="DateOfBirth" class="form-control" required>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                                    <div class="form-group" style="padding: 15px">
-                                        <div class="col-sm-4" style="">
-                                            <label class="p-t-5 control-label pull-right">Place of Birth:</label>
-                                        </div>
-                                        <div class="col-sm-8" style="">
-                                            <input type="text" id="birthPlace" name="PlaceOfBirth" class="form-control" required>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right">Country of Birth:</label>
+                                            </div>
+                                            <div class="col-sm-8" style="">
+                                                <select id="empBirthCountry" name="BirthCountryId" class="form-control" required>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                                    <div class="form-group" style="padding: 15px">
-                                        <div class="col-sm-4" style="">
-                                            <label class="p-t-5 control-label pull-right">Attachment:</label>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right">Place of Birth:</label>
+                                            </div>
+                                            <div class="col-sm-8" style="">
+                                                <input type="text" id="birthPlace" name="PlaceOfBirth" class="form-control" required>
+                                            </div>
                                         </div>
-                                        <div class="col-sm-8" style="">
-                                            <input type="file" id="bioAttachment" name="BioAttachment" class="form-control">
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right">Attachment:</label>
+                                            </div>
+                                            <div class="col-sm-8" style="">
+                                                <input type="file" id="bioAttachment" name="BioAttachment" class="form-control">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div id="identityInfoTab" class="secondaryTab" style="display: none">
-                <div class="customForm">
-                    <div class="formHeader">
-                        <span class="headerTitle">Identity Information</span>
-                    </div>
-                    <div class="formContent h-fill-available">
-                        <ejs-accordion id="identityInfoAccordion">
-                            <e-accordion-accordionitems>
-                                <e-accordion-accordionitem expanded="true" header="National Identity" content="#nationalIdentityInfo"></e-accordion-accordionitem>
-                                <e-accordion-accordionitem header="Passports/Travel Documents" content="#passportTravelInfo"></e-accordion-accordionitem>
-                            </e-accordion-accordionitems>
-                        </ejs-accordion>
-                        <div id="nationalIdentityInfo">
+                        <div id="bioDisabilitiestDetails" style="display:none">
                             <div class="control-section">
-                                <div id="nationalIdentitiesCS" class="control-section">
-                                    <ejs-grid id="NationalIdentitiesGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultPrimaryFilesCrudCommandClick"
+                                <div id="disabilitiesCS" class="control-section">
+                                    <ejs-grid id="DisabilitiesGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultFilesCrudCommandClick"
                                               showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
-                                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultPrimaryFilesCrudActionBegin" actionComplete="defaultPrimaryFilesCrudActionComplete"
+                                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultFilesCrudActionBegin" actionComplete="defaultFilesCrudActionComplete"
                                               allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
                                               toolbarClick="defaultCrudToolbarClick" toolbar="@initialCrudToolBar.Where(x => { if (x.GetType() == typeof(string)) { return (string)x != "ColumnChooser"; } else return true; })"
                                               allowPaging="true" allowResizing="true">
@@ -2046,12 +2184,8 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                                         }
                                         <e-grid-columns>
                                             <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
-                                            <e-grid-column validationRules="@(new { required=true})" field="idTypeId" headerText="ID Type" editType="dropdownedit" edit="dicValueTypeEdit" valueAccessor="@("dictionaryValueAccessor")" textAlign="Center"></e-grid-column>
-                                            <e-grid-column validationRules="@(new { required=true})" field="idNumber" headerText="ID Number" allowEditing="true" textAlign="Center"></e-grid-column>
-                                            <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
-                                            <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>
-                                            <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
-                                            <e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>
+                                            <e-grid-column validationRules="@(new { required=true})" field="certificateIssuingAuthority" headerText="Certificate Issuing Authority" allowEditing="true" textAlign="Center"></e-grid-column>
+                                            <e-grid-column valueAccessor="@("singleFileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Certificate Attachment" allowEditing="true" textAlign="Center"></e-grid-column>
 
                                             <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
                                         </e-grid-columns>
@@ -2067,7 +2201,474 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div id="identityInfoTab" class="secondaryTab" style="display: none">
+                <div class="customForm">
+                    <div class="formHeader">
+                        <span class="headerTitle">Identity Information</span>
+                    </div>
+                    <div class="formContent h-fill-available">
+                        <ejs-accordion id="identityInfoAccordion">
+                            <e-accordion-accordionitems>
+                                <e-accordion-accordionitem id="iqamaIdItem" header="Iqama Information" content="#iqamaIdentityInfo"></e-accordion-accordionitem>
+                                <e-accordion-accordionitem id="natIdItem" expanded="true" header="National Identity" content="#nationalIdentityInfo"></e-accordion-accordionitem>
+                                <e-accordion-accordionitem header="Passports/Travel Documents" content="#passportTravelInfo"></e-accordion-accordionitem>
+                            </e-accordion-accordionitems>
+                        </ejs-accordion>
+                        <div id="iqamaIdentityInfo" style="display:none">
+                            <ejs-tab id="iqamaIdentityInfoTabs" animation="horizontalAnimation" heightAdjustMode="None" overflowMode="Scrollable" headerPlacement="Top" cssClass="e-fill customTab">
+                                <e-tab-tabitems>
+                                    <e-tab-tabitem header="@(new TabHeader { Text = "Iqama Number" })" content="#iqamaNumberIdentityInfo"></e-tab-tabitem>
+                                    <e-tab-tabitem header="@(new TabHeader { Text = "Labour Office Number" })" content="#labourOfficeNumberIdentityInfo"></e-tab-tabitem>
+                                    <e-tab-tabitem header="@(new TabHeader { Text = "Sponsorship Details" })" content="#sponsorshipIqamaIdentityInfo"></e-tab-tabitem>
+                                </e-tab-tabitems>
+                            </ejs-tab>
+                            
+                            <div id="iqamaNumberIdentityInfo" style="display:none">
+                                <div class="row">
+                                    <div class="col-sm-2">
+
+                                    </div>
+                                    <div class="col-sm-8" style="padding:0">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                            <div class="form-group" style="padding: 15px">
+                                                <div class="col-sm-4" style="">
+                                                    <label class="p-t-5 control-label pull-right">Iqama Number:</label>
+                                                </div>
+                                                <div class="col-sm-8" style="">
+                                                    <input type="text" id="iqamaNumberField" name="IqamaNumber" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                            <div class="form-group" style="padding: 15px">
+                                                <div class="col-sm-4" style="">
+                                                    <label class="p-t-5 control-label pull-right ">Place of Issue:</label>
+                                                </div>
+                                                <div class="col-sm-8" style="">
+                                                    <input type="text" id="iqamaPlaceOfIssue" name="IqamaPlaceOfIssue" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @*<div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                            <div class="form-group" style="padding: 15px">
+                                                <div class="col-sm-4" style="">
+                                                    <label class="p-t-5 control-label pull-right ">Valid From:</label>
+                                                </div>
+                                                <div class="col-sm-8" style="">
+                                                    <input type="date" id="iqamaValidityFromDate" name="IqamaValidityFromDate" class="text-left form-control inline pull-left" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                            <div class="form-group" style="padding: 15px">
+                                                <div class="col-sm-4" style="">
+                                                    <label class="p-t-5 control-label pull-right ">Valid To:</label>
+                                                </div>
+                                                <div class="col-sm-8" style="">
+                                                    <input type="date" id="iqamaValidityToDate" name="IqamaValidityToDate" class="text-left form-control inline pull-left" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                            <div class="form-group" style="padding: 15px">
+                                                <div class="col-sm-4" style="">
+                                                    <label class="p-t-5 control-label pull-right">Attachment:</label>
+                                                </div>
+                                                <div class="col-sm-8" style="">
+                                                    <input type="file" id="iqamaAttachment" name="IqamaAttachment" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>*@
+                                    </div>
+                                    <div class="col-sm-2">
+
+                                    </div>
+                                </div>
+
+                                <div class="m-t-20"> 
+                                    <div class="control-section">
+                                        <div id="iqamaRenewValidityCS" class="control-section">
+                                            <ejs-grid id="IqamaRenewValidityGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultFilesCrudCommandClick"
+                                                      showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                                      hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultFilesCrudActionBegin" actionComplete="defaultFilesCrudActionComplete"
+                                                      allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                                      toolbarClick="defaultCrudToolbarClick" toolbar="@initialCrudToolBar.Where(x => { if (x.GetType() == typeof(string)) { return (string)x != "ColumnChooser"; } else return true; })"
+                                                      >
+
+                                                @{
+
+
+                                                }
+                                                <e-grid-columns>
+                                                    <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                                    <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
+                                                    <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>
+                                                   <e-grid-column valueAccessor="@("singleFileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>
+
+                                                    <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
+                                                </e-grid-columns>
+
+                                                <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                                <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" mode="Dialog"></e-grid-editSettings>
+                                                <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                            </ejs-grid>
+                                        </div>
+                                        <div id="auditTrail" style="display:none;">
+                                            @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="labourOfficeNumberIdentityInfo" style="display:none">
+                                <div class="row">
+                                    <div class="col-sm-2">
+
+                                    </div>
+                                    <div class="col-sm-8" style="padding:0">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                            <div class="form-group" style="padding: 15px">
+                                                <div class="col-sm-4" style="">
+                                                    <label class="p-t-5 control-label pull-right">Labour Office Number:</label>
+                                                </div>
+                                                <div class="col-sm-8" style="">
+                                                    <input type="text" id="labourOfficeNumberField" name="LabourOfficeNumber" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                            <div class="form-group" style="padding: 15px">
+                                                <div class="col-sm-4" style="">
+                                                    <label class="p-t-5 control-label pull-right ">Place of Issue:</label>
+                                                </div>
+                                                <div class="col-sm-8" style="">
+                                                    <input type="text" id="labourOfficePlaceOfIssue" name="LabourOfficePlaceOfIssue" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @*<div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                            <div class="form-group" style="padding: 15px">
+                                                <div class="col-sm-4" style="">
+                                                    <label class="p-t-5 control-label pull-right ">Valid From:</label>
+                                                </div>
+                                                <div class="col-sm-8" style="">
+                                                    <input type="date" id="labourOfficeValidityFromDate" name="LabourOfficeValidityFromDate" class="text-left form-control inline pull-left" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                            <div class="form-group" style="padding: 15px">
+                                                <div class="col-sm-4" style="">
+                                                    <label class="p-t-5 control-label pull-right ">Valid To:</label>
+                                                </div>
+                                                <div class="col-sm-8" style="">
+                                                    <input type="date" id="labourOfficeValidityToDate" name="abourOfficeValidityToDate" class="text-left form-control inline pull-left" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                            <div class="form-group" style="padding: 15px">
+                                                <div class="col-sm-4" style="">
+                                                    <label class="p-t-5 control-label pull-right">Attachment:</label>
+                                                </div>
+                                                <div class="col-sm-8" style="">
+                                                    <input type="file" id="labourOfficeAttachment" name="LabourOfficeAttachment" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>*@
+                                    </div>
+                                    <div class="col-sm-2">
+
+                                    </div>
+                                </div>
+                                <div class="m-t-20">
+                                    <div class="control-section">
+                                        <div id="labourOfficeRenewValidityCS" class="control-section">
+                                            <ejs-grid id="LabourOfficeRenewValidityGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultFilesCrudCommandClick"
+                                                      showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                                      hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultFilesCrudActionBegin" actionComplete="defaultFilesCrudActionComplete"
+                                                      allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                                      toolbarClick="defaultCrudToolbarClick" toolbar="@initialCrudToolBar.Where(x => { if (x.GetType() == typeof(string)) { return (string)x != "ColumnChooser"; } else return true; })">
+
+                                                @{
+
+
+                                                }
+                                                <e-grid-columns>
+                                                    <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                                    <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
+                                                    <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>
+                                                    <e-grid-column valueAccessor="@("singleFileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>
+
+                                                    <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
+                                                </e-grid-columns>
+
+                                                <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                                <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" mode="Dialog"></e-grid-editSettings>
+                                                <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                            </ejs-grid>
+                                        </div>
+                                        <div id="auditTrail" style="display:none;">
+                                            @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="sponsorshipIqamaIdentityInfo" style="display:none">
+                                <div>
+                                    <div class="col-sm-2">
+
+                                    </div>
+                                    <div class="col-sm-8" style="padding:0">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                            <div class="form-group" style="padding: 15px">
+                                                <div class="col-sm-4" style="">
+                                                    <label class="p-t-5 control-label pull-right">Sponsor Type:</label>
+                                                </div>
+                                                <div class="col-sm-8" style="">
+                                                    <select id="empIqamaSponsorType" name="IqamaSponsorType" onchange="
+                                                            if (typeof $('option:selected', '#empIqamaSponsorType').attr('data-value') !== 'undefined' && $('option:selected', '#empIqamaSponsorType').attr('data-value').includes('Group')) {
+                                                                $('#groupSponsorFields').slideDown();
+                                                                $('#otherSponsorFields').slideUp();
+                                                            } else {
+                                                                $('#groupSponsorFields').slideUp();
+                                                                $('#otherSponsorFields').slideDown();
+                                                            }
+                                                        " class="form-control" required>
+                                                        @for (int i = 0; i < iqamaSponsorTypes.Count; i++)
+                                                        {
+                                                            <option value="@((int)iqamaSponsorTypes[i])" data-value="@EnumExtensions.GetDescription(iqamaSponsorTypes[i])">@EnumExtensions.GetDescription(iqamaSponsorTypes[i])</option>
+                                                        }
+                                                    </select>                                                
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="groupSponsorFields" style="display:none">
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                                <div class="form-group" style="padding: 15px">
+                                                    <div class="col-sm-4" style="">
+                                                        <label class="p-t-5 control-label pull-right">Legal Entities:</label>
+                                                    </div>
+                                                    <div class="col-sm-8" style="">
+                                                        <select id="empIqamaSponsorLegalEntitiesId" multiple="multiple" name="IqamaSponsorLegalEntitiesId" class="form-control mltslct" required>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="otherSponsorFields" style="display:none">
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                                <div class="form-group" style="padding: 15px">
+                                                    <div class="col-sm-4" style="">
+                                                        <label class="p-t-5 control-label pull-right ">Sponsor's Name:</label>
+                                                    </div>
+                                                    <div class="col-sm-8" style="">
+                                                        <input type="text" id="iqamaSponsorName" name="IqamaSponsorName" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                                <div class="form-group" style="padding: 15px">
+                                                    <div class="col-sm-4" style="">
+                                                        <label class="p-t-5 control-label pull-right ">Sponsor's Name Local:</label>
+                                                    </div>
+                                                    <div class="col-sm-8" style="">
+                                                        <input type="text" id="iqamaSponsorNameLocal" name="IqamaSponsorNameLocal" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                                <div class="form-group" style="padding: 15px">
+                                                    <div class="col-sm-4" style="">
+                                                        <label class="p-t-5 control-label pull-right ">Address Line 1:</label>
+                                                    </div>
+                                                    <div class="col-sm-8" style="">
+                                                        <input type="text" id="iqamaSponsorAddressLine1" name="IqamaSponsorAddressLine1" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                                <div class="form-group" style="padding: 15px">
+                                                    <div class="col-sm-4" style="">
+                                                        <label class="p-t-5 control-label pull-right ">Address Line 2</label>
+                                                    </div>
+                                                    <div class="col-sm-8" style="">
+                                                        <input type="text" id="iqamaSponsorAddressLine2" name="IqamaSponsorAddressLine2" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                                <div class="form-group" style="padding: 15px">
+                                                    <div class="col-sm-4" style="">
+                                                        <label class="p-t-5 control-label pull-right ">Email Address</label>
+                                                    </div>
+                                                    <div class="col-sm-8" style="">
+                                                        <input type="email" id="iqamaSponsorEmailAddress" name="IqamaSponsorEmailAddress" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                                <div class="form-group" style="padding: 15px">
+                                                    <div class="col-sm-4" style="">
+                                                        <label class="p-t-5 control-label pull-right ">Labour Office Number</label>
+                                                    </div>
+                                                    <div class="col-sm-8" style="">
+                                                        <input type="email" id="iqamaSponsorLabourOfficeNumber" name="IqamaSponsorLabourOfficeNumber" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                                <div class="form-group" style="padding: 15px">
+                                                    <div class="col-sm-4" style="">
+                                                        <label class="p-t-5 control-label pull-right ">Contract Secured</label>
+                                                    </div>
+                                                    <div class="col-sm-8" style="">
+                                                        <input type="checkbox" id="iqamaSponsorContractSecured" name="IqamaSponsorContractSecured" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                                <div class="form-group" style="padding: 15px">
+                                                    <div class="col-sm-4" style="">
+                                                        <label class="p-t-5 control-label pull-right">Attachment:</label>
+                                                    </div>
+                                                    <div class="col-sm-8" style="">
+                                                        <input type="file" id="iqamaSponsorAttachment" name="IqamaSponsorAttachment" class="form-control">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="nationalIdentityInfo">
+                            <div class="row">
+                                <div class="col-sm-2">
+
+                                </div>
+                                <div class="col-sm-8" style="padding:0">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right">National ID Type:</label>
+                                            </div>
+                                            <div class="col-sm-8" style="">
+                                                <select id="empNationalIdentityTypeId" name="NationalIdentityTypeId" class="form-control mltslct" required>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label id="natIdNumberField" class="p-t-5 control-label pull-right">National ID Number:</label>
+                                            </div>
+                                            <div class="col-sm-8" style="">
+                                                <input type="text" id="nationalIdentityNumberField" name="NationalIdentityNumber" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right ">Name on ID:</label>
+                                            </div>
+                                            <div class="col-sm-8" style="">
+                                                <input type="text" id="nationalIdentityNameOnID" name="NationalIdentityNameOnID" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right ">Name on ID (AR):</label>
+                                            </div>
+                                            <div class="col-sm-8" style="">
+                                                <input type="text" id="nationalIdentityNameOnIDLocal" name="NationalIdentityNameOnIDLocal" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @*<div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right ">Valid From:</label>
+                                            </div>
+                                            <div class="col-sm-8" style="">
+                                                <input type="date" id="nationalIdentityValidityFromDate" name="NationalIdentityValidityFromDate" class="text-left form-control inline pull-left" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right ">Valid To:</label>
+                                            </div>
+                                            <div class="col-sm-8" style="">
+                                                <input type="date" id="nationalIdentityValidityToDate" name="NationalIdentityValidityToDate" class="text-left form-control inline pull-left" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group" style="padding: 15px">
+                                            <div class="col-sm-4" style="">
+                                                <label class="p-t-5 control-label pull-right">Attachment:</label>
+                                            </div>
+                                            <div class="col-sm-8" style="">
+                                                <input type="file" id="nationalIdentityAttachment" name="NationalIdentityAttachment" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>*@
+                                </div>
+                                <div class="col-sm-2">
+
+                                    </div>
+                            </div>
+                            <div class="m-t-20">
+                                <div class="control-section">
+                                    <div id="nationalIdentitiesCS" class="control-section">
+                                        <ejs-grid id="NationalIdentitiesGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultPrimaryFilesCrudCommandClick"
+                                                    showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
+                                                    hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultPrimaryFilesCrudActionBegin" actionComplete="defaultPrimaryFilesCrudActionComplete"
+                                                    allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                                                    toolbarClick="defaultCrudToolbarClick" toolbar="@initialCrudToolBar.Where(x => { if (x.GetType() == typeof(string)) { return (string)x != "ColumnChooser"; } else return true; })"
+                                                    allowPaging="true" allowResizing="true">
+
+                                            @{
+
+
+                                            }
+                                            <e-grid-columns>
+                                                <e-grid-column field="id" headerText="Id" isIdentity="true" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                                                <e-grid-column visible="false" field="idTypeId" headerText="ID Type" allowEditing="false" editType="dropdownedit" edit="dicValueTypeEdit" valueAccessor="@("dictionaryValueAccessor")" textAlign="Center"></e-grid-column>
+                                                <e-grid-column visible="false" field="idNumber" headerText="ID Number" allowEditing="true" textAlign="Center"></e-grid-column>
+                                                <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
+                                                <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>
+                                                <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
+                                                <e-grid-column valueAccessor="@("singleFileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>
+
+                                                <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
+                                            </e-grid-columns>
+
+                                            <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                            <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true" mode="Dialog"></e-grid-editSettings>
+                                            <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                            <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                        </ejs-grid>
+                                    </div>
+                                    <div id="auditTrail" style="display:none;">
+                                        @*<partial na me="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div id="passportTravelInfo" style="display: none">
+                            
                             <div class="control-section">
                                 <div id="passportTravelsCS" class="control-section">
                                     <ejs-grid id="PassportTravelsGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultPrimaryFilesCrudCommandClick"
@@ -2093,7 +2694,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                                             <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
                                             <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>
                                             <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
-                                            <e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>
+                                            <e-grid-column valueAccessor="@("singleFileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>
 
                                             <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
                                         </e-grid-columns>
@@ -2147,7 +2748,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                                             @*<e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
                                                 <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>*@
                                             <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
-                                            @*<e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>*@
+                                            @*<e-grid-column valueAccessor="@("singleFileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>*@
 
                                             <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
                                         </e-grid-columns>
@@ -2184,7 +2785,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                                             @*<e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
                                                 <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>*@
                                             <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
-                                            @*<e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>*@
+                                            @*<e-grid-column valueAccessor="@("singleFileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>*@
 
                                             <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
                                         </e-grid-columns>
@@ -2226,7 +2827,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                                             @*<e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
                                                 <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>*@
                                             <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
-                                            @*<e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>*@
+                                            @*<e-grid-column valueAccessor="@("singleFileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>*@
 
                                             <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
                                         </e-grid-columns>
@@ -2269,7 +2870,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                                             <e-grid-column validationRules="@(new { required=true})" field="postalCode" headerText="Postal Code" allowEditing="true" textAlign="Center"></e-grid-column>
                                             <e-grid-column validationRules="@(new { required=true})" field="countryId" valueAccessor="@("dictionaryValueAccessor")" headerText="Country" editType="dropdownedit" edit="dicValueTypeEdit" textAlign="Center"></e-grid-column>
                                             <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
-                                            @*<e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>*@
+                                            @*<e-grid-column valueAccessor="@("singleFileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>*@
 
                                             <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
                                         </e-grid-columns>
@@ -2305,9 +2906,9 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                         <div id="dependantsInfo">
                             <div class="control-section">
                                 <div id="dependantsCS" class="control-section">
-                                    <ejs-grid id="DependantsGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultCrudCommandClick"
+                                    <ejs-grid id="DependantsGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="defaultFilesCrudCommandClick"
                                               showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" dataSource="new List<object>()"
-                                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultCrudActionBegin" actionComplete="defaultCrudActionComplete"
+                                              hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="defaultFilesCrudActionBegin" actionComplete="defaultFilesCrudActionComplete"
                                               allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
                                               toolbarClick="defaultCrudToolbarClick" toolbar="@initialCrudToolBar.Where(x => { if (x.GetType() == typeof(string)) { return (string)x != "ColumnChooser"; } else return true; })"
                                               allowPaging="true" allowResizing="true">
@@ -2325,8 +2926,9 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                                             <e-grid-column validationRules="@(new { required=true})" field="relationshipTypeId" headerText="Relationship" editType="dropdownedit" edit="dicValueTypeEdit" valueAccessor="@("dictionaryValueAccessor")" textAlign="Center"></e-grid-column>
                                             <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="dateOfBirth" headerText="Date of Birth" allowEditing="true" textAlign="Center"></e-grid-column>
                                             <e-grid-column validationRules="@(new { required=true})" field="birthCountryId" valueAccessor="@("dictionaryValueAccessor")" headerText="Birth Country" editType="dropdownedit" edit="dicValueTypeEdit" textAlign="Center"></e-grid-column>
+                                            <e-grid-column validationRules="@(new { required=true})" field="nationalityId" valueAccessor="@("dictionaryValueAccessor")" headerText="Nationality" editType="dropdownedit" edit="dicValueTypeEdit" textAlign="Center"></e-grid-column>
                                             <e-grid-column validationRules="@(new { required=true})" field="placeOfBirth" headerText="Place of Birth" allowEditing="true" textAlign="Center"></e-grid-column>
-                                            <e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>
+                                            <e-grid-column valueAccessor="@("singleFileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>
 
                                             <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
                                         </e-grid-columns>
@@ -2402,7 +3004,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                                                 <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
                                                 <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>
                                                 <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
-                                                <e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>
+                                                <e-grid-column valueAccessor="@("singleFileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>
 
                                                 <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
                                             </e-grid-columns>
@@ -2444,7 +3046,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                                                 <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format = "dd/MM/yyyy" } })" editType='datepickeredit' field="validityFromDate" headerText="Valid From" allowEditing="true" textAlign="Center"></e-grid-column>
                                                 <e-grid-column validationRules="@(new { required=true})" type='date' format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="validityToDate" headerText="Valid To" allowEditing="true" textAlign="Center"></e-grid-column>
                                                 <e-grid-column field="isPrimary" displayAsCheckBox="true" editType="booleanedit" headerText="Primary" allowEditing="true" textAlign="Center"></e-grid-column>
-                                                <e-grid-column valueAccessor="@("fileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>
+                                                <e-grid-column valueAccessor="@("singleFileNameAccessor")" type='string' edit="@(new {create="fileCreate", read="fileRead", destroy="fileDestroy", write="fileWrite"  })" field="attachment" headerText="Attachment" allowEditing="true" textAlign="Center"></e-grid-column>
 
                                                 <e-grid-column headerText="Actions" textAlign="Center" commands="defaultCrudCommands"></e-grid-column>
                                             </e-grid-columns>
@@ -2461,7 +3063,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                                 </div>
                             </div>
                         </div>
-                        <div id="dependantsOverview">
+                        <div id="dependantsOverview" style="display: none">
                             <div class="control-section card-control-section tile_layout">
                                 <div class="row filter">
                                     <div class="col-xs-6 col-sm-6 col-lg-6 col-md-6">
@@ -2472,9 +3074,9 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                                             <span class="e-clear-icon"></span>
                                         </div>
                                     </div>
-                                    @*<div class="col-xs-6 col-sm-6 col-lg-6 col-md-6 tile_search">
-                    <input type="text" id="local">
-                </div>*@
+                                    <div class="col-xs-6 col-sm-6 col-lg-6 col-md-6 tile_search">
+                                        <input type="text" id="dependantsSelection">
+                                    </div>
                                 </div>
                                 <div class="row e-card-layout" style="text-align:center;">
                                     <div class="row">
@@ -2655,6 +3257,39 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group" style="padding: 15px">
+                                        <div class="col-sm-4" style="">
+                                            <label class="p-t-5 control-label pull-right">Employee Group:</label>
+                                        </div>
+                                        <div class="col-sm-8" style="">
+                                            <select id="empEmployeeGroup" name="EmployeeGroupId" class="form-control mltslct" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group" style="padding: 15px">
+                                        <div class="col-sm-4" style="">
+                                            <label class="p-t-5 control-label pull-right">Employee Sub Group:</label>
+                                        </div>
+                                        <div class="col-sm-8" style="">
+                                            <select id="empEmployeeSubGroup" name="EmployeeSubGroupId" class="form-control mltslct" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group" style="padding: 15px">
+                                        <div class="col-sm-4" style="">
+                                            <label class="p-t-5 control-label pull-right">Employment Type:</label>
+                                        </div>
+                                        <div class="col-sm-8" style="">
+                                            <select id="empEmploymentType" name="EmploymentTypeId" class="form-control mltslct" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-md-6">
                             </div>
@@ -2719,7 +3354,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
         <div id="compensationTab" class="mainTab" style="display: none">
             <ejs-tab id="compensationTabs" animation="verticalAnimation" heightAdjustMode="None" overflowMode="Scrollable" headerPlacement="Left" cssClass="e-fill classicTab">
                 <e-tab-tabitems>
-                    <e-tab-tabitem header="@(new TabHeader { Text = "Basic Salary" })" content="#basicSalaryTab"></e-tab-tabitem>
+                    <e-tab-tabitem header="@(new TabHeader { Text = "Basic Contract Details" })" content="#basicSalaryTab"></e-tab-tabitem>
                     <e-tab-tabitem header="@(new TabHeader { Text = "Benefits" })" content="#benefitsTab"></e-tab-tabitem>
                     <e-tab-tabitem header="@(new TabHeader { Text = "Payment Details" })" content="#paymentDetailsTab"></e-tab-tabitem>
                     <e-tab-tabitem header="@(new TabHeader { Text = "Payslips" })" content="#payslipsTab"></e-tab-tabitem>
@@ -2753,6 +3388,26 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                                         <div class="col-sm-8" style="">
                                             <select id="empCBS_PayGrade" name="PayGradeId" class="form-control" required>
                                             </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group" style="padding: 15px">
+                                        <div class="col-sm-4" style="">
+                                            <label class="p-t-5 control-label pull-right ">Valid From:</label>
+                                        </div>
+                                        <div class="col-sm-8" style="">
+                                            <input type="date" id="contractValidityFromDate" name="ContractValidityFromDate" class="text-left form-control inline pull-left" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group" style="padding: 15px">
+                                        <div class="col-sm-4" style="">
+                                            <label class="p-t-5 control-label pull-right ">Valid To:</label>
+                                        </div>
+                                        <div class="col-sm-8" style="">
+                                            <input type="date" id="contractValidityToDate" name="ContractValidityToDate" class="text-left form-control inline pull-left" required>
                                         </div>
                                     </div>
                                 </div>
@@ -3149,8 +3804,6 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                                               allowPaging="true" allowResizing="true">
 
                                         @{
-
-
                                             var academicTypeEdit = new
                                             {
 @@params = new Syncfusion.EJ2.DropDowns.DropDownList() { DataSource = EnumExtensions.GetDescriptions(typeof(OS_AcademicType)), Query = "new ej.data.Query()", AllowFiltering = true }
@@ -3469,6 +4122,14 @@ let profilePic = $('#profileImageUpload')[0].files[0];
         }
         catch (ex) {
             console.error({ ex, data, field, column });
+        }
+    }
+    function singleFileNameAccessor(field, data, column) {
+        //show only the file name in grid columns
+        if (typeof (Object.byString(data, field)) != 'undefined' && Object.byString(data, field) != '' && Object.byString(data, field).length > 0)
+            return (Object.byString(data, field));
+        else {
+            return "—";
         }
     }
     function fileNameAccessor(field, data, column) {
@@ -3918,12 +4579,15 @@ let profilePic = $('#profileImageUpload')[0].files[0];
 
             if (typeof args.data.attachment !== 'undefined' && args.data.attachment.length > 0) {
                 cur.files = [...args.data.attachment];
+                cur.attachment = args.data.attachment[0].name;
                 console.log(cur.files);
                 console.log(this.dataSource);
             }
             else {
                 cur.files = [];
             }
+            
+
             this.refresh();
         }
     }
@@ -4020,6 +4684,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                 for (var i = 0; i < this.dataSource.length; i++) {
                     let curDependant = this.dataSource[i];
                     let data = {
+                        relationshipTypeId: curDependant.relationshipTypeId,
                         header_title: curDependant.firstName + ' ' + curDependant.lastName,
                         header_subtitle: dictionaryValueAccessor('relationshipTypeId', curDependant),
                         header_birthCountry: dictionaryValueAccessor('birthCountryId', curDependant),
@@ -4038,6 +4703,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                 console.log('Dependants Book');
                 console.log(dependantsBook);
                 cardObj = dependantsBook;
+                destroyAllCard();
                 cardRendering(cardObj);
             }
         }
@@ -4156,12 +4822,14 @@ let profilePic = $('#profileImageUpload')[0].files[0];
 
             if (typeof args.data.attachment !== 'undefined' && args.data.attachment.length > 0) {
                 cur.files = [...args.data.attachment];
+                cur.attachment = args.data.attachment[0].name;
                 console.log(cur.files);
                 console.log(this.dataSource);
             }
             else {
                 cur.files = [];
             }
+            
             this.refresh();
         }
     }
@@ -4203,7 +4871,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
         $('#imageCancel').hide();
         $('#remove').hide();
 
-        $('#EmpPhoto').attr('src', '/images/noimage.jpg');
+        $('#EmpPhoto').attr('src', '/Uploads/noimage.jpg');
         $('#EmpPhoto').hide();
         $('#EmpPhoto').fadeIn(650);
 

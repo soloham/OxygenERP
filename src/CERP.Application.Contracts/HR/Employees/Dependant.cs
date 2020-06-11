@@ -28,6 +28,9 @@ namespace CERP.HR.Documents
         public string PlaceOfBirth { get; set; }
         public string BioAttachment { get; set; }
 
+        public DictionaryValue_Dto Nationality { get; set; }
+        public Guid NationalityId { get; set; }
+
         public List<DependantNationalIdentity_Dto> NationalIdentities { get; set; }
         public List<DependantPassportTravelDocument_Dto> PassportTravelDocuments { get; set; }
     }

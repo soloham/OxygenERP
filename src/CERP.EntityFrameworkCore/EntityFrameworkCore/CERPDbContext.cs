@@ -137,30 +137,39 @@ namespace CERP.EntityFrameworkCore
         #endregion
 
         #region Employee Central
+        #region Objects
+        public DbSet<Disability> Disabilities { get; set; }
+        public DbSet<EmailAddress> EmailAddresses { get; set; }
+        public DbSet<HomeAddress> HomeAddresses { get; set; }
+        public DbSet<PhoneAddress> PhoneAddresses { get; set; }
+        public DbSet<Contact> Contacts { get; set; }
+        public DbSet<NationalIdentity> NationalIdentities { get; set; }
+        public DbSet<PassportTravelDocument> PassportTravelDocuments { get; set; }
+
+        public DbSet<PrimaryValidityAttachment> PrimaryValidityAttachments { get; set; }
+        #endregion
         #region Employee
         public DbSet<Employee> Employees { get; set; }
         public DbSet<EmployeeLoan> EmployeeLoans { get; set; }
         public DbSet<Benefit> Benefits { get; set; }
         public DbSet<Dependant> Dependants { get; set; }
         #endregion
+        #region Bio
+        public DbSet<EmployeeDisability> EmployeeDisabilities { get; set; }
+        #endregion
         #region Addresses
-        public DbSet<EmailAddress> EmailAddresses { get; set; }
         public DbSet<EmployeeEmailAddress> EmployeeEmailAddresses { get; set; }
-        public DbSet<HomeAddress> HomeAddresses { get; set; }
         public DbSet<EmployeeHomeAddress> EmployeeHomeAddresses { get; set; }
-        public DbSet<PhoneAddress> PhoneAddresses { get; set; }
         public DbSet<EmployeePhoneAddress> EmployeePhoneAddresses { get; set; }
         #endregion
         #region Contact
-        public DbSet<Contact> Contacts { get; set; }
         public DbSet<EmployeeContact> EmployeeContacts { get; set; }
         #endregion
         #region Identities
-        public DbSet<NationalIdentity> NationalIdentities { get; set; }
-        public DbSet<EmployeeNationalIdentity> EmployeeNationalIdentities { get; set; }
+        public DbSet<EmployeePrimaryValidityAttachment> EmployeePrimaryValidityAttachments { get; set; }
         public DbSet<DependantNationalIdentity> DependantNationalIdentities { get; set; }
-        public DbSet<PassportTravelDocument> PassportTravelDocuments { get; set; }
         public DbSet<EmployeePassportTravelDocument> EmployeePassportTravelDocuments { get; set; }
+        public DbSet<EmployeeSponsorLegalEntity> EmployeeSponsorLegalEntities { get; set; }
         public DbSet<DependantPassportTravelDocument> DependantPassportTravelDocuments { get; set; }
         #endregion
         #region Payment Types

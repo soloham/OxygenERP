@@ -326,14 +326,14 @@ namespace CERP.Migrations
                 schema: "HR.EmployeeCentral",
                 table: "Employees",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new Guid("ae4673e5-1442-30f0-0eb7-39f5b1547b17"));
 
             migrationBuilder.AddColumn<Guid>(
                 name: "CostCenterId",
                 schema: "HR.EmployeeCentral",
                 table: "Employees",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new Guid("ae4673e5-1442-30f0-0eb7-39f5b1547b17"));
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "DateOfBirth",
@@ -424,7 +424,7 @@ namespace CERP.Migrations
                 schema: "HR.EmployeeCentral",
                 table: "Employees",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new Guid("ae4673e5-1442-30f0-0eb7-39f5b1547b17"));
 
             migrationBuilder.AddColumn<string>(
                 name: "PreferredName",
@@ -437,7 +437,7 @@ namespace CERP.Migrations
                 schema: "HR.EmployeeCentral",
                 table: "Employees",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new Guid("ae4673e5-1442-30f0-0eb7-39f5b1547b17"));
 
             migrationBuilder.AddColumn<int>(
                 name: "YearlyTimeOffAllowance",
@@ -1965,7 +1965,7 @@ namespace CERP.Migrations
                 table: "Employees",
                 type: "uniqueidentifier",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new Guid("ae4673e5-1442-30f0-0eb7-39f5b1547b17"));
 
             migrationBuilder.AddColumn<Guid>(
                 name: "ContractTypeId",
@@ -1973,7 +1973,7 @@ namespace CERP.Migrations
                 table: "Employees",
                 type: "uniqueidentifier",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new Guid("ae4673e5-1442-30f0-0eb7-39f5b1547b17"));
 
             migrationBuilder.AddColumn<string>(
                 name: "DOB",
@@ -1995,7 +1995,7 @@ namespace CERP.Migrations
                 table: "Employees",
                 type: "uniqueidentifier",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new Guid("ae4673e5-1442-30f0-0eb7-39f5b1547b17"));
 
             migrationBuilder.AddColumn<Guid>(
                 name: "EmployeeStatusId",
@@ -2003,7 +2003,7 @@ namespace CERP.Migrations
                 table: "Employees",
                 type: "uniqueidentifier",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new Guid("ae4673e5-1442-30f0-0eb7-39f5b1547b17"));
 
             migrationBuilder.AddColumn<Guid>(
                 name: "EmployeeTypeId",
@@ -2011,7 +2011,7 @@ namespace CERP.Migrations
                 table: "Employees",
                 type: "uniqueidentifier",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new Guid("ae4673e5-1442-30f0-0eb7-39f5b1547b17"));
 
             migrationBuilder.AddColumn<string>(
                 name: "FamilyName",
@@ -2062,7 +2062,7 @@ namespace CERP.Migrations
                 table: "Employees",
                 type: "uniqueidentifier",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new Guid("ae4673e5-1442-30f0-0eb7-39f5b1547b17"));
 
             migrationBuilder.AddColumn<Guid>(
                 name: "PositionId",
@@ -2070,7 +2070,7 @@ namespace CERP.Migrations
                 table: "Employees",
                 type: "uniqueidentifier",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new Guid("ae4673e5-1442-30f0-0eb7-39f5b1547b17"));
 
             migrationBuilder.AddColumn<Guid>(
                 name: "ReligionId",
@@ -2078,7 +2078,7 @@ namespace CERP.Migrations
                 table: "Employees",
                 type: "uniqueidentifier",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new Guid("ae4673e5-1442-30f0-0eb7-39f5b1547b17"));
 
             migrationBuilder.AddColumn<Guid>(
                 name: "ReportingToId",

@@ -83,10 +83,62 @@ namespace CERP.HR.EmployeeCentral.Employee
         public string PlaceOfBirth { get; set; }
         [CustomAudited]
         public string BioAttachment { get; set; }
+
+        public virtual ICollection<EmployeeDisability> EmployeeDisabilities { get; set; }
         #endregion
 
         #region Identity Info
-        public virtual ICollection<EmployeeNationalIdentity> NationalIdentities { get; set; }
+        #region Iqama Identity
+        [CustomAudited]
+        public string IqamaNumber { get; set; }
+        [CustomAudited]
+        public string IqamaPlaceOfIssue { get; set; }
+        [CustomAudited]
+        public string LabourOfficeNumber { get; set; }
+        [CustomAudited]
+        public string LabourOfficePlaceOfIssue { get; set; }
+
+        public EC_IqamaSponsorType IqamaSponsorType { get; set; }
+        public virtual ICollection<EmployeeSponsorLegalEntity> EmployeeSponsorLegalEntities { get; set; }
+
+        [CustomAudited]
+        public string IqamaSponsorName { get; set; }
+        [CustomAudited]
+        public string IqamaSponsorNameLocal { get; set; }
+        [CustomAudited]
+        public string IqamaSponsorAddressLine1 { get; set; }
+        [CustomAudited]
+        public string IqamaSponsorAddressLine2 { get; set; }
+        [CustomAudited]
+        public string IqamaSponsorEmailAddress { get; set; }
+        [CustomAudited]
+        public string IqamaSponsorLabourOfficeNumber { get; set; }
+        [CustomAudited]
+        public bool IqamaSponsorContractSecured { get; set; }
+        [CustomAudited]
+        public string IqamaSponsorAttachment { get; set; }
+
+        public EmployeePrimaryValidityAttachment IqamaNumberValidities { get; set; }
+        public int? IqamaNumberValiditiesId { get; set; }
+        public EmployeePrimaryValidityAttachment IqamaLabourOfficeValidities { get; set; }
+        public int? IqamaLabourOfficeValiditiesId { get; set; }
+        #endregion
+
+        #region National Identity
+        public DictionaryValue NationalIdentityType { get; set; }
+        [CustomAudited]
+        public Guid NationalIdentityTypeId { get; set; }
+        [CustomAudited]
+        public string NationalIdentityNumber { get; set; }
+        [CustomAudited]
+        public string NationalIdentityNameOnID { get; set; }
+        [CustomAudited]
+        public string NationalIdentityNameOnIDLocal { get; set; }
+
+        public virtual EmployeePrimaryValidityAttachment NationalIdentities { get; set; }
+        public int? NationalIdentitiesId { get; set; }
+        #endregion
+
         public virtual ICollection<EmployeePassportTravelDocument> PassportTravelDocuments { get; set; }
         #endregion
 
@@ -123,19 +175,32 @@ namespace CERP.HR.EmployeeCentral.Employee
         public DictionaryValue CostCenter { get; set; }
         [CustomAudited]
         public Guid CostCenterId { get; set; }
+        [CustomAudited]
+        public DictionaryValue EmployeeSubGroup { get; set; }
+        public Guid EmployeeSubGroupId { get; set; }
+        [CustomAudited]
+        public DictionaryValue EmployeeGroup { get; set; }
+        public Guid EmployeeGroupId { get; set; }
+        public DictionaryValue EmploymentType { get; set; }
+        [CustomAudited]
+        public Guid EmploymentTypeId { get; set; }
         #endregion
 
         #endregion
 
         #region Compensation Info
 
-        #region Basic Salary Info
+        #region Basic Contract Info
         public PS_PayGroup PayGroup { get; set; }
         [CustomAudited]
         public int PayGroupId { get; set; }
         public PS_PayGrade PayGrade { get; set; }
         [CustomAudited]
         public int PayGradeId { get; set; }
+        [CustomAudited]
+        public string ContractValidityFromDate { get; set; }
+        [CustomAudited] 
+        public string ContractValidityToDate { get; set; }
         #endregion
 
         #region Benefits Info
@@ -200,45 +265,56 @@ namespace CERP.HR.EmployeeCentral.Employee
         }
     }
 
-    public class EmployeeNationalIdentity : AuditedAggregateTenantRoot<int>
+    public class EmployeeDisability : AuditedAggregateTenantRoot<int>
     {
         public Employee Employee { get; set; }
-        public int EmployeeId { get; set; }
-        public NationalIdentity NationalIdentity { get; set; }
-        public int NationalIdentityId { get; set; }
+        public Guid EmployeeId { get; set; }
+        public Disability Disability { get; set; }
+        public int DisabilityId { get; set; }
+    }
+    public class EmployeeSponsorLegalEntity : AuditedAggregateTenantRoot<int>
+    {
+        public Employee Employee { get; set; }
+        public Guid EmployeeId { get; set; }
+        public Company LegalEntity { get; set; }
+        public Guid LegalEntityId { get; set; }
+    }
+    public class EmployeePrimaryValidityAttachment : AuditedAggregateTenantRoot<int>
+    {
+        public virtual ICollection<PrimaryValidityAttachment> PrimaryValidityAttachments { get; set; }
     }
     public class EmployeePassportTravelDocument : AuditedAggregateTenantRoot<int>
     {
         public Employee Employee { get; set; }
-        public int EmployeeId { get; set; }
+        public Guid EmployeeId { get; set; }
         public PassportTravelDocument PassportTravelDocument { get; set; }
         public int PassportTravelDocumentId { get; set; }
     }
     public class EmployeeEmailAddress : AuditedAggregateTenantRoot<int>
     {
         public Employee Employee { get; set; }
-        public int EmployeeId { get; set; }
+        public Guid EmployeeId { get; set; }
         public EmailAddress EmailAddress { get; set; }
         public int EmailAddressId { get; set; }
     }
     public class EmployeePhoneAddress : AuditedAggregateTenantRoot<int>
     {
         public Employee Employee { get; set; }
-        public int EmployeeId { get; set; }
+        public Guid EmployeeId { get; set; }
         public PhoneAddress PhoneAddress { get; set; }
         public int PhoneAddressId { get; set; }
     }
     public class EmployeeHomeAddress : AuditedAggregateTenantRoot<int>
     {
         public Employee Employee { get; set; }
-        public int EmployeeId { get; set; }
+        public Guid EmployeeId { get; set; }
         public HomeAddress HomeAddress { get; set; }
         public int HomeAddressId { get; set; }
     }
     public class EmployeeContact : AuditedAggregateTenantRoot<int>
     {
         public Employee Employee { get; set; }
-        public int EmployeeId { get; set; }
+        public Guid EmployeeId { get; set; }
         public Contact Contact { get; set; }
         public int ContactId { get; set; }
     }
@@ -298,7 +374,7 @@ namespace CERP.HR.EmployeeCentral.Employee
 
         //public OS_SkillUpdatePeriod SkillUpdatePeriod { get; set; }
 
-        //public virtual OS_CompensationMatrixTemplate_Dto CompensationMatrix { get; set; }
+        //public virtual OS_CompensationMatrixTemplate CompensationMatrix { get; set; }
         //public int CompensationMatrixId { get; set; }
     }
 }

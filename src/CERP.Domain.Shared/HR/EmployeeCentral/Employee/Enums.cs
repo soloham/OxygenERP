@@ -12,4 +12,11 @@ namespace CERP.HR.EmployeeCentral.Employee
         [Description("Inactive")]
         Inactive
     }
+    public enum EC_IqamaSponsorType
+    {
+        [Description("Group Legal Entity")]
+        GroupLegalEntity,
+        [Description("Other")]
+        Other
+    }
 }

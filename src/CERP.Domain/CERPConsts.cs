@@ -34,6 +34,7 @@
         public const string HR_Profiles_DbSchema = "HR.Objects.Profiles";
         public const string HR_Contacts_DbSchema = "HR.Objects.Contacts";
         public const string HR_Addresses_DbSchema = "HR.Objects.Addresses";
+        public const string HR_Attributes_DbSchema = "HR.Objects.Attributes";
 
         public const string PayrollDbSchema = "PR";
         public const string SetupDbSchema = "SETUP";

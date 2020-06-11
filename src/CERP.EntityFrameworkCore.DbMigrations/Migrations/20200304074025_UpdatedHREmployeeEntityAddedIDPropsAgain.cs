@@ -22,14 +22,14 @@ namespace CERP.Migrations
                 schema: "HR",
                 table: "EmpPhysicalIDs",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new Guid("ae4673e5-1442-30f0-0eb7-39f5b1547b17"));
 
             migrationBuilder.AddColumn<Guid>(
                 name: "IssuedFromId",
                 schema: "HR",
                 table: "EmpPhysicalIDs",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new Guid("ae4673e5-1442-30f0-0eb7-39f5b1547b17"));
 
             migrationBuilder.CreateIndex(
                 name: "IX_EmpPhysicalIDs_IDTypeId",

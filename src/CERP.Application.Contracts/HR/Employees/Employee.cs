@@ -4,7 +4,10 @@ using CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructur
 using CERP.ApplicationContracts.HR.OrganizationalManagement.PayrollStructure;
 using CERP.Attributes;
 using CERP.Base;
+using CERP.FM.DTOs;
 using CERP.HR.Documents;
+using CERP.HR.EmployeeCentral.DTOs.Attributes;
+using CERP.HR.EmployeeCentral.Employee;
 using CERP.HR.Setup.OrganizationalManagement.OrganizationStructure;
 using CERP.Setup;
 using CERP.Users;
@@ -64,10 +67,43 @@ namespace CERP.HR.EmployeeCentral.DTOs.Employee
         public Guid BirthCountryId { get; set; }
         public string PlaceOfBirth { get; set; }
         public string BioAttachment { get; set; }
+
+        public List<EmployeeDisability_Dto> EmployeeDisabilities { get; set; }
         #endregion
 
         #region Identity Info
-        public List<EmployeeNationalIdentity_Dto> NationalIdentities { get; set; }
+        #region Iqama Identity
+        public string IqamaNumber { get; set; }
+        public string IqamaPlaceOfIssue { get; set; }
+        public string LabourOfficeNumber { get; set; }
+        public string LabourOfficePlaceOfIssue { get; set; }
+
+        public EC_IqamaSponsorType IqamaSponsorType { get; set; }
+        public List<EmployeeSponsorLegalEntity_Dto> EmployeeSponsorLegalEntities { get; set; }
+        public string IqamaSponsorName { get; set; }
+        public string IqamaSponsorNameLocal { get; set; }
+        public string IqamaSponsorAddressLine1 { get; set; }
+        public string IqamaSponsorAddressLine2 { get; set; }
+        public string IqamaSponsorEmailAddress { get; set; }
+        public string IqamaSponsorLabourOfficeNumber { get; set; }
+        public bool IqamaSponsorContractSecured { get; set; }
+        public string IqamaSponsorAttachment { get; set; }
+
+        public EmployeePrimaryValidityAttachment_Dto IqamaNumberValidities { get; set; }
+        public int? IqamaNumberValiditiesId { get; set; }
+        public EmployeePrimaryValidityAttachment_Dto IqamaLabourOfficeValidities { get; set; }
+        public int? IqamaLabourOfficeValiditiesId { get; set; }
+        #endregion
+        #region National Identity
+        public DictionaryValue_Dto NationalIdentityType { get; set; }
+        public Guid NationalIdentityTypeId { get; set; }
+        public string NationalIdentityNumber { get; set; }
+        public string NationalIdentityNameOnID { get; set; }
+        public string NationalIdentityNameOnIDLocal { get; set; }
+
+        public EmployeePrimaryValidityAttachment_Dto NationalIdentities { get; set; }
+        public int NationalIdentitiesId { get; set; }
+        #endregion
         public List<EmployeePassportTravelDocument_Dto> PassportTravelDocuments { get; set; }
         #endregion
 
@@ -95,6 +131,12 @@ namespace CERP.HR.EmployeeCentral.DTOs.Employee
         public int OrganizationStructureTemplateBusinessUnitId { get; set; }
         public Guid LegalEntityId { get; set; }
 
+        public DictionaryValue_Dto EmployeeSubGroup { get; set; }
+        public Guid EmployeeSubGroupId { get; set; }
+        public DictionaryValue_Dto EmployeeGroup { get; set; }
+        public Guid EmployeeGroupId { get; set; }
+        public DictionaryValue_Dto EmploymentType { get; set; }
+        public Guid EmploymentTypeId { get; set; }
         //public DictionaryValue_Dto Timezone { get; set; }
         //[CustomAudited]
         //public Guid TimezoneId { get; set; }
@@ -107,11 +149,13 @@ namespace CERP.HR.EmployeeCentral.DTOs.Employee
 
         #region Compensation Info
 
-        #region Basic Salary Info
+        #region Basic Contract Info
         public PS_PayGroup_Dto PayGroup { get; set; }
         public int PayGroupId { get; set; }
         public PS_PayGrade_Dto PayGrade { get; set; }
         public int PayGradeId { get; set; }
+        public string ContractValidityFromDate { get; set; }
+        public string ContractValidityToDate { get; set; }
         #endregion
 
         #region Benefits Info
@@ -164,45 +208,56 @@ namespace CERP.HR.EmployeeCentral.DTOs.Employee
         public Guid? PortalId { get; set; }
     }
 
-    public class EmployeeNationalIdentity_Dto : AuditedEntityTenantDto<int>
+    public class EmployeeDisability_Dto : AuditedEntityTenantDto<int>
     {
         public Employee_Dto Employee { get; set; }
-        public int EmployeeId { get; set; }
-        public NationalIdentity_Dto NationalIdentity { get; set; }
-        public int NationalIdentityId { get; set; }
+        public Guid EmployeeId { get; set; }
+        public Disability_Dto Disability { get; set; }
+        public int DisabilityId { get; set; }
+    }
+    public class EmployeeSponsorLegalEntity_Dto : AuditedEntityTenantDto<int>
+    {
+        public Employee_Dto Employee { get; set; }
+        public Guid EmployeeId { get; set; }
+        public Company_Dto LegalEntity { get; set; }
+        public Guid LegalEntityId { get; set; }
+    }
+    public class EmployeePrimaryValidityAttachment_Dto : AuditedEntityTenantDto<int>
+    {
+        public List<PrimaryValidityAttachment_Dto> PrimaryValidityAttachments { get; set; }
     }
     public class EmployeePassportTravelDocument_Dto : AuditedEntityTenantDto<int>
     {
         public Employee_Dto Employee { get; set; }
-        public int EmployeeId { get; set; }
+        public Guid EmployeeId { get; set; }
         public PassportTravelDocument_Dto PassportTravelDocument { get; set; }
         public int PassportTravelDocumentId { get; set; }
     }
     public class EmployeeEmailAddress_Dto : AuditedEntityTenantDto<int>
     {
         public Employee_Dto Employee { get; set; }
-        public int EmployeeId { get; set; }
+        public Guid EmployeeId { get; set; }
         public EmailAddress_Dto EmailAddress { get; set; }
         public int EmailAddressId { get; set; }
     }
     public class EmployeePhoneAddress_Dto : AuditedEntityTenantDto<int>
     {
         public Employee_Dto Employee { get; set; }
-        public int EmployeeId { get; set; }
+        public Guid EmployeeId { get; set; }
         public PhoneAddress_Dto PhoneAddress { get; set; }
         public int PhoneAddressId { get; set; }
     }
     public class EmployeeHomeAddress_Dto : AuditedEntityTenantDto<int>
     {
         public Employee_Dto Employee { get; set; }
-        public int EmployeeId { get; set; }
+        public Guid EmployeeId { get; set; }
         public HomeAddress_Dto HomeAddress { get; set; }
         public int HomeAddressId { get; set; }
     }
     public class EmployeeContact_Dto : AuditedEntityTenantDto<int>
     {
         public Employee_Dto Employee { get; set; }
-        public int EmployeeId { get; set; }
+        public Guid EmployeeId { get; set; }
         public Contact_Dto Contact { get; set; }
         public int ContactId { get; set; }
     }

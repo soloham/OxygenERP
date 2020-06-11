@@ -89,17 +89,21 @@ namespace CERP
         PhoneType,
         [Description("Address Type")]
         AddressType,
-        [Description("Education Certificates")]
+        [Description("Education Certificate")]
         EducationCertificate,
-        [Description("Training Certificates")]
+        [Description("Training Certificate")]
         TrainingCertificate,
-        [Description("Type I Skills")]
+        [Description("Type I Skill")]
         TypeISkill,
-        [Description("Type II Skills")]
+        [Description("Type II Skill")]
         TypeIISkill,
         [Description("Timezone")]
         Timezone,
-        [Description("Salutation")]
-        Salutation
+        [Description("Employment Type")]
+        EmploymentType,
+        [Description("Employment Group")]
+        EmploymentGroup,
+        [Description("Employment Sub Group")]
+        EmploymentSubGroup
     }
 }

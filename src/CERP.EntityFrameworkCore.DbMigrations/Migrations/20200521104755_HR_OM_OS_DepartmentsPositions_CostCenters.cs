@@ -136,7 +136,7 @@ namespace CERP.Migrations
                 table: "PositionTemplates",
                 type: "uniqueidentifier",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new Guid("ae4673e5-1442-30f0-0eb7-39f5b1547b17"));
 
             migrationBuilder.AddColumn<Guid>(
                 name: "CostCenterId",
@@ -144,7 +144,7 @@ namespace CERP.Migrations
                 table: "DepartmentTemplates",
                 type: "uniqueidentifier",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new Guid("ae4673e5-1442-30f0-0eb7-39f5b1547b17"));
 
             migrationBuilder.CreateIndex(
                 name: "IX_PositionTemplates_CostCenterId",

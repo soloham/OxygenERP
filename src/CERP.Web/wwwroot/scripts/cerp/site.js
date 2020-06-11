@@ -257,7 +257,7 @@ function initSettings() {
     $(".DatePicker").on('change', function () {
         $(this).parent().parent().siblings().find(".DatePickerHijri").val(writeIslamicDate(new Date($(this).val()), 0));
     });
-    initDatePicker();
+    //initDatePicker();
 
 
     toastr.options = {
@@ -394,7 +394,10 @@ const ValueTypeModules = {
     TypeISkill: 40,
     TypeIISkill: 41,
     Timezone: 42,
-    Salutation: 43
+    Salutation: 43,
+    EmploymentType: 44,
+    EmploymentGroup: 45,
+    EmploymentSubGroup: 46
 }
 
 function SelectDepartmentPositions(departmentsElmId, positionsElmId, departmentsArr, positionsArr, isEditing, isEditingLoaded, toSelectPositions) {

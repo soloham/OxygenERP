@@ -194,6 +194,12 @@
     <Compile Remove="Migrations\20200610164636_EmployeeCentral_Employee_Salutation.Designer.cs" />
     <Compile Remove="Migrations\20200610170748_EmployeeCentral_Employee_Salutation.cs" />
     <Compile Remove="Migrations\20200610170748_EmployeeCentral_Employee_Salutation.Designer.cs" />
+    <Compile Remove="Migrations\20200611121620_EmployeeCentral_Employee_Identity_Contract.cs" />
+    <Compile Remove="Migrations\20200611121620_EmployeeCentral_Employee_Identity_Contract.Designer.cs" />
+    <Compile Remove="Migrations\20200611123057_EmployeeCentral_Employee_Identity_Contract.cs" />
+    <Compile Remove="Migrations\20200611123057_EmployeeCentral_Employee_Identity_Contract.Designer.cs" />
+    <Compile Remove="Migrations\20200611143438_EmployeeCentral_Employee_Identity_Contract_Optional.cs" />
+    <Compile Remove="Migrations\20200611143438_EmployeeCentral_Employee_Identity_Contract_Optional.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

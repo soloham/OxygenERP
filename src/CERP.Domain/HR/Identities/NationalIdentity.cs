@@ -21,7 +21,7 @@ namespace CERP.HR.Documents
         [CustomAudited]
         public string IDNumber { get; set; }
         [CustomAudited]
-        public string IDAttachment { get; set; }
+        public string Attachment { get; set; }
 
         [CustomAudited]
         public bool IsPrimary { get; set; }

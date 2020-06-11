@@ -30,6 +30,7 @@ using CERP.Setup;
 using CERP.Setup.DTOs;
 using CERP.Users;
 using System.Linq;
+using CERP.HR.EmployeeCentral.DTOs.Attributes;
 
 namespace CERP
 {
@@ -263,6 +264,10 @@ namespace CERP
             #endregion
             #region Employee Central
 
+            #region Objects
+            CreateMap<PrimaryValidityAttachment, PrimaryValidityAttachment_Dto>();
+            CreateMap<PrimaryValidityAttachment_Dto, PrimaryValidityAttachment>();
+            #endregion
             #region Employee
             CreateMap<Employee, Employee_Dto>();
             CreateMap<Employee_Dto, Employee>();
@@ -285,6 +290,12 @@ namespace CERP
             CreateMap<EmployeePhoneAddress, EmployeePhoneAddress_Dto>();
             CreateMap<EmployeePhoneAddress_Dto, EmployeePhoneAddress>();
             #endregion
+            #region Bio
+            CreateMap<Disability, Disability_Dto>();
+            CreateMap<Disability_Dto, Disability>();
+            CreateMap<EmployeeDisability, EmployeeDisability_Dto>();
+            CreateMap<EmployeeDisability_Dto, EmployeeDisability>();
+            #endregion
             #region Contact
             CreateMap<Contact, Contact_Dto>();
             CreateMap<Contact_Dto, Contact>();
@@ -295,8 +306,8 @@ namespace CERP
             #region Identities
             CreateMap<NationalIdentity, NationalIdentity_Dto>();
             CreateMap<NationalIdentity_Dto, NationalIdentity>();
-            CreateMap<EmployeeNationalIdentity, EmployeeNationalIdentity_Dto>();
-            CreateMap<EmployeeNationalIdentity_Dto, EmployeeNationalIdentity>();
+            CreateMap<EmployeePrimaryValidityAttachment, EmployeePrimaryValidityAttachment_Dto>();
+            CreateMap<EmployeePrimaryValidityAttachment_Dto, EmployeePrimaryValidityAttachment>();
             CreateMap<DependantNationalIdentity, DependantNationalIdentity_Dto>();
             CreateMap<DependantNationalIdentity_Dto, DependantNationalIdentity>();
 
@@ -306,6 +317,9 @@ namespace CERP
             CreateMap<EmployeePassportTravelDocument_Dto, EmployeePassportTravelDocument>();
             CreateMap<DependantPassportTravelDocument, DependantPassportTravelDocument_Dto>();
             CreateMap<DependantPassportTravelDocument_Dto, DependantPassportTravelDocument>();
+
+            CreateMap<EmployeeSponsorLegalEntity, EmployeeSponsorLegalEntity_Dto>();
+            CreateMap<EmployeeSponsorLegalEntity_Dto, EmployeeSponsorLegalEntity>();
             #endregion
 
             #region Benefits Info

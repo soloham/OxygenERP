@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CERP.App.CustomEntityHistorySystem;
 using CERP.AppServices.HR.EmployeeService;
 using CERP.HR.Documents;
+using CERP.HR.EmployeeCentral.DTOs.Attributes;
 using CERP.HR.EmployeeCentral.DTOs.Employee;
 using CERP.HR.EmployeeCentral.Employee;
 using Microsoft.AspNetCore.Authorization;
@@ -50,6 +51,35 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
         public const string EMPLOYEE_NATID_PATH = EMPLOYEE_PATH + "/NatIds";
         public const string EMPLOYEE_PTD_PATH = EMPLOYEE_PATH + "/PTDs";
 
+        public string GetEmployeeFolderPath(Guid emplopyeeId)
+        {
+            return EMPLOYEE_PATH + "/" + emplopyeeId.ToString();
+        }
+        public string GetEmployeeGeneralPath(Guid emplopyeeId)
+        {
+            return GetEmployeeFolderPath(emplopyeeId) + "/General";
+        }
+        public string GetEmployeeNatIdsPath(Guid emplopyeeId)
+        {
+            return GetEmployeeFolderPath(emplopyeeId) + "/NatIds";
+        }
+        public string GetEmployeePTDsPath(Guid emplopyeeId)
+        {
+            return GetEmployeeFolderPath(emplopyeeId) + "/PTDs";
+        }
+        public string GetEmployeeDependantsPath(Guid emplopyeeId, int dependantId)
+        {
+            return GetEmployeeFolderPath(emplopyeeId) + "/Dependants/" + dependantId;
+        }
+        public string GetEmployeeDependantNationalIdentitiesPath(Guid emplopyeeId, int dependantId)
+        {
+            return GetEmployeeDependantsPath(emplopyeeId, dependantId) + "/NatIds";
+        }
+        public string GetEmployeeDependantPTDPath(Guid emplopyeeId, int dependantId)
+        {
+            return GetEmployeeDependantsPath(emplopyeeId, dependantId) + "/PTDs";
+        }
+
         public Guid? Id { get; set; }
 
         public void OnGet()
@@ -80,7 +110,11 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
                 {
                     Employee toUpdate = EmployeeAppService.Repository
                        .Include(x => x.NationalIdentities)
-                            .ThenInclude(x => x.NationalIdentity)
+                            .ThenInclude(x => x.PrimaryValidityAttachments)
+                       .Include(x => x.IqamaNumberValidities)
+                            .ThenInclude(x => x.PrimaryValidityAttachments)
+                       .Include(x => x.IqamaLabourOfficeValidities)
+                            .ThenInclude(x => x.PrimaryValidityAttachments)
                         .Include(x => x.PassportTravelDocuments)
                             .ThenInclude(x => x.PassportTravelDocument)
 
@@ -93,6 +127,11 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
 
                          .Include(x => x.OrganizationStructureTemplateDepartment)
                              .ThenInclude(x => x.DepartmentTemplate)
+
+                         .Include(x => x.EmployeeDisabilities)
+                             .ThenInclude(x => x.Disability)
+
+                         .Include(x => x.EmployeeSponsorLegalEntities)
 
                          .Include(x => x.EmailAddresses)
                              .ThenInclude(x => x.EmailAddress)
@@ -146,43 +185,91 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
                     toUpdate.PlaceOfBirth = employee.PlaceOfBirth;
                     toUpdate.BioAttachment = employee.BioAttachment;
                     toUpdate.YearlyTimeOffAllowance = employee.YearlyTimeOffAllowance;
+                    toUpdate.IqamaNumber = employee.IqamaNumber;
+                    toUpdate.LabourOfficeNumber = employee.LabourOfficeNumber;
+                    toUpdate.IqamaPlaceOfIssue = employee.IqamaPlaceOfIssue;
+                    toUpdate.LabourOfficePlaceOfIssue = employee.LabourOfficePlaceOfIssue;
+                    toUpdate.IqamaSponsorName = employee.IqamaSponsorName;
+                    toUpdate.IqamaSponsorType = employee.IqamaSponsorType;
+                    toUpdate.IqamaSponsorNameLocal = employee.IqamaSponsorNameLocal;
+                    toUpdate.IqamaSponsorAddressLine1 = employee.IqamaSponsorAddressLine1;
+                    toUpdate.IqamaSponsorAddressLine2 = employee.IqamaSponsorAddressLine2;
+                    toUpdate.IqamaSponsorEmailAddress = employee.IqamaSponsorEmailAddress;
+                    toUpdate.IqamaSponsorLabourOfficeNumber = employee.IqamaSponsorLabourOfficeNumber;
+                    toUpdate.IqamaSponsorContractSecured = employee.IqamaSponsorContractSecured;
                     //toUpdate.Title = employee.Title;
+
 
                     if (FormData.Files.Count > 0)
                     {
                         if (FormData.Files.Any(x => x.Name == "ProfilePicture"))
                         {
                             IFormFile formFile = FormData.Files.First(x => x.Name == "ProfilePicture");
-                            if(System.IO.File.Exists(toUpdate.ProfilePic))
+                            if (System.IO.File.Exists(toUpdate.ProfilePic))
                                 System.IO.File.Delete(toUpdate.ProfilePic);
 
-                            string uploadedFileName = UploadedFile(formFile, $"Profile", EMPLOYEE_GENERAL_PATH);
+                            string uploadedFileName = UploadedFile(formFile, $"Profile", GetEmployeeGeneralPath(toUpdate.Id));
                             toUpdate.ProfilePic = uploadedFileName;
                         }
                         if (FormData.Files.Any(x => x.Name == "BioAttachment"))
                         {
                             IFormFile formFile = FormData.Files.First(x => x.Name == "BioAttachment");
                             if (System.IO.File.Exists(toUpdate.BioAttachment))
-                                 System.IO.File.Delete(toUpdate.BioAttachment);
+                                System.IO.File.Delete(toUpdate.BioAttachment);
 
-                            string uploadedFileName = UploadedFile(formFile, $"BIO", EMPLOYEE_GENERAL_PATH);
+                            string uploadedFileName = UploadedFile(formFile, $"BIO", GetEmployeeGeneralPath(toUpdate.Id));
                             toUpdate.BioAttachment = uploadedFileName;
                         }
 
-                        for (int i = 0; i < toUpdate.NationalIdentities.Count; i++)
+                        for (int i = 0; i < toUpdate.NationalIdentities.PrimaryValidityAttachments.Count; i++)
                         {
-                            EmployeeNationalIdentity_Dto curIdentityRaw = employeeRaw.NationalIdentities[i];
-                            EmployeeNationalIdentity curIdentity = toUpdate.NationalIdentities.ElementAt(i);
-                            string attachName = $"ENatId_{curIdentityRaw.NationalIdentity.Id}_Attachment";
+                            PrimaryValidityAttachment_Dto curIdentityRaw = employeeRaw.NationalIdentities.PrimaryValidityAttachments[i];
+                            PrimaryValidityAttachment curIdentity = toUpdate.NationalIdentities.PrimaryValidityAttachments.ElementAt(i);
+                            string attachName = $"ENatId_{curIdentityRaw.Id}_Attachment";
 
                             if (FormData.Files.Any(x => x.Name.Contains(attachName)))
                             {
                                 IFormFile formFile = FormData.Files.First(x => x.Name == attachName);
-                                if (System.IO.File.Exists(curIdentity.NationalIdentity.IDAttachment))
-                                    System.IO.File.Delete(curIdentity.NationalIdentity.IDAttachment);
 
-                                string uploadedFileName = UploadedFile(formFile, $"{toUpdate.Id}NATID{curIdentity.NationalIdentityId}", EMPLOYEE_NATID_PATH);
-                                curIdentity.NationalIdentity.IDAttachment = uploadedFileName;
+                                string path = GetEmployeeNatIdsPath(toUpdate.Id); 
+                                string uploadPath = webHostEnvironment.WebRootPath + "/" + path;
+                                if (System.IO.File.Exists(path + "/" + curIdentity.Attachment))
+                                    System.IO.File.Delete(path + "/" + curIdentity.Attachment);
+
+                                string uploadedFileName = UploadedFile(formFile, $"NATID{toUpdate.NationalIdentityNumber}{DateTime.Now.ToString("dd-mm-yyyy")}{DateTime.Now.Millisecond}", path);
+                                curIdentity.Attachment = uploadedFileName;
+                            }
+                        }
+                        for (int i = 0; i < toUpdate.IqamaNumberValidities.PrimaryValidityAttachments.Count; i++)
+                        {
+                            PrimaryValidityAttachment_Dto curIdentityRaw = employeeRaw.IqamaNumberValidities.PrimaryValidityAttachments[i];
+                            PrimaryValidityAttachment curIdentity = toUpdate.IqamaNumberValidities.PrimaryValidityAttachments.ElementAt(i);
+                            string attachName = $"EIQN_{curIdentityRaw.Id}_Attachment";
+
+                            if (FormData.Files.Any(x => x.Name.Contains(attachName)))
+                            {
+                                IFormFile formFile = FormData.Files.First(x => x.Name == attachName);
+                                if (System.IO.File.Exists(curIdentity.Attachment))
+                                    System.IO.File.Delete(curIdentity.Attachment);
+
+                                string uploadedFileName = UploadedFile(formFile, $"IQN{toUpdate.IqamaNumber}{DateTime.Now.ToString("dd-mm-yyyy")}{DateTime.Now.Millisecond}", GetEmployeeNatIdsPath(toUpdate.Id));
+                                curIdentity.Attachment = uploadedFileName;
+                            }
+                        }
+                        for (int i = 0; i < toUpdate.IqamaLabourOfficeValidities.PrimaryValidityAttachments.Count; i++)
+                        {
+                            PrimaryValidityAttachment_Dto curIdentityRaw = employeeRaw.IqamaLabourOfficeValidities.PrimaryValidityAttachments[i];
+                            PrimaryValidityAttachment curIdentity = toUpdate.IqamaLabourOfficeValidities.PrimaryValidityAttachments.ElementAt(i);
+                            string attachName = $"EIQLN_{curIdentityRaw.Id}_Attachment";
+
+                            if (FormData.Files.Any(x => x.Name.Contains(attachName)))
+                            {
+                                IFormFile formFile = FormData.Files.First(x => x.Name == attachName);
+                                if (System.IO.File.Exists(curIdentity.Attachment))
+                                    System.IO.File.Delete(curIdentity.Attachment);
+
+                                string uploadedFileName = UploadedFile(formFile, $"IQLN{toUpdate.IqamaNumber}{DateTime.Now.ToString("dd-mm-yyyy")}{DateTime.Now.Millisecond}", GetEmployeeNatIdsPath(toUpdate.Id));
+                                curIdentity.Attachment = uploadedFileName;
                             }
                         }
                         for (int i = 0; i < toUpdate.PassportTravelDocuments.Count; i++)
@@ -194,11 +281,13 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
                             if (FormData.Files.Any(x => x.Name.Contains(attachName)))
                             {
                                 IFormFile formFile = FormData.Files.First(x => x.Name == attachName);
-                                if (System.IO.File.Exists(curIdentity.PassportTravelDocument.DocumentAttachment))
-                                    System.IO.File.Delete(curIdentity.PassportTravelDocument.DocumentAttachment);
+                                string path = GetEmployeePTDsPath(toUpdate.Id);
+                                string uploadPath = webHostEnvironment.WebRootPath + "/" + path;
+                                if (System.IO.File.Exists(path + "/" + curIdentity.PassportTravelDocument.Attachment))
+                                    System.IO.File.Delete(path + "/" + curIdentity.PassportTravelDocument.Attachment);
 
-                                string uploadedFileName = UploadedFile(formFile, $"{toUpdate.Id}PTD{curIdentity.PassportTravelDocumentId}", EMPLOYEE_PTD_PATH);
-                                curIdentity.PassportTravelDocument.DocumentAttachment = uploadedFileName;
+                                string uploadedFileName = UploadedFile(formFile, $"PTD{curIdentity.PassportTravelDocument.DocumentNumber}{DateTime.Now.ToString("dd-mm-yyyy")}{DateTime.Now.Millisecond}", path);
+                                curIdentity.PassportTravelDocument.Attachment = uploadedFileName;
                             }
                         }
 
@@ -216,11 +305,14 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
                                 if (FormData.Files.Any(x => x.Name.Contains(attachName)))
                                 {
                                     IFormFile formFile = FormData.Files.First(x => x.Name == attachName);
-                                    if (System.IO.File.Exists(curIdentity.NationalIdentity.IDAttachment))
-                                        System.IO.File.Delete(curIdentity.NationalIdentity.IDAttachment);
+                                    string path = GetEmployeeDependantNationalIdentitiesPath(toUpdate.Id, curDependant.Id);
+                                    string uploadPath = webHostEnvironment.WebRootPath + "/" + path;
 
-                                    string uploadedFileName = UploadedFile(formFile, $"{toUpdate.Id}DEP{curDependant.Id}NATID{curIdentity.NationalIdentityId}", EMPLOYEE_DEPENDANT_NATID_PATH);
-                                    curIdentity.NationalIdentity.IDAttachment = uploadedFileName;
+                                    if (System.IO.File.Exists(uploadPath + "/" + curIdentity.NationalIdentity.Attachment))
+                                        System.IO.File.Delete(uploadPath + "/" + curIdentity.NationalIdentity.Attachment);
+
+                                    string uploadedFileName = UploadedFile(formFile, $"NATID{toUpdate.NationalIdentityNumber}{DateTime.Now.ToString("dd-mm-yyyy")}{DateTime.Now.Millisecond}", path);
+                                    curIdentity.NationalIdentity.Attachment = uploadedFileName;
                                 }
                             }
                             for (int i = 0; i < curDependant.PassportTravelDocuments.Count; i++)
@@ -232,62 +324,232 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
                                 if (FormData.Files.Any(x => x.Name.Contains(attachName)))
                                 {
                                     IFormFile formFile = FormData.Files.First(x => x.Name == attachName);
-                                    if (System.IO.File.Exists(curIdentity.PassportTravelDocument.DocumentAttachment))
-                                        System.IO.File.Delete(curIdentity.PassportTravelDocument.DocumentAttachment);
 
-                                    string uploadedFileName = UploadedFile(formFile, $"{toUpdate.Id}DEP{curDependant.Id}PTD{curIdentity.PassportTravelDocumentId}", EMPLOYEE_DEPENDANT_PTD_PATH);
-                                    curIdentity.PassportTravelDocument.DocumentAttachment = uploadedFileName;
+                                    string path = GetEmployeeDependantPTDPath(toUpdate.Id, curDependant.Id);
+                                    string uploadPath = webHostEnvironment.WebRootPath + "/" + path;
+                                    if (System.IO.File.Exists(uploadPath + "/" + curIdentity.PassportTravelDocument.Attachment))
+                                        System.IO.File.Delete(uploadPath + "/" + curIdentity.PassportTravelDocument.Attachment);
+
+                                    string uploadedFileName = UploadedFile(formFile, $"PTD{curIdentity.PassportTravelDocument.DocumentNumber}{DateTime.Now.ToString("dd-mm-yyyy")}{DateTime.Now.Millisecond}", path);
+                                    curIdentity.PassportTravelDocument.Attachment = uploadedFileName;
                                 }
                             }
                         }
                     }
 
-
-
                     #region Child Entities
-                    #region Employee National Identities
+                    #region Employee Disabilities
                     //Getting New
-                    EmployeeNationalIdentity_Dto[] employeeNationalIdentities = employee.NationalIdentities.ToArray();
+                    EmployeeDisability_Dto[] employeeEmployeeDisabilities = employee.EmployeeDisabilities.ToArray();
                     //Getting Current
-                    int[] curNationalIdentitiesIds = toUpdate.NationalIdentities != null && toUpdate.NationalIdentities.Count > 0 ? toUpdate.NationalIdentities.Select(x => x.NationalIdentity.Id).ToArray() : new int[0];
+                    int[] curEmployeeDisabilitiesIds = toUpdate.EmployeeDisabilities != null && toUpdate.EmployeeDisabilities.Count > 0 ? toUpdate.EmployeeDisabilities.Select(x => x.Disability.Id).ToArray() : new int[0];
+                    List<int> toDeleteEmployeeDisabilities = new List<int>();
+                    //Removing Removed
+                    for (int i = 0; i < curEmployeeDisabilitiesIds.Length; i++)
+                    {
+                        EmployeeDisability curDisability = toUpdate.EmployeeDisabilities.First(x => x.DisabilityId == curEmployeeDisabilitiesIds[i]);
+                        if (!employeeEmployeeDisabilities.Any(x => x.Disability.Id == curEmployeeDisabilitiesIds[i]))
+                        {
+                            toUpdate.EmployeeDisabilities.Remove(toUpdate.EmployeeDisabilities.First(x => x.DisabilityId == curEmployeeDisabilitiesIds[i]));
+                            toDeleteEmployeeDisabilities.Add(curEmployeeDisabilitiesIds[i]);
+                        }
+                    }
+                    //Adding & Updating New
+                    for (int i = 0; i < employeeEmployeeDisabilities.Length; i++)
+                    {
+                        if (!toUpdate.EmployeeDisabilities.Any(x => x.DisabilityId == employeeEmployeeDisabilities[i].Disability.Id))
+                        {
+                            employeeEmployeeDisabilities[i].Disability.Id = 0;
+                            toUpdate.EmployeeDisabilities.Add(new EmployeeDisability() { Disability = ObjectMapper.Map<Disability_Dto, Disability>(employeeEmployeeDisabilities[i].Disability) });
+                        }
+                        else
+                        {
+                            var _disabilityNew = employeeEmployeeDisabilities[i].Disability;
+                            var _disability = toUpdate.EmployeeDisabilities.First(x => x.DisabilityId == employeeEmployeeDisabilities[i].Disability.Id);
+
+                            _disability.Disability.CertificateIssuingAuthority = _disabilityNew.CertificateIssuingAuthority;
+                            _disability.Disability.Attachment = _disabilityNew.Attachment;
+
+                            await EmployeeAppService.DisabilitiesRepo.UpdateAsync(_disability.Disability);
+                        }
+                    }
+                    //Appending Deleted
+                    for (int i = 0; i < toDeleteEmployeeDisabilities.Count; i++)
+                    {
+                        await EmployeeAppService.EmployeeDisabilitiesRepo.DeleteAsync(x => x.DisabilityId == toDeleteEmployeeDisabilities[i]);
+                    }
+                    #endregion
+
+                    #region Employee NAT ID Primary Validity Attachment
+                    //Getting New
+                    PrimaryValidityAttachment_Dto[] employeeNationalIdentities = employee.NationalIdentities.PrimaryValidityAttachments.ToArray();
+                    //Getting Current
+                    int[] curNationalIdentitiesIds = toUpdate.NationalIdentities != null && toUpdate.NationalIdentities.PrimaryValidityAttachments.Count > 0 ? toUpdate.NationalIdentities.PrimaryValidityAttachments.Select(x => x.Id).ToArray() : new int[0];
                     List<int> toDeleteNationalIdentities = new List<int>();
                     //Removing Removed
                     for (int i = 0; i < curNationalIdentitiesIds.Length; i++)
                     {
-                        EmployeeNationalIdentity curNationalIdentity = toUpdate.NationalIdentities.First(x => x.NationalIdentityId == curNationalIdentitiesIds[i]);
-                        if (!employeeNationalIdentities.Any(x => x.NationalIdentity.Id == curNationalIdentitiesIds[i]))
+                        PrimaryValidityAttachment curNationalIdentity = toUpdate.NationalIdentities.PrimaryValidityAttachments.First(x => x.Id == curNationalIdentitiesIds[i]);
+                        if (!employeeNationalIdentities.Any(x => x.Id == curNationalIdentitiesIds[i]))
                         {
-                            toUpdate.NationalIdentities.Remove(toUpdate.NationalIdentities.First(x => x.NationalIdentityId == curNationalIdentitiesIds[i]));
+                            toUpdate.NationalIdentities.PrimaryValidityAttachments.Remove(toUpdate.NationalIdentities.PrimaryValidityAttachments.First(x => x.Id == curNationalIdentitiesIds[i]));
                             toDeleteNationalIdentities.Add(curNationalIdentitiesIds[i]);
                         }
                     }
                     //Adding & Updating New
                     for (int i = 0; i < employeeNationalIdentities.Length; i++)
                     {
-                        if (!toUpdate.NationalIdentities.Any(x => x.NationalIdentityId == employeeNationalIdentities[i].NationalIdentity.Id))
+                        if (!toUpdate.NationalIdentities.PrimaryValidityAttachments.Any(x => x.Id == employeeNationalIdentities[i].Id))
                         {
-                            employeeNationalIdentities[i].NationalIdentity.Id = 0;
-                            toUpdate.NationalIdentities.Add(new EmployeeNationalIdentity() { NationalIdentity = ObjectMapper.Map<NationalIdentity_Dto, NationalIdentity>(employeeNationalIdentities[i].NationalIdentity) });
+                            employeeNationalIdentities[i].Id = 0;
+                            toUpdate.NationalIdentities.PrimaryValidityAttachments.Add(ObjectMapper.Map<PrimaryValidityAttachment_Dto, PrimaryValidityAttachment>(employeeNationalIdentities[i]));
                         }
                         else
                         {
-                            var _emailAddressNew = employeeNationalIdentities[i].NationalIdentity;
-                            var _emailAddress = toUpdate.NationalIdentities.First(x => x.NationalIdentityId == employeeNationalIdentities[i].NationalIdentity.Id);
+                            var _nationalIdentityNew = employeeNationalIdentities[i];
+                            var _nationalIdentity = toUpdate.NationalIdentities.PrimaryValidityAttachments.First(x => x.Id == employeeNationalIdentities[i].Id);
 
-                            _emailAddress.NationalIdentity.IdTypeId = _emailAddressNew.IdTypeId;
-                            _emailAddress.NationalIdentity.IDNumber = _emailAddressNew.IDNumber;
-                            _emailAddress.NationalIdentity.IDAttachment = _emailAddressNew.IDNumber;
-                            _emailAddress.NationalIdentity.IsPrimary = _emailAddressNew.IsPrimary;
-                            _emailAddress.NationalIdentity.ValidityFromDate = _emailAddressNew.ValidityFromDate;
-                            _emailAddress.NationalIdentity.ValidityToDate = _emailAddressNew.ValidityToDate;
+                            _nationalIdentity.Attachment = _nationalIdentityNew.Attachment;
+                            _nationalIdentity.IsPrimary = _nationalIdentityNew.IsPrimary;
+                            _nationalIdentity.ValidityFromDate = _nationalIdentityNew.ValidityFromDate;
+                            _nationalIdentity.ValidityToDate = _nationalIdentityNew.ValidityToDate;
 
-                            await EmployeeAppService.NationalIdentitiesRepo.UpdateAsync(_emailAddress.NationalIdentity);
+                            await EmployeeAppService.PrimaryValidityAttachmentsRepo.UpdateAsync(_nationalIdentity);
                         }
                     }
                     //Appending Deleted
                     for (int i = 0; i < toDeleteNationalIdentities.Count; i++)
                     {
-                        await EmployeeAppService.EmployeeNationalIdentitiesRepo.DeleteAsync(x => x.NationalIdentityId == toDeleteNationalIdentities[i]);
+                        await EmployeeAppService.PrimaryValidityAttachmentsRepo.DeleteAsync(x => x.Id == toDeleteNationalIdentities[i]);
+                    }
+                    #endregion
+                    #region Employee Iqama Number Primary Validity Attachment
+                    //Getting New
+                    PrimaryValidityAttachment_Dto[] employeeIqamaNumberValidities = employee.IqamaNumberValidities.PrimaryValidityAttachments.ToArray();
+                    //Getting Current
+                    int[] curIqamaNumberValiditiesIds = toUpdate.IqamaNumberValidities != null && toUpdate.IqamaNumberValidities.PrimaryValidityAttachments.Count > 0 ? toUpdate.IqamaNumberValidities.PrimaryValidityAttachments.Select(x => x.Id).ToArray() : new int[0];
+                    List<int> toDeleteIqamaNumberValidities = new List<int>();
+                    //Removing Removed
+                    for (int i = 0; i < curIqamaNumberValiditiesIds.Length; i++)
+                    {
+                        PrimaryValidityAttachment curIqamaNumberValidity = toUpdate.IqamaNumberValidities.PrimaryValidityAttachments.First(x => x.Id == curIqamaNumberValiditiesIds[i]);
+                        if (!employeeIqamaNumberValidities.Any(x => x.Id == curIqamaNumberValiditiesIds[i]))
+                        {
+                            toUpdate.IqamaNumberValidities.PrimaryValidityAttachments.Remove(toUpdate.IqamaNumberValidities.PrimaryValidityAttachments.First(x => x.Id == curIqamaNumberValiditiesIds[i]));
+                            toDeleteIqamaNumberValidities.Add(curIqamaNumberValiditiesIds[i]);
+                        }
+                    }
+                    //Adding & Updating New
+                    for (int i = 0; i < employeeIqamaNumberValidities.Length; i++)
+                    {
+                        if (!toUpdate.IqamaNumberValidities.PrimaryValidityAttachments.Any(x => x.Id == employeeIqamaNumberValidities[i].Id))
+                        {
+                            employeeIqamaNumberValidities[i].Id = 0;
+                            toUpdate.IqamaNumberValidities.PrimaryValidityAttachments.Add(ObjectMapper.Map<PrimaryValidityAttachment_Dto, PrimaryValidityAttachment>(employeeIqamaNumberValidities[i]));
+                        }
+                        else
+                        {
+                            var _iqamaNumberValidityNew = employeeIqamaNumberValidities[i];
+                            var _iqamaNumberValidity = toUpdate.IqamaNumberValidities.PrimaryValidityAttachments.First(x => x.Id == employeeIqamaNumberValidities[i].Id);
+
+                            _iqamaNumberValidity.Attachment = _iqamaNumberValidityNew.Attachment;
+                            _iqamaNumberValidity.IsPrimary = _iqamaNumberValidityNew.IsPrimary;
+                            _iqamaNumberValidity.ValidityFromDate = _iqamaNumberValidityNew.ValidityFromDate;
+                            _iqamaNumberValidity.ValidityToDate = _iqamaNumberValidityNew.ValidityToDate;
+
+                            await EmployeeAppService.PrimaryValidityAttachmentsRepo.UpdateAsync(_iqamaNumberValidity);
+                        }
+                    }
+                    //Appending Deleted
+                    for (int i = 0; i < toDeleteIqamaNumberValidities.Count; i++)
+                    {
+                        await EmployeeAppService.PrimaryValidityAttachmentsRepo.DeleteAsync(x => x.Id == toDeleteIqamaNumberValidities[i]);
+                    }
+                    #endregion
+                    #region Employee Iqama Labour Office Primary Validity Attachment
+                    //Getting New
+                    PrimaryValidityAttachment_Dto[] employeeIqamaLabourOfficeValidities = employee.IqamaLabourOfficeValidities.PrimaryValidityAttachments.ToArray();
+                    //Getting Current
+                    int[] curIqamaLabourOfficeValiditiesIds = toUpdate.IqamaLabourOfficeValidities != null && toUpdate.IqamaLabourOfficeValidities.PrimaryValidityAttachments.Count > 0 ? toUpdate.IqamaLabourOfficeValidities.PrimaryValidityAttachments.Select(x => x.Id).ToArray() : new int[0];
+                    List<int> toDeleteIqamaLabourOfficeValidities = new List<int>();
+                    //Removing Removed
+                    for (int i = 0; i < curIqamaLabourOfficeValiditiesIds.Length; i++)
+                    {
+                        PrimaryValidityAttachment curIqamaLabourOfficeValidity = toUpdate.IqamaLabourOfficeValidities.PrimaryValidityAttachments.First(x => x.Id == curIqamaLabourOfficeValiditiesIds[i]);
+                        if (!employeeIqamaLabourOfficeValidities.Any(x => x.Id == curIqamaLabourOfficeValiditiesIds[i]))
+                        {
+                            toUpdate.IqamaLabourOfficeValidities.PrimaryValidityAttachments.Remove(toUpdate.IqamaLabourOfficeValidities.PrimaryValidityAttachments.First(x => x.Id == curIqamaLabourOfficeValiditiesIds[i]));
+                            toDeleteIqamaLabourOfficeValidities.Add(curIqamaLabourOfficeValiditiesIds[i]);
+                        }
+                    }
+                    //Adding & Updating New
+                    for (int i = 0; i < employeeIqamaLabourOfficeValidities.Length; i++)
+                    {
+                        if (!toUpdate.IqamaLabourOfficeValidities.PrimaryValidityAttachments.Any(x => x.Id == employeeIqamaLabourOfficeValidities[i].Id))
+                        {
+                            employeeIqamaLabourOfficeValidities[i].Id = 0;
+                            toUpdate.IqamaLabourOfficeValidities.PrimaryValidityAttachments.Add(ObjectMapper.Map<PrimaryValidityAttachment_Dto, PrimaryValidityAttachment>(employeeIqamaLabourOfficeValidities[i]));
+                        }
+                        else
+                        {
+                            var _iqamaLabourOfficeValidityNew = employeeIqamaLabourOfficeValidities[i];
+                            var _iqamaLabourOfficeValidity = toUpdate.IqamaLabourOfficeValidities.PrimaryValidityAttachments.First(x => x.Id == employeeIqamaLabourOfficeValidities[i].Id);
+
+                            _iqamaLabourOfficeValidity.Attachment = _iqamaLabourOfficeValidityNew.Attachment;
+                            _iqamaLabourOfficeValidity.IsPrimary = _iqamaLabourOfficeValidityNew.IsPrimary;
+                            _iqamaLabourOfficeValidity.ValidityFromDate = _iqamaLabourOfficeValidityNew.ValidityFromDate;
+                            _iqamaLabourOfficeValidity.ValidityToDate = _iqamaLabourOfficeValidityNew.ValidityToDate;
+
+                            await EmployeeAppService.PrimaryValidityAttachmentsRepo.UpdateAsync(_iqamaLabourOfficeValidity);
+                        }
+                    }
+                    //Appending Deleted
+                    for (int i = 0; i < toDeleteIqamaLabourOfficeValidities.Count; i++)
+                    {
+                        await EmployeeAppService.PrimaryValidityAttachmentsRepo.DeleteAsync(x => x.Id == toDeleteIqamaLabourOfficeValidities[i]);
+                    }
+                    #endregion
+
+                    #region Employee Sponsor Legal Entities
+                    //Getting New
+                    EmployeeSponsorLegalEntity_Dto[] employeeEmployeeSponsorLegalEntities = employee.EmployeeSponsorLegalEntities.ToArray();
+                    //Getting Current
+                    Guid[] curEmployeeSponsorLegalEntitiesIds = toUpdate.EmployeeSponsorLegalEntities != null && toUpdate.EmployeeSponsorLegalEntities.Count > 0 ? toUpdate.EmployeeSponsorLegalEntities.Select(x => x.LegalEntityId).ToArray() : new Guid[0];
+                    List<Guid> toDeleteEmployeeSponsorLegalEntities = new List<Guid>();
+                    //Removing Removed
+                    for (int i = 0; i < curEmployeeSponsorLegalEntitiesIds.Length; i++)
+                    {
+                        EmployeeSponsorLegalEntity curSponsorLegalEntity = toUpdate.EmployeeSponsorLegalEntities.First(x => x.LegalEntityId == curEmployeeSponsorLegalEntitiesIds[i]);
+                        if (!employeeEmployeeSponsorLegalEntities.Any(x => x.LegalEntityId == curEmployeeSponsorLegalEntitiesIds[i]))
+                        {
+                            toUpdate.EmployeeSponsorLegalEntities.Remove(toUpdate.EmployeeSponsorLegalEntities.First(x => x.LegalEntityId == curEmployeeSponsorLegalEntitiesIds[i]));
+                            toDeleteEmployeeSponsorLegalEntities.Add(curEmployeeSponsorLegalEntitiesIds[i]);
+                        }
+                    }
+                    //Adding & Updating New
+                    for (int i = 0; i < employeeEmployeeSponsorLegalEntities.Length; i++)
+                    {
+                        if (!toUpdate.EmployeeSponsorLegalEntities.Any(x => x.LegalEntityId == employeeEmployeeSponsorLegalEntities[i].LegalEntityId))
+                        {
+                            toUpdate.EmployeeSponsorLegalEntities.Add(new EmployeeSponsorLegalEntity() { LegalEntityId = employeeEmployeeSponsorLegalEntities[i].LegalEntityId });
+                        }
+                        else
+                        {
+                            //var _nationalIdentityNew = employeeEmployeeSponsorLegalEntities[i].LegalEntity;
+                            //var _nationalIdentity = toUpdate.EmployeeSponsorLegalEntities.First(x => x.LegalEntityId == employeeEmployeeSponsorLegalEntities[i].LegalEntity.Id);
+
+                            //_nationalIdentity.LegalEntity.Attachment = _nationalIdentityNew.Attachment;
+                            //_nationalIdentity.LegalEntity.IsPrimary = _nationalIdentityNew.IsPrimary;
+                            //_nationalIdentity.LegalEntity.ValidityFromDate = _nationalIdentityNew.ValidityFromDate;
+                            //_nationalIdentity.LegalEntity.ValidityToDate = _nationalIdentityNew.ValidityToDate;
+
+                            //await EmployeeAppService.LegalEntitysRepo.UpdateAsync(_nationalIdentity.LegalEntity);
+                        }
+                    }
+                    //Appending Deleted
+                    for (int i = 0; i < toDeleteEmployeeSponsorLegalEntities.Count; i++)
+                    {
+                        await EmployeeAppService.EmployeeSponsorLegalEntitysRepo.DeleteAsync(x => x.LegalEntityId == toDeleteEmployeeSponsorLegalEntities[i]);
                     }
                     #endregion
                     #region Employee Passport Travel Documents
@@ -322,7 +584,7 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
                             _passportTravelDocument.PassportTravelDocument.DocumentType = _passportTravelDocumentsNew.DocumentType;
                             _passportTravelDocument.PassportTravelDocument.IssuingCountryId = _passportTravelDocumentsNew.IssuingCountryId;
                             _passportTravelDocument.PassportTravelDocument.DocumentNumber = _passportTravelDocumentsNew.DocumentNumber;
-                            _passportTravelDocument.PassportTravelDocument.DocumentAttachment = _passportTravelDocumentsNew.DocumentAttachment;
+                            _passportTravelDocument.PassportTravelDocument.Attachment = _passportTravelDocumentsNew.Attachment;
                             _passportTravelDocument.PassportTravelDocument.IsPrimary = _passportTravelDocumentsNew.IsPrimary;
                             _passportTravelDocument.PassportTravelDocument.ValidityFromDate = _passportTravelDocumentsNew.ValidityFromDate;
                             _passportTravelDocument.PassportTravelDocument.ValidityToDate = _passportTravelDocumentsNew.ValidityToDate;
@@ -593,7 +855,7 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
 
                                     _natId.NationalIdentity.IdTypeId = _natIdNew.IdTypeId;
                                     _natId.NationalIdentity.IDNumber = _natIdNew.IDNumber;
-                                    _natId.NationalIdentity.IDAttachment = _natIdNew.IDNumber;
+                                    _natId.NationalIdentity.Attachment = _natIdNew.IDNumber;
                                     _natId.NationalIdentity.IsPrimary = _natIdNew.IsPrimary;
                                     _natId.NationalIdentity.ValidityFromDate = _natIdNew.ValidityFromDate;
                                     _natId.NationalIdentity.ValidityToDate = _natIdNew.ValidityToDate;
@@ -639,7 +901,7 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
                                     _passportTravelDocument.PassportTravelDocument.DocumentType = _passportTravelDocumentsNew.DocumentType;
                                     _passportTravelDocument.PassportTravelDocument.IssuingCountryId = _passportTravelDocumentsNew.IssuingCountryId;
                                     _passportTravelDocument.PassportTravelDocument.DocumentNumber = _passportTravelDocumentsNew.DocumentNumber;
-                                    _passportTravelDocument.PassportTravelDocument.DocumentAttachment = _passportTravelDocumentsNew.DocumentAttachment;
+                                    _passportTravelDocument.PassportTravelDocument.Attachment = _passportTravelDocumentsNew.Attachment;
                                     _passportTravelDocument.PassportTravelDocument.IsPrimary = _passportTravelDocumentsNew.IsPrimary;
                                     _passportTravelDocument.PassportTravelDocument.ValidityFromDate = _passportTravelDocumentsNew.ValidityFromDate;
                                     _passportTravelDocument.PassportTravelDocument.ValidityToDate = _passportTravelDocumentsNew.ValidityToDate;
@@ -674,7 +936,143 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
                     }
                     #endregion
 
-                    #region Employee EmployeeBenefits
+                    #region Cash Payment Types
+                    //Getting New
+                    CashPaymentType_Dto[] cashPaymentTypes = employee.CashPaymentTypes.ToArray();
+                    //Getting Current
+                    int[] curCashPaymentTypesIds = toUpdate.CashPaymentTypes != null && toUpdate.CashPaymentTypes.Count > 0 ? toUpdate.CashPaymentTypes.Select(x => x.Id).ToArray() : new int[0];
+                    List<int> toDeleteCashPaymentTypes = new List<int>();
+                    //Removing Removed
+                    for (int i = 0; i < curCashPaymentTypesIds.Length; i++)
+                    {
+                        //CashPaymentType curCashPaymentType = toUpdate.CashPaymentTypes.First(x => x.Id == curCashPaymentTypesIds[i]);
+                        if (!cashPaymentTypes.Any(x => x.Id == curCashPaymentTypesIds[i]))
+                        {
+                            toUpdate.CashPaymentTypes.Remove(toUpdate.CashPaymentTypes.First(x => x.Id == curCashPaymentTypesIds[i]));
+                            toDeleteCashPaymentTypes.Add(curCashPaymentTypesIds[i]);
+                        }
+                    }
+                    //Adding & Updating New
+                    for (int i = 0; i < cashPaymentTypes.Length; i++)
+                    {
+                        if (!toUpdate.CashPaymentTypes.Any(x => x.Id == cashPaymentTypes[i].Id))
+                        {
+                            cashPaymentTypes[i].Id = 0;
+                            toUpdate.CashPaymentTypes.Add(ObjectMapper.Map<CashPaymentType_Dto, CashPaymentType>(cashPaymentTypes[i]));
+                        }
+                        else
+                        {
+                            var cashPaymentTypeRaw = employee.CashPaymentTypes.First(x => x.Id == cashPaymentTypes[i].Id);
+                            var cashPaymentType = toUpdate.CashPaymentTypes.First(x => x.Id == cashPaymentTypes[i].Id);
+
+                            cashPaymentType.CollectionLocationId = cashPaymentTypeRaw.CollectionLocationId;
+                            cashPaymentType.ValidityFromDate = cashPaymentTypeRaw.ValidityFromDate;
+                            cashPaymentType.ValidityToDate = cashPaymentTypeRaw.ValidityToDate;
+                            cashPaymentType.IsPrimary = cashPaymentTypeRaw.IsPrimary;
+
+                            var cashPaymentTypeUpdated = await EmployeeAppService.CashPaymentTypesRepo.UpdateAsync(cashPaymentType);
+                        }
+                    }
+                    //Appending Deleted
+                    for (int i = 0; i < toDeleteCashPaymentTypes.Count; i++)
+                    {
+                        await EmployeeAppService.CashPaymentTypesRepo.DeleteAsync(x => x.Id == toDeleteCashPaymentTypes[i]);
+                    }
+                    #endregion
+                    #region Cheque Payment Types
+                    //Getting New
+                    ChequePaymentType_Dto[] chequePaymentTypes = employee.ChequePaymentTypes.ToArray();
+                    //Getting Current
+                    int[] curChequePaymentTypesIds = toUpdate.ChequePaymentTypes != null && toUpdate.ChequePaymentTypes.Count > 0 ? toUpdate.ChequePaymentTypes.Select(x => x.Id).ToArray() : new int[0];
+                    List<int> toDeleteChequePaymentTypes = new List<int>();
+                    //Removing Removed
+                    for (int i = 0; i < curChequePaymentTypesIds.Length; i++)
+                    {
+                        //ChequePaymentType curChequePaymentType = toUpdate.ChequePaymentTypes.First(x => x.Id == curChequePaymentTypesIds[i]);
+                        if (!chequePaymentTypes.Any(x => x.Id == curChequePaymentTypesIds[i]))
+                        {
+                            toUpdate.ChequePaymentTypes.Remove(toUpdate.ChequePaymentTypes.First(x => x.Id == curChequePaymentTypesIds[i]));
+                            toDeleteChequePaymentTypes.Add(curChequePaymentTypesIds[i]);
+                        }
+                    }
+                    //Adding & Updating New
+                    for (int i = 0; i < chequePaymentTypes.Length; i++)
+                    {
+                        if (!toUpdate.ChequePaymentTypes.Any(x => x.Id == chequePaymentTypes[i].Id))
+                        {
+                            chequePaymentTypes[i].Id = 0;
+                            toUpdate.ChequePaymentTypes.Add(ObjectMapper.Map<ChequePaymentType_Dto, ChequePaymentType>(chequePaymentTypes[i]));
+                        }
+                        else
+                        {
+                            var chequePaymentTypeRaw = employee.ChequePaymentTypes.First(x => x.Id == chequePaymentTypes[i].Id);
+                            var chequePaymentType = toUpdate.ChequePaymentTypes.First(x => x.Id == chequePaymentTypes[i].Id);
+
+                            chequePaymentType.NameOnCheque = chequePaymentTypeRaw.NameOnCheque;
+                            chequePaymentType.ValidityFromDate = chequePaymentTypeRaw.ValidityFromDate;
+                            chequePaymentType.ValidityToDate = chequePaymentTypeRaw.ValidityToDate;
+                            chequePaymentType.IsPrimary = chequePaymentTypeRaw.IsPrimary;
+
+                            var chequePaymentTypeUpdated = await EmployeeAppService.ChequePaymentTypesRepo.UpdateAsync(chequePaymentType);
+                        }
+                    }
+                    //Appending Deleted
+                    for (int i = 0; i < toDeleteChequePaymentTypes.Count; i++)
+                    {
+                        await EmployeeAppService.ChequePaymentTypesRepo.DeleteAsync(x => x.Id == toDeleteChequePaymentTypes[i]);
+                    }
+                    #endregion
+                    #region Bank Payment Types
+                    //Getting New
+                    BankPaymentType_Dto[] bankPaymentTypes = employee.BankPaymentTypes.ToArray();
+                    //Getting Current
+                    int[] curBankPaymentTypesIds = toUpdate.BankPaymentTypes != null && toUpdate.BankPaymentTypes.Count > 0 ? toUpdate.BankPaymentTypes.Select(x => x.Id).ToArray() : new int[0];
+                    List<int> toDeleteBankPaymentTypes = new List<int>();
+                    //Removing Removed
+                    for (int i = 0; i < curBankPaymentTypesIds.Length; i++)
+                    {
+                        //BankPaymentType curBankPaymentType = toUpdate.BankPaymentTypes.First(x => x.Id == curBankPaymentTypesIds[i]);
+                        if (!bankPaymentTypes.Any(x => x.Id == curBankPaymentTypesIds[i]))
+                        {
+                            toUpdate.BankPaymentTypes.Remove(toUpdate.BankPaymentTypes.First(x => x.Id == curBankPaymentTypesIds[i]));
+                            toDeleteBankPaymentTypes.Add(curBankPaymentTypesIds[i]);
+                        }
+                    }
+                    //Adding & Updating New
+                    for (int i = 0; i < bankPaymentTypes.Length; i++)
+                    {
+                        if (!toUpdate.BankPaymentTypes.Any(x => x.Id == bankPaymentTypes[i].Id))
+                        {
+                            bankPaymentTypes[i].Id = 0;
+                            toUpdate.BankPaymentTypes.Add(ObjectMapper.Map<BankPaymentType_Dto, BankPaymentType>(bankPaymentTypes[i]));
+                        }
+                        else
+                        {
+                            var bankPaymentTypeRaw = employee.BankPaymentTypes.First(x => x.Id == bankPaymentTypes[i].Id);
+                            var bankPaymentType = toUpdate.BankPaymentTypes.First(x => x.Id == bankPaymentTypes[i].Id);
+
+                            bankPaymentType.BankNameId = bankPaymentTypeRaw.BankNameId;
+                            bankPaymentType.BankAccountName = bankPaymentTypeRaw.BankAccountName;
+                            bankPaymentType.BankAccountNumber = bankPaymentTypeRaw.BankAccountNumber;
+                            bankPaymentType.BankIBAN = bankPaymentTypeRaw.BankIBAN;
+                            bankPaymentType.BankAddress = bankPaymentTypeRaw.BankAddress;
+                            bankPaymentType.City = bankPaymentTypeRaw.City;
+                            bankPaymentType.CountryId = bankPaymentTypeRaw.CountryId;
+                            bankPaymentType.ValidityFromDate = bankPaymentTypeRaw.ValidityFromDate;
+                            bankPaymentType.ValidityToDate = bankPaymentTypeRaw.ValidityToDate;
+                            bankPaymentType.IsPrimary = bankPaymentTypeRaw.IsPrimary;
+
+                            var bankPaymentTypeUpdated = await EmployeeAppService.BankPaymentTypesRepo.UpdateAsync(bankPaymentType);
+                        }
+                    }
+                    //Appending Deleted
+                    for (int i = 0; i < toDeleteBankPaymentTypes.Count; i++)
+                    {
+                        await EmployeeAppService.BankPaymentTypesRepo.DeleteAsync(x => x.Id == toDeleteBankPaymentTypes[i]);
+                    }
+                    #endregion
+
+                    #region Employee Benefits
                     //Getting New
                     Benefit_Dto[] employeeBenefits = employee.EmployeeBenefits.ToArray();
                     //Getting Current
@@ -863,8 +1261,24 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
                 {
                     employee.Id = Guid.Empty;
 
+                    if (employee.EmployeeDisabilities != null)
+                        employee.EmployeeDisabilities.ForEach(x => { x.Id = 0; x.Disability.Id = 0; x.DisabilityId = x.Disability.Id; });
+
                     if (employee.NationalIdentities != null)
-                        employee.NationalIdentities.ForEach(x => { x.Id = 0; x.NationalIdentity.Id = 0; x.NationalIdentityId = x.NationalIdentity.Id; });
+                    {
+                        employee.NationalIdentities.Id = 0;
+                        employee.NationalIdentities.PrimaryValidityAttachments.ForEach(x => { x.Id = 0; });
+                    }
+                    if (employee.IqamaNumberValidities != null)
+                    {
+                        employee.IqamaNumberValidities.Id = 0;
+                        employee.IqamaNumberValidities.PrimaryValidityAttachments.ForEach(x => { x.Id = 0; });
+                    }
+                    if (employee.IqamaLabourOfficeValidities != null)
+                    {
+                        employee.IqamaLabourOfficeValidities.Id = 0;
+                        employee.IqamaLabourOfficeValidities.PrimaryValidityAttachments.ForEach(x => { x.Id = 0; });
+                    }
                     if (employee.PassportTravelDocuments != null)
                         employee.PassportTravelDocuments.ForEach(x => { x.Id = 0; x.PassportTravelDocument.Id = 0; x.PassportTravelDocumentId = x.PassportTravelDocument.Id; });
 
@@ -915,7 +1329,7 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
 
                     Employee toUpdate = EmployeeAppService.Repository
                         .Include(x => x.NationalIdentities)
-                        .ThenInclude(x => x.NationalIdentity)
+                        .ThenInclude(x => x.PrimaryValidityAttachments)
                         .Include(x => x.PassportTravelDocuments)
                         .ThenInclude(x => x.PassportTravelDocument)
                         .Include(x => x.Dependants)
@@ -944,30 +1358,70 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
                         if (FormData.Files.Any(x => x.Name == "ProfilePicture"))
                         {
                             IFormFile formFile = FormData.Files.First(x => x.Name == "ProfilePicture");
+                            if (System.IO.File.Exists(toUpdate.ProfilePic))
+                                System.IO.File.Delete(toUpdate.ProfilePic);
 
-                            string uploadedFileName = UploadedFile(formFile, $"Profile", EMPLOYEE_GENERAL_PATH);
+                            string uploadedFileName = UploadedFile(formFile, $"Profile", GetEmployeeGeneralPath(toUpdate.Id));
                             toUpdate.ProfilePic = uploadedFileName;
                         }
                         if (FormData.Files.Any(x => x.Name == "BioAttachment"))
                         {
                             IFormFile formFile = FormData.Files.First(x => x.Name == "BioAttachment");
+                            if (System.IO.File.Exists(toUpdate.BioAttachment))
+                                System.IO.File.Delete(toUpdate.BioAttachment);
 
-                            string uploadedFileName = UploadedFile(formFile, $"BIO", EMPLOYEE_GENERAL_PATH);
+                            string uploadedFileName = UploadedFile(formFile, $"BIO", GetEmployeeGeneralPath(toUpdate.Id));
                             toUpdate.BioAttachment = uploadedFileName;
                         }
 
-                        for (int i = 0; i < toUpdate.NationalIdentities.Count; i++)
+                        for (int i = 0; i < toUpdate.NationalIdentities.PrimaryValidityAttachments.Count; i++)
                         {
-                            EmployeeNationalIdentity_Dto curIdentityRaw = employeeRaw.NationalIdentities[i];
-                            EmployeeNationalIdentity curIdentity = toUpdate.NationalIdentities.ElementAt(i);
-                            string attachName = $"ENatId_{curIdentityRaw.NationalIdentity.Id}_Attachment";
+                            PrimaryValidityAttachment_Dto curIdentityRaw = employeeRaw.NationalIdentities.PrimaryValidityAttachments[i];
+                            PrimaryValidityAttachment curIdentity = toUpdate.NationalIdentities.PrimaryValidityAttachments.ElementAt(i);
+                            string attachName = $"ENatId_{curIdentityRaw.Id}_Attachment";
 
                             if (FormData.Files.Any(x => x.Name.Contains(attachName)))
                             {
                                 IFormFile formFile = FormData.Files.First(x => x.Name == attachName);
+                                if (System.IO.File.Exists(curIdentity.Attachment))
+                                    System.IO.File.Delete(curIdentity.Attachment);
 
-                                string uploadedFileName = UploadedFile(formFile, $"{toUpdate.Id}NATID{curIdentity.NationalIdentityId}", EMPLOYEE_NATID_PATH);
-                                curIdentity.NationalIdentity.IDAttachment = uploadedFileName;
+                                string uploadedFileName = UploadedFile(formFile, $"NATID{toUpdate.NationalIdentityNumber}{DateTime.Now.ToString("dd-mm-yyyy")}{DateTime.Now.Millisecond}", GetEmployeeNatIdsPath(toUpdate.Id));
+                                curIdentity.Attachment = uploadedFileName;
+                            }
+                        }
+                        for (int i = 0; i < toUpdate.IqamaNumberValidities.PrimaryValidityAttachments.Count; i++)
+                        {
+                            PrimaryValidityAttachment_Dto curIdentityRaw = employeeRaw.IqamaNumberValidities.PrimaryValidityAttachments[i];
+                            PrimaryValidityAttachment curIdentity = toUpdate.IqamaNumberValidities.PrimaryValidityAttachments.ElementAt(i);
+                            string attachName = $"EIQN_{curIdentityRaw.Id}_Attachment";
+
+                            if (FormData.Files.Any(x => x.Name.Contains(attachName)))
+                            {
+                                IFormFile formFile = FormData.Files.First(x => x.Name == attachName);
+                                if (System.IO.File.Exists(curIdentity.Attachment))
+                                    System.IO.File.Delete(curIdentity.Attachment);
+
+                                string uploadedFileName = UploadedFile(formFile, $"IQN{toUpdate.IqamaNumber}{DateTime.Now.ToString("dd-mm-yyyy")}{DateTime.Now.Millisecond}", GetEmployeeNatIdsPath(toUpdate.Id));
+                                curIdentity.Attachment = uploadedFileName;
+                            }
+                        }
+                        for (int i = 0; i < toUpdate.IqamaLabourOfficeValidities.PrimaryValidityAttachments.Count; i++)
+                        {
+                            PrimaryValidityAttachment_Dto curIdentityRaw = employeeRaw.IqamaLabourOfficeValidities.PrimaryValidityAttachments[i];
+                            PrimaryValidityAttachment curIdentity = toUpdate.IqamaLabourOfficeValidities.PrimaryValidityAttachments.ElementAt(i);
+                            string attachName = $"EIQLN_{curIdentityRaw.Id}_Attachment";
+
+                            if (FormData.Files.Any(x => x.Name.Contains(attachName)))
+                            {
+                                IFormFile formFile = FormData.Files.First(x => x.Name == attachName);
+                                string path = GetEmployeeNatIdsPath(toUpdate.Id);
+                                string uploadPath = webHostEnvironment.WebRootPath + "/" + path;
+                                if (System.IO.File.Exists(path + "/" + curIdentity.Attachment))
+                                    System.IO.File.Delete(path + "/" + curIdentity.Attachment);
+
+                                string uploadedFileName = UploadedFile(formFile, $"NATID{toUpdate.NationalIdentityNumber}{DateTime.Now.ToString("dd-mm-yyyy")}{DateTime.Now.Millisecond}", path);
+                                curIdentity.Attachment = uploadedFileName;
                             }
                         }
                         for (int i = 0; i < toUpdate.PassportTravelDocuments.Count; i++)
@@ -980,8 +1434,13 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
                             {
                                 IFormFile formFile = FormData.Files.First(x => x.Name == attachName);
 
-                                string uploadedFileName = UploadedFile(formFile, $"{toUpdate.Id}PTD{curIdentity.PassportTravelDocumentId}", EMPLOYEE_PTD_PATH);
-                                curIdentity.PassportTravelDocument.DocumentAttachment = uploadedFileName;
+                                string path = GetEmployeePTDsPath(toUpdate.Id);
+                                string uploadPath = webHostEnvironment.WebRootPath + "/" + path;
+                                if (System.IO.File.Exists(path + "/" + curIdentity.PassportTravelDocument.Attachment))
+                                    System.IO.File.Delete(path + "/" + curIdentity.PassportTravelDocument.Attachment);
+
+                                string uploadedFileName = UploadedFile(formFile, $"PTD{curIdentity.PassportTravelDocument.DocumentNumber}{DateTime.Now.ToString("dd-mm-yyyy")}{DateTime.Now.Millisecond}", path);
+                                curIdentity.PassportTravelDocument.Attachment = uploadedFileName;
                             }
                         }
 
@@ -999,9 +1458,14 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
                                 if (FormData.Files.Any(x => x.Name.Contains(attachName)))
                                 {
                                     IFormFile formFile = FormData.Files.First(x => x.Name == attachName);
+                                    string path = GetEmployeeDependantNationalIdentitiesPath(toUpdate.Id, curDependant.Id);
+                                    string uploadPath = webHostEnvironment.WebRootPath + "/" + path;
 
-                                    string uploadedFileName = UploadedFile(formFile, $"{toUpdate.Id}DEP{curDependant.Id}NATID{curIdentity.NationalIdentityId}", EMPLOYEE_DEPENDANT_NATID_PATH);
-                                    curIdentity.NationalIdentity.IDAttachment = uploadedFileName;
+                                    if (System.IO.File.Exists(uploadPath + "/" + curIdentity.NationalIdentity.Attachment))
+                                        System.IO.File.Delete(uploadPath + "/" + curIdentity.NationalIdentity.Attachment);
+
+                                    string uploadedFileName = UploadedFile(formFile, $"NATID{toUpdate.NationalIdentityNumber}{DateTime.Now.ToString("dd-mm-yyyy")}{DateTime.Now.Millisecond}", path);
+                                    curIdentity.NationalIdentity.Attachment = uploadedFileName;
                                 }
                             }
                             for (int i = 0; i < curDependant.PassportTravelDocuments.Count; i++)
@@ -1013,9 +1477,13 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
                                 if (FormData.Files.Any(x => x.Name.Contains(attachName)))
                                 {
                                     IFormFile formFile = FormData.Files.First(x => x.Name == attachName);
+                                    string path = GetEmployeeDependantPTDPath(toUpdate.Id, curDependant.Id);
+                                    string uploadPath = webHostEnvironment.WebRootPath + "/" + path;
+                                    if (System.IO.File.Exists(uploadPath + "/" + curIdentity.PassportTravelDocument.Attachment))
+                                        System.IO.File.Delete(uploadPath + "/" + curIdentity.PassportTravelDocument.Attachment);
 
-                                    string uploadedFileName = UploadedFile(formFile, $"{toUpdate.Id}DEP{curDependant.Id}PTD{curIdentity.PassportTravelDocumentId}", EMPLOYEE_DEPENDANT_PTD_PATH);
-                                    curIdentity.PassportTravelDocument.DocumentAttachment = uploadedFileName;
+                                    string uploadedFileName = UploadedFile(formFile, $"PTD{curIdentity.PassportTravelDocument.DocumentNumber}{DateTime.Now.ToString("dd-mm-yyyy")}{DateTime.Now.Millisecond}", path);
+                                    curIdentity.PassportTravelDocument.Attachment = uploadedFileName;
                                 }
                             }
                         }

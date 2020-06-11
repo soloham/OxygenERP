@@ -12,14 +12,14 @@ namespace CERP.Migrations
                 schema: "HR",
                 table: "WeeklyTimesheetsJobs",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new Guid("ae4673e5-1442-30f0-0eb7-39f5b1547b17"));
 
             migrationBuilder.AddColumn<Guid>(
                 name: "ClientId",
                 schema: "HR",
                 table: "WeeklyTimesheetsJobs",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new Guid("ae4673e5-1442-30f0-0eb7-39f5b1547b17"));
 
             migrationBuilder.AddColumn<int>(
                 name: "JobInWeekId",
@@ -33,7 +33,7 @@ namespace CERP.Migrations
                 schema: "HR",
                 table: "WeeklyTimesheetsJobs",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new Guid("ae4673e5-1442-30f0-0eb7-39f5b1547b17"));
 
             migrationBuilder.CreateIndex(
                 name: "IX_WeeklyTimesheetsJobs_ChargeabilityId",

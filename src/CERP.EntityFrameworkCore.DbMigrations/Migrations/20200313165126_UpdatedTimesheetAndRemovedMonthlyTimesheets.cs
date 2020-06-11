@@ -31,7 +31,7 @@ namespace CERP.Migrations
                 schema: "HR",
                 table: "WeeklyTimesheets",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new Guid("ae4673e5-1442-30f0-0eb7-39f5b1547b17"));
 
             migrationBuilder.AddColumn<int>(
                 name: "Month",

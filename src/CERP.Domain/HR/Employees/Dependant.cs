@@ -38,6 +38,10 @@ namespace CERP.HR.Documents
         [CustomAudited]
         public string BioAttachment { get; set; }
 
+        public DictionaryValue Nationality { get; set; }
+        [CustomAudited]
+        public Guid NationalityId { get; set; }
+
         public virtual ICollection<DependantNationalIdentity> NationalIdentities { get; set; }
         public virtual ICollection<DependantPassportTravelDocument> PassportTravelDocuments { get; set; }
     }
