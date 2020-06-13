@@ -1,0 +1,18 @@
+{
+  "name": "jq-orgchart",
+  "description": "organisation chart",
+  "main": "js/jquery.jOrgChart.js",
+  "version": "1.0.2",
+  "authors": [
+    "jiangbaojun"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/jiangbaojun/jQueryOrgChart",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

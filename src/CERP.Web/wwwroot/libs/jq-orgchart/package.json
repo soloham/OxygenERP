@@ -1,0 +1,19 @@
+{
+  "name": "jq-orgchart",
+  "version": "1.0.2",
+  "description": "organisation chart",
+  "main": "js/jquery.jOrgChart.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jiangbaojun/jQueryOrgChart.git"
+  },
+  "author": "jiangbaojun",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jiangbaojun/jQueryOrgChart/issues"
+  },
+  "homepage": "https://github.com/jiangbaojun/jQueryOrgChart#readme"
+}

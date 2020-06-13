@@ -42,7 +42,7 @@
         "index.js",
         "readme.md"
       ]
-    }, 
+    },
     {
       "library": "validator@12.2.0",
       "destination": "wwwroot/libs/validator/",
@@ -63,17 +63,34 @@
         "dist/sweetalert2.min.css",
         "dist/sweetalert2.min.js"
       ]
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "browserify@16.5.1",
+      "destination": "wwwroot/libs/browserify/",
+      "files": [
+        "package.json",
+        "index.js",
+        "index.min.js"
+      ]
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "jq-orgchart@1.0.2",
+      "destination": "wwwroot/libs/",
+      "files": [
+        "js/jquery.jOrgChart.js",
+        "js/jquery.jOrgChart.min.js",
+        "README.md",
+        "package.json",
+        "example.html",
+        "bower.json",
+        "css/custom.css",
+        "css/custom.min.css",
+        "css/jquery.jOrgChart.css",
+        "css/jquery.jOrgChart.min.css",
+        "images/demo.gif"
+      ]
     }
-  ,
-{
-  "provider": "jsdelivr",
-  "library": "browserify@16.5.1",
-  "destination": "wwwroot/libs/browserify/",
-  "files": [
-    "package.json",
-    "index.js",
-    "index.min.js"
   ]
-}
-]
 }

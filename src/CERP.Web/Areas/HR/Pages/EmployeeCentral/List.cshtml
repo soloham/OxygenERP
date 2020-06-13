@@ -17,12 +17,15 @@
 
     var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
     var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Audit Trail", tooltipText = "View Audit Trail", prefixIcon = "e-toggleaudittrail", id = "toggleaudittrail" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, "ExcelExport", "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
+
+    List<object> employeeCommands = new List<object>();
+    employeeCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
+    employeeCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
 }
 @section styles {
     
 
     <style>
-
 
 
         /*.statustemp.e-terminatedcolor {
@@ -85,21 +88,53 @@
 @section scripts {
     <!-- Syncfusion Essential JS 2 Scripts -->
     
-    
+    <script>
+        let employeesGrid;
+        $(function () {
+            employeesGrid = $('#EmployeesGrid')[0].ej2_instances[0];
+            employeesGrid.showSpinner();
+            cERP.appServices.hR.employeeService.employee.getAllEmployeesForEC().done(function (data) {
+                employeesGrid.hideSpinner();
+                $.each(data, function (i, x) { x.profilePic = typeof x.profilePic == 'undefined' || x.profilePic == null? 'noimage.jpg' : x.profilePic });
+                employeesGrid.dataSource = data;
+            });
+
+        });
+    </script>
 }
 <partial name="_DefaultPageHeader" />
 <div class="site-content customContentArea">
     <div class="control-section">
-        <ejs-grid id="EmployeesGrid" dataSource="@ViewData["Employees_DS"]" enableAutoFill="true" columns="@Model.GetPrimaryGridColumns()"
+        <ejs-grid id="EmployeesGrid" enableAutoFill="true"
                   dataBound="dataBoundResponsive" commandClick="commandClick" queryCellInfo="queryCellInfo" showColumnChooser="true"
-                  allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                  allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true" actionComplete="actionComplete"
                   hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" detailTemplate="#detailtemplate"
                   allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
                   toolbarClick="toolbarClick" toolbar="@initialToolBar"
                   allowPaging="true" allowResizing="true">
 
+            <e-grid-columns>
+                <e-grid-column field="id" headerText="Id" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                <e-grid-column field="getReferenceId" headerText="Id" textAlign="Center" showInColumnChooser="false"></e-grid-column>
+                <e-grid-column field="name" headerText="Name" textAlign="Center"></e-grid-column>
+                @*<e-grid-column field="nameLocal" headerText="Local Name" textAlign="Center"></e-grid-column>*@
+                <e-grid-column field="displayName" headerText="Display Name" textAlign="Center"></e-grid-column>
+                <e-grid-column field="gender.value" headerText="Gender" textAlign="Center"></e-grid-column>
+                <e-grid-column field="nationality.value" headerText="Nationality" textAlign="Center"></e-grid-column>
+                <e-grid-column visible="false" showInColumnChooser="true" field="maritalStatus.value" headerText="Marital Status" textAlign="Center"></e-grid-column>
+                <e-grid-column visible="false" showInColumnChooser="true" field="preferredLanguage.value" headerText="Preferred Language" textAlign="Center"></e-grid-column>
+                @*<e-grid-column field="organizationStructureTemplateDepartment.name" headerText="Department" textAlign="Center"></e-grid-column>*@
+                <e-grid-column field="costCenter.value" headerText="Cost Center" textAlign="Center"></e-grid-column>
+                <e-grid-column field="payGroup.name" headerText="Pay Group" textAlign="Center"></e-grid-column>
+                <e-grid-column field="payGrade.name" headerText="Pay Grade" textAlign="Center"></e-grid-column>
+                <e-grid-column visible="false" showInColumnChooser="true" field="timezone.value" headerText="Timezone" textAlign="Center"></e-grid-column>
+                <e-grid-column visible="false" showInColumnChooser="true" field="hiringDate" headerText="Hiring Date" textAlign="Center"></e-grid-column>
+
+                <e-grid-column headerText="Actions" textAlign="Center" commands="employeeCommands"></e-grid-column>
+            </e-grid-columns>
+
             <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
-            <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
+            <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="false" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
             <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
             <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
         </ejs-grid>
@@ -134,37 +169,37 @@
             <tbody>
                 <tr>
                     <td rowspan="4" style="text-align: center;">
-                        <img class="photo" src="/Uploads/${ProfilePic}" alt="${Id}" />
+                        <img class="photo" src="/Uploads/${profilePic}" alt="${Id}" />
                     </td>
                     <td>
-                        <span style="font-weight: 500;">First Name: </span> ${FirstName}
+                        <span style="font-weight: 500;">First Name: </span> ${firstName}
                     </td>
                     <td>
-                        <span style="font-weight: 500;">Gender: </span> ${Gender.Value}
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <span style="font-weight: 500;">Last Name: </span> ${LastName}
-                    </td>
-                    <td>
-                        <span style="font-weight: 500;">Email: </span> ${ExtraProperties['contactInformation'].PrimaryContact.Email}
+                        <span style="font-weight: 500;">Gender: </span> ${gender.value}
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <span style="font-weight: 500;">Department: </span> ${Position.Department.Name}
+                        <span style="font-weight: 500;">Last Name: </span> ${lastName}
                     </td>
                     <td>
-                        <span style="font-weight: 500;">Join Date: </span> ${JoiningDate}
+                        @*<span style="font-weight: 500;">Email: </span> ${ExtraProperties['contactInformation'].PrimaryContact.Email}*@
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <span style="font-weight: 500;">Position: </span> ${Position.Title}
+                        @*<span style="font-weight: 500;">Department: </span> ${Position.Department.Name}*@
                     </td>
                     <td>
-                        <span style="font-weight: 500;">Phone: </span> ${ExtraProperties['contactInformation'].PrimaryContact.PhoneNumber}
+                        <span style="font-weight: 500;">Join Date: </span> ${hiringDate}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @*<span style="font-weight: 500;">Position: </span> ${Position.Title}*@
+                    </td>
+                    <td>
+                        @*<span style="font-weight: 500;">Phone: </span> ${ExtraProperties['contactInformation'].PrimaryContact.PhoneNumber}*@
                     </td>
                 </tr>
             </tbody>
@@ -175,10 +210,10 @@
                 <span class="statustxt">${EmployeeStatus.Value}</span>
             </div>*@
         <div id="status" class="statustemp">
-            <span class="statustxt">${EmployeeStatus.Value}</span>
+            @*<span class="statustxt">${EmployeeStatus.Value}</span>*@
         </div>
     </script>
-    <script type="text/x-jsrender" id="contractStatusTemplate">
+    @*<script type="text/x-jsrender" id="contractStatusTemplate">
         <div id="contractStatus" class="statustemp">
             <span class="statustxt">${ContractStatus.Value}</span>
         </div>
@@ -194,7 +229,7 @@
     <script id="coltemplate" type="text/x-template">
         <span class="zmdi zmdi-pin" style="color:#797878"></span>
         <span id="locationtext">&nbsp${Nationality.Value}</span>
-    </script>
+    </script>*@
 
     <div id="auditTrail" style="display:none;">
         <partial name="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />
@@ -291,13 +326,13 @@
     }
     function toolbarClick(args) {
         var gridObj = document.getElementById("EmployeesGrid").ej2_instances[0];
-        if (args.item.id === 'EmployeesGrid_pdfexport') {
+        if (args.item.id === 'Grid_pdfexport') {
             gridObj.pdfExport();
         }
-        if (args.item.id === 'EmployeesGrid_excelexport') {
+        if (args.item.id === 'Grid_excelexport') {
             gridObj.excelExport();
         }
-        if (args.item.id === 'EmployeesGrid_csvexport') {
+        if (args.item.id === 'Grid_csvexport') {
             gridObj.csvExport();
         }
         if (this.getSelectedRecords().length > 0) {
@@ -318,7 +353,7 @@
         }
         if (args.item.id === 'showActions') {
             gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Audit Trail", tooltipText: "View Audit Trail", prefixIcon: "e-custom-audit-trail", id: "toggleaudittrail" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "PdfExport", "CsvExport", "Print", "Search",{ text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
-    gridObj.refresh();
+            gridObj.refresh();
         }
         if (args.item.id === 'hideActions') {
             gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
@@ -353,7 +388,7 @@
         }
         if (args.item.id === 'toggleaudittrail') {
             if (!isAuditTrail) {
-                var grid = $("#EmployeesGrid")[0].ej2_instances[0];
+                var grid = $("#Grid")[0].ej2_instances[0];
                 var agtGrid = $("#AuditTrailGrid")[0].ej2_instances[0];
                 grid.showSpinner();
 
@@ -409,10 +444,40 @@
         //console.log(args);
     }
 
+    function actionComplete(args) {
+        if (args.requestType == "delete")
+        {
+            console.log(args);
+            Swal.showLoading();
+
+            let formData = new FormData();
+            formData.append("info", JSON.stringify(args.data));
+            var xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+            formData.append("__RequestVerificationToken", xhrToken);
+
+            $.ajax({
+                url: '',
+                async: true,
+                type: "DELETE",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    swal.fire("Success", "Employee has successfully been deleted", "success");
+                    window.open("@Url.Content("~")/HR/Employees");
+                },
+                error: function (err) {
+                    swal.fire("Failed", "Employee couldn't be deleted, please fix all errors and try again.", "error");
+
+                    console.log(err);
+                }
+            });
+        }
+    }
     function commandClick(args) {
         if (args.commandColumn.type == "Edit") {
             var params_ = JSON.stringify(args.rowData);  // display row data
-            window.open("@Url.Content("~")/HR/Employee/" + args.rowData.Id, "_blank");
+            window.open("@Url.Content("~")/HR/EmployeeCentral/Employee/" + args.rowData.id, "_blank");
             @*$.ajax({
                 url: "/?handler=EditAccountkj&Guid_=" + params_.Id,
                 async: true,
@@ -431,5 +496,6 @@
             this.copy(false);
         }
     }
+
 </script>
 

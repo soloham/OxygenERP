@@ -68,6 +68,14 @@
         .customContentArea {
             position: unset !important;
         }
+        .orgchart {
+            min-height: 100%;
+            min-width: 100%;
+        }
+
+            .orgchart table {
+                background-color: transparent !important;
+            }
     </style>
 }
 @section scripts {
@@ -271,7 +279,9 @@
         let usedDivisions = [];
         let usedDepartments = [];
         let posJobGrid;
+        var $ocJs;
         $(document).ready(function () {
+            $ocJs = $('#orgChartJs').orgchart({ data: [], nodeTitle: 'type', nodeContent: 'name'});
             let options = {
                 buttonWidth: '100%',
                 includeSelectAllOption: true,
@@ -523,7 +533,7 @@
             });
             cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayGrade.getAllPayGrades({}).done(function (data) {
                 console.log(data);
-                paygrades = data.items;
+                paygrades = data;
 
                 let dataMS = [];
                 for (let i = 0; i < paygrades.length; i++) {
@@ -2085,19 +2095,19 @@
                     </ejs-treegrid>
                 </div>
                 <div id="diagramOverviewTab" class="areaForm" style="display:none">
-                    <div class="control-section">
+                    <div class="control-section" style="display:none">
                         <div style="width: 100%;height: 10%">
                             @*Initializes ToolBar control.*@
                             @*<ejs-toolbar id="toolbar" clicked="posDGToolbarClick" created="posDGToolbarCreate">
-                                <e-toolbar-items>
-                                    <e-toolbar-item id="Add" tooltipText="Add" prefixIcon="e-icons e-add" text="Add"></e-toolbar-item>
-                                    <e-toolbar-item type="Separator"></e-toolbar-item>
-                                    <e-toolbar-item id="Edit" tooltipText="Edit" prefixIcon="e-icons e-update" text="Edit"></e-toolbar-item>
-                                    <e-toolbar-item type="Separator"></e-toolbar-item>
-                                    <e-toolbar-item id="Delete" tooltipText="Delete" prefixIcon="e-icons e-delete" text="Delete"></e-toolbar-item>
-                                    <e-toolbar-item type="Separator"></e-toolbar-item>
-                                </e-toolbar-items>
-                            </ejs-toolbar>*@
+                    <e-toolbar-items>
+                        <e-toolbar-item id="Add" tooltipText="Add" prefixIcon="e-icons e-add" text="Add"></e-toolbar-item>
+                        <e-toolbar-item type="Separator"></e-toolbar-item>
+                        <e-toolbar-item id="Edit" tooltipText="Edit" prefixIcon="e-icons e-update" text="Edit"></e-toolbar-item>
+                        <e-toolbar-item type="Separator"></e-toolbar-item>
+                        <e-toolbar-item id="Delete" tooltipText="Delete" prefixIcon="e-icons e-delete" text="Delete"></e-toolbar-item>
+                        <e-toolbar-item type="Separator"></e-toolbar-item>
+                    </e-toolbar-items>
+                </ejs-toolbar>*@
                         </div>
                         <div style="width: 100%;height: 80%;border-width: 0 1px 1px 1px; border-style: solid; border-color:#D7D7D7">
                             <div id="diagram-space" class="sb-mobile-diagram">
@@ -2137,6 +2147,9 @@
                                 </e-dialog-buttons>
                             </ejs-dialog>
                         </div>
+                    </div>
+                    <div id="orgChartJs" style="width: 100%; height: 100%">
+
                     </div>
                 </div>
             </div>
@@ -2289,18 +2302,35 @@
         if (args.selectedIndex == 1) {
             let ds = structureTG.dataSource;
             if (ds) {
-                let diagramDS = [];
-                for (var i = 0; i < ds.length; i++) {
-                    let node = { id: ds[i].id, unit: ds[i]._unit };
-                    if (ds[i].parentId)
-                        node.parentId = ds[i].parentId;
-                    diagramDS.push(node);
+                //let diagramDS = [];
+                //for (var i = 0; i < ds.length; i++) {
+                //    let node = { id: ds[i].id, unit: ds[i]._unit };
+                //    if (ds[i].parentId)
+                //        node.parentId = ds[i].parentId;
+                //    diagramDS.push(node);
 
+                //}
+                //posManDG.nodes = [];
+                //posManDG.connectors = [];
+                //posManDG.dataSourceSettings.dataSource.dataSource.data = diagramDS;
+                //posManDG.refresh();
+                let diagramDS = {};
+                let indegree0 = ds.filter(function (x) { return typeof x.parentId == 'undefined' || x.parentId == null });
+                for (var i = 0; i < indegree0.length; i++) {
+                    let curNode = indegree0[i];
+                    if (i == 0) {
+                        diagramDS = {
+                            id: curNode.id,
+                            type: curNode._unit.unitType,
+                            name: curNode._unit.name,
+                            children: []
+                        };
+                    }
+
+                    let children = getAllChildren(ds, curNode);
+                    diagramDS.children = children;
                 }
-                posManDG.nodes = [];
-                posManDG.connectors = [];
-                posManDG.dataSourceSettings.dataSource.dataSource.data = diagramDS;
-                posManDG.refresh();
+                $ocJs.init({ pan: true, parentNodeSymbol: '', data: diagramDS, nodeTitle: 'type', nodeContent: 'name' });
             }
             console.log(ds);
         }

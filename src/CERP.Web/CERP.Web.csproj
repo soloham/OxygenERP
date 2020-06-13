@@ -95,7 +95,7 @@
 
   <ItemGroup>
     <None Include="Areas\HR\Pages\Employees\Create.cshtml" />
-    <None Include="Areas\HR\Pages\Employees\List.cshtml" />
+    <None Include="Areas\HR\Pages\EmployeeCentral\List.cshtml" />
     <None Include="Areas\HR\Pages\Employees\_DialogEditPartial.cshtml" />
     <None Include="Areas\HR\Pages\Employees\_EmployeeContactInfoPartial.cshtml" />
     <None Include="Areas\HR\Pages\Employees\_EmployeeContractDetailsPartial.cshtml" />

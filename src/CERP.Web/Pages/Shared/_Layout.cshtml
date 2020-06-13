@@ -33,9 +33,12 @@
     <link href="~/libs/bootstrap-multiselect-0.9.15/css/bootstrap-multiselect.css" rel="stylesheet" />
     <link href="~/libs/syncfusion/ej2/styles/fabric.css" rel="stylesheet" />
     <link href="~/styles/cerp/site.css" rel="stylesheet" asp-append-version="true" />
+
+    <script src="~/libs/jq-orgchart/dist/js/jquery.orgchart.js"></script>
+    <link href="~/libs/jq-orgchart/dist/css/jquery.orgchart.css" rel="stylesheet" />
     @*<abp-style-bundle>
-    </abp-style-bundle>*@
-    
+        </abp-style-bundle>*@
+
     <style>
         .calendars-popup {
             z-index: 10000 !important;
@@ -560,17 +563,24 @@
                         <ul class="sidebar-submenu collapse">
                             <li class="menu-subtitle">Employees</li>
 
+                            @*<li class="">
+                                <a asp-area="HR" asp-page="/EmployeeCentral/Employee">
+                                    <span class="menu-icon">
+                                        <i class="zmdi zmdi-minus"></i>
+                                    </span> <span class="menu-text">Employee Central</span>
+                                </a>
+                            </li>*@
+                            <li class="" style="display:none">
+                                <a asp-area="HR" asp-page="/EmployeeCentral/List">
+                                <span class="menu-icon">
+                                    <i class="zmdi zmdi-minus"></i>
+                                </span> <span class="menu-text">Employees List</span></a>
+                            </li>
                             <li class="">
                                 <a asp-area="HR" asp-page="/EmployeeCentral/List">
                                 <span class="menu-icon">
                                     <i class="zmdi zmdi-minus"></i>
-                                </span> <span class="menu-text">Employee Central</span></a>
-                            </li>
-                            <li class="">
-                                <a asp-area="HR" asp-page="/Employees/List">
-                                <span class="menu-icon">
-                                    <i class="zmdi zmdi-minus"></i>
-                                </span> <span class="menu-text">Employee List</span></a>
+                                </span> <span class="menu-text">Employees List</span></a>
                             </li>
                             <li class="">
                                 <a asp-area="HR" asp-page="/Documents/List">
@@ -1117,7 +1127,7 @@
 
     <script src="~/libs/rfdc/index.js"></script>
     <script src="~/scripts/cerp/site.js" asp-append-version="true"></script>
-
+    <script src="~/libs/jq-orgchart/js/jquery.jOrgChart.js"></script>
     @RenderSection("Scripts", required: false)
     <abp-script-bundle>
     </abp-script-bundle>

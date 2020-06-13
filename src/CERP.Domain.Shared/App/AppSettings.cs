@@ -99,11 +99,15 @@ namespace CERP
         TypeIISkill,
         [Description("Timezone")]
         Timezone,
+        [Description("Salutations")]
+        Salutation,
         [Description("Employment Type")]
         EmploymentType,
         [Description("Employment Group")]
-        EmploymentGroup,
+        EmployeeGroup,
         [Description("Employment Sub Group")]
-        EmploymentSubGroup
+        EmployeeSubGroup,
+        [Description("Languages")]
+        Language
     }
 }

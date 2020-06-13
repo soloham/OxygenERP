@@ -396,8 +396,9 @@ const ValueTypeModules = {
     Timezone: 42,
     Salutation: 43,
     EmploymentType: 44,
-    EmploymentGroup: 45,
-    EmploymentSubGroup: 46
+    EmployeeGroup: 45,
+    EmployeeSubGroup: 46,
+    Languages: 47
 }
 
 function SelectDepartmentPositions(departmentsElmId, positionsElmId, departmentsArr, positionsArr, isEditing, isEditingLoaded, toSelectPositions) {
@@ -900,4 +901,30 @@ function defaultCrudToolbarClick(args) {
 
     }
     setTimeout(function () { gridObj.hideSpinner() }, 200);
+}
+
+
+function getAllChildren(nodes, curNode) {
+    let result = [];
+
+    let children = nodes.filter(function (x) { return x.parentId == curNode.id });
+    nodes = nodes.filter(function (x) { return x.parentId != curNode.id });
+
+    if (children.length > 0) {
+        for (var i = 0; i < children.length; i++) {
+            let curChild = children[i];
+            let subChildren = getAllChildren(nodes, curChild);
+
+            result.push({
+                id: curChild.id,
+                type: curChild._unit.unitType,
+                name: curChild._unit.name,
+                //unit: curChild._unit,
+
+                children: subChildren
+            });
+        }
+    }
+
+    return result;
 }

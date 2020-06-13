@@ -269,10 +269,12 @@ List<EC_IqamaSponsorType> iqamaSponsorTypes = Enum.GetValues(typeof(EC_IqamaSpon
 
         .customTab.e-tab .e-tab-header .e-toolbar-item.e-active .e-tab-text {
             color: #fff !important;
+            font-weight: 500;
         }
 
         .customTab.e-tab .e-tab-header .e-toolbar-item .e-tab-text {
             color: #fff !important;
+            font-weight: 500;
         }
 
         .customTab.e-tab .e-tab-header .e-toolbar-item.active .e-tab-text:hover {
@@ -323,14 +325,17 @@ List<EC_IqamaSponsorType> iqamaSponsorTypes = Enum.GetValues(typeof(EC_IqamaSpon
 
         .classicTab.e-tab .e-tab-header .e-toolbar-item .e-tab-text {
             color: #333 !important;
+            font-weight: 500;
         }
-
             .classicTab.e-tab .e-tab-header .e-toolbar-item .e-tab-text:hover {
                 color: #030303 !important;
+                font-weight: 600
             }
 
-        .classicTab.e-tab .e-tab-header .e-toolbar-item.active .e-tab-text:hover {
+        .classicTab.e-tab .e-tab-header .e-toolbar-item.e-active .e-tab-text:hover {
+            /*color: #fff !important;*/
             color: #fff !important;
+            font-weight: 600;
         }
 
         .classicTab.e-tab .e-tab-header .e-toolbar-item .e-tab-wrap {
@@ -441,7 +446,7 @@ List<EC_IqamaSponsorType> iqamaSponsorTypes = Enum.GetValues(typeof(EC_IqamaSpon
                     text-shadow: 0px 0px 350px #2c5173;
                     font-size: 22px;
                     font-family: "Segoe UI", "GeezaPro", "DejaVu Serif", sans-serif, "-apple-system", "BlinkMacSystemFont";
-                    font-weight: 400;
+                    font-weight: 600;
                     /* align-self: center; */
                     flex: auto;
                     background-color: transparent;
@@ -452,6 +457,14 @@ List<EC_IqamaSponsorType> iqamaSponsorTypes = Enum.GetValues(typeof(EC_IqamaSpon
 
             .customForm .formContent {
                 padding: 10px 10px 20px 10px;
+            }
+
+            .orgchart{
+                min-height: 100%;
+                min-width: 100%;
+            }
+            .orgchart table{
+                background-color: transparent !important;
             }
     </style>
 }
@@ -642,10 +655,12 @@ console.log(columnIndex);
     let curDiv;
     let curDep;
     let loadedOrgStructureInfo = false;
-    let loadedCompBenefits = false;
+        let loadedCompBenefits = false;
+        var $ocJs;
     var cardObj;
-    $(document).ready(function () {
-    if (isEditingEmployee) {
+        $(document).ready(function () {
+            $ocJs = $('#orgChartJs').orgchart({ data: [], nodeTitle: 'type', nodeContent: 'name'});
+        if (isEditingEmployee) {
         $('#submitEmployeeBtn').text('UPDATE EMPLOYEE');
         cERP.appServices.hR.employeeService.employee.getEmployee('@Model.Id', true).done(function (data) {
             curEmployee = data;
@@ -736,7 +751,7 @@ console.log(columnIndex);
 
                 curEmployee.iqamaNumberValidities = data.iqamaNumberValidities;
                 curEmployee.iqamaLabourOfficeValidities = data.iqamaLabourOfficeValidities;
-               
+
                 let clonedData = rfdc()(curEmployee);
 
                 fullNameValueObjects = fullNameValueObjects.filter(function (x) { return clonedData.dependants.filter(function (y) { return y.id == x.id }).length > 0 });
@@ -780,7 +795,7 @@ console.log(columnIndex);
                     iqamaRenewValidityGrid.dataSource = clonedData.iqamaNumberValidities.primaryValidityAttachments;
                 if (clonedData.iqamaLabourOfficeValidities)
                     labourOfficeRenewValidityGrid.dataSource = clonedData.iqamaLabourOfficeValidities.primaryValidityAttachments;
-               
+
 
             });
         });
@@ -852,7 +867,7 @@ console.log(columnIndex);
                 accordion.hideItem(1, false);
                 let value = dictionaryValueTypes.filter(function (x) { return x.value.includes('GCC') })[0].id;
                 //nationalIdentitiesGrid.columns[1].value = value;
-                
+
                 $('#empNationalIdentityTypeId').multiselect('select', value);
                 $('#natIdNumberField').text('GCC ID Number:');
                 isNotNational = false;
@@ -1031,21 +1046,31 @@ console.log(columnIndex);
             //            $.each(orgStructureDEPMultiselectsArr, function (i, x) { populateMSCodeNameTypes(dEps, x) });
 
             if (isEditingEmployee) $('#empBU').val(curEmployee.organizationStructureTemplateBusinessUnitId);
-                        $('#empBU').change();
+            $('#empBU').change();
             //if (!curOrgStructure) return;
-            let posManDG = $('#PosManagementDiagram')[0].ej2_instances[0];
-            let diagramDS = [];
+            //let posManDG = $('#PosManagementDiagram')[0].ej2_instances[0];
+            let diagramDS = {};
             let ds = JSON.parse(curOrgStructure.extraProperties['Structure'][0]);
-            for (var i = 0; i < ds.length; i++) {
-                let node = { id: ds[i].id, unit: ds[i]._unit };
-            if (ds[i].parentId)
-                node.parentId = ds[i].parentId;
-                diagramDS.push(node);
+            let indegree0 = ds.filter(function (x) { return typeof x.parentId == 'undefined' || x.parentId == null });
+            for (var i = 0; i < indegree0.length; i++) {
+                let curNode = indegree0[i];
+                if (i == 0) {
+                    diagramDS = {
+                        id: curNode.id,
+                        type: curNode._unit.unitType,
+                        name: curNode._unit.name,
+                        children: []
+                    };
+                }
+
+                let children = getAllChildren(ds, curNode);
+                diagramDS.children = children;
             }
-            posManDG.nodes = [];
-            posManDG.connectors = [];
-            posManDG.dataSourceSettings.dataSource.dataSource.data = diagramDS;
-            posManDG.refresh();
+            $ocJs.init({ pan: true, parentNodeSymbol: '', data: diagramDS, nodeTitle: 'type', nodeContent: 'name' });
+            //posManDG.nodes = [];
+            //posManDG.connectors = [];
+            //posManDG.dataSourceSettings.dataSource.dataSource.data = diagramDS;
+            //posManDG.refresh();
         });
     });
         $('#empBU').on('change', function (x) {
@@ -1617,7 +1642,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                 ...employeeData.personalInformation.bioInfo,
                 ...employeeData.personalInformation.identityInfo.raw,
                 nationalIdentityTypeId: $('#empNationalIdentityTypeId').val(),
-                
+
                 nationalIdentities: { primaryValidityAttachments: employeeData.personalInformation.identityInfo.nationalIdentities },
                 iqamaNumberValidities: { primaryValidityAttachments: employeeData.personalInformation.identityInfo.iqamaNumberValidities },
                 iqamaLabourOfficeValidities: { primaryValidityAttachments: employeeData.personalInformation.identityInfo.iqamaLabourOfficeValidities },
@@ -1722,7 +1747,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
         });
 
         //----------
-      
+
         cardTemplateFn = ej.base.compile(document.getElementById('card_template').innerHTML.trim());
         var card;
         var cardEle;
@@ -1740,7 +1765,7 @@ let profilePic = $('#profileImageUpload')[0].files[0];
             removed: multiSelectRemove,
         });
         multiselectComp.appendTo('#dependantsSelection');
-        
+
         function multiSelectRemove(e) {
             var cardDa = searchData.length > 0 ? searchData : (multiSelectData.length > 0 ? multiSelectData : cardObj);
             if (multiselectComp.value && multiselectComp.value.length === 0 && searchValCount === 0) {
@@ -3159,7 +3184,10 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                                     </ejs-toolbar>*@
                             </div>
                             <div style="width: 100%;height: 80%;border-width: 0 1px 1px 1px; border-style: solid; border-color:#D7D7D7">
-                                <div id="diagram-space" class="sb-mobile-diagram">
+                                <div id="orgChartJs" style="width: 100%; height: 100%">
+
+                                </div>
+                                <div id="diagram-space" class="sb-mobile-diagram" style="display:none">
                                     @*Initializes Diagram control.*@
                                     <ejs-diagram id="PosManagementDiagram" width="100%" height="550px" getNodeDefaults='"getNodeDefaults"' getConnectorDefaults='"getConnectorDefaults"' created="diagramCreated">
                                         <e-diagram-snapsettings constraints="None"></e-diagram-snapsettings>
@@ -3257,6 +3285,8 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="col-md-6">
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                                     <div class="form-group" style="padding: 15px">
                                         <div class="col-sm-4" style="">
@@ -3290,8 +3320,6 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
                             </div>
                         </div>
                     </div>
@@ -4717,7 +4745,12 @@ let profilePic = $('#profileImageUpload')[0].files[0];
             this.columns[1].visible = false;
             curBenefitEdit = args.rowData;
         }
-        if (type == "beginEdit") {
+        if (type == "add") {
+            if (this.element.id.includes('BenefitsGrid')) {
+                this.columns[1].visible = true;
+            }
+        }
+        else if (type == "beginEdit") {
             let dependantColumns = this.columns.filter(function (x) { return x.field == 'dependantId' });
             attachDependantsReferences(dependantColumns);
 

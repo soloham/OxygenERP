@@ -1,0 +1,8 @@
+/**
+ * Minified by jsDelivr using clean-css v4.2.1.
+ * Original file: /npm/jq-orgchart@1.0.2/css/custom.css
+ *
+ * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
+ */
+a,body,div,h1,h2,h3,h4,h5,html,p,span{margin:0;padding:0}body,html{width:100%}body{color:#fff;font-family:tahoma;font-weight:lighter;padding-top:40px}body p{font-size:14px}body p a{font-size:16px}h1{color:#e05e00;font-style:italic}a{color:#e05e00;text-decoration:none}a:hover{text-decoration:underline}.clear{clear:both}#org{background-color:#fff;margin:10px;padding:10px}#show-list{cursor:pointer}.alert-message{margin:2px 0}.topbar{position:absolute}.org-chart{margin:10px;padding:20px}.org-chart .node{font-size:14px;background:linear-gradient(top ,#f5f9fd 2% ,#dee7fa 97%);background:-o-linear-gradient(top ,#f5f9fd 2% ,#dee7fa 97%);background:-ms-linear-gradient(top ,#f5f9fd 2% ,#dee7fa 97%);background:-moz-linear-gradient(top ,#f5f9fd 2% ,#dee7fa 97%);background:-webkit-linear-gradient(top ,#f5f9fd 2% ,#dee7fa 97%);border-radius:8px;-moz-border-radius:8px;border:1px solid #d2d3d5;box-shadow:0 0 3px #d2d3d5;color:#333;font-family:Microsoft YaHei;vertical-align:middle;line-height:60px}.content-name,.content-url{font-size:18px;color:#333}.node .content-url{color:red}.node .order-num{padding:0 5px 0 5px;background-color:#859ff7;border-radius:5px;color:#fff;margin-right:5px}.node p{font-family:tahoma;font-size:10px;line-height:11px;padding:2px}
+/*# sourceMappingURL=/sm/8fd60c48ca1c7a5f345521c18ccb8da9471fa8b61c3a89c95cadd6ad2f685c90.map */

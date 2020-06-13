@@ -9,6 +9,7 @@
   },
   "private": true,
   "dependencies": {
-    "@abp/aspnetcore.mvc.ui.theme.basic": "~2.4.0"
+    "@abp/aspnetcore.mvc.ui.theme.basic": "~2.4.0",
+    "orgchart": "^2.1.10"
   }
 }

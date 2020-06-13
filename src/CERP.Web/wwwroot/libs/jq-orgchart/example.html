@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>组织结构图</title>
+    <link rel="stylesheet" href="css/jquery.jOrgChart.css"/>
+    <link rel="stylesheet" href="css/custom.css"/>
+
+    <script type="text/javascript" src="js/jquery-min.js"></script>
+    <script src="js/jquery.jOrgChart.js"></script>
+
+    <script>
+        var data = [
+            {id: "0", name: "根节点", collapsed: false, url: ""},
+            {id: "1", parentId: "0", name: "页面", collapsed: false, url: "", orderNum: 1,nodeClass:"male"},
+            {id: "2", parentId: "0", name: "表单", collapsed: false, url: "", orderNum: 2,nodeClass:"male"},
+            {id: "5", parentId: "0", name: "其它", collapsed: true, url: "", orderNum: 3,nodeClass:"male"},
+            {id: "3", parentId: "1", name: "查询1", collapsed: true, url: "", orderNum: 1,nodeClass:"male"},
+            {id: "4", parentId: "2", name: "表单1", collapsed: false, url: "http://www.baidu.com", orderNum: 1,nodeClass:"male"},
+            {id: "6", parentId: "5", name: "其他1", collapsed: false, url: "http://www.baidu.com", orderNum: 1,nodeClass:"male"},
+            {id: "7", parentId: "1", name: "查询2", collapsed: false, url: "", orderNum: 2,nodeClass:"male"},
+            {id: "10", parentId: "7", name: "查询2-1", collapsed: false, url: "http://www.baidu.com", orderNum: 1,nodeClass:"male"},
+            {id: "8", parentId: "3", name: "查询1-1", collapsed: true, url: "", orderNum: 1,nodeClass:"male"},
+            {id: "9", parentId: "8", name: "查询1-1-1", collapsed: false, url: "http://www.baidu.com", orderNum: 1,nodeClass:"male"}
+        ];
+        $(function(){
+            $("#chart").orgChat({
+                data : data,
+                showOrderNum: true,
+                rootId : 0
+            });
+        });
+    </script>
+  </head>
+
+  <body>
+
+    <div id="chart" class="orgChart"></div>
+
+</body>
+</html>

@@ -1093,6 +1093,7 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
                     {
                         if (!toUpdate.EmployeeBenefits.Any(x => x.Id == employeeBenefits[i].Id))
                         {
+                            employeeBenefits[i].Id = 0;
                             toUpdate.EmployeeBenefits.Add(ObjectMapper.Map<Benefit_Dto, Benefit>(employeeBenefits[i]));
                         }
                         else

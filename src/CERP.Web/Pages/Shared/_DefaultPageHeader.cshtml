@@ -5,8 +5,8 @@
             </div>
         </div>*@
         <div class="col-md-2 col-sm-2 col-xs-2" style="height:99%; width:80px;  padding:0">
-            <div style="background-color: #00b2f0; height: inherit; padding-top:15px">
-                <span class="menu-icon m-r-13"><i style="font-size:38px; margin-left:23px; height:inherit;" class="@ViewData["IconClass"]"></i></span>
+            <div style="background-color: #00b2f0; height: inherit; padding-top:10px">
+                <span class="menu-icon m-r-13"><i style="font-size:30px; margin-left:25px; height:inherit;" class="@ViewData["IconClass"]"></i></span>
             </div>
         </div>
         <div class="flex pull-left" style="background-color: transparent; height:inherit; padding-left:15px; padding-top:10px">
@@ -21,7 +21,7 @@
             }
             else if ((bool)ViewData["IsCreate"] == true)
             {
-                <a asp-area="@ViewData["Area"]" asp-page="@ViewData["CreateNewLink"]" class="btn btn-outline-dark addBtn" style="height:100%"><i class="fa fa-plus fa-fw"></i> <br /> @ViewData["CreateNewText"]</a>
+                <a asp-area="@ViewData["Area"]" asp-page="@ViewData["CreateNewLink"]" class="btn btn-outline-dark addBtn" style="height:100%"><i class="fa fa-plus fa-fw"></i> @ViewData["CreateNewText"]</a>
             }
         </div>
         @*<div class="clearfix " style=""></div>*@
