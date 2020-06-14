@@ -793,7 +793,7 @@ function defaultToolbarClick(args) {
         }
     }
     if (args.item.id === 'showActions') {
-        gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+        gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, { text: "ExcelExport", tooltipText: "Excel Export", prefixIcon: "e-excelexport", id: this.element.id + "_excelexport", align: 'Right' }, { text: this.element.id + "_PdfExport", tooltipText: "Pdf Export", prefixIcon: "e-pdfexport", id: "pdfexport", align: 'Right' }, { text: "CsvExport", tooltipText: "Csv Export", prefixIcon: "e-csvexport", id: this.element.id + "_csvexport", align: 'Right' }, { text: "Print", tooltipText: "Print", prefixIcon: "e-print", id: this.element.id + "_print", align: 'Right' },, "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, "Search", { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
         gridObj.refresh();
     }
     if (args.item.id === 'hideActions') {
@@ -830,6 +830,9 @@ function defaultToolbarClick(args) {
     if (args.item.id === 'toggleaudittrail') {
 
     }
+    if (args.item.id === 'togglesearch') {
+        gridObj.toolbarModule.enableItems([`${id}_Search`], true);
+    }
     setTimeout(function () { gridObj.hideSpinner() }, 200);
 }
 function defaultCrudToolbarClick(args) {
@@ -863,7 +866,7 @@ function defaultCrudToolbarClick(args) {
         }
     }
     if (args.item.id === 'showActions') {
-        gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, "Add", "Delete", { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, "ExcelExport", "PdfExport", "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+        gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, "Add", "Delete", { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, { text: "ExcelExport", tooltipText: "Excel Export", prefixIcon: "e-excelexport", id: this.element.id + "_excelexport", align: 'Right' }, { text: this.element.id + "_PdfExport", tooltipText: "Pdf Export", prefixIcon: "e-pdfexport", id: "pdfexport", align: 'Right' }, { text: "CsvExport", tooltipText: "Csv Export", prefixIcon: "e-csvexport", id: this.element.id + "_csvexport", align: 'Right' }, { text: "Print", tooltipText: "Print", prefixIcon: "e-print", id: this.element.id + "_print", align: 'Right' }, { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, "Search", { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
         gridObj.refresh();
     }
     if (args.item.id === 'hideActions') {
@@ -928,3 +931,4 @@ function getAllChildren(nodes, curNode) {
 
     return result;
 }
+

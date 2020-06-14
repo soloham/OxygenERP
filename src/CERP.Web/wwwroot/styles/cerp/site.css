@@ -578,11 +578,11 @@ vhr {
 }
 
 .e-custom-hide-actions:before {
-    content: '\e60a';
+    content: '\e825';
 }
 
 .e-custom-show-actions:before {
-    content: '\e679';
+    content: '\e22f';
 }
 
 /*button[id$='_columnchooser']:before {
@@ -1036,6 +1036,21 @@ h1{
 }
 .form-group .form-control:focus {
     border: none !important;
-    border-bottom: 2px solid #0e0e0e !important;
+    border-bottom: 2px solid #1d87e4 !important;
     box-shadow: inset 0 1px 1px rgba(0,0,0,.0) !important;
+}
+
+.e-toolbar-item.e-overlay{
+    display:none !important; 
+}
+
+.e-tab-header.e-vertical.e-vertical-left.e-control.e-toolbar{
+    overflow: visible !important;
+}
+.e-tab .e-tab-header .e-toolbar-item.e-active .e-text-wrap::before {
+    border: none !important;
+}
+
+.e-grid .e-toolbar .e-toolbar-items {
+    border-right: none !important;
 }

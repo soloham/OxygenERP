@@ -1,0 +1,40 @@
+{
+    "components": [
+        "grid"
+    ],
+    "minified": "true",
+    "injectables": {
+        "grid": [
+            "Filter",
+            "Page",
+            "Selection",
+            "Sort",
+            "Group",
+            "Reorder",
+            "RowDD",
+            "DetailRow",
+            "Toolbar",
+            "Aggregate",
+            "Search",
+            "VirtualScroll",
+            "Edit",
+            "Resize",
+            "ExcelExport",
+            "PdfExport",
+            "CommandColumn",
+            "ContextMenu",
+            "Freeze",
+            "ColumnMenu",
+            "ColumnChooser",
+            "ForeignKey",
+            "BlazorAction",
+            "InfiniteScroll"
+        ]
+    },
+    "themes": [
+        "material"
+    ],
+    "version": "18.1.56-patch",
+    "name": "ej2",
+    "isMinified": true
+}
