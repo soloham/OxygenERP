@@ -32,7 +32,8 @@
     <link href="~/libs/sweetalert2/dist/sweetalert2.css" rel="stylesheet" />
     <link href="~/libs/bootstrap-multiselect-0.9.15/css/bootstrap-multiselect.css" rel="stylesheet" />
     @*<link href="~/libs/syncfusion/ej2/styles/fabric.css" rel="stylesheet" />*@
-    <link href="~/libs/syncfusion/ej2/styles/material/material.css" rel="stylesheet" />
+    @*<link href="~/libs/syncfusion/ej2/styles/material/Default/material.css" rel="stylesheet" />*@
+    <link href="~/libs/syncfusion/ej2/styles/material/Custom/material.css" rel="stylesheet" />
     <link href="~/styles/cerp/site.css" rel="stylesheet" asp-append-version="true" />
 
     <script src="~/libs/jq-orgchart/dist/js/jquery.orgchart.js"></script>
@@ -834,6 +835,12 @@
                                                 </a>
                                             </li>
                                             <li class="">
+                                                <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/PayrollStructure/PaySubGroups/List">
+                                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                                    <span class="menu-text">Pay Sub Groups</span>
+                                                </a>
+                                            </li>
+                                            <li class="">
                                                 <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/PayrollStructure/PayRanges/List">
                                                     <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
                                                     <span class="menu-text">Pay Ranges</span>
@@ -862,6 +869,39 @@
                                                     <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
                                                     <span class="menu-text">Pay Frequencies</span>
                                                 </a>
+                                            </li>
+                                            <li class="">
+                                                <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/PayrollStructure/PaymentBanks/List">
+                                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                                    <span class="menu-text">Payment Banks</span>
+                                                </a>
+                                            </li>
+
+                                            <li class="with-sub">
+                                                <a href="#" aria-haspopup="true">
+                                                    <span class="menu-text">Payment Files</span>
+                                                </a>
+                                                <ul class="sidebar-submenu sidebar-submenu-simple collapse" style="padding-left: 31px">
+                                                    <li class="menu-subtitle">Payment Files</li>
+                                                    <li class="">
+                                                        <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/PayrollStructure/PaymentFiles/Bank/List">
+                                                            <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                                            <span class="menu-text">Bank Files</span>
+                                                        </a>
+                                                    </li>
+                                                    <li class="">
+                                                        <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/PayrollStructure/PaymentBanks/Cash/List">
+                                                            <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                                            <span class="menu-text">Cash Files</span>
+                                                        </a>
+                                                    </li>
+                                                    <li class="">
+                                                        <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/PayrollStructure/PaymentBanks/Cheque/List">
+                                                            <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                                            <span class="menu-text">Cheque Files</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
                                             </li>
                                         </ul>
                                     </li>

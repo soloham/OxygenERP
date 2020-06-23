@@ -50,7 +50,7 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
         {
             return ObjectMapper.Map<OS_FunctionSkillTemplate, OS_FunctionSkillTemplate_Dto>(await SkillsRepository.InsertAsync(functionSkillTemplate));
         }
-        public async Task<OS_FunctionSkillTemplate_Dto> AddSkillTemplate(OS_FunctionSkillTemplate_Dto functionSkillTemplate)
+        public async Task<OS_FunctionSkillTemplate_Dto> AddSkill(OS_FunctionSkillTemplate_Dto functionSkillTemplate)
         {
             OS_FunctionSkillTemplate toAdd = ObjectMapper.Map<OS_FunctionSkillTemplate_Dto, OS_FunctionSkillTemplate>(functionSkillTemplate);
             return ObjectMapper.Map<OS_FunctionSkillTemplate, OS_FunctionSkillTemplate_Dto>(await SkillsRepository.InsertAsync(toAdd));

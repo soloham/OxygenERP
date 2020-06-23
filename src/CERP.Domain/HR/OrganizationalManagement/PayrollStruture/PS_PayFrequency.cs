@@ -32,6 +32,6 @@ namespace CERP.HR.OrganizationalManagement.PayrollStructure
         public string Description { get; set; }
 
         [CustomAudited]
-        public int AnnualizationFactor { get; set; }
+        public PS_PayFrequencyAnnualizationFactor AnnualizationFactor { get; set; }
     }
 }

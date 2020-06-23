@@ -67,8 +67,8 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
 
         public OS_OrganizationStructureTemplateBusinessUnitPosition_Dto Head { get => OrganizationStructureTemplateBusinessUnitAssociatedPositions.FirstOrDefault(x => x.IsHead); }
 
-        public PS_PayGroup_Dto PayGroup { get; set; }
-        public int PayGroupId { get; set; }
+        public PS_PaySubGroup_Dto PaySubGroup { get; set; }
+        public int PaySubGroupId { get; set; }
     }
     public class OS_OrganizationStructureTemplateBusinessUnitPosition_Dto : AuditedEntityTenantDto<int>
     {

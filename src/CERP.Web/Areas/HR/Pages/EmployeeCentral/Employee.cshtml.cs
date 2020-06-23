@@ -166,7 +166,7 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
                     toUpdate.NationalityId = employee.NationalityId;
                     toUpdate.BirthCountryId = employee.BirthCountryId;
                     toUpdate.CostCenterId = employee.CostCenterId;
-                    toUpdate.PayGroupId = employee.PayGroupId;
+                    toUpdate.PaySubGroupId = employee.PaySubGroupId;
                     toUpdate.PayGradeId = employee.PayGradeId;
                     toUpdate.TimezoneId = employee.TimezoneId;
                     toUpdate.PortalId = employee.PortalId;
@@ -1321,7 +1321,7 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
                     employee.Nationality = null;
                     employee.BirthCountry = null;
                     employee.CostCenter = null;
-                    employee.PayGroup = null;
+                    employee.PaySubGroup = null;
                     employee.PayGrade = null;
                     employee.Timezone = null;
                     employee.Portal = null;
@@ -1349,7 +1349,7 @@ namespace CERP.Web.Areas.HR.Pages.EmployeeCentral
                     toUpdate.Nationality = null;
                     toUpdate.BirthCountry = null;
                     toUpdate.CostCenter = null;
-                    toUpdate.PayGroup = null;
+                    toUpdate.PaySubGroup = null;
                     toUpdate.PayGrade = null;
                     toUpdate.Timezone = null;
                     toUpdate.Portal = null;

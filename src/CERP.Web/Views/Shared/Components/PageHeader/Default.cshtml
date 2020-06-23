@@ -1,0 +1,74 @@
+﻿@model CERP.Web.Pages.Shared.Components.PageHeaderVCModel
+@using Syncfusion.EJ2.Grids;
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<div class="site-content customPageHeader fixed-top" data-size="big">
+    @*<div class="panel-body">
+            <div class="row">
+                <breadcrumb></breadcrumb>
+            </div>
+        </div>*@
+    <div class="col-md-2 col-sm-2 col-xs-2" style="height:99%; width:80px;  padding:0">
+        <div style="background-color: #00b2f0; height: inherit; padding-top:10px">
+            <span class="menu-icon m-r-13"><i style="font-size:30px; margin-left:25px; height:inherit;" class="@Model.IconClass"></i></span>
+        </div>
+    </div>
+    <div class="flex pull-left" style="background-color: transparent; height:inherit; padding-left:15px; padding-top:10px">
+        <span id="title" class="menu-text">@Model.HeaderTitle</span>
+        @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
+    </div>
+    <div class="pull-right text-right p-r-20" style="height:100%">
+        @*<div class="clearfix margin-15"></div>*@
+        @if (Model.IsList == true)
+        {
+
+        }
+        @if (Model.IsSearch == true)
+        {
+            <a href="#" class="btn btn-outline-dark addBtn" onclick="@(Model.OnSearchClicked)()" style="height:100%"><i class="fa fa-search fa-fw"></i> @Model.SearchText</a>
+        }
+        @if (Model.IsCreate == true)
+        {
+            <a href="#" class="btn btn-outline-dark addBtn" onclick="@(Model.OnCreateClicked)()" style="height:100%"><i class="fa fa-plus fa-fw"></i> @Model.CreateNewText</a>
+        }
+    </div>
+    @*<div class="clearfix " style=""></div>*@
+</div>
+
+<script>
+    $(document).ready(function () {
+        $(window).scroll(function () {
+            let headerHeight = $(".site-header").height();
+            let selfHeight = $(".customPageHeader").height();
+            let curStatus = $('.customPageHeader').attr('data-size');
+            //console.log(`Currently: ${curStatus}`);
+            //if ($(document).scrollTop() > 0) {
+            //    if (curStatus == 'big') {
+            //        $('.customPageHeader').attr('data-size', 'small');
+            //        //console.log(`Currently: ${curStatus}`);
+            //        $('.customPageHeader').stop().animate({
+            //            height: '80px'
+            //        }, 200);
+            //        $('#subTitle').stop().animate({
+            //            fontSize: '25px',
+            //            paddingLeft: '15px'
+            //        }, 200);
+            //        $('#subTitle').removeClass('clearfix');
+            //    }
+            //}
+            //else {
+            //    if (curStatus == 'small') {
+            //        $('.customPageHeader').attr('data-size', 'big');
+            //        $('.customPageHeader').stop().animate({
+            //            height: '130px'
+            //        }, 250);
+            //        $('#subTitle').stop().animate({
+            //            fontSize: '15px',
+            //            paddingLeft: '10px'
+            //        }, 250);
+            //        $('#subTitle').addClass('clearfix');
+            //    }
+            //}
+        });
+    })
+</script>

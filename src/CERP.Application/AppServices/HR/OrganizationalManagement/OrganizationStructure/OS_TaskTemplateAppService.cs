@@ -59,21 +59,21 @@ namespace CERP.AppServices.HR.OrganizationalManagement.OrganizationStructure
         //    return ObjectMapper.Map<OS_TaskQualificationTemplate, OS_TaskQualificationTemplate_Dto>(await QualificationsRepository.InsertAsync(toAdd));
         //}
 
-        public async Task<OS_TaskSkillTemplate_Dto> AddSkillTemplate(OS_TaskSkillTemplate functionSkillTemplate)
+        public async Task<OS_TaskSkillTemplate_Dto> AddTaskSkill(OS_TaskSkillTemplate functionSkillTemplate)
         {
             return ObjectMapper.Map<OS_TaskSkillTemplate, OS_TaskSkillTemplate_Dto>(await SkillsRepository.InsertAsync(functionSkillTemplate));
         }
-        public async Task<OS_TaskSkillTemplate_Dto> AddSkillTemplate(OS_TaskSkillTemplate_Dto functionSkillTemplate)
+        public async Task<OS_TaskSkillTemplate_Dto> AddTaskSkillTemplate(OS_TaskSkillTemplate_Dto functionSkillTemplate)
         {
             OS_TaskSkillTemplate toAdd = ObjectMapper.Map<OS_TaskSkillTemplate_Dto, OS_TaskSkillTemplate>(functionSkillTemplate);
             return ObjectMapper.Map<OS_TaskSkillTemplate, OS_TaskSkillTemplate_Dto>(await SkillsRepository.InsertAsync(toAdd));
         }
 
-        public async Task<OS_TaskAcademiaTemplate_Dto> AddAcademiaTemplate(OS_TaskAcademiaTemplate functionAcademiaTemplate)
+        public async Task<OS_TaskAcademiaTemplate_Dto> AddTaskAcademiaTemplate(OS_TaskAcademiaTemplate functionAcademiaTemplate)
         {
             return ObjectMapper.Map<OS_TaskAcademiaTemplate, OS_TaskAcademiaTemplate_Dto>(await AcademiaRepository.InsertAsync(functionAcademiaTemplate));
         }
-        public async Task<OS_TaskAcademiaTemplate_Dto> AddAcademia(OS_TaskAcademiaTemplate_Dto functionAcademiaTemplate)
+        public async Task<OS_TaskAcademiaTemplate_Dto> AddTaskAcademia(OS_TaskAcademiaTemplate_Dto functionAcademiaTemplate)
         {
             OS_TaskAcademiaTemplate toAdd = ObjectMapper.Map<OS_TaskAcademiaTemplate_Dto, OS_TaskAcademiaTemplate>(functionAcademiaTemplate);
             return ObjectMapper.Map<OS_TaskAcademiaTemplate, OS_TaskAcademiaTemplate_Dto>(await AcademiaRepository.InsertAsync(toAdd));

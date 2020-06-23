@@ -7,6 +7,7 @@ using CERP.HR.OrganizationalManagement.OrganizationStructure;
 using CERP.HR.OrganizationalManagement.PayrollStructure;
 using CERP.HR.Timesheets;
 using CERP.HR.Workshifts;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,19 +31,25 @@ namespace CERP.AppServices.HR.OrganizationalManagement.PayrollStructure
 
         public async Task<List<PS_PayGroup_Dto>> GetAllPayGroupsAsync()
         {
-            List<PS_PayGroup_Dto> list = (await Repository.GetListAsync(true)).Select(MapToGetListOutputDto).ToList();
-            return list;
+            try {
+                List<PS_PayGroup_Dto> list = (await Repository.GetListAsync(true)).Select(MapToGetListOutputDto).ToList();
+                return list;
+            }
+            catch(Exception ex)
+            {
+                return new List<PS_PayGroup_Dto>();
+            }
         }
 
-        //public async Task<List<EntityReference>> GetAllReferences(int id)
-        //{
-        //    List<EntityReference> entityReferences = new List<EntityReference>();
+        public async Task<List<EntityReference>> GetAllReferences(int id)
+        {
+            List<EntityReference> entityReferences = new List<EntityReference>();
 
-        //    entityReferences.AddRange(PositionsReferenceRepo.WithDetails(x => x.PositionTemplate).Where(x => x.JobTemplateId == id)
-        //        .ToList()
-        //        .Select(x => new EntityReference() { Id = entityReferences.Count + 1, Name = x.PositionTemplate.Name, Code = x.PositionTemplate.Code, Type = "Position" }));
+            //entityReferences.AddRange(PositionsReferenceRepo.WithDetails(x => x.PositionTemplate).Where(x => x.JobTemplateId == id)
+            //    .ToList()
+            //    .Select(x => new EntityReference() { Id = entityReferences.Count + 1, Name = x.PositionTemplate.Name, Code = x.PositionTemplate.Code, Type = "Position" }));
 
-        //    return entityReferences;
-        //}
+            return entityReferences;
+        }
     }
 }

@@ -218,7 +218,7 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
                 $('#subDepartmentsField').change();
             });
 
-            cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayGroup.getAllPayGroups().done(function (data) {
+            cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PaySubGroup.getAllPaySubGroups().done(function (data) {
                 let dataMS = [];
                 for (let i = 0; i < data.length; i++) {
                     let item = data[i];
@@ -488,10 +488,10 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
                         <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="form-group" style="padding: 15px">
                                 <div class="col-sm-4" style="">
-                                    <label class="p-t-5 control-label pull-right">Pay Group:</label>
+                                    <label class="p-t-5 control-label pull-right">Pay Sub Group:</label>
                                 </div>
                                 <div class="col-sm-8" style="">
-                                    <select id="depPaygroup" name="PayGroupId" class="text-left form-control inline pull-left" required>
+                                    <select id="depPaygroup" name="PaySubGroupId" class="text-left form-control inline pull-left" required>
                                     </select>
                                 </div>
                             </div>
@@ -712,7 +712,7 @@ referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-i
                     @*<e-grid-column field="departmentHead.name" headerText="Head" textAlign="Center"></e-grid-column>*@
                     @*<e-grid-column field="costCenter.value" headerText="Cost Center" textAlign="Center"></e-grid-column>*@
                     @*<e-grid-column field="reviewPeriodDescription" headerText="Review period" textAlign="Center"></e-grid-column>*@
-                    <e-grid-column field="payGroup.name" headerText="Pay Group" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="payGroup.name" headerText="Pay Sub Group" textAlign="Center"></e-grid-column>
                     <e-grid-column field="payGrade.name" headerText="Pay Grade" textAlign="Center"></e-grid-column>
                     <e-grid-column headerText="Validity" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "validityFromDate", Type="date", Format="E, MMMM d, y", AllowEditing=true, EditType="datepicker", HeaderText = "From", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },

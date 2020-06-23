@@ -54,8 +54,8 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStru
         //}
         //public List<OS_PositionTemplate_Dto> PositionTemplates { get; set; } = new List<OS_PositionTemplate_Dto>();
 
-        public PS_PayGroup_Dto PayGroup { get; set; }
-        public int PayGroupId { get; set; }
+        public PS_PaySubGroup_Dto PaySubGroup { get; set; }
+        public int PaySubGroupId { get; set; }
 
         public PS_PayGrade_Dto PayGrade { get; set; }
         public int PayGradeId { get; set; }

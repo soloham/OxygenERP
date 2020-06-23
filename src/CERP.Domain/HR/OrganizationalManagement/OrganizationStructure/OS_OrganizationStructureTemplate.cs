@@ -75,8 +75,8 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public virtual ICollection<OS_OrganizationStructureTemplatePosition> OrganizationStructureTemplateBusinessUnitPositions { get; set; }
         public virtual ICollection<OS_OrganizationStructureTemplateBusinessUnitCostCenter> OrganizationStructureTemplateBusinessUnitCostCenters { get; set; }
 
-        public PS_PayGroup PayGroup { get; set; }
-        public int PayGroupId { get; set; }
+        public PS_PaySubGroup PaySubGroup { get; set; }
+        public int PaySubGroupId { get; set; }
     }
     public class OS_OrganizationStructureTemplateBusinessUnitPosition : AuditedAggregateTenantRoot<int>
     {

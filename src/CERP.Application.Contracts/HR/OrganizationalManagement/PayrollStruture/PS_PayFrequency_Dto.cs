@@ -23,6 +23,6 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.PayrollStructure
         public string Name { get; set; }
         public string NameLocalized { get; set; }
         public string Description { get; set; }
-        public int AnnualizationFactor { get; set; }
+        public PS_PayFrequencyAnnualizationFactor AnnualizationFactor { get; set; }
     }
 }

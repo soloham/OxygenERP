@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Net;
+using Westwind.AspNetCore.LiveReload;
 
 namespace CERP.Web
 {
@@ -15,6 +16,7 @@ namespace CERP.Web
         {
             services.AddApplication<CERPWebModule>();
 
+            //services.AddLiveReload();
             services.AddRazorPages()
                 .AddRazorRuntimeCompilation()
                 .AddRazorPagesOptions(options =>
@@ -71,9 +73,9 @@ namespace CERP.Web
 
         public void Configure(IApplicationBuilder app)
         {
-            //Register Syncfusion license here
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MjE1OTQxQDMxMzcyZTM0MmUzMGZDUGl3WkUyOUpsdWhoZjdPK1hpNHVzY2FtMnZaT1FVa1EyL0lBR3RDUlE9");
 
+            //app.UseLiveReload();
             app.InitializeApplication();
         }
     }

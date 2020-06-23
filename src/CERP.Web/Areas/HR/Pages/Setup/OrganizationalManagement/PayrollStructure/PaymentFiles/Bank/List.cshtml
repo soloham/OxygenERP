@@ -1,0 +1,1221 @@
+﻿@page "/HR/PayrollStructure/PaymentFiles/Bank"
+@using CERP.Localization;
+@using Microsoft.AspNetCore.Mvc.Localization;
+@using CERP.App;
+@using CERP;
+@using CERP.HR.Setup.OrganizationalManagement.PayrollStructure;
+@inject IHtmlLocalizer<CERPResource> L
+@inject Volo.Abp.Json.IJsonSerializer JsonSerializer
+@using CERP.App.Helpers;
+@using Syncfusion.EJ2.Navigations;
+
+@model CERP.Web.Areas.HR.Setup.OrganizationalManagement.PayrollStructure.Pages.PaymentFiles.Bank.ListModel
+@{
+    ViewData["IsEditing"] = false;
+    bool IsEditing = (bool)ViewData["IsEditing"];
+
+    ViewData["Title"] = L["BankFiles"].Value;
+    ViewData["IconClass"] = "fas fa-list";
+    ViewData["HeaderTitle"] = L["BankFiles"].Value.ToUpper();
+    ViewData["SubTitle"] = $"{L["ListOf"]} {L["BankFiles"]}";
+    ViewData["Area"] = "Setup";
+
+    ViewData["IsList"] = false;
+    ViewData["IsCreate"] = true;
+    string cNT = $"{L["Add"].Value} {L["New"].Value}";
+    ViewData["CreateNewText"] = cNT;
+    //ViewData["CreateNewLink"] = "/BankFiles/BankFile";
+
+    string TabPlaceholder = (bool)ViewData["IsEditing"] ? L["Area"].Value : L["Step"].Value;
+
+    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+
+    var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Audit Trail", tooltipText = "View Audit Trail", prefixIcon = "e-toggleaudittrail", id = "toggleaudittrail" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, new { text = "ExcelExport", tooltipText = "Excel Export", prefixIcon = "e-excelexport", id = "excelexport", align = "Right" }, "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
+
+    List<object> bankFileCommands = new List<object>();
+    bankFileCommands.Add(new { type = "View", buttonOption = new { iconCss = "e-icons e-search", cssClass = "e-flat" } });
+    bankFileCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
+    bankFileCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+    bankFileCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
+
+    List<object> referenceCommands = new List<object>();
+    referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+
+    var paymentFileEmployeeColumns = EnumExtensions.GetDescriptions(typeof(PS_PaymentFileEmployeeColumn));
+    var paymentFilePayrollColumns = EnumExtensions.GetDescriptions(typeof(PS_PaymentFileEmployeeColumn));
+    var paymentFileBankColumns = EnumExtensions.GetDescriptions(typeof(PS_PaymentFileBankColumn));
+}
+
+@section styles {
+    @if ((bool)ViewData["IsEditing"])
+    {
+        <link href="~/libs/smartwizard/dist/css/smart_wizard_theme_circles.min.css" rel="stylesheet" />
+    }
+
+    <style>
+        .customContentArea {
+            position: unset !important;
+        }
+
+        .e-tab-header.e-vertical.e-vertical-left.e-control.e-toolbar.e-lib.e-keyboard .e-toolbar-items {
+            width: 200px !important;
+        }
+
+        #spacesTabs > .e-tab-header {
+            display: none;
+        }
+    </style>
+
+    <style>
+       
+    </style>
+}
+@section scripts {
+    <script>
+        var isEditingCrudSpace = false;
+        var isSearchingCrudSpace = false;
+        var curCrudSpaceEdit;
+
+        let bankFile = []
+        let listOfData = []
+        let gridObj;
+        let options = {
+            buttonWidth: '100%',
+            includeSelectAllOption: true,
+            enableFiltering: false,
+            enableClickableOptGroups: true,
+            includeResetOption: true,
+            includeResetDivider: true,
+            enableCollapsibleOptGroups: true
+        };
+        let curOrgStructure;
+        function loadAllDependencies(fieldData = null) {
+
+            let options = {
+                buttonWidth: '100%',
+                includeSelectAllOption: true,
+                enableFiltering: false,
+                enableClickableOptGroups: true,
+                includeResetOption: true,
+                includeResetDivider: true,
+                enableCollapsibleOptGroups: true
+            };
+            $.each($('.mltslct'), function (i, x) { $(x).multiselect(options); });
+
+            loadCodeNameTypes(cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PaymentBank.getAllPaymentBanks, [], [], ['.ps_banks'], 'code', 'name', function (data) {
+                if (curCrudSpaceEdit != null && id != null) {
+                    $(`#paymentBanks${id}`).multiselect('deselectAll');
+                    $(`#paymentBanks${id}`).multiselect('select', curCrudSpaceEdit.paymentBanks.map(function (x) { return x.id }));
+                    $(`#paymentBanks${id}`).multiselect('refresh');
+                }
+            });
+            cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PaymentBankFile.getAllFileColumns().done(function(data){
+                let paymentFileEmployeeColumns = data.paymentFileEmployeeColumns;
+                let paymentFilePayrollColumns = data.paymentFilePayrollColumns;
+                let paymentFileBankColumns = data.paymentFileBankColumns;
+                console.log('grt');
+                console.log(data);
+                let dataMS = [];
+                for (let i = 0; i < paymentFileEmployeeColumns.length; i++) {
+                    let item = paymentFileEmployeeColumns[i];
+
+                    dataMS.push({ label: `${item.description}`, value: item.id, data: item });
+                }
+                $('#employeeFileColumns').multiselect('dataprovider', dataMS);
+                dataMS = [];
+                for (let i = 0; i < paymentFilePayrollColumns.length; i++) {
+                    let item = paymentFilePayrollColumns[i];
+
+                    dataMS.push({ label: `${item.description}`, value: item.id, data: item });
+                }
+                $('#payrollFileColumns').multiselect('dataprovider', dataMS);
+                dataMS = [];
+                for (let i = 0; i < paymentFileBankColumns.length; i++) {
+                    let item = paymentFileBankColumns[i];
+
+                    dataMS.push({ label: `${item.description}`, value: item.id, data: item });
+                }
+                $('#bankFileColumns').multiselect('dataprovider', dataMS);
+
+                if (fieldData != null && id != null) {
+                    $(`#paymentBanks${id}`).multiselect('deselectAll');
+                    $(`#paymentBanks${id}`).multiselect('select', fieldData.paymentBanks.map(function (x) { return x.id }));
+                    $(`#paymentBanks${id}`).multiselect('refresh');
+                }
+            });
+            loadDictionaryValues(ValueTypeModules.Country,
+                [],
+                [],
+                ['#countryId'], function (data) {
+                    if (isEditingCrudSpace) {
+                        $('#countryId').multiselect('select', curCrudSpaceEdit.countryId)
+                    }
+                    $('#countryId').change()
+                });
+        }
+
+        let spaceTabs;
+        var cardTemplateFn;
+        $(document).ready(function () {
+
+            cardTemplateFn = ej.base.compile(document.getElementById('card_template').innerHTML.trim());
+            var card;
+            var cardEle;
+            var data = [];
+            var multiSelectData = [];
+            var searchData = [];
+            var searchValCount = 0;
+            var filterCategory = [{ Name: 'Client-Side', Code: 'client' }, { Name: 'Server-Side', Code: 'server' }, { Name: 'Front-End', Code: 'ui' }];
+            var emptyData = true;
+
+            spaceTabs = $('#spacesTabs')[0].ej2_instances[0];
+            loadAllDependencies();
+            gridObj = $("#BankFilesGrid")[0].ej2_instances[0];
+            gridObj.showSpinner();
+            $('#bankFileLoader').slideDown(100);
+
+            $('.e-card-layout > .row .tiles-loader').slideDown();
+            cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PaymentBankFile.getAllPaymentBankFiles().done(function (data) {
+                $('#bankFileLoader').slideUp(100);
+                $('.e-card-layout > .row .tiles-loader').slideUp();
+                gridObj.hideSpinner();
+
+                calculateTiles(data);
+
+                gridObj.dataSource = data;
+                setTimeout(function () { gridObj.hideSpinner() }, 200);
+
+            });
+
+            $('#addBankFilesBtn').on('click', function () {
+                isEditingCrudSpace = false;
+
+                let tabs = $('#crudSpecificFormTabs')[0].ej2_instances[0];
+                tabs.properties.items[1].visible = false;
+
+                $('#submitBankFileBtn').val('Create Bank File');
+            });
+            $('#submitBankFileBtn').on('click', function (e) {
+                e.preventDefault();
+                submitBankFileBtn('crudSpecificForm');
+            });
+
+        });
+        function submitBankFileBtn(formId = '', _id = null) {
+            if (ValidateForm(formId)) {
+                gridObj.showSpinner();
+                Swal.showLoading();
+
+                let sid = ''
+                if (_id != null && typeof _id != 'object' && typeof _id != 'undefined')
+                    sid = _id;
+
+                let form = [];
+                let functionDetails = $('#' + formId).find("textarea, input, select").serializeArray();
+                form = form.concat(functionDetails);
+
+                let params = objectifyForm(form);
+                console.log('sid');
+
+                params.PaymentBanks = [];
+                let selectedBanks = $('#paymentBanks').val();
+                selectedBanks.forEach(function (val, i) {
+                    params.PaymentBanks.push({ bankId: val });
+                });
+
+                params.BankFileColumns = { PaymentFileEmployeeColumns: [], PaymentFilePayrollColumns: [], PaymentFileBankColumns: []};
+                let selectedEmpFileColumns = $('#employeeFileColumns').val();
+                selectedEmpFileColumns.forEach(function (val, i) {
+                    params.BankFileColumns.PaymentFileEmployeeColumns.push({ id: val });
+                });
+                let selectedPayrollFileColumns = $('#payrollFileColumns').val();
+                selectedPayrollFileColumns.forEach(function (val, i) {
+                    params.BankFileColumns.PaymentFilePayrollColumns.push({ id: val });
+                });
+                let selectedBankFileColumns = $('#bankFileColumns').val();
+                selectedBankFileColumns.forEach(function (val, i) {
+                    params.BankFileColumns.PaymentFileBankColumns.push({id: val});
+                });
+
+                let id = 0;
+                if (gridObj.dataSource.length > 0)
+                    id = gridObj.dataSource[gridObj.dataSource.length - 1].id;
+
+                params.isEditing = isEditingCrudSpace;
+                params.isSearching = isSearchingCrudSpace;
+                if (isEditingCrudSpace) {
+                    params.id = curCrudSpaceEdit.id;
+
+                    //cERP.appServices.hR.leaveRequestTemplates.update()
+                }
+                else {
+
+                    //cERP.appServices.hR.leaveRequestTemplates.update()
+                }
+
+                let formData = new FormData();
+                formData.append("info", JSON.stringify(params));
+                formData.append("isSearching", isSearchingCrudSpace);
+                let xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+                formData.append("__RequestVerificationToken", xhrToken);
+                console.log(params);
+
+                $.ajax({
+                    url: "?handler=PaymentBankFile",
+                    async: true,
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (data ) {
+                        Swal.hideLoading();
+                        console.log(data);
+                        if (isSearchingCrudSpace) {
+                            calculateTiles(data);
+
+                            goBackSpace();
+                        }
+                        else {
+
+                            if (isEditingCrudSpace) {
+                                gridObj.refresh(); // refresh the Grid.
+
+                                swal.fire("Success", "Bank File has successfully been updated", "success");
+
+                                for (let i = 0; i < gridObj.dataSource.length; i++) {
+                                    if (gridObj.dataSource[i].id == data.id) {
+                                        gridObj.dataSource[i] = data;
+                                    }
+                                }
+                                gridObj.refresh();
+                            }
+                            else {
+                                gridObj.dataSource.push(data);
+
+                                gridObj.refresh(); // refresh the Grid.
+
+                                swal.fire("Success", "Bank File has successfully been added", "success");
+                            }
+
+                            calculateTiles(gridObj.dataSource);
+                        }
+                        gridObj.hideSpinner();
+                    },
+                    error: function (err) {
+                        Swal.hideLoading();
+                        if (isEditingCrudSpace)
+                            swal.fire("Failed", "Bank File couldn't be updated, please fix all errors and try again.", "error");
+                        else
+                            swal.fire("Failed", "Bank File couldn't be added, please fix all errors and try again.", "error");
+
+                        console.log(err);
+                        gridObj.hideSpinner();
+                    }
+                });
+            }
+            else {
+                Swal.close();
+                Swal.hideLoading();
+            }
+        }
+    </script>
+}
+@*<partial name="_DefaultPageHeader"  />*@
+<vc:page-header create-new-link="" icon-class="fas fa-list" header-title="@L["BankFiles"].Value.ToUpper()" sub-title="@($"{L["ListOf"]} {L["BankFiles"]}")" area="Setup" is-list="true" is-search="true" is-create="true" create-new-text="@cNT" on-create-clicked="toggleCreateNew" search-text="Search" on-seach-clicked="toggleSearchSpace"></vc:page-header>
+<script id="card_template" type="text/x-template">
+    <div class="e-card ${if(isHorizontal)} e-card-horizontal ${/if}">
+        ${if(cardTitle)}
+        <div class="e-card-title"> ${cardTitle} </div>
+        ${/if} 
+        ${if(header_title || header_subtitle || header_img)}
+        <div class="e-card-header">
+            ${if(header_img)}
+            <div class="e-card-header-image ${if(header_img.isRounded)} e-card-corner ${/if}" style="background-image:url(${header_img.url})"></div>
+            ${/if} ${if(header_title || header_subtitle)}
+            <div class="e-card-header-caption">
+                ${if(header_title)}
+                <div class="e-card-header-title">${header_title}</div>
+                ${/if} 
+                ${if(header_subtitle)}
+                <div class="e-card-sub-title">${header_subtitle}</div>
+                ${/if}
+            </div>
+            ${/if}
+        </div>
+        ${/if} 
+        ${if(cardContent)}
+        <div class="e-card-content">
+            ${for(field of cardContent)}
+                ${if(field.isVisible)}
+                    <div class="row p-y-5" style="@*border-bottom: 1px dashed rgba(141, 141, 141, 0.67);*@ display:flex; justify-content:center">
+                        <div class="col-md-6" style="font-weight:400; text-align: end;">
+                            ${field.name}  :
+                        </div>
+                        <div class="col-md-6" style="align-self: center; text-align: start; font-weight:500">
+                            ${field.value}
+                        </div>
+                    </div>
+                ${/if}
+            ${/for}
+        </div>
+        ${/if} 
+        ${if(card_action_btn)}
+        <div class="e-card-actions ${if(card_action_btn.isVertical)} e-card-vertical ${/if}">
+            ${if(!card_action_btn.isVertical)}
+            <div style="display:flex; justify-content:center">
+            ${/if}
+            ${for(action_btn of card_action_btn.action_btns)} 
+                ${if(action_btn.tag === 'a')}
+                <a href="${action_btn.href}" target="${action_btn.target}">${action_btn.text}</a>
+                ${else}
+                <button class="e-card-btn ${action_btn.color}" data-id="${action_btn.args.data.id}" data-type="${action_btn.args.type}" data-onclick="${action_btn.onclick}" onclick="console.log($(this)); onCardButtonClicked($(this));"><span><i class="m-r-5 ${action_btn.iconClass}"></i> ${action_btn.text}</span></button>
+                ${/if}
+            ${/for}
+            ${if(!card_action_btn.isVertical)}
+                </div>
+            ${/if}
+        </div>
+        ${/if}
+    </div>
+</script>
+<div class="site-content customContentArea">
+    <ejs-tab id="spacesTabs" animation="ViewBag.animation">
+        <e-tab-tabitems>
+            <e-tab-tabitem header="@(new TabHeader { Text = "Tiles View" })" content="#tileSpace"></e-tab-tabitem>
+            <e-tab-tabitem header="@(new TabHeader { Text = "Grid View" })" content="#crudSpace"></e-tab-tabitem>
+        </e-tab-tabitems>
+    </ejs-tab>
+    <div id="tileSpace">
+        <div class="control-section card-control-section tile_layout">
+            <div class="row e-card-layout" style="text-align:center;">
+                <div class="row">
+                    <div id="staticContent">
+                        <div class="row tiles-loader" style="min-height:150px">
+                            <div class="loader-inline" style="margin:auto;height:50px; width:50px"></div>
+                        </div>
+                        <div class="row error" style="display:none;min-height:150px">
+                            <div class="e-error-content" style="margin:auto;height:inherit;font-size:18px;font-weight:500;color:inherit">No results found to display.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="crudSpace" style="display:none">
+        @*<a id="crudSpaceBackBtn" onclick="goBackSpace(); isEditingCrudSpace = false;" class="btn btn-outline-dark"><span class="spaceBackButton"><i class="fa fa-backward fa-fw"></i></span></a>*@
+        <div class="control-section">
+            <div style="display:flex;">
+                <div class="areaHeader" style="display:none;">
+
+                    <div id="bankFileLoader" class="pull-left loader-inline" style="display:none"></div>
+                    <div class="areaHeaderTitle">
+                        <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Add New Bank File</span>
+                        @*<span id="" class="areaHeaderTitleInNode menu-text"> > </span>*@
+                        @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
+                    </div>
+                    @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
+                    <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                        @*<div class="clearfix margin-15"></div>*@
+                        @*<a id="addBankFilesBtn" onclick="areaHeaderBtnClick(event); isEditingCrudSpace = false;" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>*@
+                    </div>
+                </div>
+            </div>
+            <form id="bankFileForm" onkeydown="return event.key != 'Enter';" class="row areaForm" method="post" data-toggle="validator" style="display: block; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                <div class="row m-b-10 crudSpaceHeader">
+                    <a id="crudSpaceBackBtn" onclick="goBackSpace(); isEditingCrudSpace = false;" class="btn btn-outline-dark"><span class="spaceBackButton"><i class="fa fa-backward fa-fw"></i></span></a>
+                    <div class="">
+                        <p class="crudSpaceTitle">Create New Bank File</p>
+                    </div>
+                </div>
+
+                <div id="crudSpecificForm">
+                    <ejs-accordion id="crudSpecificFormTabs" animation="ViewBag.animation">
+                        <e-accordion-accordionitems>
+                            <e-accordion-accordionitem header="General" expanded="true" content="#generalTab"></e-accordion-accordionitem>
+                            <e-accordion-accordionitem header="Files" expanded="true" visible="false" content="#filesInfoTab"></e-accordion-accordionitem>
+                            @*<e-accordion-accordionitem header="References" expanded="false"  content="#referencesTab"></e-accordion-accordionitem>*@
+                        </e-accordion-accordionitems>
+                    </ejs-accordion>
+                    @*<ejs-tab id="crudSpecificFormTabs" animation="ViewBag.animation">
+                        <e-tab-tabitems>
+                            <e-tab-tabitem header="@(new TabHeader { Text = "General" })" content="#generalTab"></e-tab-tabitem>
+                            <e-tab-tabitem header="@(new TabHeader { Text = "General" })" visible="false" content="#generalTab"></e-tab-tabitem>
+                            <e-tab-tabitem header="@(new TabHeader { Text = "Payment Settings" })" visible="true" content="#groupPaymentsTab"></e-tab-tabitem>
+                            <e-tab-tabitem header="@(new TabHeader { Text = "Payroll Periods" })" content="#payrollPeriodsTab"></e-tab-tabitem>
+                            <e-tab-tabitem header="@(new TabHeader { Text = "References" })" visible="false" content="#referencesTab"></e-tab-tabitem>
+                        </e-tab-tabitems>
+                    </ejs-tab>*@
+                    <div id="generalTab" style="display:none">
+                        <div class="col-sm-1" style="padding:0">
+                        </div>
+                        <div class="col-sm-9" style="padding:0">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Name:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="text" id="pBFName" name="Name" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Name Localized:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="text" id="pBFNameLocalized" name="NameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Payment Banks:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <select id="paymentBanks" name="PaymentBanks" multiple="multiple" class="form-control ps_banks mltslct" required>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Employee Columns:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <select id="employeeFileColumns" multiple="multiple" name="PaymentFileEmployeeColumns" class="form-control mltslct" required>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Payroll Columns:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <select id="payrollFileColumns" multiple="multiple" name="PaymentFilePayrollColumns" class="form-control mltslct" required>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Bank Columns:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <select id="bankFileColumns" multiple="multiple" name="PaymentFileBankColumns" class="form-control mltslct" required>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2" style="padding:0">
+                        </div>
+                    </div>
+                    <div id="filesInfoTab" style="display:none">
+                        <div style="padding-top: 15px">
+                            <div class="col-md-12">
+                                <div class="panel-body p-t-0" style="">
+                                    <div id="payrollPeriodsCS" class="control-section">
+                                        <ejs-grid id="PayrollPeriodsGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                                  allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                                  hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="payPeriodActionBegin"
+                                                  actionComplete="payPeriodActionComplete"
+                                                  allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                                  toolbar="@initialToolBar" toolbarClick="payrollPeriodToolbarClick" created="payrollPeriodGridCreated"
+                                                  allowPaging="false" allowResizing="true">
+
+                                            <e-grid-columns>
+                                                <e-grid-column field="id" headerText="ID" width="70px" textAlign="Center" allowEditing="false" visible="false" isPrimaryKey="true"></e-grid-column>
+                                                <e-grid-column field="id" headerText="ID" width="70px" textAlign="Center" allowEditing="false"></e-grid-column>
+                                                <e-grid-column width="120px" field="name" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                                <e-grid-column validationRules="@(new { required=true})" autoFit="true" type="date" format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="attendanceCutOffDate" allowEditing="true" headerText="Attendance Cut Off Date" textAlign="Center"></e-grid-column>
+                                                <e-grid-column validationRules="@(new { required=true})" autoFit="true" type="date" format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="employeeTransactionCutOffDate" allowEditing="true" headerText="Transaction Cut Off Date" textAlign="Center"></e-grid-column>
+                                                <e-grid-column validationRules="@(new { required=true})" autoFit="true" type="date" format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="payrollProcessingDate" allowEditing="true" headerText="Payroll Processing Date" textAlign="Center"></e-grid-column>
+                                                <e-grid-column validationRules="@(new { required=true})" autoFit="true" field="payrollReminderIssuanceDays" allowEditing="true" headerText="Payroll Reminder Issuance Days" textAlign="Center"></e-grid-column>
+                                                <e-grid-column validationRules="@(new { required=true})" autoFit="true" type="date" format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="approvalDate" allowEditing="true" headerText="Approval Date" textAlign="Center"></e-grid-column>
+                                                <e-grid-column validationRules="@(new { required=true})" autoFit="true" field="approvalReminderIssuanceDays" allowEditing="true" headerText="Approval Reminder Issuance Days" textAlign="Center"></e-grid-column>
+                                                <e-grid-column validationRules="@(new { required=true})" autoFit="true" type="date" format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="paymentDate" allowEditing="true" headerText="Payment Date" textAlign="Center"></e-grid-column>
+                                                <e-grid-column validationRules="@(new { required=true})" autoFit="true" field="postPaymentSelfServiceAvailabilityDays" allowEditing="true" headerText="Self Service Availability Days" textAlign="Center"></e-grid-column>
+                                                <e-grid-column validationRules="@(new { required=true})" autoFit="true" type="date" format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="glExpensePostingDate" allowEditing="true" headerText="GL Posting Date" textAlign="Center"></e-grid-column>
+                                                <e-grid-column autoFit="true" editType='booleanedit' field="offCyclePayroll" allowEditing="true" headerText="Off Cycle" displayAsCheckBox="true" textAlign="Center"></e-grid-column>
+                                                <e-grid-column visible="false" autoFit="true" format="dd/MM/yyyy" field="periodStartDate" allowEditing="true" textAlign="Center"></e-grid-column>
+                                                <e-grid-column visible="false" autoFit="true" format="dd/MM/yyyy" field="periodEndDate" allowEditing="true" textAlign="Center"></e-grid-column>
+                                            </e-grid-columns>
+
+                                            <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                            <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                            <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                            @*<e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>*@
+                                        </ejs-grid>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="referencesTab" class="areaForm" style="display:none">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel-body p-t-0" style="">
+                                    <div id="referencesCS" class="control-section">
+                                        <ejs-grid id="ReferenceReferenceGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                                  allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                                  hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                                  allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                                  toolbar="@initialToolBar" toolbarClick="defaultToolbarClick"
+                                                  allowPaging="true" allowResizing="true">
+
+                                            <e-grid-columns>
+                                                <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                                <e-grid-column field="type" allowEditing="false" headerText="Type" textAlign="Center"></e-grid-column>
+                                                <e-grid-column field="name" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                                <e-grid-column field="code" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                                @*<e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>*@
+                                            </e-grid-columns>
+
+                                            <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                            <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                            <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                            <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                        </ejs-grid>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="control-label m-b-5 "></label>
+                            <input id="submitBankFileBtn" type="button" class="btn btn-success btn-block crudSpaceSubmitBtn" value="Create Bank File" required />
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div id="bankFileCS" class="control-section">
+                <ejs-grid id="BankFilesGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="commandClick"
+                          showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="crudSpaceActionBegin" actionComplete="crudSpaceActionComplete"
+                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                          toolbarClick="toolbarClick" toolbar="@initialToolBar"
+                          
+                          allowPaging="true" allowResizing="true">
+
+                    <e-grid-columns>
+                        <e-grid-column field="id" headerText="Id" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                        <e-grid-column headerText="Name" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
+                            new Syncfusion.EJ2.Grids.GridColumn() { Field= "name", HeaderText = "Default", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
+                            new Syncfusion.EJ2.Grids.GridColumn() { Field= "nameLocalized", HeaderText = "Local", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
+                        }'></e-grid-column>
+                        <e-grid-column field="totalBanks" headerText="Total Banks" textAlign="Center"></e-grid-column>
+                        <e-grid-column field="totalEmployeeColumns" headerText="Total Employee Columns" allowEditing="true" textAlign="Center"></e-grid-column>
+                        <e-grid-column field="totalPayrollColumns" headerText="Total Payroll Columns" allowEditing="true" textAlign="Center"></e-grid-column>
+                        <e-grid-column field="totalBankColumns" headerText="Total Bank Columns" allowEditing="true" textAlign="Center"></e-grid-column>
+                        
+                        @*<e-grid-column headerText="Actions" textAlign="Center" commands="bankFileCommands"></e-grid-column>*@
+                    </e-grid-columns>
+
+                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
+                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                </ejs-grid>
+            </div>
+            <div id="auditTrail" style="display:none;">
+                @*<partial name="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+            </div>
+        </div>
+    </div>
+
+</div>
+<ejs-dialog id="alert_dialog" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy with Header" content="Atleast one row should be selected to copy with header">
+    <e-dialog-buttons>
+        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+    </e-dialog-buttons>
+</ejs-dialog>
+<ejs-dialog id="alert_dialog_1" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy" content="Atleast one row should be selected to copy">
+    <e-dialog-buttons>
+        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+    </e-dialog-buttons>
+</ejs-dialog>
+
+<script>
+    function onCardButtonClickedDataCustom(type, data) {
+        if (type == 'view' || type == 'edit')
+        {
+            loadAllDependencies(data, data.id);
+            if (type == 'view') {
+                $('.crudSpaceTitle').text('Viewing Bank File: ' + data.name);
+
+                setTimeout(function () {
+                    $('.crudSpaceSubmitBtn').attr('value', 'View Bank File');
+                }, 500);
+            } else {
+                $('.crudSpaceTitle').text('Editing Bank File: ' + data.name);
+                setTimeout(function () {
+                    $('.crudSpaceSubmitBtn').attr('value', 'Update Bank File');
+                }, 500);
+            }
+
+            $('#employeeFileColumns').multiselect('select', data.bankFileColumns.map(function (x) { return x.bankId }));
+            $('#payrollFileColumns').multiselect('select', data.bankFileColumns.filter(function (x) { return x.isThirdParty == true }).map(function (x) { return x.bankId }));
+            $('#bankFileColumns').multiselect('select', data.bankFileColumns.filter(function (x) { return x.isThirdParty == true }).map(function (x) { return x.bankId }));
+
+        }
+        else if (type == 'delete')
+        {
+            Swal.showLoading();
+
+            let formData = new FormData();
+            formData.append("info", JSON.stringify(data));
+            let xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+            formData.append("__RequestVerificationToken", xhrToken);
+            swal.fire("", "Are you sure?", "info").then(function (v) {
+                $.ajax({
+                    url: '?handler=PaymentBankFile',
+                    async: true,
+                    type: "DELETE",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        swal.fire("Success", "Bank File(s) has successfully been deleted", "success");
+
+                        if ($('#bankFileForm').css('display') !== 'none') {
+                            $('#bankFileForm').slideUp();
+                        }
+
+
+                        $('.e-card-layout > .row .tiles-loader').slideDown();
+                        cERP.appServices.hR.organizationalManagement.payrollStructure.pS_BankFile.getAllBankFiles().done(function (data) {
+                            $('#bankFileLoader').slideUp(100);
+                            $('.e-card-layout > .row .tiles-loader').slideUp();
+                            gridObj.hideSpinner();
+
+                            calculateTiles(data);
+
+                            gridObj.dataSource = data;
+                            setTimeout(function () { gridObj.hideSpinner() }, 200);
+
+                        });
+
+                        Swal.hideLoading();
+                    },
+                    error: function (err) {
+                        swal.fire("Failed", "Bank File(s) couldn't be deleted, please fix all errors and try again.", "error");
+
+                        console.log(err);
+                        Swal.hideLoading();
+                    }
+                });
+            });
+        }
+    }
+    function calculateTiles(data) {
+        listOfData = generateCardTiles(data, 'name', '',
+            [
+                //{ title: 'Data', path: '*', isVisible: false },
+                //{ title: 'Code', path: 'code' },
+                { title: 'Name', path: 'name' },
+                { title: 'Local Name', path: 'nameLocalized' },
+                { title: 'Total Banks', path: 'totalBanks' },
+                { title: 'Total Employee Columns', path: 'totalEmployeeColumns' },
+                { title: 'Total Payroll Columns', path: 'totalPayrollColumns' },
+                { title: 'Total Bank Columns', path: 'totalBankColumns' },
+            ],
+            {
+                action_btns: [
+                    { tag: 'button', text: 'View', type: 'view', iconClass: 'e-icons e-search', color: 'secondary' },
+                    { tag: 'button', text: 'Edit', type: 'edit', iconClass: 'e-icons e-edit', color: 'primary'},
+                    { tag: 'button', text: 'Delete', type: 'delete', iconClass: 'e-icons e-delete', color: 'danger' }
+                ],
+                isVertical: false
+            },
+            false
+        );
+
+        destroyAllCard();
+        cardRendering(listOfData);
+    }
+    
+
+    function toggleSearchSpace() {
+        isSearchingCrudSpace = true;
+        $('.crudSpaceTitle').text('Search All Bank Files');
+
+        loadAllDependencies();
+        FillDivFormByObject({}, $('#crudSpace :input'));
+            
+        spaceTabs.setActive(1);
+        $('.crudSpaceSubmitBtn').attr('value', 'Search Bank Files');
+        //areaHeaderBtnClick();
+    }
+    function toggleCreateNew() {
+        isSearchingCrudSpace = false;
+        $('.crudSpaceTitle').text('Create New Bank File');
+
+        loadAllDependencies();
+        FillDivFormByObject({}, $('#crudSpace :input'));
+            
+        spaceTabs.setActive(1);
+        $('.crudSpaceSubmitBtn').attr('value', 'Create Bank File');
+        //areaHeaderBtnClick();
+    }
+    function goBackSpace() {
+        if (spaceTabs.prevIndex != -1)
+            spaceTabs.setActive(spaceTabs.prevIndex);
+
+        $('.crudSpaceTitle').text('Create New Bank File');
+        //areaHeaderBtnClick();
+    }
+
+    let isAuditTrail = false;
+
+    function alertBtnClick() {
+        let dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+        let dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
+        dialogObj.hide();
+        dialogObj1.hide();
+    }
+    function toolbarClick(args) {
+        let gridObj = document.getElementById("BankFilesGrid").ej2_instances[0];
+
+        if (args.item.id === 'BankFilesGrid_pdfexport') {
+            gridObj.pdfExport();
+        }
+        if (args.item.id === 'BankFilesGrid_excelexport') {
+            gridObj.excelExport();
+        }
+        if (args.item.id === 'BankFilesGrid_csvexport') {
+            gridObj.csvExport();
+        }
+        if (this.getSelectedRecords().length > 0) {
+            let withHeader = false;
+            if (args.item.id === 'copyHeader') {
+                withHeader = true;
+            }
+            this.copy(withHeader);
+        }
+        else {
+            if (args.item.id === 'copyHeader') {
+                let dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+                dialogObj.show();
+            }
+            else if (args.item.id === 'copy') {
+                let dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+                dialogObj.show();
+            }
+        }
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Audit Trail", tooltipText: "View Audit Trail", prefixIcon: "e-custom-audit-trail", id: "toggleaudittrail" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, { text: "ExcelExport", tooltipText: "Excel Export", prefixIcon: "e-excelexport", id: this.element.id + "_excelexport", align: 'Right' }, { text: this.element.id + "_PdfExport", tooltipText: "Pdf Export", prefixIcon: "e-pdfexport", id: "pdfexport", align: 'Right' }, { text: "CsvExport", tooltipText: "Csv Export", prefixIcon: "e-csvexport", id: this.element.id + "_csvexport", align: 'Right' }, { text: "Print", tooltipText: "Print", prefixIcon: "e-print", id: this.element.id + "_print", align: 'Right' }, { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, "Search", { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.showColumnChooser = true;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            let visCount = 0;
+            for (let i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (let i = 0; i < gridObj.columns.length; i++) {
+                    let col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (let i = 0; i < gridObj.columns.length; i++) {
+                    let col = gridObj.columns[i];
+                    if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+        }
+        if (args.item.id === 'toggleaudittrail') {
+
+            if (!isAuditTrail) {
+                var agtGrid = $("#AuditTrailGrid")[0].ej2_instances[0];
+                gridObj.showSpinner();
+
+                $.ajax({
+                    url: '?handler=DataAuditTrail',
+                    async: true,
+                    type: "GET",
+                    data: {},
+                    success: function (data) {
+                        gridObj.hideSpinner();
+
+                        //agtGrid.childGrid.childGrid.dataSource = data.tertiaryDS;
+                        //agtGrid.childGrid.dataSource = data.secondaryDS;
+                        agtGrid.dataSource = data.ds;
+                        agtGrid.refresh();
+
+                        $(".customContentArea").css('position', 'unset');
+                        $("#auditTrail").slideDown(200);
+                    },
+                    error: function (data) {
+                        gridObj.hideSpinner();
+
+                        $(".customContentArea").css('position', 'absolute');
+                        $("#auditTrail").slideUp(200);
+
+                        swal.fire('Failed', `An error occured while generating the audit trail`, 'error');
+                    }
+                });
+
+            }
+            else {
+                $(".customContentArea").css('position', 'absolute');
+                $("#auditTrail").slideUp(200);
+            }
+
+            isAuditTrail = !isAuditTrail;
+        }
+        setTimeout(function () { gridObj.hideSpinner() }, 200);
+    }
+    function commandClick(args) {
+        let gridObj = document.getElementById("BankFilesGrid").ej2_instances[0];
+        if (args.commandColumn.type == "View") {
+            isEditingCrudSpace = false;
+            curCrudSpaceEdit = null;
+        }
+        else if (args.commandColumn.type == "Edit") {
+            isEditingCrudSpace = true;
+            curCrudSpaceEdit = args.rowData;
+        }
+        newDefaultCommandClick(gridObj, args);
+    }
+
+    function payrollPeriodGridCreated(args) {
+        let gridObj = document.getElementById("PayrollPeriodsGrid").ej2_instances[0];
+        gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Add", "Cancel", "Search", "ColumnChooser"];
+    }
+    function payrollPeriodToolbarClick(args) {
+        let gridObj = document.getElementById("PayrollPeriodsGrid").ej2_instances[0];
+
+        if (args.item.id === 'PayrollPeriodsGrid_pdfexport') {
+            gridObj.pdfExport();
+        }
+        if (args.item.id === 'PayrollPeriodsGrid_excelexport') {
+            gridObj.excelExport();
+        }
+        if (args.item.id === 'PayrollPeriodsGrid_csvexport') {
+            gridObj.csvExport();
+        }
+        if (this.getSelectedRecords().length > 0) {
+            let withHeader = false;
+            if (args.item.id === 'copyHeader') {
+                withHeader = true;
+            }
+            this.copy(withHeader);
+        }
+        else {
+            if (args.item.id === 'copyHeader') {
+                let dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+                dialogObj.show();
+            }
+            else if (args.item.id === 'copy') {
+                let dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+                dialogObj.show();
+            }
+        }
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Audit Trail", tooltipText: "View Audit Trail", prefixIcon: "e-custom-audit-trail", id: "toggleaudittrail" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, { text: "ExcelExport", tooltipText: "Excel Export", prefixIcon: "e-excelexport", id: this.element.id + "_excelexport", align: 'Right' }, { text: this.element.id + "_PdfExport", tooltipText: "Pdf Export", prefixIcon: "e-pdfexport", id: "pdfexport", align: 'Right' }, { text: "CsvExport", tooltipText: "Csv Export", prefixIcon: "e-csvexport", id: this.element.id + "_csvexport", align: 'Right' }, { text: "Print", tooltipText: "Print", prefixIcon: "e-print", id: this.element.id + "_print", align: 'Right' }, { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, "Search", { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            if(gridObj.dataSource.length == 0)
+                gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Add", "Cancel", "Search", "ColumnChooser"];
+            else
+                gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.showColumnChooser = true;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            let visCount = 0;
+            for (let i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (let i = 0; i < gridObj.columns.length; i++) {
+                    let col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (let i = 0; i < gridObj.columns.length; i++) {
+                    let col = gridObj.columns[i];
+                    if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+        }
+        if (args.item.id === 'toggleaudittrail') {
+
+            if (!isAuditTrail) {
+                var agtGrid = $("#AuditTrailGrid")[0].ej2_instances[0];
+                gridObj.showSpinner();
+
+                $.ajax({
+                    url: '?handler=DataAuditTrail',
+                    async: true,
+                    type: "GET",
+                    data: {},
+                    success: function (data) {
+                        gridObj.hideSpinner();
+
+                        //agtGrid.childGrid.childGrid.dataSource = data.tertiaryDS;
+                        //agtGrid.childGrid.dataSource = data.secondaryDS;
+                        agtGrid.dataSource = data.ds;
+                        agtGrid.refresh();
+
+                        $(".customContentArea").css('position', 'unset');
+                        $("#auditTrail").slideDown(200);
+                    },
+                    error: function (data) {
+                        gridObj.hideSpinner();
+
+                        $(".customContentArea").css('position', 'absolute');
+                        $("#auditTrail").slideUp(200);
+
+                        swal.fire('Failed', `An error occured while generating the audit trail`, 'error');
+                    }
+                });
+
+            }
+            else {
+                $(".customContentArea").css('position', 'absolute');
+                $("#auditTrail").slideUp(200);
+            }
+
+            isAuditTrail = !isAuditTrail;
+        }
+        setTimeout(function () { gridObj.hideSpinner() }, 200);
+    }
+
+    function payPeriodActionBegin(args) {
+        if (args.requestType == "delete") {
+            if (this.dataSource.length == 0) {
+                this.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Add", "Cancel", "Search", "ColumnChooser"];
+                this.refresh();
+            }
+        }
+        if (args.requestType == "add") {
+            if (this.dataSource.length > 0) {
+                args.cancel = true;
+
+                this.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+                this.refresh();
+            }
+        }
+    }
+    function payrollCalendarRangeChanged(_id = null) {
+        let id = '';
+        if (_id == null || typeof _id == 'object')
+            id = '';
+        else
+            id = _id;
+
+        let grid = $('#PayrollPeriodsGrid' + id)[0].ej2_instances[0];
+        let _dataSource = grid.dataSource;
+
+        if (_dataSource.length > 0) {
+            let initialPeriod = _dataSource[0];
+            let payrollPeriod = $('#payrollCalendarRange' + id)[0].ej2_instances[0].value;
+            let payrollFrequency = $('#periodFrequency' + id).val();
+            let periodName = $('#periodName' + id).val();
+            let extraPeriods = $('#extraPeriods' + id).val();
+
+            setPayPeriodsMinMaxDates(payrollPeriod[0], payrollPeriod[1]);
+
+            grid.dataSource = calculatePayrollPeriods(payrollPeriod, initialPeriod, payrollFrequency, periodName, extraPeriods);
+        }
+        if (grid.dataSource.length == 0) {
+            grid.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Add", "Cancel", "Search", "ColumnChooser"];
+        }
+    }
+    function setPayPeriodsMinMaxDates(min, max) {
+        let grid = $('#PayrollPeriodsGrid')[0].ej2_instances[0];
+        for (var i = 0; i < grid.columns.length; i++) {
+            if (grid.columns[i].type == 'datepickeredit') {
+                grid.columns[i].edit.params.min = min;
+                grid.columns[i].edit.params.max = max;
+            }
+        }
+    }
+    function calculatePayrollPeriods(payrollPeriod, initialPeriod, payrollFrequency, periodName, extraPeriods) {
+        let _dataSource = [];
+        initialPeriod.id = 1;
+        initialPeriod.name = periodName + ' - ' + 1;
+
+        console.log(initialPeriod);
+        console.log(payrollPeriod);
+        let attendanceCOD = new Date(initialPeriod.attendanceCutOffDate);
+        let transCOD = new Date(initialPeriod.employeeTransactionCutOffDate);
+        let payrollProcessingDate = new Date(initialPeriod.payrollProcessingDate);
+        let approvalDate = new Date(initialPeriod.approvalDate);
+        let paymentDate = new Date(initialPeriod.paymentDate);
+        let gLExpensePostingDate = new Date(initialPeriod.glExpensePostingDate);
+        let SSAvailDays = initialPeriod.postPaymentSelfServiceAvailabilityDays;
+
+        let noOfPeriods = 0;
+        let incremental = 0;
+        switch (payrollFrequency) {
+            case '@((int)PS_PayFrequencyAnnualizationFactor.WEEKLY)':
+                let noOfWeeks = diff_weeks(payrollPeriod[1], payrollPeriod[0]);
+                noOfPeriods = noOfWeeks;
+                incremental = 7;
+                break;
+            case '@((int)PS_PayFrequencyAnnualizationFactor.BI_WEEKLY)':
+                let noOfBiweeks = diff_weeks(payrollPeriod[1], payrollPeriod[0]) / 2;
+                noOfPeriods = noOfBiweeks;
+                incremental = 14;
+                break;
+            case '@((int)PS_PayFrequencyAnnualizationFactor.MONTHLY)':
+                let noOfMonths = diff_months(payrollPeriod[1], payrollPeriod[0]);
+                noOfPeriods = noOfMonths;
+                incremental = 30;
+                break;
+            case '@((int)PS_PayFrequencyAnnualizationFactor.QUATERLY)':
+                let noOfQuaters = diff_quarters(payrollPeriod[1], payrollPeriod[0]);
+                noOfPeriods = noOfQuaters;
+                incremental = 30 * 3;
+                break;
+            case '@((int)PS_PayFrequencyAnnualizationFactor.HALF_YEARLY)':
+                let noOfHalfYears = diff_halfYears(payrollPeriod[1], payrollPeriod[0]);
+                noOfPeriods = noOfHalfYears;
+                incremental = 30 * 6;
+                break;
+            case '@((int)PS_PayFrequencyAnnualizationFactor.YEARLY)':
+                let noOfYears = diff_years(payrollPeriod[1], payrollPeriod[0]);
+                noOfPeriods = noOfYears;
+                incremental = 30 * 12;
+                break;
+        }
+        for (var i = 0; i < noOfPeriods; i++) {
+            let curAttendanceCOD = attendanceCOD.addDays(i * incremental);
+            let curtransCOD = transCOD.addDays(i * incremental);
+            let curPayrollProcessingDate = payrollProcessingDate.addDays(i * incremental);
+            let curApprovalDate = approvalDate.addDays(i * incremental);
+            let curPaymentDate = paymentDate.addDays(i * incremental);
+            let curGLExpensePostingDate = gLExpensePostingDate.addDays(i * incremental);
+            let nextPeriod = {
+                id: i + 1,
+                name: periodName + ' - ' + (i + 1),
+                attendanceCutOffDate: curAttendanceCOD,
+                employeeTransactionCutOffDate: curtransCOD,
+                payrollProcessingDate: curPayrollProcessingDate,
+                approvalDate: curApprovalDate,
+                paymentDate: curPaymentDate,
+                glExpensePostingDate: curGLExpensePostingDate,
+                payrollReminderIssuanceDays: initialPeriod.payrollReminderIssuanceDays,
+                approvalReminderIssuanceDays: initialPeriod.approvalReminderIssuanceDays,
+                postPaymentSelfServiceAvailabilityDays: SSAvailDays,
+            };
+            if (i == noOfPeriods - 1) {
+                for (var y = 0; y < extraPeriods; y++) {
+                    nextPeriod.id = i + (y + 1);
+                    nextPeriod.periodName = periodName + ' - ' + nextPeriod.id,
+                    _dataSource.push(rfdc()(nextPeriod));
+                }
+            }
+            else
+                _dataSource.push(nextPeriod);
+        }
+
+        return _dataSource;
+    }
+    function payPeriodActionComplete(args) {
+        if (args.requestType == "delete") {
+            if (this.dataSource.length == 0) {
+                this.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Add", "Cancel", "Search"];
+                this.refresh();
+            }
+        }
+        if (args.requestType == "save") {
+            if (this.dataSource.length <= 1) {
+                //args.cancel = true;
+
+                this.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search"];
+                this.refresh();
+
+                let initialPeriod = args.data;
+                let payrollPeriod = $('#payrollCalendarRange')[0].ej2_instances[0].value;
+                let payrollFrequency = $('#periodFrequency').val();
+                let periodName = $('#periodName').val();
+
+                setPayPeriodsMinMaxDates(payrollPeriod[0], payrollPeriod[1]);
+                console.log(initialPeriod);
+                this.dataSource = calculatePayrollPeriods(payrollPeriod, initialPeriod, payrollFrequency, periodName);
+            }
+            else
+                args.cancel = true;
+
+
+        }
+    }
+
+    function crudSpaceActionComplete(args) {
+        let gridObj = document.getElementById("BankFilesGrid").ej2_instances[0];
+        setTimeout(function () { gridObj.hideSpinner() }, 200)
+
+    }
+    function crudSpaceActionBegin(args) {
+        if (args.requestType == "delete") {
+            let gridObj = document.getElementById("BankFilesGrid").ej2_instances[0];
+            Swal.showLoading();
+
+            let formData = new FormData();
+            formData.append("bankFile", JSON.stringify(args.data));
+            let xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+            formData.append("__RequestVerificationToken", xhrToken);
+
+            $.ajax({
+                url: '?handler=BankFile',
+                async: true,
+                type: "DELETE",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    gridObj.hideSpinner();
+                    swal.fire("Success", "BankFile(s) has successfully been deleted", "success");
+
+                    if ($('#bankFileForm').css('display') !== 'none') {
+                        $('#bankFileForm').slideUp();
+                    }
+                },
+                error: function (err) {
+                    gridObj.hideSpinner();
+                    swal.fire("Failed", "BankFile(s) couldn't be deleted, please fix all errors and try again.", "error");
+
+                    console.log(err);
+                }
+            });
+            setTimeout(function () { gridObj.hideSpinner() }, 200);
+        }
+    }
+</script>
+

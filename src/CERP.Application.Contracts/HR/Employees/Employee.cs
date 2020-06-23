@@ -150,8 +150,8 @@ namespace CERP.HR.EmployeeCentral.DTOs.Employee
         #region Compensation Info
 
         #region Basic Contract Info
-        public PS_PayGroup_Dto PayGroup { get; set; }
-        public int PayGroupId { get; set; }
+        public PS_PaySubGroup_Dto PaySubGroup { get; set; }
+        public int PaySubGroupId { get; set; }
         public PS_PayGrade_Dto PayGrade { get; set; }
         public int PayGradeId { get; set; }
         public string ContractValidityFromDate { get; set; }

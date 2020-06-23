@@ -591,7 +591,7 @@
                 businessUnits = data;
             });
 
-            cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayGroup.getList({}).done(function (data) {
+            cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PaySubGroup.getList({}).done(function (data) {
                 let dataMS = [];
                 for (let i = 0; i < data.items.length; i++) {
                     let item = data.items[i];
@@ -1106,7 +1106,7 @@
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                                         <div class="form-group" style="padding: 15px">
                                             <div class="col-sm-4" style="">
-                                                <label class="p-t-5 control-label pull-right ">Pay Group:</label>
+                                                <label class="p-t-5 control-label pull-right ">Pay Sub Group:</label>
                                             </div>
                                             <div class="col-sm-7" style="">
                                                 <select id="buPaygroup" name="BUPaygroupId" class="paygroup form-control">
@@ -1511,10 +1511,10 @@
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                                         <div class="form-group" style="padding: 15px">
                                             <div class="col-sm-4" style="">
-                                                <label class="p-t-5 control-label pull-right ">Pay Group:</label>
+                                                <label class="p-t-5 control-label pull-right ">Pay Sub Group:</label>
                                             </div>
                                             <div class="col-sm-7" style="">
-                                                <select id="depPayroup" name="PayGroupId" class="paygroup form-control" required>
+                                                <select id="depPayroup" name="PaySubGroupId" class="paygroup form-control" required>
                                                 </select>
                                             </div>
                                         </div>

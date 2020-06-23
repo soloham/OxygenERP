@@ -289,7 +289,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                                         orgStructureBusinessUnit.OrganizationStructureTemplateBusinessUnitAssociatedPositions.FirstOrDefault(x => x.PositionTemplateId == headId).IsHead = true;
                                         orgStructureBusinessUnit.OrganizationStructureTemplateBusinessUnitAssociatedPositions.FirstOrDefault(x => x.PositionTemplateId != headId).IsHead = false;
 
-                                        orgStructureBusinessUnit.PayGroupId = int.Parse(unit.UnitDetails.BUPaygroupId.ToString());
+                                        orgStructureBusinessUnit.PaySubGroupId = int.Parse(unit.UnitDetails.BUPaygroupId.ToString());
                                     }
 
                                     organizationStructureTemplate_Dto.OrganizationStructureTemplateBusinessUnits.Add(orgStructureBusinessUnit);
@@ -339,7 +339,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
                                         orgStructureDivision.OrganizationStructureTemplateDivisionAssociatedPositions.FirstOrDefault(x => x.PositionTemplateId != headId).IsHead = false;
 
                                         //orgStructureDivision.ParentId = 
-                                        //orgStructureDivision.PayGroupId = int.Parse(unit.UnitDetails.DIVPaygroupId.ToString());
+                                        //orgStructureDivision.PaySubGroupId = int.Parse(unit.UnitDetails.DIVPaygroupId.ToString());
                                     }
 
                                     int parentBUId = int.Parse(structuralNode.ParentId.ToString());
@@ -785,7 +785,7 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.OrganizationStructure
             public string UniqueId { get; set; }
             public string ValidityFromDate { get; set; }
             public string ValidityToDate { get; set; }
-            public int PayGroupId { get; set; }
+            public int PaySubGroupId { get; set; }
             public int PayGradeId { get; set; }
             public int LocationId { get; set; }
 

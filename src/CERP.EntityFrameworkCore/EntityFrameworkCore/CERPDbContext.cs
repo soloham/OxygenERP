@@ -124,9 +124,23 @@ namespace CERP.EntityFrameworkCore
 
         public DbSet<OS_CompensationMatrixTemplate> OS_CompensationMatrixTemplates { get; set; }
         #endregion
-        #endregion
         #region Payroll Structure
         public DbSet<PS_PayGroup> PayGroups { get; set; }
+        public DbSet<PS_PaySubGroup> PaySubGroups { get; set; }
+        public DbSet<PS_PaySubGroupBank> PaySubGroupBanks { get; set; }
+        public DbSet<PS_PaymentBank> PaymentBanks { get; set; }
+
+        public DbSet<PS_PaymentBankFile> PaymentBankFiles { get; set; }
+        public DbSet<PS_PaymentCashFile> PaymentCashFiles { get; set; }
+        public DbSet<PS_PaymentChequeFile> PaymentChequeFiles { get; set; }
+        public DbSet<PS_PaymentBankFileBank> PaymentBankFileBanks { get; set; }
+
+        public DbSet<PS_PayrollPeriod> PayrollPeriods { get; set; }
+        public DbSet<PS_PayPeriod> PayPeriods { get; set; }
+        public DbSet<PS_PaySubGroupBusinessUnit> PaySubGroupBusinessUnits { get; set; }
+        public DbSet<PS_PaySubGroupBusinessUnitDivision> PaySubGroupBusinessUnitDivisions { get; set; }
+        public DbSet<PS_PaySubGroupBusinessUnitDivisionDepartment> PaySubGroupBusinessUnitDivisionDepartments { get; set; }
+
         public DbSet<PS_PayRange> PayRanges { get; set; }
         public DbSet<PS_PayGrade> PayGrades { get; set; }
 
@@ -135,7 +149,7 @@ namespace CERP.EntityFrameworkCore
         public DbSet<PS_PayComponentType> PayComponentTypes { get; set; }
         public DbSet<PS_PayFrequency> PayFrequencies { get; set; }
         #endregion
-
+        #endregion
         #region Employee Central
         #region Objects
         public DbSet<Disability> Disabilities { get; set; }
@@ -220,9 +234,11 @@ namespace CERP.EntityFrameworkCore
         public DbSet<Attendance> Attendance { get; set; }
 
         public CERPDbContext(DbContextOptions<CERPDbContext> options)
-            : base(options)
+            : 
+            base(options)
         {
             //options.UseLazyLoadingProxies();
+        
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

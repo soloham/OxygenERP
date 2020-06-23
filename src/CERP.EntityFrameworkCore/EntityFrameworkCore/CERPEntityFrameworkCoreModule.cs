@@ -176,7 +176,7 @@ namespace CERP.EntityFrameworkCore
                                                        .Include(p => p.Nationality)
                                                        .Include(p => p.BirthCountry)
                                                        .Include(p => p.CostCenter)
-                                                       .Include(p => p.PayGroup)
+                                                       .Include(p => p.PaySubGroup)
                                                        .Include(p => p.PayGrade)
                                                        .Include(p => p.EmployeeSubGroup)
                                                        .Include(p => p.EmployeeGroup)
@@ -442,6 +442,18 @@ namespace CERP.EntityFrameworkCore
                 //});
                 #endregion
                 #region Payroll Structure
+                options.Entity<PS_PaySubGroup>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.Frequency)
+                                                       .Include(p => p.PayrollPeriod)
+                                                       .Include(p => p.LegalEntity)
+                                                       .Include(p => p.PayGroup)
+                                                       .Include(p => p.AllowedBanks);
+                });
+                options.Entity<PS_PayrollPeriod>(opt =>
+                {
+                    opt.DefaultWithDetailsFunc = q => q.Include(p => p.PayPeriods);
+                });
                 options.Entity<PS_PayGrade>(opt =>
                 {
                     opt.DefaultWithDetailsFunc = q => q.Include(p => p.PayRange)

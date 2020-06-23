@@ -39,9 +39,9 @@ namespace CERP.HR.OrganizationalManagement.OrganizationStructure
         public virtual ICollection<OS_DepartmentSubDepartmentTemplate> SubDepartmentTemplates { get; set; }
         public virtual ICollection<OS_DepartmentCostCenterTemplate> DepartmentCostCenterTemplates { get; set; }
 
-        public PS_PayGroup PayGroup { get; set; }
+        public PS_PaySubGroup PaySubGroup { get; set; }
         [CustomAudited]
-        public int PayGroupId { get; set; }
+        public int PaySubGroupId { get; set; }
 
         public PS_PayGrade PayGrade { get; set; }
         [CustomAudited]

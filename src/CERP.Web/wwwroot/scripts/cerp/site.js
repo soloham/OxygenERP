@@ -4,10 +4,20 @@
 //const deepCopy = require('../../libs/rfdc')() // Returns the deep copy function
 
 // Write your Javascript code.
+
 $(document).ready(function () {
     initSettings(); 
 
-    
+    let options = {
+        buttonWidth: '100%',
+        includeSelectAllOption: true,
+        enableFiltering: false,
+        enableClickableOptGroups: true,
+        includeResetOption: true,
+        includeResetDivider: true,
+        enableCollapsibleOptGroups: true
+    };
+    $.each($('.mltslct'), function (i, x) { $(x).multiselect(options); });
 });
 Array.prototype.removeIf = function (callback) {
     var i = this.length;
@@ -17,19 +27,26 @@ Array.prototype.removeIf = function (callback) {
         }
     }
 };
+Date.prototype.addDays = function (days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+}
 Object.byString = function (o, s) {
     s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
     s = s.replace(/^\./, '');           // strip a leading dot
     var a = s.split('.');
     for (var i = 0, n = a.length; i < n; ++i) {
         var k = a[i];
+        if (o == null)
+            continue;
         if (k in o) {
             o = o[k];
         } else {
             return;
         }
     }
-    return o;
+    return o;ml
 }
 function newDefaultCommandClick(gridObj, args) {
     if (args.commandColumn.type == "View") {
@@ -318,6 +335,7 @@ function initDatePicker() {
 function objectifyForm(formArray) {
     //serialize data function
     var returnArray = {};
+    console.log(formArray);
     for (var i = 0; i < formArray.length; i++) {
         var curName = formArray[i]['name'];
         var newObjIndex = curName.indexOf('.');
@@ -326,10 +344,10 @@ function objectifyForm(formArray) {
             var propName = curName.substring(newObjIndex + 1);
             if (returnArray[objName] == null)
                 returnArray[objName] = {};
-            returnArray[objName][propName] = formArray[i]['value'];
+            returnArray[objName][propName] = (propName.includes('Is') || propName.includes('Has') || curName.includes('Allow')) && (formArray[i]['value'] == 'on' || formArray[i]['value'] == 'off')? formArray[i]['value'] == 'on' : formArray[i]['value'];
         }
         else
-            returnArray[curName] = formArray[i]['value'];
+            returnArray[curName] = (curName.includes('Is') || curName.includes('Has') || curName.includes('Allow')) && (formArray[i]['value'] == 'on' || formArray[i]['value'] == 'off')? formArray[i]['value'] == 'on' : formArray[i]['value'];
     }
     return returnArray;
 }
@@ -577,7 +595,7 @@ function FillFormByObject(obj, form) {
             }
             else if (type == 'select-one') {
                 let melm = $('#' + elm.id);
-                console.log(melm);
+                //console.log(melm);
                 if ($(melm).parent()[0].id.includes('multiselect') || $(melm).parent()[0].className.includes('multiselect')) {
                     $(melm).multiselect('deselectAll', false);
                     $(melm).multiselect('refresh');
@@ -623,12 +641,21 @@ function modifyObject(obj, newObj) {
     });
 
 }
-function FillDivFormByObject(obj, elements) {
+function FillDivFormByObject(obj, elements, isReadonly = false) {
     let props = Object.keys(obj);
     for (var i = 0; i < elements.length; i++) {
         let elm = elements[i];
         let type = elm.type;
+        if (type == 'button' || type == 'submit')
+            continue;
         let propName = props.filter(function (x) { return x.toLowerCase() == elm.name.toLowerCase(); });
+        if (isReadonly) {
+            $(elm).attr('readonly', 'readonly')
+        }
+        else {
+            $(elm).attr('disabled', false)
+            $(elm).removeAttr('readonly')
+        }
         if (propName != '') {
             if (type == 'date') {
                 let val = new Date(obj[propName]);
@@ -641,6 +668,12 @@ function FillDivFormByObject(obj, elements) {
             }
             else if (type == 'checkbox') {
                 $(elm)[0].checked = (obj[propName] != true || obj[propName] == false) ? obj[propName] == 'on' ? true : false : obj[propName];
+                if (isReadonly) {
+                    $(elm).attr('disabled', true)
+                }
+                else {
+                    $(elm).attr('disabled', false)
+                }
             }
             else if (type == 'select-multiple') {
                 let melm = $('#' + elm.id);
@@ -649,22 +682,102 @@ function FillDivFormByObject(obj, elements) {
                     $(melm).multiselect('refresh');
                     $(melm).multiselect('select', obj[propName]);
                     $(melm).change();
+                    if (isReadonly) {
+                        setTimeout(function (x) {
+                            $(melm).multiselect('disable');
+                        }, 1000);
+                    }
+                    else {
+                        setTimeout(function (x) {
+                            $(melm).multiselect('enable');
+                        }, 1000);
+                    }
+                }
+            }
+            else if (type == 'select-one') {
+                console.log(elm.id);
+                let melm = $('#' + elm.id, $(elm).parent()[0]);
+                //console.log(melm);
+                if ($(melm).parent()[0].id.includes('multiselect') || $(melm).parent()[0].className.includes('multiselect')) {
+                    $(melm).multiselect('deselectAll', false);
+                    //$(melm).multiselect('reset');
+                    console.log(obj[propName]);
+                    setTimeout(function () {
+                        $(melm).multiselect('select', obj[propName]);
+                    }, 1000);
+                    $(melm).change();
+                    if (isReadonly) {
+                        setTimeout(function (x) {
+                            $(melm).multiselect('disable');
+                        }, 1000);
+                    }
+                    else {
+                        setTimeout(function (x) {
+                            $(melm).multiselect('enable');
+                        }, 1000);
+                    }
+                }
+                else {
+                    $(melm).val(obj[propName]);
+                }
+            }
+            else {
+                elm.value = obj[propName];
+            }
+        }
+        else {
+            if (type == 'date') {
+                //let val = new Date();
+                //let month = ('0' + (val.getMonth() + 1)).slice(-2);
+                //let date = ('0' + (val.getDate())).slice(-2);
+                //let dateVal = `${val.getUTCFullYear()}-${month}-${date}`;
+                elm.value = '';
+                console.log(elm.value);
+            }
+            else if (type == 'checkbox') {
+                $(elm)[0].checked = false;
+            }
+            else if (type == 'select-multiple') {
+                let melm = $('#' + elm.id);
+                if ($(melm).parent()[0].id.includes('multiselect') || $(melm).parent()[0].className.includes('multiselect')) {
+                    $(melm).multiselect('deselectAll', false);
+                    $(melm).multiselect('refresh');
+                    $(melm).change();
+                    if (isReadonly) {
+                        setTimeout(function (x) {
+                            $(melm).multiselect('disable');
+                        }, 1000);
+                    }
+                    else {
+                        setTimeout(function (x) {
+                            $(melm).multiselect('enable');
+                        }, 1000);
+                    }
                 }
             }
             else if (type == 'select-one') {
                 let melm = $('#' + elm.id, $(elm).parent()[0]);
-                console.log(melm);
+                //console.log(melm);
                 if ($(melm).parent()[0].id.includes('multiselect') || $(melm).parent()[0].className.includes('multiselect')) {
                     $(melm).multiselect('deselectAll', false);
-                    $(melm).multiselect('refresh');
-                    $(melm).multiselect('select', obj[propName]);
+                    //$(melm).multiselect('reset');
                     $(melm).change();
+                    if (isReadonly) {
+                        setTimeout(function (x) {
+                            $(melm).multiselect('disable');
+                        }, 1000);
+                    }
+                    else {
+                        setTimeout(function (x) {
+                            $(melm).multiselect('enable');
+                        }, 1000);
+                    }
                 }
                 else
-                    $(melm).val(obj[propName]);
+                    $(melm).val('');
             }
             else
-                elm.value = obj[propName];
+                elm.value = '';
         }
     }
 }
@@ -932,3 +1045,258 @@ function getAllChildren(nodes, curNode) {
     return result;
 }
 
+function diff_weeks(dt2, dt1) {
+
+    var diff = (dt2.getTime() - dt1.getTime()) / 1000;
+    diff /= (60 * 60 * 24 * 7);
+    return Math.abs(Math.round(diff));
+
+}
+function diff_months(dt2, dt1) {
+
+    var diff = (dt2.getTime() - dt1.getTime()) / 1000;
+    diff /= (60 * 60 * 24 * 30);
+    return Math.abs(Math.round(diff));
+}
+function diff_quarters(dt2, dt1) {
+
+    var diff = (dt2.getTime() - dt1.getTime()) / 1000;
+    diff /= (60 * 60 * 24 * 30 * 3);
+    return Math.abs(Math.round(diff));
+}
+function diff_halfYears(dt2, dt1) {
+
+    var diff = (dt2.getTime() - dt1.getTime()) / 1000;
+    diff /= (60 * 60 * 24 * 30 * 6);
+    return Math.abs(Math.round(diff));
+}
+function diff_years(dt2, dt1) {
+
+    var diff = (dt2.getTime() - dt1.getTime()) / 1000;
+    diff /= (60 * 60 * 24 * 30 * 12);
+    return Math.abs(Math.round(diff));
+}
+
+
+let dictionaryValueTypes = [];
+let fullNameValueObjects = [];
+let codeNameTypes = [];
+function populateDictionaryValues(data, grid, columnIndex) {
+    let dataMS = [];
+    for (let i = 0; i < data.length; i++) {
+        let item = data[i];
+        dataMS.push({ label: `${item.value} (${item.key})`, value: item.id, data: item });
+    }
+    try {
+        if (typeof columnIndex === typeof '')
+            grid.columns.filter(function (x) { return x.field == columnIndex })[0].edit.params.dataSource = dataMS;
+        else
+            grid.columns[columnIndex].edit.params.dataSource = dataMS;
+    } catch (ex) {
+        console.error(ex);
+        console.log(columnIndex);
+        console.log(grid.columns[columnIndex]);
+        console.log(grid.columns.filter(function (x) { return x.field == columnIndex })[0]);
+    }
+    //console.log(dataMS);
+}
+function populateMSDictionaryValues(data, multiselect) {
+    let dataMS = [];
+    for (let i = 0; i < data.length; i++) {
+        let item = data[i];
+        dataMS.push({ label: `${item.value} (${item.key})`, value: item.id, data: item });
+    }
+    //console.log(dataMS);
+    $(multiselect).multiselect('dataprovider', dataMS);
+}
+function loadDictionaryValues(valueType, gridsArray = [], columnsArray = [], multiselects = [], callback = null) {
+    $.each(gridsArray, function (i, x) { x.showSpinner(); });
+    cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(valueType).done(function (data) {
+        $.each(gridsArray, function (i, x) { x.hideSpinner(); });
+
+        dictionaryValueTypes.removeIf(function (x) { return data.filter(function (y) { return y.id == x.id }).length > 0 })
+        dictionaryValueTypes = dictionaryValueTypes.concat(data);
+
+        $.each(gridsArray, function (i, x) { populateDictionaryValues(data, x, columnsArray[i]) });
+        if (multiselects.length > 0)
+            $.each(multiselects, function (i, x) { populateMSDictionaryValues(data, x) });
+        if (callback) callback(data);
+    });
+}
+
+function populateCodeNameTypes(data, grid, columnIndex, codeProp = null, valueProp = null) {
+    let dataMS = [];
+    for (let i = 0; i < data.length; i++) {
+        let item = data[i];
+        let cP = codeProp != null ? codeProp : 'code';
+        let vP = valueProp != null ? valueProp : 'name';
+
+        dataMS.push({ label: `${item[cP]} - ${item[vP]}`, value: item.id, data: item });
+    }
+    console.log(columnIndex);
+    if (typeof columnIndex === typeof '')
+        grid.columns.filter(function (x) { return x.field == columnIndex })[0].edit.params.dataSource = dataMS;
+    else
+        grid.columns[columnIndex].edit.params.dataSource = dataMS;
+
+    //console.log(dataMS);
+}
+function populateMSCodeNameTypes(data, multiselect, codeProp = null, valueProp = null) {
+    let dataMS = [];
+    for (let i = 0; i < data.length; i++) {
+        let item = data[i];
+        let cP = codeProp != null ? codeProp : 'code';
+        let vP = valueProp != null ? valueProp : 'name';
+
+        dataMS.push({ label: `${item[cP]} - ${item[vP]}`, value: item.id, data: item });
+    }
+    //console.log(dataMS);
+    $(multiselect).multiselect('dataprovider', dataMS);
+}
+function loadCodeNameTypes(serviceFuncion, gridsArray = [], columnsArray = [], multiselects = [], codeProp = null, valueProp = null, callback = null) {
+    $.each(gridsArray, function (i, x) { x.showSpinner(); });
+    serviceFuncion().done(function (data) {
+        $.each(gridsArray, function (i, x) { x.hideSpinner(); });
+
+        codeNameTypes.removeIf(function (x) { return data.filter(function (y) { return y.id == x.id }).length > 0 })
+        codeNameTypes = codeNameTypes.concat(data);
+
+        $.each(gridsArray, function (i, x) { populateCodeNameTypes(data, x, columnsArray[i], codeProp, valueProp) });
+        if (multiselects.length > 0) {
+            $.each(multiselects, function (i, x) {
+                if (x[0] == '.') {
+                    $.each($(x), function (j, y) { populateMSCodeNameTypes(data, y, codeProp, valueProp) })
+                }
+                else
+                    populateMSCodeNameTypes(data, x, codeProp, valueProp);
+            });
+        }
+        if (callback) callback();
+    });
+}
+
+function generateCardTiles(data, title, subTitle, fields, cardActionBtns, isHorizontal)
+{
+    $('.tile_layout > .row > #staticContent .loader-inline').slideDown();
+    let result = [];
+
+    var def = $('.tile_layout > .row > #staticContent');
+    $('.e-card-layout > .card-container').empty();
+    for (var i = 0; i < data.length; i++) {
+        let curCardActionBtns = rfdc()(cardActionBtns);
+        let curData = data[i];
+
+        cardHtml = `<div class="col-xs-6 col-sm-6 col-lg-6 col-md-6 cardHolder">
+                        <div id="view_tile_${i + 1}" class="view_tile"></div>
+                    </div>`;
+
+        $('.e-card-layout > .card-container').append(cardHtml);
+        console.log('CURRENT DATA');
+        console.log(curData);
+        let header_title = Object.byString(curData, title);
+        let header_subtitle = Object.byString(curData, subTitle);
+        let card = {
+            data: curData,
+            header_title,
+            header_subtitle,
+            isHorizontal
+        }
+        card.cardContent = [];  
+        for (var j = 0; j < fields.length; j++) {
+            let isVisible = typeof fields[j].isVisible == 'undefined'? true : fields[j].isVisible;
+            let fieldValue = '';
+            if (fields[j].path == '*') {
+                fieldValue = curData;
+            }
+            else {
+                try {
+                    fieldValue = Object.byString(rfdc()(curData), fields[j].path);
+                }
+                catch {
+                    fieldValue = curData[fields[j].path];
+                }
+            }
+            card.cardContent.push({ name: fields[j].title, value: fieldValue, isVisible});
+        }
+        for (var j = 0; j < curCardActionBtns.action_btns.length; j++) {
+            curCardActionBtns.action_btns[j].onclick = 'onCardButtonClicked';
+            curCardActionBtns.action_btns[j].args = { type: curCardActionBtns.action_btns[j].type, data: rfdc()(curData) };
+        }
+        card.card_action_btn = curCardActionBtns;
+
+        result.push(card);
+    }
+
+    $('.tile_layout > .row > #staticContent .loader-inline').slideUp();
+    return result;
+}
+function onCardButtonClickedData(type, data) {
+
+    if (type == 'view' || type == 'edit') {
+        isEditingCrudSpace = false;
+        isSearchingCrudSpace = false;
+
+        let crudSpaceIndex = spaceTabs.items.findIndex(function (x) {
+            return x.properties.content == '#crudSpace';
+        });
+        spaceTabs.setActive(crudSpaceIndex);
+        console.log('fdsf');
+        let isReadonly = false;
+        curCrudSpaceEdit = data;
+        if (type == 'view') {
+           
+            isReadonly = true;
+            $('.formSpaceSubmitBtn', '#crudSpace').slideUp();
+        }
+        else {
+            isEditingCrudSpace = true;
+
+            isReadonly = false;
+
+            let curValue = $('.formSpaceSubmitBtn', '#crudSpace').val();
+            curValue = curValue.replace('Create', 'Update');
+            $('.formSpaceSubmitBtn', '#crudSpace').val(curValue);
+            $('.formSpaceSubmitBtn', '#crudSpace').slideDown();
+        }
+
+        FillDivFormByObject(data, $('#formSpaceForm :input', '#crudSpace'), isReadonly);
+    }
+
+    try {
+        onCardButtonClickedDataCustom(type, data);
+    }
+    catch (ex) {
+        console.log(ex);
+    }
+}
+
+function onCardButtonClicked(btn) {
+    let curId = $(btn).attr('data-id');
+    let curType = $(btn).attr('data-type');
+    let data = listOfData.filter(function (x) { return x.data.id == curId })[0].data;
+
+    onCardButtonClickedData(curType, data);
+}
+
+function cardRendering(cardObj) {
+    var staticContent = document.querySelector('.tile_layout > .row');
+    if (cardObj.length > 0) {
+        staticContent.style.display = 'none';
+        cardObj.forEach(function (data, index) {
+            card = cardTemplateFn(data);
+            cardEle = document.getElementById('view_tile_' + (++index));
+            if (cardEle) {
+                cardEle.appendChild(card[0]);
+            }
+        });
+    }
+    else {
+        staticContent.style.display = 'flex';
+    }
+}
+function destroyAllCard() {
+    var cards = document.querySelectorAll('.card-control-section .e-card');
+    [].slice.call(cards).forEach(function (el) {
+        ej.base.detach(el);
+    });
+}

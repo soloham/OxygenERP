@@ -389,6 +389,7 @@ namespace CERP.EntityFrameworkCore
             {
                 b.ToTable($"{CERPConsts.HR_OM_OrganizationStructure_DbTablePrefix}OrganizationStructureTemplates", CERPConsts.HR_OM_OrganizationStructure_DbSchema);
 
+                //b.HasKey(x => new { x.LegalEntityId, x.Id });
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
@@ -868,8 +869,99 @@ namespace CERP.EntityFrameworkCore
                 b.ConfigureFullAuditedAggregateRoot();
                 b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
                 b.ConfigureConcurrencyStamp();
+            });
+            builder.Entity<PS_PaySubGroup>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_PayrollStructure_DbTablePrefix}PaySubGroups", CERPConsts.HR_OM_PayrollStructure_DbSchema);
 
-                b.HasOne(x => x.Frequency).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.PayGroup).WithMany().HasForeignKey(x => x.PayGroupId).IsRequired(false).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.Frequency).WithMany().IsRequired().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.LegalEntity).WithMany().HasForeignKey(x => x.LegalEntityId).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(x => x.PayrollPeriod).WithMany().HasForeignKey(x => x.PayrollPeriodId).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne<OS_OrganizationStructureTemplate>().WithMany().HasForeignKey(x => new { x.OrganizationStructureTemplateId }).IsRequired(false).OnDelete(DeleteBehavior.NoAction);
+
+                b.HasMany(x => x.BusinessUnits).WithOne().HasForeignKey(x => new { x.PaySubGroupId }).OnDelete(DeleteBehavior.Cascade);
+
+                b.HasMany(x => x.AllowedBanks).WithOne().HasForeignKey(x => x.PaySubGroupId).OnDelete(DeleteBehavior.Cascade);
+            });
+            builder.Entity<PS_PayrollPeriod>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_PayrollStructure_DbTablePrefix}PayrollPeriods", CERPConsts.HR_OM_PayrollStructure_DbSchema);
+
+                b.ConfigureByConvention();
+
+                b.HasMany(x => x.PayPeriods).WithOne().HasForeignKey(x => new { x.PayrollPeriodId }).OnDelete(DeleteBehavior.Cascade);
+            });
+            builder.Entity<PS_PaymentBank>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_PayrollStructure_DbTablePrefix}PaymentBanks", CERPConsts.HR_OM_PayrollStructure_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasOne(x => x.Country).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<PS_PaymentBankFile>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_PayrollStructure_DbTablePrefix}PaymentBankFiles", CERPConsts.HR_OM_PayrollStructure_DbSchema);
+
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
+
+                b.HasMany(x => x.PaymentBanks).WithOne().HasForeignKey(x => x.PaymentBankFileId).OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<PS_PaymentBankFileBank>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_PayrollStructure_DbTablePrefix}PaymentBankFileBanks", CERPConsts.HR_OM_PayrollStructure_DbSchema);
+
+                b.HasKey(x => new { x.PaymentBankFileId, x.BankId, x.Id });
+                b.ConfigureByConvention();
+                b.Property(x => x.Id).ValueGeneratedOnAdd();
+
+                b.HasOne(x => x.Bank).WithMany().OnDelete(DeleteBehavior.NoAction);
+                //b.HasOne(x => x.Country).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<PS_PaySubGroupBank>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_PayrollStructure_DbTablePrefix}PaySubGroupBanks", CERPConsts.HR_OM_PayrollStructure_DbSchema);
+
+                b.HasKey(x => new { x.PaySubGroupId, x.BankId, x.Id });
+                b.ConfigureByConvention();
+                b.Property(x => x.Id).ValueGeneratedOnAdd();
+
+                b.HasOne(x => x.Bank).WithMany().OnDelete(DeleteBehavior.NoAction);
+                //b.HasOne(x => x.BusinessUnitTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
+
+                //b.HasMany(x => x.OrganizationStructureTemplateDivisions).WithOne(x => x.OrganizationStructureTemplateBusinessUnit).OnDelete(DeleteBehavior.Cascade);
+            });
+            builder.Entity<PS_PaySubGroupBusinessUnit>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_PayrollStructure_DbTablePrefix}PaySubGroupBusinessUnits", CERPConsts.HR_OM_PayrollStructure_DbSchema);
+
+                b.HasKey(x => new { x.PaySubGroupId, x.OrganizationStructureTemplateId });
+                b.ConfigureByConvention();
+
+                //b.HasOne(x => x.OrganizationStructureTemplate).WithMany(x => x.OrganizationStructureTemplateBusinessUnits).OnDelete(DeleteBehavior.NoAction);
+                //b.HasOne(x => x.BusinessUnitTemplate).WithMany().OnDelete(DeleteBehavior.NoAction);
+
+                //b.HasMany(x => x.OrganizationStructureTemplateDivisions).WithOne(x => x.OrganizationStructureTemplateBusinessUnit).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<PS_PayPeriod>(b =>
+            {
+                b.ToTable($"{CERPConsts.HR_OM_PayrollStructure_DbTablePrefix}PayPeriods", CERPConsts.HR_OM_PayrollStructure_DbSchema);
+
+                b.HasKey(x => new { x.PayrollPeriodId, x.Id });
+                b.Property(x => x.Id).ValueGeneratedOnAdd();
+                b.ConfigureFullAuditedAggregateRoot();
+                b.ConfigureMultiTenant(); b.ConfigureExtraProperties();
+                b.ConfigureConcurrencyStamp();
             });
             builder.Entity<PS_PayRange>(b =>
             {
@@ -990,7 +1082,7 @@ namespace CERP.EntityFrameworkCore
                 b.HasOne(p => p.EmploymentType).WithMany().OnDelete(DeleteBehavior.NoAction);
 
                 // BASIC CONTRACT DETAILS
-                b.HasOne(p => p.PayGroup).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(p => p.PaySubGroup).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(p => p.PayGrade).WithMany().OnDelete(DeleteBehavior.NoAction);
 
                 // BENEFITS
@@ -1307,7 +1399,6 @@ namespace CERP.EntityFrameworkCore
             #endregion
             #endregion
             #endregion
-
 
             builder.Entity<Department>(b =>
             {

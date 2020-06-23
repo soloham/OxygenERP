@@ -1,0 +1,1189 @@
+﻿@page "/HR/PayrollStructure/PaymentBanks"
+@using CERP.Localization;
+@using Microsoft.AspNetCore.Mvc.Localization;
+@using CERP.App;
+@using CERP;
+@using CERP.HR.Setup.OrganizationalManagement.PayrollStructure;
+@inject IHtmlLocalizer<CERPResource> L
+@inject Volo.Abp.Json.IJsonSerializer JsonSerializer
+@using CERP.App.Helpers;
+@using Syncfusion.EJ2.Navigations;
+
+@model CERP.Web.Areas.HR.Setup.OrganizationalManagement.PayrollStructure.Pages.PaymentBanks.ListModel
+@{
+    ViewData["IsEditing"] = false;
+    bool IsEditing = (bool)ViewData["IsEditing"];
+
+    ViewData["Title"] = L["PaymentBanks"].Value;
+    ViewData["IconClass"] = "fas fa-list";
+    ViewData["HeaderTitle"] = L["PaymentBanks"].Value.ToUpper();
+    ViewData["SubTitle"] = $"{L["ListOf"]} {L["PaymentBanks"]}";
+    ViewData["Area"] = "Setup";
+
+    ViewData["IsList"] = false;
+    ViewData["IsCreate"] = true;
+    string cNT = $"{L["Add"].Value} {L["New"].Value}";
+    ViewData["CreateNewText"] = cNT;
+    //ViewData["CreateNewLink"] = "/PaymentBanks/PaymentBank";
+
+    string TabPlaceholder = (bool)ViewData["IsEditing"] ? L["Area"].Value : L["Step"].Value;
+
+    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+
+    var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Audit Trail", tooltipText = "View Audit Trail", prefixIcon = "e-toggleaudittrail", id = "toggleaudittrail" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, new { text = "ExcelExport", tooltipText = "Excel Export", prefixIcon = "e-excelexport", id = "excelexport", align = "Right" }, "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
+
+    List<object> paymentBanksCommands = new List<object>();
+    paymentBanksCommands.Add(new { type = "View", buttonOption = new { iconCss = "e-icons e-search", cssClass = "e-flat" } });
+    paymentBanksCommands.Add(new { type = "Edit", buttonOption = new { iconCss = "e-icons e-edit", cssClass = "e-flat" } });
+    paymentBanksCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+    paymentBanksCommands.Add(new { type = "Cancel", buttonOption = new { iconCss = "e-icons e-cancel-icon", cssClass = "e-flat" } });
+
+    List<object> referenceCommands = new List<object>();
+    referenceCommands.Add(new { type = "Delete", buttonOption = new { iconCss = "e-icons e-delete", cssClass = "e-flat" } });
+
+    var payFrequencies = EnumExtensions.GetDescriptions(typeof(PS_PayFrequencyAnnualizationFactor));
+}
+
+@section styles {
+    @if ((bool)ViewData["IsEditing"])
+    {
+        <link href="~/libs/smartwizard/dist/css/smart_wizard_theme_circles.min.css" rel="stylesheet" />
+    }
+
+    <style>
+        .customContentArea {
+            position: unset !important;
+        }
+
+        .e-tab-header.e-vertical.e-vertical-left.e-control.e-toolbar.e-lib.e-keyboard .e-toolbar-items {
+            width: 200px !important;
+        }
+
+        #spacesTabs > .e-tab-header {
+            display: none;
+        }
+    </style>
+
+    <style>
+       
+    </style>
+}
+@section scripts {
+    <script>
+        var isEditingCrudSpace = false;
+        var curCrudSpaceEdit;
+
+        let paymentBanks = []
+        let listOfData = []
+        let gridObj;
+        let options = {
+            buttonWidth: '100%',
+            includeSelectAllOption: true,
+            enableFiltering: false,
+            enableClickableOptGroups: true,
+            includeResetOption: true,
+            includeResetDivider: true,
+            enableCollapsibleOptGroups: true
+        };
+        let curOrgStructure;
+        function loadAllDependencies(fieldData = null) {
+
+            let options = {
+                buttonWidth: '100%',
+                includeSelectAllOption: true,
+                enableFiltering: false,
+                enableClickableOptGroups: true,
+                includeResetOption: true,
+                includeResetDivider: true,
+                enableCollapsibleOptGroups: true
+            };
+            $.each($('.mltslct'), function (i, x) { $(x).multiselect(options); });
+
+            let id = fieldData != null ? fieldData.id : '';
+            loadDictionaryValues(ValueTypeModules.Country,
+                [],
+                [],
+                ['#countryId'], function (data) {
+                    if (isEditingCrudSpace) {
+                        $('#countryId').multiselect('select', curCrudSpaceEdit.countryId)
+                    }
+                    $('#countryId').change()
+                });
+        }
+
+        let spaceTabs;
+        var cardTemplateFn;
+        $(document).ready(function () {
+
+            cardTemplateFn = ej.base.compile(document.getElementById('card_template').innerHTML.trim());
+            var card;
+            var cardEle;
+            var data = [];
+            var multiSelectData = [];
+            var searchData = [];
+            var searchValCount = 0;
+            var filterCategory = [{ Name: 'Client-Side', Code: 'client' }, { Name: 'Server-Side', Code: 'server' }, { Name: 'Front-End', Code: 'ui' }];
+            var emptyData = true;
+
+            spaceTabs = $('#spacesTabs')[0].ej2_instances[0];
+            loadAllDependencies();
+            gridObj = $("#PaymentBanksGrid")[0].ej2_instances[0];
+            gridObj.showSpinner();
+            $('#paymentBanksLoader').slideDown(100);
+
+            $('.e-card-layout > .row .tiles-loader').slideDown();
+            cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PaymentBank.getAllPaymentBanks().done(function (data) {
+                $('#paymentBanksLoader').slideUp(100);
+                $('.e-card-layout > .row .tiles-loader').slideUp();
+                gridObj.hideSpinner();
+
+                calculateTiles(data);
+
+                gridObj.dataSource = data;
+                setTimeout(function () { gridObj.hideSpinner() }, 200);
+
+            });
+
+            //cerp.appservices.hr.organizationalmanagement.payrollstructure.ps_bank.getAllbanks().done(function (data) {
+            //    $('#paygroupsloader').slideup(100);
+
+            //    let datams = [];
+            //    for (let i = 0; i < data.length; i++) {
+            //        let item = data[i];
+            //        datams.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
+            //    }
+            //    $.each($('.ps_banks'), function (i, x) { $(x).multiselect('dataprovider', datams) });
+            //});
+
+            $('#addPaymentBanksBtn').on('click', function () {
+                isEditingCrudSpace = false;
+
+                let tabs = $('#paymentBankSpecificFormTabs')[0].ej2_instances[0];
+                tabs.properties.items[1].visible = false;
+
+                $('#submitPaymentBankBtn').val('Create Payment Bank');
+            });
+            $('#submitPaymentBankBtn').on('click', function (e) {
+                e.preventDefault();
+                submitPaymentBankBtn('paymentBankSpecificForm');
+            });
+
+        });
+        function submitPaymentBankBtn(formId, _id = null) {
+            if (ValidateForm(formId)) {
+                gridObj.showSpinner();
+                Swal.showLoading();
+
+                let sid = ''
+                if (_id != null && typeof _id != 'object')
+                    sid = _id;
+
+                let form = [];
+                let functionDetails = $('#' + formId).find("textarea, input, select").serializeArray();
+                form = form.concat(functionDetails);
+
+                let params = objectifyForm(form);
+
+
+
+                let id = 0;
+                if (gridObj.dataSource.length > 0)
+                    id = gridObj.dataSource[gridObj.dataSource.length - 1].id;
+
+                params.isEditing = isEditingCrudSpace;
+
+                if (isEditingCrudSpace) {
+                    params.id = curCrudSpaceEdit.id;
+
+                    //cERP.appServices.hR.leaveRequestTemplates.update()
+                }
+                else {
+
+                    //cERP.appServices.hR.leaveRequestTemplates.update()
+                }
+
+                let formData = new FormData();
+                formData.append("info", JSON.stringify(params));
+                let xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+                formData.append("__RequestVerificationToken", xhrToken);
+                console.log(params);
+
+                $.ajax({
+                    url: "?handler=PaymentBank",
+                    async: true,
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        Swal.hideLoading();
+                        console.log(data);
+                        if (isEditingCrudSpace) {
+                            gridObj.refresh(); // refresh the Grid.
+
+                            swal.fire("Success", "Payment Bank has successfully been updated", "success");
+
+                            for (let i = 0; i < gridObj.dataSource.length; i++) {
+                                if (gridObj.dataSource[i].id == data.id) {
+                                    gridObj.dataSource[i] = data;
+                                }
+                            }
+                            gridObj.refresh();
+                        }
+                        else {
+                            gridObj.dataSource.push(data);
+
+                            gridObj.refresh(); // refresh the Grid.
+
+                            swal.fire("Success", "Payment Bank has successfully been added", "success");
+                        }
+
+                        calculateTiles(gridObj.dataSource);
+                        
+                        gridObj.hideSpinner();
+                    },
+                    error: function (err) {
+                        Swal.hideLoading();
+                        if (isEditingCrudSpace)
+                            swal.fire("Failed", "Payment Bank couldn't be updated, please fix all errors and try again.", "error");
+                        else
+                            swal.fire("Failed", "Payment Bank couldn't be added, please fix all errors and try again.", "error");
+
+                        console.log(err);
+                        gridObj.hideSpinner();
+                    }
+                });
+            }
+            else {
+                Swal.close();
+                Swal.hideLoading();
+            }
+        }
+    </script>
+}
+@*<partial name="_DefaultPageHeader"  />*@
+<vc:page-header create-new-link="" icon-class="fas fa-list" header-title="@L["PaymentBanks"].Value.ToUpper()" sub-title="@($"{L["ListOf"]} {L["PaymentBanks"]}")" area="Setup" is-list="true" is-create="true" is-search="false" create-new-text="@cNT" on-create-clicked="toggleCreateNew" search-text="Search" on-seach-clicked=""></vc:page-header>
+<script id="card_template" type="text/x-template">
+    <div class="e-card ${if(isHorizontal)} e-card-horizontal ${/if}">
+        ${if(cardTitle)}
+        <div class="e-card-title"> ${cardTitle} </div>
+        ${/if}
+        ${if(card_action_btn)}
+        <div class="e-card-actions ${if(card_action_btn.isVertical)} e-card-vertical ${/if}">
+            ${if(!card_action_btn.isVertical)}
+            <div style="display:flex; justify-content:flex-start">
+                ${/if}
+                ${for(action_btn of card_action_btn.action_btns)}
+                ${if(action_btn.side === 'left')}
+                ${if(action_btn.tag === 'a')}
+                <a href="${action_btn.href}" target="${action_btn.target}">${action_btn.text}</a>
+                ${else}
+                <button class="e-card-btn ${action_btn.color}" data-id="${action_btn.args.data.id}" data-type="${action_btn.args.type}" data-onclick="${action_btn.onclick}" onclick="console.log($(this)); onCardButtonClicked($(this));"><span><i class="m-r-5 ${action_btn.iconClass}"></i></span></button>
+                ${/if}
+                ${/if}
+                ${/for}
+                ${if(!card_action_btn.isVertical)}
+            </div>
+            ${/if}
+
+            ${if(!card_action_btn.isVertical)}
+            <div style="display:flex; justify-content:flex-end">
+                ${/if}
+                ${for(action_btn of card_action_btn.action_btns)}
+                ${if(action_btn.side === 'right')}
+                ${if(action_btn.tag === 'a')}
+                <a href="${action_btn.href}" target="${action_btn.target}">${action_btn.text}</a>
+                ${else}
+                <button class="e-card-btn ${action_btn.color}" data-id="${action_btn.args.data.id}" data-type="${action_btn.args.type}" data-onclick="${action_btn.onclick}" onclick="console.log($(this)); onCardButtonClicked($(this));"><span><i class="m-r-5 ${action_btn.iconClass}"></i></span></button>
+                ${/if}
+                ${/if}
+                ${/for}
+                ${if(!card_action_btn.isVertical)}
+            </div>
+            ${/if}
+        </div>
+        ${/if}
+        ${if(header_title || header_subtitle || header_img)}
+        <div class="e-card-header">
+            ${if(header_img)}
+            <div class="e-card-header-image ${if(header_img.isRounded)} e-card-corner ${/if}" style="background-image:url(${header_img.url})"></div>
+            ${/if} ${if(header_title || header_subtitle)}
+            <div class="e-card-header-caption">
+                ${if(header_title)}
+                <div class="e-card-header-title">${header_title}</div>
+                ${/if}
+                ${if(header_subtitle)}
+                <div class="e-card-sub-title">${header_subtitle}</div>
+                ${/if}
+            </div>
+            ${/if}
+        </div>
+        ${/if}
+        ${if(cardContent)}
+        <div class="e-card-content">
+            ${for(field of cardContent)}
+            ${if(field.isVisible)}
+            <div class="row p-y-5" style="@*border-bottom: 1px dashed rgba(141, 141, 141, 0.67);*@ display:flex; justify-content:center">
+                <div class="col-md-6" style="font-weight:400; text-align: end;">
+                    ${field.name}  :
+                </div>
+                <div class="col-md-6" style="align-self: center; text-align: start; font-weight:500">
+                    ${field.value}
+                </div>
+            </div>
+            ${/if}
+            ${/for}
+        </div>
+        ${/if}
+    </div>
+</script>
+<div class="site-content customContentArea">
+    <ejs-tab id="spacesTabs" animation="ViewBag.animation">
+        <e-tab-tabitems>
+            <e-tab-tabitem header="@(new TabHeader { Text = "Tiles View" })" content="#tileSpace"></e-tab-tabitem>
+            <e-tab-tabitem header="@(new TabHeader { Text = "Grid View" })" content="#crudSpace"></e-tab-tabitem>
+        </e-tab-tabitems>
+    </ejs-tab>
+    <div id="tileSpace">
+        <div class="control-section card-control-section tile_layout">
+            <div class="row e-card-layout" style="text-align:center;">
+                <div class="row">
+                    <div id="staticContent">
+                        <div class="row tiles-loader" style="min-height:150px">
+                            <div class="loader-inline" style="margin:auto;height:50px; width:50px"></div>
+                        </div>
+                        <div class="row error" style="display:none;min-height:150px">
+                            <div class="e-error-content" style="margin:auto;height:inherit;font-size:18px;font-weight:500;color:inherit">No results found to display.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="crudSpace" style="display:none">
+        @*<a id="crudSpaceBackBtn" onclick="goBackSpace(); isEditingCrudSpace = false;" class="btn btn-outline-dark"><span class="spaceBackButton"><i class="fa fa-backward fa-fw"></i></span></a>*@
+        <div class="control-section">
+            <div style="display:flex;">
+                <div class="areaHeader" style="display:none;">
+
+                    <div id="paymentBanksLoader" class="pull-left loader-inline" style="display:none"></div>
+                    <div class="areaHeaderTitle">
+                        <span id="areHeadertitle" class="areaHeaderTitleNode menu-text">Add New Payment Bank</span>
+                        @*<span id="" class="areaHeaderTitleInNode menu-text"> > </span>*@
+                        @*<span id="subTitle" class="menu-text" style="padding-left:15px; font-size: 28px; font-family:Roboto; font-weight:200;">@ViewData["SubTitle"]</span>*@
+                    </div>
+                    @*<h3 class="control-label" style="flex-grow: 1; margin:0">Approval Route</h3>*@
+                    <div class="pull-right text-right p-r-20 areaHeaderBtnSec">
+                        @*<div class="clearfix margin-15"></div>*@
+                        @*<a id="addPaymentBanksBtn" onclick="areaHeaderBtnClick(event); isEditingCrudSpace = false;" class="btn btn-outline-dark areaHeaderBtn"><i class="fa fa-plus fa-fw"></i> Add New</a>*@
+                    </div>
+                </div>
+            </div>
+            <form id="paymentBanksForm" onkeydown="return event.key != 'Enter';" class="row areaForm" method="post" data-toggle="validator" style="display: block; margin:0; padding:20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05), 0 0px 10px 0px rgba(0, 0, 0, 0.05);">
+                <div class="row m-b-10 crudSpaceTitle">
+                    <a id="crudSpaceBackBtn" onclick="goBackSpace(); isEditingCrudSpace = false;" class="btn btn-outline-dark"><span class="spaceBackButton"><i class="fa fa-backward fa-fw"></i></span></a>
+                    <div class="">
+                        Create New Payment Bank
+                    </div>
+                </div>
+
+                <div id="paymentBankSpecificForm">
+                    <ejs-accordion id="paymentBankSpecificFormTabs" animation="ViewBag.animation">
+                        <e-accordion-accordionitems>
+                            <e-accordion-accordionitem header="General Details" expanded="true" content="#generalTab"></e-accordion-accordionitem>
+                            <e-accordion-accordionitem header="Account Number Setting" expanded="true" content="#accountNumberTab"></e-accordion-accordionitem>
+                            <e-accordion-accordionitem header="IBAN Setting" expanded="true" content="#ibanTab"></e-accordion-accordionitem>
+                            @*<e-accordion-accordionitem header="References" expanded="false"  content="#referencesTab"></e-accordion-accordionitem>*@
+                        </e-accordion-accordionitems>
+                    </ejs-accordion>
+                    @*<ejs-tab id="paymentBankSpecificFormTabs" animation="ViewBag.animation">
+                        <e-tab-tabitems>
+                            <e-tab-tabitem header="@(new TabHeader { Text = "General" })" content="#generalTab"></e-tab-tabitem>
+                            <e-tab-tabitem header="@(new TabHeader { Text = "General" })" visible="false" content="#generalTab"></e-tab-tabitem>
+                            <e-tab-tabitem header="@(new TabHeader { Text = "Payment Settings" })" visible="true" content="#groupPaymentsTab"></e-tab-tabitem>
+                            <e-tab-tabitem header="@(new TabHeader { Text = "Payroll Periods" })" content="#payrollPeriodsTab"></e-tab-tabitem>
+                            <e-tab-tabitem header="@(new TabHeader { Text = "References" })" visible="false" content="#referencesTab"></e-tab-tabitem>
+                        </e-tab-tabitems>
+                    </ejs-tab>*@
+                    <div id="generalTab" style="display:none">
+                        <div class="col-sm-1" style="padding:0">
+                        </div>
+                        <div class="col-sm-9" style="padding:0">
+                            <div class="col-md-6">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group" style="padding: 15px">
+                                        <div class="col-sm-4" style="">
+                                            <label class="p-t-5 control-label pull-right ">Code:</label>
+                                        </div>
+                                        <div class="col-sm-8" style="">
+                                            <input type="text" id="paymentBankCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group" style="padding: 15px">
+                                        <div class="col-sm-4" style="">
+                                            <label class="p-t-5 control-label pull-right ">Name:</label>
+                                        </div>
+                                        <div class="col-sm-8" style="">
+                                            <input type="text" id="paymentBankTitle" name="Name" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group" style="padding: 15px">
+                                        <div class="col-sm-4" style="">
+                                            <label class="p-t-5 control-label pull-right ">Name (In Arabic):</label>
+                                        </div>
+                                        <div class="col-sm-8" style="">
+                                            <input type="text" id="paymentBankTitleLocalized" name="NameLocalized" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group" style="padding: 15px">
+                                        <div class="col-sm-4" style="">
+                                            <label class="p-t-5 control-label pull-right">Effective From:</label>
+                                        </div>
+                                        <div class="col-sm-8" style="">
+                                            <input type="date" id="paymentBankEffectiveFrom" name="EffectiveFrom" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group" style="padding: 15px">
+                                        <div class="col-sm-4" style="">
+                                            <label class="p-t-5 control-label pull-right">Address Line 1:</label>
+                                        </div>
+                                        <div class="col-sm-8" style="">
+                                            <input type="text" id="paymentBankAddressLine1" name="AddressLine1" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group" style="padding: 15px">
+                                        <div class="col-sm-4" style="">
+                                            <label class="p-t-5 control-label pull-right">Address Line 2:</label>
+                                        </div>
+                                        <div class="col-sm-8" style="">
+                                            <input type="text" id="paymentBankAddressLine2" name="AddressLine2" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group" style="padding: 15px">
+                                        <div class="col-sm-4" style="">
+                                            <label class="p-t-5 control-label pull-right">City:</label>
+                                        </div>
+                                        <div class="col-sm-8" style="">
+                                            <input type="text" id="paymentBankCity" name="City" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group" style="padding: 15px">
+                                        <div class="col-sm-4" style="">
+                                            <label class="p-t-5 control-label pull-right">State:</label>
+                                        </div>
+                                        <div class="col-sm-8" style="">
+                                            <input type="text" id="paymentBankState" name="State" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group" style="padding: 15px">
+                                        <div class="col-sm-4" style="">
+                                            <label class="p-t-5 control-label pull-right">Postal Code:</label>
+                                        </div>
+                                        <div class="col-sm-8" style="">
+                                            <input type="text" id="paymentBankPostalCode" name="PostalCode" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group" style="padding: 15px">
+                                        <div class="col-sm-4" style="">
+                                            <label class="p-t-5 control-label pull-right">Country:</label>
+                                        </div>
+                                        <div class="col-sm-8" style="">
+                                            <select id="countryId" name="CountryId" class="form-control mltslct country">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2" style="padding:0">
+                        </div>
+                    </div>
+                    <div id="accountNumberTab" style="display:none">
+                        <div class="col-sm-1" style="padding:0">
+                        </div>
+                        <div class="col-sm-9" style="padding:0">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right ">Account Inititals:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="text" id="paymentBankAccountInititals" name="AccountInitials" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right ">Account Digits:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="text" id="paymentBankAccountDigits" name="AccountDigits" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">Account Number Restriction:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="checkbox" id="paymentBankHasAccountNumberRestriction" name="HasAccountNumberRestriction" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2" style="padding:0">
+                        </div>
+                    </div>
+                    <div id="ibanTab" style="display:none">
+                        <div class="col-sm-1" style="padding:0">
+                        </div>
+                        <div class="col-sm-9" style="padding:0">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right ">IBAN Inititals:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="text" id="paymentBankIBANInititals" name="IBANInitials" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control " required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right ">IBAN Digits:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="text" id="paymentBankIBANDigits" name="IBANDigits" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group" style="padding: 15px">
+                                    <div class="col-sm-4" style="">
+                                        <label class="p-t-5 control-label pull-right">IBAN Number Restriction:</label>
+                                    </div>
+                                    <div class="col-sm-8" style="">
+                                        <input type="checkbox" id="paymentBankHasIBANNumberRestriction" name="HasIBANNumberRestriction" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2" style="padding:0">
+                        </div>
+                    </div>
+                    <div id="referencesTab" class="areaForm" style="display:none">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel-body p-t-0" style="">
+                                    <div id="referencesCS" class="control-section">
+                                        <ejs-grid id="ReferenceReferenceGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                                  allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                                  hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                                  allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                                  toolbar="@initialToolBar" toolbarClick="defaultToolbarClick"
+                                                  allowPaging="true" allowResizing="true">
+
+                                            <e-grid-columns>
+                                                <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                                <e-grid-column field="type" allowEditing="false" headerText="Type" textAlign="Center"></e-grid-column>
+                                                <e-grid-column field="name" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                                <e-grid-column field="code" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                                @*<e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>*@
+                                            </e-grid-columns>
+
+                                            <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                                            <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                                            <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                                            <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                                        </ejs-grid>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="control-label m-b-5 "></label>
+                            <input id="submitPaymentBankBtn" type="button" class="btn btn-success btn-block crudSpaceSubmitBtn" value="Create Payment Bank" required />
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div id="paymentBanksCS" class="control-section">
+                <ejs-grid id="PaymentBanksGrid" enableAutoFill="true" dataBound="dataBoundResponsive" commandClick="commandClick"
+                          showColumnChooser="true" allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                          hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="paymentBankActionBegin" actionComplete="paymentBankActionComplete"
+                          allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" allowTextWrap="true" textWrapSettings="@(new Syncfusion.EJ2.Grids.GridTextWrapSettings() { WrapMode = Syncfusion.EJ2.Grids.WrapMode.Header })"
+                          toolbarClick="toolbarClick" toolbar="@initialToolBar"
+                          
+                          allowPaging="true" allowResizing="true">
+
+                    <e-grid-columns>
+                        <e-grid-column field="id" headerText="Id" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                        <e-grid-column headerText="Name" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
+                            new Syncfusion.EJ2.Grids.GridColumn() { Field= "name", HeaderText = "Default", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
+                            new Syncfusion.EJ2.Grids.GridColumn() { Field= "nameLocalized", HeaderText = "Local", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
+                        }'></e-grid-column>
+                        <e-grid-column field="addressLine1" headerText="Address Line 1" textAlign="Center"></e-grid-column>
+                        <e-grid-column field="addressLine2" headerText="Address Line 2" textAlign="Center"></e-grid-column>
+                        <e-grid-column field="city" headerText="City" allowEditing="false" textAlign="Center"></e-grid-column>
+                        <e-grid-column field="state" headerText="State" allowEditing="false" textAlign="Center"></e-grid-column>
+                        <e-grid-column field="postalCode" headerText="Postal Code" allowEditing="false" textAlign="Center"></e-grid-column>
+                        <e-grid-column field="country.value" headerText="Country" allowEditing="false" textAlign="Center"></e-grid-column>
+                        <e-grid-column headerText="Account Number" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
+                            new Syncfusion.EJ2.Grids.GridColumn() { Field= "accountInitials", HeaderText = "Initials", AllowEditing=false, TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
+                            new Syncfusion.EJ2.Grids.GridColumn() { Field= "accountDigits", HeaderText = "Digits", AllowEditing=false, TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
+                            new Syncfusion.EJ2.Grids.GridColumn() { Field= "hasAccountNumberRestriction", HeaderText = "Number Restriction", AllowEditing=false, DisplayAsCheckBox=true, TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
+                        }'></e-grid-column>
+                        <e-grid-column headerText="IBAN Number" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
+                            new Syncfusion.EJ2.Grids.GridColumn() { Field= "ibanInitials", HeaderText = "Initials", AllowEditing=false, TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
+                            new Syncfusion.EJ2.Grids.GridColumn() { Field= "ibanDigits", HeaderText = "Digits", AllowEditing=false, TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
+                            new Syncfusion.EJ2.Grids.GridColumn() { Field= "hasIBANNumberRestriction", HeaderText = "Number Restriction", AllowEditing=false, DisplayAsCheckBox=true, TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
+                        }'></e-grid-column>
+                        <e-grid-column field="effectiveFrom" headerText="Effective From" allowEditing="false" textAlign="Center"></e-grid-column>
+                        @*<e-grid-column headerText="Actions" textAlign="Center" commands="paymentBanksCommands"></e-grid-column>*@
+                    </e-grid-columns>
+
+                    <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                    <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="false"></e-grid-editSettings>
+                    <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                    <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                </ejs-grid>
+            </div>
+            <div id="auditTrail" style="display:none;">
+                @*<partial name="_DataAuditTrailPartialView" model="@Model.GetDataAuditTrailModel()" />*@
+            </div>
+        </div>
+    </div>
+
+</div>
+<ejs-dialog id="alert_dialog" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy with Header" content="Atleast one row should be selected to copy with header">
+    <e-dialog-buttons>
+        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+    </e-dialog-buttons>
+</ejs-dialog>
+<ejs-dialog id="alert_dialog_1" animationSettings="alertanimation" visible="false" target=".control-section" width="300px" header="Copy" content="Atleast one row should be selected to copy">
+    <e-dialog-buttons>
+        <e-dialog-dialogbutton buttonModel="@ViewData["alertbutton"]" click="alertBtnClick"></e-dialog-dialogbutton>
+    </e-dialog-buttons>
+</ejs-dialog>
+
+<script>
+    function onCardButtonClickedDataCustom(type, data) {
+        loadAllDependencies(data, data.id);
+    }
+    function calculateTiles(data) {
+        listOfData = generateCardTiles(data, 'name', '',
+            [
+                //{ title: 'Data', path: '*', isVisible: false },
+                { title: 'Code', path: 'code' },
+                //{ title: 'Name', path: 'name' },
+                { title: 'Local Name', path: 'nameLocalized' },
+                //{ title: 'Address Line 1', path: 'addressLine1' },
+                //{ title: 'Address Line 2', path: 'addressLine2' },
+                //{ title: 'City', path: 'city' },
+                //{ title: 'State', path: 'state' },
+                //{ title: 'Postal Code', path: 'postalCode' },
+                { title: 'Country', path: 'country.value' },
+                //{ title: 'Account Initials', path: 'accountInitials' },
+                //{ title: 'Account Digits', path: 'accountDigits' },
+                { title: 'Account Restriction', path: 'hasAccountNumberRestriction' },
+                //{ title: 'IBAN Initials', path: 'ibanInitials' },
+                //{ title: 'IBAN Digits', path: 'ibanDigits' },
+                { title: 'IBAN Restriction', path: 'hasIBANNumberRestriction' },
+            ],
+            {
+                action_btns: [
+                    { tag: 'button', side: 'left', text: 'Favourite', type: 'fav', iconClass: 'far fa-star', color: 'quatery' },
+                    { tag: 'button', side: 'left', text: 'Audit', type: 'audit', iconClass: 'e-icons e-audit-clock', color: 'tertiary' },
+                    { tag: 'button', side: 'right', text: 'View', type: 'view', iconClass: 'e-icons e-search', color: 'secondary' },
+                    { tag: 'button', side: 'right', text: 'Edit', type: 'edit', iconClass: 'e-icons e-edit', color: 'primary'},
+                    { tag: 'button', side: 'right', text: 'Delete', type: 'delete', iconClass: 'e-icons e-delete', color: 'danger' }
+                ],
+                isVertical: false
+            },
+            false
+        );
+
+        cardRendering(listOfData);
+    }
+    
+
+    function toggleCreateNew() {
+        spaceTabs.setActive(1);
+        //areaHeaderBtnClick();
+    }
+    function goBackSpace() {
+        if (spaceTabs.prevIndex != -1)
+            spaceTabs.setActive(spaceTabs.prevIndex);
+        //areaHeaderBtnClick();
+    }
+
+    let isAuditTrail = false;
+
+    function alertBtnClick() {
+        let dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+        let dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
+        dialogObj.hide();
+        dialogObj1.hide();
+    }
+    function toolbarClick(args) {
+        let gridObj = document.getElementById("PaymentBanksGrid").ej2_instances[0];
+
+        if (args.item.id === 'PaymentBanksGrid_pdfexport') {
+            gridObj.pdfExport();
+        }
+        if (args.item.id === 'PaymentBanksGrid_excelexport') {
+            gridObj.excelExport();
+        }
+        if (args.item.id === 'PaymentBanksGrid_csvexport') {
+            gridObj.csvExport();
+        }
+        if (this.getSelectedRecords().length > 0) {
+            let withHeader = false;
+            if (args.item.id === 'copyHeader') {
+                withHeader = true;
+            }
+            this.copy(withHeader);
+        }
+        else {
+            if (args.item.id === 'copyHeader') {
+                let dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+                dialogObj.show();
+            }
+            else if (args.item.id === 'copy') {
+                let dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+                dialogObj.show();
+            }
+        }
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Audit Trail", tooltipText: "View Audit Trail", prefixIcon: "e-custom-audit-trail", id: "toggleaudittrail" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, { text: "ExcelExport", tooltipText: "Excel Export", prefixIcon: "e-excelexport", id: this.element.id + "_excelexport", align: 'Right' }, { text: this.element.id + "_PdfExport", tooltipText: "Pdf Export", prefixIcon: "e-pdfexport", id: "pdfexport", align: 'Right' }, { text: "CsvExport", tooltipText: "Csv Export", prefixIcon: "e-csvexport", id: this.element.id + "_csvexport", align: 'Right' }, { text: "Print", tooltipText: "Print", prefixIcon: "e-print", id: this.element.id + "_print", align: 'Right' }, { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, "Search", { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.showColumnChooser = true;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            let visCount = 0;
+            for (let i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (let i = 0; i < gridObj.columns.length; i++) {
+                    let col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (let i = 0; i < gridObj.columns.length; i++) {
+                    let col = gridObj.columns[i];
+                    if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+        }
+        if (args.item.id === 'toggleaudittrail') {
+
+            if (!isAuditTrail) {
+                var agtGrid = $("#AuditTrailGrid")[0].ej2_instances[0];
+                gridObj.showSpinner();
+
+                $.ajax({
+                    url: '?handler=DataAuditTrail',
+                    async: true,
+                    type: "GET",
+                    data: {},
+                    success: function (data) {
+                        gridObj.hideSpinner();
+
+                        //agtGrid.childGrid.childGrid.dataSource = data.tertiaryDS;
+                        //agtGrid.childGrid.dataSource = data.secondaryDS;
+                        agtGrid.dataSource = data.ds;
+                        agtGrid.refresh();
+
+                        $(".customContentArea").css('position', 'unset');
+                        $("#auditTrail").slideDown(200);
+                    },
+                    error: function (data) {
+                        gridObj.hideSpinner();
+
+                        $(".customContentArea").css('position', 'absolute');
+                        $("#auditTrail").slideUp(200);
+
+                        swal.fire('Failed', `An error occured while generating the audit trail`, 'error');
+                    }
+                });
+
+            }
+            else {
+                $(".customContentArea").css('position', 'absolute');
+                $("#auditTrail").slideUp(200);
+            }
+
+            isAuditTrail = !isAuditTrail;
+        }
+        setTimeout(function () { gridObj.hideSpinner() }, 200);
+    }
+    function commandClick(args) {
+        let gridObj = document.getElementById("PaymentBanksGrid").ej2_instances[0];
+        if (args.commandColumn.type == "View") {
+            isEditingCrudSpace = false;
+            curCrudSpaceEdit = null;
+        }
+        else if (args.commandColumn.type == "Edit") {
+            isEditingCrudSpace = true;
+            curCrudSpaceEdit = args.rowData;
+        }
+        newDefaultCommandClick(gridObj, args);
+    }
+
+    function payrollPeriodGridCreated(args) {
+        let gridObj = document.getElementById("PayrollPeriodsGrid").ej2_instances[0];
+        gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Add", "Cancel", "Search", "ColumnChooser"];
+    }
+    function payrollPeriodToolbarClick(args) {
+        let gridObj = document.getElementById("PayrollPeriodsGrid").ej2_instances[0];
+
+        if (args.item.id === 'PayrollPeriodsGrid_pdfexport') {
+            gridObj.pdfExport();
+        }
+        if (args.item.id === 'PayrollPeriodsGrid_excelexport') {
+            gridObj.excelExport();
+        }
+        if (args.item.id === 'PayrollPeriodsGrid_csvexport') {
+            gridObj.csvExport();
+        }
+        if (this.getSelectedRecords().length > 0) {
+            let withHeader = false;
+            if (args.item.id === 'copyHeader') {
+                withHeader = true;
+            }
+            this.copy(withHeader);
+        }
+        else {
+            if (args.item.id === 'copyHeader') {
+                let dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+                dialogObj.show();
+            }
+            else if (args.item.id === 'copy') {
+                let dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+                dialogObj.show();
+            }
+        }
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Audit Trail", tooltipText: "View Audit Trail", prefixIcon: "e-custom-audit-trail", id: "toggleaudittrail" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, { text: "ExcelExport", tooltipText: "Excel Export", prefixIcon: "e-excelexport", id: this.element.id + "_excelexport", align: 'Right' }, { text: this.element.id + "_PdfExport", tooltipText: "Pdf Export", prefixIcon: "e-pdfexport", id: "pdfexport", align: 'Right' }, { text: "CsvExport", tooltipText: "Csv Export", prefixIcon: "e-csvexport", id: this.element.id + "_csvexport", align: 'Right' }, { text: "Print", tooltipText: "Print", prefixIcon: "e-print", id: this.element.id + "_print", align: 'Right' }, { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, "Search", { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            if(gridObj.dataSource.length == 0)
+                gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Add", "Cancel", "Search", "ColumnChooser"];
+            else
+                gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.showColumnChooser = true;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            let visCount = 0;
+            for (let i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (let i = 0; i < gridObj.columns.length; i++) {
+                    let col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (let i = 0; i < gridObj.columns.length; i++) {
+                    let col = gridObj.columns[i];
+                    if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+        }
+        if (args.item.id === 'toggleaudittrail') {
+
+            if (!isAuditTrail) {
+                var agtGrid = $("#AuditTrailGrid")[0].ej2_instances[0];
+                gridObj.showSpinner();
+
+                $.ajax({
+                    url: '?handler=DataAuditTrail',
+                    async: true,
+                    type: "GET",
+                    data: {},
+                    success: function (data) {
+                        gridObj.hideSpinner();
+
+                        //agtGrid.childGrid.childGrid.dataSource = data.tertiaryDS;
+                        //agtGrid.childGrid.dataSource = data.secondaryDS;
+                        agtGrid.dataSource = data.ds;
+                        agtGrid.refresh();
+
+                        $(".customContentArea").css('position', 'unset');
+                        $("#auditTrail").slideDown(200);
+                    },
+                    error: function (data) {
+                        gridObj.hideSpinner();
+
+                        $(".customContentArea").css('position', 'absolute');
+                        $("#auditTrail").slideUp(200);
+
+                        swal.fire('Failed', `An error occured while generating the audit trail`, 'error');
+                    }
+                });
+
+            }
+            else {
+                $(".customContentArea").css('position', 'absolute');
+                $("#auditTrail").slideUp(200);
+            }
+
+            isAuditTrail = !isAuditTrail;
+        }
+        setTimeout(function () { gridObj.hideSpinner() }, 200);
+    }
+
+    function payPeriodActionBegin(args) {
+        if (args.requestType == "delete") {
+            if (this.dataSource.length == 0) {
+                this.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Add", "Cancel", "Search", "ColumnChooser"];
+                this.refresh();
+            }
+        }
+        if (args.requestType == "add") {
+            if (this.dataSource.length > 0) {
+                args.cancel = true;
+
+                this.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+                this.refresh();
+            }
+        }
+    }
+    function payrollCalendarRangeChanged(_id = null) {
+        let id = '';
+        if (_id == null || typeof _id == 'object')
+            id = '';
+        else
+            id = _id;
+
+        let grid = $('#PayrollPeriodsGrid' + id)[0].ej2_instances[0];
+        let _dataSource = grid.dataSource;
+
+        if (_dataSource.length > 0) {
+            let initialPeriod = _dataSource[0];
+            let payrollPeriod = $('#payrollCalendarRange' + id)[0].ej2_instances[0].value;
+            let payrollFrequency = $('#periodFrequency' + id).val();
+            let periodName = $('#periodName' + id).val();
+            let extraPeriods = $('#extraPeriods' + id).val();
+
+            setPayPeriodsMinMaxDates(payrollPeriod[0], payrollPeriod[1]);
+
+            grid.dataSource = calculatePayrollPeriods(payrollPeriod, initialPeriod, payrollFrequency, periodName, extraPeriods);
+        }
+        if (grid.dataSource.length == 0) {
+            grid.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Add", "Cancel", "Search", "ColumnChooser"];
+        }
+    }
+    function setPayPeriodsMinMaxDates(min, max) {
+        let grid = $('#PayrollPeriodsGrid')[0].ej2_instances[0];
+        for (var i = 0; i < grid.columns.length; i++) {
+            if (grid.columns[i].type == 'datepickeredit') {
+                grid.columns[i].edit.params.min = min;
+                grid.columns[i].edit.params.max = max;
+            }
+        }
+    }
+    function calculatePayrollPeriods(payrollPeriod, initialPeriod, payrollFrequency, periodName, extraPeriods) {
+        let _dataSource = [];
+        initialPeriod.id = 1;
+        initialPeriod.name = periodName + ' - ' + 1;
+
+        console.log(initialPeriod);
+        let attendanceCOD = new Date(initialPeriod.attendanceCutOffDate);
+        let transCOD = new Date(initialPeriod.employeeTransactionCutOffDate);
+        let payrollProcessingDate = new Date(initialPeriod.payrollProcessingDate);
+        let approvalDate = new Date(initialPeriod.approvalDate);
+        let paymentDate = new Date(initialPeriod.paymentDate);
+        let gLExpensePostingDate = new Date(initialPeriod.glExpensePostingDate);
+        let SSAvailDays = initialPeriod.postPaymentSelfServiceAvailabilityDays;
+
+        let noOfPeriods = 0;
+        let incremental = 0;
+        switch (payrollFrequency) {
+            case '@((int)PS_PayFrequencyAnnualizationFactor.WEEKLY)':
+                let noOfWeeks = diff_weeks(payrollPeriod[1], payrollPeriod[0]);
+                noOfPeriods = noOfWeeks;
+                incremental = 7;
+                break;
+            case '@((int)PS_PayFrequencyAnnualizationFactor.BI_WEEKLY)':
+                let noOfBiweeks = diff_weeks(payrollPeriod[1], payrollPeriod[0]) / 2;
+                noOfPeriods = noOfBiweeks;
+                incremental = 14;
+                break;
+            case '@((int)PS_PayFrequencyAnnualizationFactor.MONTHLY)':
+                let noOfMonths = diff_months(payrollPeriod[1], payrollPeriod[0]);
+                noOfPeriods = noOfMonths;
+                incremental = 30;
+                break;
+            case '@((int)PS_PayFrequencyAnnualizationFactor.QUATERLY)':
+                let noOfQuaters = diff_quarters(payrollPeriod[1], payrollPeriod[0]);
+                noOfPeriods = noOfQuaters;
+                incremental = 30 * 3;
+                break;
+            case '@((int)PS_PayFrequencyAnnualizationFactor.HALF_YEARLY)':
+                let noOfHalfYears = diff_halfYears(payrollPeriod[1], payrollPeriod[0]);
+                noOfPeriods = noOfHalfYears;
+                incremental = 30 * 6;
+                break;
+            case '@((int)PS_PayFrequencyAnnualizationFactor.YEARLY)':
+                let noOfYears = diff_years(payrollPeriod[1], payrollPeriod[0]);
+                noOfPeriods = noOfYears;
+                incremental = 30 * 12;
+                break;
+        }
+        for (var i = 0; i < noOfPeriods; i++) {
+            let curAttendanceCOD = attendanceCOD.addDays(i * incremental);
+            let curtransCOD = transCOD.addDays(i * incremental);
+            let curPayrollProcessingDate = payrollProcessingDate.addDays(i * incremental);
+            let curApprovalDate = approvalDate.addDays(i * incremental);
+            let curPaymentDate = paymentDate.addDays(i * incremental);
+            let curGLExpensePostingDate = gLExpensePostingDate.addDays(i * incremental);
+            let nextPeriod = {
+                id: i + 1,
+                name: periodName + ' - ' + (i + 1),
+                attendanceCutOffDate: curAttendanceCOD,
+                employeeTransactionCutOffDate: curtransCOD,
+                payrollProcessingDate: curPayrollProcessingDate,
+                approvalDate: curApprovalDate,
+                paymentDate: curPaymentDate,
+                glExpensePostingDate: curGLExpensePostingDate,
+                payrollReminderIssuanceDays: initialPeriod.payrollReminderIssuanceDays,
+                approvalReminderIssuanceDays: initialPeriod.approvalReminderIssuanceDays,
+                postPaymentSelfServiceAvailabilityDays: SSAvailDays,
+            };
+            if (i == noOfPeriods - 1) {
+                for (var y = 0; y < extraPeriods; y++) {
+                    nextPeriod.id = i + (y + 1);
+                    nextPeriod.periodName = periodName + ' - ' + nextPeriod.id,
+                    _dataSource.push(rfdc()(nextPeriod));
+                }
+            }
+            else
+                _dataSource.push(nextPeriod);
+        }
+
+        return _dataSource;
+    }
+    function payPeriodActionComplete(args) {
+        if (args.requestType == "delete") {
+            if (this.dataSource.length == 0) {
+                this.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Add", "Cancel", "Search"];
+                this.refresh();
+            }
+        }
+        if (args.requestType == "save") {
+            if (this.dataSource.length <= 1) {
+                //args.cancel = true;
+
+                this.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search"];
+                this.refresh();
+
+                let initialPeriod = args.data;
+                let payrollPeriod = $('#payrollCalendarRange')[0].ej2_instances[0].value;
+                let payrollFrequency = $('#periodFrequency').val();
+                let periodName = $('#periodName').val();
+
+                setPayPeriodsMinMaxDates(payrollPeriod[0], payrollPeriod[1]);
+                console.log(initialPeriod);
+                this.dataSource = calculatePayrollPeriods(payrollPeriod, initialPeriod, payrollFrequency, periodName);
+            }
+            else
+                args.cancel = true;
+
+
+        }
+    }
+
+    function paymentBankActionComplete(args) {
+        let gridObj = document.getElementById("PaymentBanksGrid").ej2_instances[0];
+        setTimeout(function () { gridObj.hideSpinner() }, 200)
+
+    }
+    function paymentBankActionBegin(args) {
+        if (args.requestType == "delete") {
+            let gridObj = document.getElementById("PaymentBanksGrid").ej2_instances[0];
+            Swal.showLoading();
+
+            let formData = new FormData();
+            formData.append("paymentBanks", JSON.stringify(args.data));
+            let xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+            formData.append("__RequestVerificationToken", xhrToken);
+
+            $.ajax({
+                url: '?handler=PaymentBank',
+                async: true,
+                type: "DELETE",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    gridObj.hideSpinner();
+                    swal.fire("Success", "PaymentBank(s) has successfully been deleted", "success");
+
+                    if ($('#paymentBanksForm').css('display') !== 'none') {
+                        $('#paymentBanksForm').slideUp();
+                    }
+                },
+                error: function (err) {
+                    gridObj.hideSpinner();
+                    swal.fire("Failed", "PaymentBank(s) couldn't be deleted, please fix all errors and try again.", "error");
+
+                    console.log(err);
+                }
+            });
+            setTimeout(function () { gridObj.hideSpinner() }, 200);
+        }
+    }
+</script>
+

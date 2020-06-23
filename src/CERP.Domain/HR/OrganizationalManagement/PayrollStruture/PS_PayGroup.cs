@@ -30,8 +30,6 @@ namespace CERP.HR.OrganizationalManagement.PayrollStructure
         [CustomAudited]
         public string Description { get; set; }
 
-        public PS_PayFrequency Frequency { get; set; }
-        [CustomAudited]
-        public int FrequencyId { get; set; }
+        public virtual ICollection<PS_PaySubGroup> PaySubGroups { get; set; }
     }
 }

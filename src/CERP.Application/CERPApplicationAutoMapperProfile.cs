@@ -240,9 +240,39 @@ namespace CERP
             CreateMap<OS_CompensationMatrixTemplate, OS_CompensationMatrixTemplate_Dto>();
             CreateMap<OS_CompensationMatrixTemplate_Dto, OS_CompensationMatrixTemplate>();
             #endregion
-            #region PayrollStructure
+            #region Payroll Structure
             CreateMap<PS_PayGroup, PS_PayGroup_Dto>();
             CreateMap<PS_PayGroup_Dto, PS_PayGroup>();
+            CreateMap<PS_PaySubGroup, PS_PaySubGroup_Dto>();
+            CreateMap<PS_PaySubGroup_Dto, PS_PaySubGroup>();
+            CreateMap<PS_PaymentBank, PS_PaymentBank_Dto>();
+            CreateMap<PS_PaymentBank_Dto, PS_PaymentBank>();
+
+            CreateMap<PS_PaymentBankFile, PS_PaymentBankFile_Dto>();
+            CreateMap<PS_PaymentBankFile_Dto, PS_PaymentBankFile>();
+
+            CreateMap<PS_PaymentBankFile, PS_PaymentBankFile_Dto>();
+            CreateMap<PS_PaymentBankFile_Dto, PS_PaymentBankFile>();
+            CreateMap<PS_PaymentBankFileBank, PS_PaymentBankFileBank_Dto>();
+            CreateMap<PS_PaymentBankFileBank_Dto, PS_PaymentBankFileBank>();
+
+            CreateMap<PS_PaymentCashFile, PS_PaymentCashFile_Dto>();
+            CreateMap<PS_PaymentCashFile_Dto, PS_PaymentCashFile>();
+            CreateMap<PS_PaymentCashFileColumn, PS_PaymentCashFileColumn_Dto>();
+            CreateMap<PS_PaymentCashFileColumn_Dto, PS_PaymentCashFileColumn>();
+            CreateMap<PS_PaymentChequeFile, PS_PaymentChequeFile_Dto>();
+            CreateMap<PS_PaymentChequeFile_Dto, PS_PaymentChequeFile>();
+            CreateMap<PS_PaymentChequeFileColumn, PS_PaymentChequeFileColumn_Dto>();
+            CreateMap<PS_PaymentChequeFileColumn_Dto, PS_PaymentChequeFileColumn>();
+
+            CreateMap<PS_PaySubGroupBank, PS_PaySubGroupBank_Dto>();
+            CreateMap<PS_PaySubGroupBank_Dto, PS_PaySubGroupBank>();
+            CreateMap<PS_PaySubGroupBusinessUnit, PS_PaySubGroupBusinessUnit_Dto>();
+            CreateMap<PS_PaySubGroupBusinessUnit_Dto, PS_PaySubGroupBusinessUnit>();
+            CreateMap<PS_PaySubGroupBusinessUnitDivision, PS_PaySubGroupBusinessUnitDivision_Dto>();
+            CreateMap<PS_PaySubGroupBusinessUnitDivision_Dto, PS_PaySubGroupBusinessUnitDivision>();
+            CreateMap<PS_PaySubGroupBusinessUnitDivisionDepartment, PS_PaySubGroupBusinessUnitDivisionDepartment_Dto>();
+            CreateMap<PS_PaySubGroupBusinessUnitDivisionDepartment_Dto, PS_PaySubGroupBusinessUnitDivisionDepartment>();
 
             CreateMap<PS_PayRange, PS_PayRange_Dto>();
             CreateMap<PS_PayRange_Dto, PS_PayRange>();
@@ -260,6 +290,12 @@ namespace CERP
 
             CreateMap<PS_PayFrequency, PS_PayFrequency_Dto>();
             CreateMap<PS_PayFrequency_Dto, PS_PayFrequency>();
+
+            CreateMap<PS_PayrollPeriod, PS_PayrollPeriod_Dto>();
+            CreateMap<PS_PayrollPeriod_Dto, PS_PayrollPeriod>();
+
+            CreateMap<PS_PayPeriod, PS_PayPeriod_Dto>();
+            CreateMap<PS_PayPeriod_Dto, PS_PayPeriod>();
             #endregion
             #endregion
             #region Employee Central

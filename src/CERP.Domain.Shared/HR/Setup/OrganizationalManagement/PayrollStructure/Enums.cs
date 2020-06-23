@@ -53,11 +53,42 @@ namespace CERP.HR.Setup.OrganizationalManagement.PayrollStructure
         [Description("Percentage")]
         Percentage
     }
-    public enum PS_PaygradeComponentAmountValueType
+    public enum PS_PayGradeComponentAmountValueType
     {
         [Description("Amount")]
         Amount,
         [Description("Percentage")]
         Percentage
+    }
+    public enum PS_PayFrequencyAnnualizationFactor
+    {
+        [Description("Weekly")]
+        WEEKLY,
+        [Description("Bi-Weekly")]
+        BI_WEEKLY,
+        [Description("Monthly")]
+        MONTHLY,
+        [Description("Quaterly")]
+        QUATERLY,
+        [Description("Half Yearly")]
+        HALF_YEARLY,
+        [Description("Yearly")]
+        YEARLY
+    }
+
+    public enum PS_PaymentFileEmployeeColumn
+    {
+        [Description("Weekly")]
+        WEEKLY,
+    }
+    public enum PS_PaymentFilePayrollColumn
+    {
+        [Description("Weekly")]
+        WEEKLY,
+    }
+    public enum PS_PaymentFileBankColumn
+    {
+        [Description("Weekly")]
+        WEEKLY,
     }
 }

@@ -522,9 +522,6 @@ List<EC_IqamaSponsorType> iqamaSponsorTypes = Enum.GetValues(typeof(EC_IqamaSpon
     let departments = [];
     let possibleSubDepartments = [];
 
-    let dictionaryValueTypes = [];
-    let fullNameValueObjects = [];
-    let codeNameTypes = [];
 
     let disabilitiesGrid;
 
@@ -556,94 +553,6 @@ List<EC_IqamaSponsorType> iqamaSponsorTypes = Enum.GetValues(typeof(EC_IqamaSpon
     let loansGrid;
         let isNotNational;
 
-    function populateDictionaryValues(data, grid, columnIndex) {
-        let dataMS = [];
-        for (let i = 0; i < data.length; i++) {
-            let item = data[i];
-            dataMS.push({ label: `${item.value} (${item.key})`, value: item.id, data: item });
-        }
-        try {
-            if (typeof columnIndex === typeof '')
-                grid.columns.filter(function (x) { return x.field == columnIndex })[0].edit.params.dataSource = dataMS;
-            else
-                grid.columns[columnIndex].edit.params.dataSource = dataMS;
-        } catch (ex) {
-            console.error(ex);
-            console.log(columnIndex);
-            console.log(grid.columns[columnIndex]);
-            console.log(grid.columns.filter(function (x) { return x.field == columnIndex })[0]);
-        }
-        //console.log(dataMS);
-    }
-    function populateMSDictionaryValues(data, multiselect) {
-        let dataMS = [];
-        for (let i = 0; i < data.length; i++) {
-            let item = data[i];
-            dataMS.push({ label: `${item.value} (${item.key})`, value: item.id, data: item });
-                }
-        //console.log(dataMS);
-        $(multiselect).multiselect('dataprovider', dataMS);
-    }
-    function loadDictionaryValues(valueType, gridsArray = [], columnsArray = [], multiselects = [], callback = null) {
-            $.each(gridsArray, function (i, x) { x.showSpinner(); });
-    cERP.appServices.setup.lookup.dictionaryValue.getAllByValueType(valueType).done(function (data) {
-                $.each(gridsArray, function (i, x) { x.hideSpinner(); });
-
-        dictionaryValueTypes.removeIf(function (x) { return data.filter(function (y) { return y.id == x.id }).length > 0 })
-                dictionaryValueTypes = dictionaryValueTypes.concat(data);
-
-                $.each(gridsArray, function (i, x) { populateDictionaryValues(data, x, columnsArray[i]) });
-        if (multiselects.length > 0)
-            $.each(multiselects, function (i, x) { populateMSDictionaryValues(data, x) });
-        if (callback) callback(data);
-    });
-}
-
-    function populateCodeNameTypes(data, grid, columnIndex, codeProp = null, valueProp = null) {
-    let dataMS = [];
-    for (let i = 0; i < data.length; i++) {
-        let item = data[i];
-        let cP = codeProp != null ? codeProp : 'code';
-        let vP = valueProp != null ? valueProp : 'name';
-
-        dataMS.push({ label: `${item[cP]} - ${item[vP]}`, value: item.id, data: item });
-}
-console.log(columnIndex);
-            if (typeof columnIndex === typeof '')
-                grid.columns.filter(function (x) { return x.field == columnIndex })[0].edit.params.dataSource = dataMS;
-            else
-                grid.columns[columnIndex].edit.params.dataSource = dataMS;
-
-            //console.log(dataMS);
-        }
-    function populateMSCodeNameTypes(data, multiselect, codeProp = null, valueProp = null) {
-        let dataMS = [];
-        for (let i = 0; i < data.length; i++) {
-            let item = data[i];
-            let cP = codeProp != null ? codeProp : 'code';
-            let vP = valueProp != null ? valueProp : 'name';
-
-            dataMS.push({ label: `${item[cP]} - ${item[vP]}`, value: item.id, data: item });
-        }
-        //console.log(dataMS);
-        $(multiselect).multiselect('dataprovider', dataMS);
-    }
-    function loadCodeNameTypes(serviceFuncion, gridsArray = [], columnsArray = [], multiselects = [], codeProp = null, valueProp = null, callback = null) {
-            $.each(gridsArray, function (i, x) { x.showSpinner(); });
-    serviceFuncion().done(function (data) {
-                $.each(gridsArray, function (i, x) { x.hideSpinner(); });
-
-        codeNameTypes.removeIf(function (x) { return data.filter(function (y) { return y.id == x.id }).length > 0 })
-                codeNameTypes = codeNameTypes.concat(data);
-
-                $.each(gridsArray, function (i, x) { populateCodeNameTypes(data, x, columnsArray[i], codeProp, valueProp) });
-        if (multiselects.length > 0)
-                    $.each(multiselects, function (i, x) { populateMSCodeNameTypes(data, x, codeProp, valueProp) });
-
-        if (callback) callback();
-    });
-}
-
     let allOrgStructures = [];
     let allOrgLegalEntities = [];
     let allBUs = [];
@@ -655,11 +564,11 @@ console.log(columnIndex);
     let curDiv;
     let curDep;
     let loadedOrgStructureInfo = false;
-        let loadedCompBenefits = false;
-        var $ocJs;
+    let loadedCompBenefits = false;
+    var $ocJs;
     var cardObj;
-        $(document).ready(function () {
-            $ocJs = $('#orgChartJs').orgchart({ data: [], nodeTitle: 'type', nodeContent: 'name'});
+    $(document).ready(function () {
+        $ocJs = $('#orgChartJs').orgchart({ data: [], nodeTitle: 'type', nodeContent: 'name'});
         if (isEditingEmployee) {
         $('#submitEmployeeBtn').text('UPDATE EMPLOYEE');
         cERP.appServices.hR.employeeService.employee.getEmployee('@Model.Id', true).done(function (data) {
@@ -803,16 +712,7 @@ console.log(columnIndex);
 
         let accordion = $('#identityInfoAccordion')[0].ej2_instances[0];
         accordion.hideItem(0, true);
-        let options = {
-            buttonWidth: '100%',
-            includeSelectAllOption: true,
-            enableFiltering: false,
-            enableClickableOptGroups: true,
-            includeResetOption: true,
-            includeResetDivider: true,
-            enableCollapsibleOptGroups: true
-        };
-        $.each($('.mltslct'), function (i, x) { $(x).multiselect(options); });
+       
 
         $('#empIqamaSponsorType').change();
 
@@ -928,7 +828,13 @@ console.log(columnIndex);
     loadDictionaryValues(ValueTypeModules.Country,
         [passportTravelGrid, homeAddressesGrid, emergencyContactsGrid, dependantsGrid, dependantsGrid, dependantPassportTravelDocsGrid, bankPaymentTypesGrid],
         [2, 8, 11, 'birthCountryId', 'nationalityId', 'issuingCountryId', 7],
-        ['#empBirthCountry', '#empNationality'], function (data) { $('#empNationality').change() });
+        ['#empBirthCountry', '#empNationality'], function (data) {
+            if (isEditingEmployee) {
+                $('#empNationality').multiselect('select', curEmployee.nationalityId)
+                $('#empCountry').multiselect('select', curEmployee.countryId)
+            }
+            $('#empNationality').change()
+        });
 
     loadDictionaryValues(ValueTypeModules.Relationship, [emergencyContactsGrid, dependantsGrid], [1, 5], [], function (data) {
         filterCategory = data;
@@ -963,7 +869,7 @@ console.log(columnIndex);
     let payGradesGridsColsArr = ['payGradeId'];
     let payGradesMultiselectsArr = ['#empCBS_PayGrade'];
 
-    loadCodeNameTypes(cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayGroup.getAllPayGroups, [], [], ['#empCBS_PayGroup']);
+    loadCodeNameTypes(cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PaySubGroup.getAllPaySubGroups, [], [], ['#empCBS_PaySubGroup']);
 
     loadCodeNameTypes(cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayGrade.getAllPayGrades, payGradesGridsArr, payGradesGridsColsArr, payGradesMultiselectsArr);
 
@@ -1185,8 +1091,8 @@ console.log(location);
             //});
         });
 
-        $('#empCBS_PayGroup').on('change', function () {
-let curPGID = $('#empCBS_PayGroup').val();
+        $('#empCBS_PaySubGroup').on('change', function () {
+let curPGID = $('#empCBS_PaySubGroup').val();
 
 //loadCodeNameTypes(cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayGrade.getAllPayGradesByGroup , [], ['#empCBS_PayGrade']);
 });
@@ -1212,7 +1118,7 @@ let lastName = $('#lastName').val();
 
         $('#submitEmployeeBtn').on('cliyck', function () {
 console.log('CUSTOM STUFF');
-let data = '{"FirstName":"Hamza","FirstNameLocalized":"ھمزا","MiddleName":"Muhammad","MiddleNameLocalized":"مھمد","LastName":"Abdullah","LastNameLocalized":"ابدللھ","Title":"Mr.","Initials":"HA","PreferredName":"Hamza","DisplayName":"Hamza","GenderId":"f127dd99-b242-1416-735d-39f58cf17825","MaritalStatusId":"e1aaa7ad-5278-3fce-1d97-39f58cf1dd99","MarriedSince":"","PreferredLanguageId":"af7acc76-66f6-7471-91f6-39f50f387c4c","NationalityId":"af7acc76-66f6-7471-91f6-39f50f387c4c","DateOfBirth":"2000-10-12","BirthCountryId":"c927ad21-0692-cfce-2b6e-39f50f326ba7","PlaceOfBirth":"Hafr Al-Batin","nationalIdentities":[{"nationalIdentity":{"id":35,"idTypeId":"6f827849-c272-07b6-3a8f-39f58ae17940","idNumber":"416511651514","validityFromDate":"2020-06-02T19:00:00.000Z","validityToDate":"2020-06-18T19:00:00.000Z","isPrimary":true,"attachment":[{"name":"Business-Event-Invitation-Template.jpg","rawFile":{},"size":38408,"status":"Ready to upload","type":"jpg","validationMessages":{"minSize":"","maxSize":""},"statusCode":"1","id":"Business-Event-Invitation-Template_466.jpg","list":{},"input":{}}],"files":[{"name":"Business-Event-Invitation-Template.jpg","rawFile":{},"size":38408,"status":"Ready to upload","type":"jpg","validationMessages":{"minSize":"","maxSize":""},"statusCode":"1","id":"Business-Event-Invitation-Template_466.jpg","list":{},"input":{}}]}}],"passportTravelDocuments":[{"passportTravelDocument":{"id":38,"documentTypeId":"Travel","issuingCountryId":"c927ad21-0692-cfce-2b6e-39f50f326ba7","documentNumber":"614511116","validityFromDate":"2020-05-31T19:00:00.000Z","validityToDate":"2020-06-24T19:00:00.000Z","isPrimary":true,"attachment":[{"name":"FBLogo.jpg","rawFile":{},"size":13137,"status":"Ready to upload","type":"jpg","validationMessages":{"minSize":"","maxSize":""},"statusCode":"1","id":"FBLogo_720.jpg","list":{},"input":{}}],"files":[{"name":"FBLogo.jpg","rawFile":{},"size":13137,"status":"Ready to upload","type":"jpg","validationMessages":{"minSize":"","maxSize":""},"statusCode":"1","id":"FBLogo_720.jpg","list":{},"input":{}}]}}],"emailAddresses":[{"emailAddress":{"id":80,"emailTypeId":"ac4c349f-6d4e-f633-d68e-39f58c527cec","email":"monosoft54@gmail.com","isPrimary":true}}],"phoneAddresses":[{"phoneAddress":{"id":29,"phoneTypeId":"47ac09b5-edcc-3711-9df1-39f58c52d7e2","phoneNumber":"5651615615615","extention":"1521","isPrimary":true}}],"homeAddresses":[{"homeAddress":{"id":58,"addressTypeId":"97ffc61a-e4e4-f8c3-8056-39f58c538b7a","regularAddress":true,"addressLine1":"gedgreg","addressLine2":"rwthrth","city":"Islamabad","state":"Punjab","postalCode":"03210","countryId":"af7acc76-66f6-7471-91f6-39f50f387c4c","isPrimary":true}}],"contacts":[{"contact":{"id":47,"relationshipTypeId":"d0a26a2f-fb42-e90c-8673-39f58c53d76e","name":"fdgjk","phoneNumber":"415354354","emailAddress":"gttgfdf@hgh","alternatePhone":"42745685","addressLine1":"hgh","addressLine2":"jugh","city":"fhfgh","state":"jukufy","postalCode":"56","countryId":"af7acc76-66f6-7471-91f6-39f50f387c4c","isPrimary":true}}],"CompanyId":"20dd3c2a-7c97-baee-6b96-39f59a2dd75a","OrganizationStructureTemplateId":"1043", "OrganizationStructureTemplateBusinessUnitId":"1","OrganizationStructureTemplateDivisionId":"1","DepartmentTemplateId":"8","LocationId":"b41b15c1-2cc9-e0bd-fa88-39f51684eff7","CostCenterId":"fd094f6e-256e-eba1-0a9f-39f53f405157","PayGroupId":"8","PayGradeId":"8","employeeBenefits":[{"id":74, "payComponent":{ "payComponentTypeId":7, "payComponentType":{"id":7,"valueTypeDescription":"Percentage","valueComponentTypeId":6}, "payFrequencyId":4 }, "payComponentId":3,"payComponentComponentTypeAmount":0,"validityFromDate":"2020-06-02T19:00:00.000Z","validityToDate":"2020-06-23T19:00:00.000Z"}],"cashPaymentTypes":[{"id":28,"collectionLocationId":"b41b15c1-2cc9-e0bd-fa88-39f51684eff7","validityFromDate":"2020-06-02T19:00:00.000Z","validityToDate":"2020-06-16T19:00:00.000Z","isPrimary":true}],"chequePaymentTypes":[{"id":89,"nameOnCheque":"fgtghtr","validityFromDate":"2020-06-02T19:00:00.000Z","validityToDate":"2020-06-17T19:00:00.000Z","isPrimary":true}],"bankPaymentTypes":[{"id":79,"bankNameId":"41924827-3eb4-2a75-8e9f-39f5906ec2cb","bankAccountName":"hsrth","bankAccountNumber":"478484","bankIBAN":"48944494","bankAddress":"gthrtsh","city":"srthtr","countryId":"af7acc76-66f6-7471-91f6-39f50f387c4c","validityFromDate":"2020-06-03T19:00:00.000Z","validityToDate":"2020-06-11T19:00:00.000Z","isPrimary":true}],"TimezoneId":"9d207390-9eeb-398e-1cc5-39f5a5dc0a68","HiringDate":"","YearlyTimeOffAllowance":"54","academiaProfile":[{"id":35,"academicTypeDescription":"External","instituteId":"d010e3c8-3e06-6033-3591-39f53ef99743","academiaCertificateTypeDescription":"Education","academiaCertificateSubTypeId":"d115236a-4ce1-3460-32bd-39f595c438b6","description":"hsryhrt"}],"skillsProfile":[{"skillAquisitionTypeDescription":"External","skillTypeDescription":"Type II","skillSubTypeId":"8bcdfa17-9139-5ea5-e3d0-39f595c513fe","description":"rsthtrh"}],"employeeLoans":[{"id":51,"loanTypeId":"e9bdc389-03bb-35a9-bfaf-39f5909a22fb","name":"hsrth","validityFromDate":"2020-06-02T19:00:00.000Z","validityToDate":"2020-06-24T19:00:00.000Z","amount":"5464546","loanStatusId":"Active"}]}'
+let data = '{"FirstName":"Hamza","FirstNameLocalized":"ھمزا","MiddleName":"Muhammad","MiddleNameLocalized":"مھمد","LastName":"Abdullah","LastNameLocalized":"ابدللھ","Title":"Mr.","Initials":"HA","PreferredName":"Hamza","DisplayName":"Hamza","GenderId":"f127dd99-b242-1416-735d-39f58cf17825","MaritalStatusId":"e1aaa7ad-5278-3fce-1d97-39f58cf1dd99","MarriedSince":"","PreferredLanguageId":"af7acc76-66f6-7471-91f6-39f50f387c4c","NationalityId":"af7acc76-66f6-7471-91f6-39f50f387c4c","DateOfBirth":"2000-10-12","BirthCountryId":"c927ad21-0692-cfce-2b6e-39f50f326ba7","PlaceOfBirth":"Hafr Al-Batin","nationalIdentities":[{"nationalIdentity":{"id":35,"idTypeId":"6f827849-c272-07b6-3a8f-39f58ae17940","idNumber":"416511651514","validityFromDate":"2020-06-02T19:00:00.000Z","validityToDate":"2020-06-18T19:00:00.000Z","isPrimary":true,"attachment":[{"name":"Business-Event-Invitation-Template.jpg","rawFile":{},"size":38408,"status":"Ready to upload","type":"jpg","validationMessages":{"minSize":"","maxSize":""},"statusCode":"1","id":"Business-Event-Invitation-Template_466.jpg","list":{},"input":{}}],"files":[{"name":"Business-Event-Invitation-Template.jpg","rawFile":{},"size":38408,"status":"Ready to upload","type":"jpg","validationMessages":{"minSize":"","maxSize":""},"statusCode":"1","id":"Business-Event-Invitation-Template_466.jpg","list":{},"input":{}}]}}],"passportTravelDocuments":[{"passportTravelDocument":{"id":38,"documentTypeId":"Travel","issuingCountryId":"c927ad21-0692-cfce-2b6e-39f50f326ba7","documentNumber":"614511116","validityFromDate":"2020-05-31T19:00:00.000Z","validityToDate":"2020-06-24T19:00:00.000Z","isPrimary":true,"attachment":[{"name":"FBLogo.jpg","rawFile":{},"size":13137,"status":"Ready to upload","type":"jpg","validationMessages":{"minSize":"","maxSize":""},"statusCode":"1","id":"FBLogo_720.jpg","list":{},"input":{}}],"files":[{"name":"FBLogo.jpg","rawFile":{},"size":13137,"status":"Ready to upload","type":"jpg","validationMessages":{"minSize":"","maxSize":""},"statusCode":"1","id":"FBLogo_720.jpg","list":{},"input":{}}]}}],"emailAddresses":[{"emailAddress":{"id":80,"emailTypeId":"ac4c349f-6d4e-f633-d68e-39f58c527cec","email":"monosoft54@gmail.com","isPrimary":true}}],"phoneAddresses":[{"phoneAddress":{"id":29,"phoneTypeId":"47ac09b5-edcc-3711-9df1-39f58c52d7e2","phoneNumber":"5651615615615","extention":"1521","isPrimary":true}}],"homeAddresses":[{"homeAddress":{"id":58,"addressTypeId":"97ffc61a-e4e4-f8c3-8056-39f58c538b7a","regularAddress":true,"addressLine1":"gedgreg","addressLine2":"rwthrth","city":"Islamabad","state":"Punjab","postalCode":"03210","countryId":"af7acc76-66f6-7471-91f6-39f50f387c4c","isPrimary":true}}],"contacts":[{"contact":{"id":47,"relationshipTypeId":"d0a26a2f-fb42-e90c-8673-39f58c53d76e","name":"fdgjk","phoneNumber":"415354354","emailAddress":"gttgfdf@hgh","alternatePhone":"42745685","addressLine1":"hgh","addressLine2":"jugh","city":"fhfgh","state":"jukufy","postalCode":"56","countryId":"af7acc76-66f6-7471-91f6-39f50f387c4c","isPrimary":true}}],"CompanyId":"20dd3c2a-7c97-baee-6b96-39f59a2dd75a","OrganizationStructureTemplateId":"1043", "OrganizationStructureTemplateBusinessUnitId":"1","OrganizationStructureTemplateDivisionId":"1","DepartmentTemplateId":"8","LocationId":"b41b15c1-2cc9-e0bd-fa88-39f51684eff7","CostCenterId":"fd094f6e-256e-eba1-0a9f-39f53f405157","PaySubGroupId":"8","PayGradeId":"8","employeeBenefits":[{"id":74, "payComponent":{ "payComponentTypeId":7, "payComponentType":{"id":7,"valueTypeDescription":"Percentage","valueComponentTypeId":6}, "payFrequencyId":4 }, "payComponentId":3,"payComponentComponentTypeAmount":0,"validityFromDate":"2020-06-02T19:00:00.000Z","validityToDate":"2020-06-23T19:00:00.000Z"}],"cashPaymentTypes":[{"id":28,"collectionLocationId":"b41b15c1-2cc9-e0bd-fa88-39f51684eff7","validityFromDate":"2020-06-02T19:00:00.000Z","validityToDate":"2020-06-16T19:00:00.000Z","isPrimary":true}],"chequePaymentTypes":[{"id":89,"nameOnCheque":"fgtghtr","validityFromDate":"2020-06-02T19:00:00.000Z","validityToDate":"2020-06-17T19:00:00.000Z","isPrimary":true}],"bankPaymentTypes":[{"id":79,"bankNameId":"41924827-3eb4-2a75-8e9f-39f5906ec2cb","bankAccountName":"hsrth","bankAccountNumber":"478484","bankIBAN":"48944494","bankAddress":"gthrtsh","city":"srthtr","countryId":"af7acc76-66f6-7471-91f6-39f50f387c4c","validityFromDate":"2020-06-03T19:00:00.000Z","validityToDate":"2020-06-11T19:00:00.000Z","isPrimary":true}],"TimezoneId":"9d207390-9eeb-398e-1cc5-39f5a5dc0a68","HiringDate":"","YearlyTimeOffAllowance":"54","academiaProfile":[{"id":35,"academicTypeDescription":"External","instituteId":"d010e3c8-3e06-6033-3591-39f53ef99743","academiaCertificateTypeDescription":"Education","academiaCertificateSubTypeId":"d115236a-4ce1-3460-32bd-39f595c438b6","description":"hsryhrt"}],"skillsProfile":[{"skillAquisitionTypeDescription":"External","skillTypeDescription":"Type II","skillSubTypeId":"8bcdfa17-9139-5ea5-e3d0-39f595c513fe","description":"rsthtrh"}],"employeeLoans":[{"id":51,"loanTypeId":"e9bdc389-03bb-35a9-bfaf-39f5909a22fb","name":"hsrth","validityFromDate":"2020-06-02T19:00:00.000Z","validityToDate":"2020-06-24T19:00:00.000Z","amount":"5464546","loanStatusId":"Active"}]}'
             let identityInfo = {
                 nationalIdentities: nationalIdentityGrid.dataSource,
                 passportTravelDocs: passportTravelGrid.dataSource
@@ -3400,10 +3306,10 @@ let profilePic = $('#profileImageUpload')[0].files[0];
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                                     <div class="form-group" style="padding: 15px">
                                         <div class="col-sm-4" style="">
-                                            <label class="p-t-5 control-label pull-right">Pay Group:</label>
+                                            <label class="p-t-5 control-label pull-right">Pay Sub Group:</label>
                                         </div>
                                         <div class="col-sm-8" style="">
-                                            <select id="empCBS_PayGroup" name="PayGroupId" class="form-control" required>
+                                            <select id="empCBS_PaySubGroup" name="PaySubGroupId" class="form-control" required>
                                             </select>
                                         </div>
                                     </div>

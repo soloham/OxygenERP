@@ -106,7 +106,7 @@ namespace CERP.AppServices.HR.EmployeeService
                         .Include(p => p.Nationality)
                         .Include(p => p.BirthCountry)
                         .Include(p => p.CostCenter)
-                        .Include(p => p.PayGroup)
+                        .Include(p => p.PaySubGroup)
                         .Include(p => p.PayGrade)
                         .Include(p => p.Timezone)
                         .Include(p => p.EmployeeSubGroup)

@@ -191,9 +191,9 @@ namespace CERP.HR.EmployeeCentral.Employee
         #region Compensation Info
 
         #region Basic Contract Info
-        public PS_PayGroup PayGroup { get; set; }
+        public PS_PaySubGroup PaySubGroup { get; set; }
         [CustomAudited]
-        public int PayGroupId { get; set; }
+        public int PaySubGroupId { get; set; }
         public PS_PayGrade PayGrade { get; set; }
         [CustomAudited]
         public int PayGradeId { get; set; }

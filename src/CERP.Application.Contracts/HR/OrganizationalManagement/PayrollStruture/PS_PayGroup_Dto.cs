@@ -2,8 +2,7 @@
 using CERP.Attributes;
 using CERP.Base;
 using CERP.FM;
-
-using CERP.ApplicationContracts.HR.OrganizationalManagement.OrganizationStructure;
+using CERP.HR.EmployeeCentral.Employee;
 using CERP.HR.Setup.OrganizationalManagement.OrganizationStructure;
 using System;
 using System.Collections.Generic;
@@ -23,7 +22,6 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.PayrollStructure
         public string NameLocalized { get; set; }
         public string Description { get; set; }
 
-        public PS_PayFrequency_Dto Frequency { get; set; }
-        public int FrequencyId { get; set; }
+        public List<PS_PaySubGroup_Dto> PaySubGroups { get; set; }
     }
 }

@@ -200,6 +200,26 @@
     <Compile Remove="Migrations\20200611123057_EmployeeCentral_Employee_Identity_Contract.Designer.cs" />
     <Compile Remove="Migrations\20200611143438_EmployeeCentral_Employee_Identity_Contract_Optional.cs" />
     <Compile Remove="Migrations\20200611143438_EmployeeCentral_Employee_Identity_Contract_Optional.Designer.cs" />
+    <Compile Remove="Migrations\20200615214627_OrgStructure_Template_CompositeId.cs" />
+    <Compile Remove="Migrations\20200615214627_OrgStructure_Template_CompositeId.Designer.cs" />
+    <Compile Remove="Migrations\20200615220646_OrgStructure_Template_CompositeId.cs" />
+    <Compile Remove="Migrations\20200615220646_OrgStructure_Template_CompositeId.Designer.cs" />
+    <Compile Remove="Migrations\20200615224622_OrgStructure_Template_CompositeId.cs" />
+    <Compile Remove="Migrations\20200615224622_OrgStructure_Template_CompositeId.Designer.cs" />
+    <Compile Remove="Migrations\20200615233526_HR_OrgMang_PayStruc_MigTest.cs" />
+    <Compile Remove="Migrations\20200615233526_HR_OrgMang_PayStruc_MigTest.Designer.cs" />
+    <Compile Remove="Migrations\20200616181052_HR_OrgMang_PayStruc_PayGroup_Period_Freq.cs" />
+    <Compile Remove="Migrations\20200616181052_HR_OrgMang_PayStruc_PayGroup_Period_Freq.Designer.cs" />
+    <Compile Remove="Migrations\20200616194515_HR_OrgMang_PayStruc_PaySubGroup_PayGroups.cs" />
+    <Compile Remove="Migrations\20200616194515_HR_OrgMang_PayStruc_PaySubGroup_PayGroups.Designer.cs" />
+    <Compile Remove="Migrations\20200617111541_HR_OrgMang_PayStruc_PaySubGroup_Periods_Composition.cs" />
+    <Compile Remove="Migrations\20200617111541_HR_OrgMang_PayStruc_PaySubGroup_Periods_Composition.Designer.cs" />
+    <Compile Remove="Migrations\20200617112151_HR_OrgMang_PayStruc_PaySubGroup_Periods_Composition.cs" />
+    <Compile Remove="Migrations\20200617112151_HR_OrgMang_PayStruc_PaySubGroup_Periods_Composition.Designer.cs" />
+    <Compile Remove="Migrations\20200618015305_HR_OrgMang_PayStruc_PaymentBanks.cs" />
+    <Compile Remove="Migrations\20200618015305_HR_OrgMang_PayStruc_PaymentBanks.Designer.cs" />
+    <Compile Remove="Migrations\20200622170130_HR_OrgMang_PayrollStruc_PayrollPeriods_Updated.cs" />
+    <Compile Remove="Migrations\20200622170130_HR_OrgMang_PayrollStruc_PayrollPeriods_Updated.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -207,7 +227,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.3">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

@@ -1,0 +1,28 @@
+﻿@page "/HR/PayrollStructure/Setup"
+@using CERP.Localization;
+@using Microsoft.AspNetCore.Mvc.Localization;
+@using CERP.HR.Setup.OrganizationalManagement.PayrollStructure;
+@inject IHtmlLocalizer<CERPResource> L
+@inject Volo.Abp.Json.IJsonSerializer JsonSerializer
+@using CERP.App.Helpers;
+@using Syncfusion.EJ2.Navigations;
+@model CERP.Web.Areas.HR.Pages.Setup.OrganizationalManagement.PayrollStructure.Setup.IndexModel
+@{
+    ViewData["IsEditing"] = false;
+    bool IsEditing = (bool)ViewData["IsEditing"];
+
+    ViewData["Title"] = L["PayRanges"].Value;
+    ViewData["IconClass"] = "fas fa-list";
+    ViewData["HeaderTitle"] = L["PayRanges"].Value.ToUpper();
+    ViewData["SubTitle"] = $"{L["ListOf"]} {L["PayRanges"]}";
+    ViewData["Area"] = "Setup";
+
+    ViewData["IsList"] = false;
+    ViewData["IsCreate"] = false;
+
+    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+
+    var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Audit Trail", tooltipText = "View Audit Trail", prefixIcon = "e-toggleaudittrail", id = "toggleaudittrail" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, new { text = "ExcelExport", tooltipText = "Excel Export", prefixIcon = "e-excelexport", id = "excelexport", align = "Right" }, "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
+}
+

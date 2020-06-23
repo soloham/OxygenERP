@@ -187,6 +187,19 @@
     "PayFrequencies": "Pay Frequencies",
     "PayFrequency": "Pay Frequency",
 
+    "PaySubGroup": "Pay Sub Group",
+    "PaySubGroups": "Pay Sub Groups",
+    "PaymentBank": "Payment Bank",
+    "PaymentBanks": "Payment Banks",
+    "PaymentBankFiles": "Payment Bank Files",
+    "PaymentBankFile": "Payment Bank File",
+    "PaymentCash": "Payment Cash",
+    "PaymentCashFiles": "Payment Cash Files",
+    "PaymentCashFile": "Payment Cash File",
+    "PaymentCheque": "Payment Cheque",
+    "PaymentChequeFiles": "Payment Cheque Files",
+    "PaymentChequeFile": "Payment Cheque File",
+
     "Welcome": "Welcome",
     "LongWelcomeMessage": "Welcome to the application."
   }

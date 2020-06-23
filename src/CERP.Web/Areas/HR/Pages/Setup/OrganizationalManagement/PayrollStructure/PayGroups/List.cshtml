@@ -63,18 +63,16 @@
 
         let payGroups = []
         let gridObj;
-        let options = {
-            buttonWidth: '100%',
-            includeSelectAllOption: true,
-            enableFiltering: false,
-            enableClickableOptGroups: true,
-            includeResetOption: true,
-            includeResetDivider: true,
-            enableCollapsibleOptGroups: true
-        };
         $(document).ready(function () {
-
-            $('#payFrequencyId').multiselect(options);
+            let options = {
+                buttonWidth: '100%',
+                includeSelectAllOption: true,
+                enableFiltering: false,
+                enableClickableOptGroups: true,
+                includeResetOption: true,
+                includeResetDivider: true,
+                enableCollapsibleOptGroups: true
+            };
 
             gridObj = $("#PayGroupsGrid")[0].ej2_instances[0];
             gridObj.showSpinner();
@@ -85,17 +83,6 @@
 
                 gridObj.dataSource = data;
                 setTimeout(function () { gridObj.hideSpinner() }, 200);
-            });
-
-            cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayFrequency.getAllPayFrequencies().done(function (data) {
-                $('#payGroupsLoader').slideUp(100);
-
-                let dataMS = [];
-                for (let i = 0; i < data.length; i++) {
-                    let item = data[i];
-                    dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
-                }
-                $.each($('.payFrequencyId'), function (i, x) { $(x).multiselect('dataprovider', dataMS) });
             });
 
             $('#addPayGroupsBtn').on('click', function () {
@@ -157,7 +144,7 @@
                         if (isEditingPayGroups) {
                             gridObj.refresh(); // refresh the Grid.
 
-                            swal.fire("Success", "Pay Group has successfully been updated", "success");
+                            swal.fire("Success", "Pay Range has successfully been updated", "success");
 
                             for (let i = 0; i < gridObj.dataSource.length; i++) {
                                 if (gridObj.dataSource[i].id == data.id) {
@@ -171,16 +158,16 @@
 
                             gridObj.refresh(); // refresh the Grid.
 
-                            swal.fire("Success", "Pay Group has successfully been added", "success");
+                            swal.fire("Success", "Pay Range has successfully been added", "success");
                         }
                         gridObj.hideSpinner();
                     },
                     error: function (err) {
                         Swal.hideLoading();
                         if (isEditingPayGroups)
-                            swal.fire("Failed", "Pay Group couldn't be updated, please fix all errors and try again.", "error");
+                            swal.fire("Failed", "Pay Range couldn't be updated, please fix all errors and try again.", "error");
                         else
-                            swal.fire("Failed", "Pay Group couldn't be added, please fix all errors and try again.", "error");
+                            swal.fire("Failed", "Pay Range couldn't be added, please fix all errors and try again.", "error");
 
                         console.log(err);
                         gridObj.hideSpinner();
@@ -225,7 +212,7 @@
                         <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="form-group" style="padding: 15px">
                                 <div class="col-sm-4" style="">
-                                    <label class="p-t-5 control-label pull-right">Pay Group Code:</label>
+                                    <label class="p-t-5 control-label pull-right">Pay Range Code:</label>
                                 </div>
                                 <div class="col-sm-8" style="">
                                     <input type="text" id="payGroupCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
@@ -259,17 +246,6 @@
                                 </div>
                                 <div class="col-sm-8" style="">
                                     <input type="text" id="payGroupDescription" name="Description" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                            <div class="form-group" style="padding: 15px">
-                                <div class="col-sm-4" style="">
-                                    <label class="p-t-5 control-label pull-right">Pay Frequency:</label>
-                                </div>
-                                <div class="col-sm-8" style="">
-                                    <select id="payFrequencyId" class="payFrequencyId" name="FrequencyId" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
-                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -326,14 +302,13 @@
 
                 <e-grid-columns>
                     <e-grid-column field="id" headerText="Id" isPrimaryKey="true" textAlign="Center" visible="false" showInColumnChooser="false"></e-grid-column>
+                    <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
                     <e-grid-column headerText="Name" textAlign="Center" columns='new List<Syncfusion.EJ2.Grids.GridColumn>() {
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "name", HeaderText = "English", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center },
                         new Syncfusion.EJ2.Grids.GridColumn() { Field= "nameLocalized", HeaderText = "Local", TextAlign = Syncfusion.EJ2.Grids.TextAlign.Center }
                     }'></e-grid-column>
-                    <e-grid-column field="code" headerText="Code" textAlign="Center"></e-grid-column>
                     <e-grid-column field="description" headerText="Description" allowEditing="true" textAlign="Center"></e-grid-column>
-                    <e-grid-column field="frequency.name" headerText="Pay Frequency" allowEditing="true" textAlign="Center"></e-grid-column>
-
+                 
                     <e-grid-column headerText="Actions" textAlign="Center" commands="payGroupsCommands"></e-grid-column>
                 </e-grid-columns>
 
@@ -361,7 +336,7 @@
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                                     <div class="form-group" style="padding: 15px">
                                         <div class="col-sm-4" style="">
-                                            <label class="p-t-5 control-label pull-right">Pay Group Code:</label>
+                                            <label class="p-t-5 control-label pull-right">Pay Range Code:</label>
                                         </div>
                                         <div class="col-sm-8" style="">
                                             <input type="text" id="payGroupCode" name="Code" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
@@ -398,17 +373,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                                    <div class="form-group" style="padding: 15px">
-                                        <div class="col-sm-4" style="">
-                                            <label class="p-t-5 control-label pull-right">Pay Frequency:</label>
-                                        </div>
-                                        <div class="col-sm-8" style="">
-                                            <select id="payFrequencyId" class="payFrequencyId" name="FrequencyId" @* value = "@(empInfo!=null? empInfo.EMAIL : "")"*@ class="form-control" required>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                             <div class="col-md-2">
 
@@ -431,7 +395,7 @@
                         <div id="updatePayGroupBtn${id}" class="row" style="display:none">
                             <div class="col-md-12">
                                 <label class="control-label m-b-5 "></label>
-                                <input id="submitPayGroupBtn${id}" type="button" class="btn btn-success btn-block" value="Update PayGroup" required />
+                                <input id="submitPayGroupBtn${id}" type="button" class="btn btn-success btn-block" value="Update Pay Group" required />
                             </div>
                         </div>
                     </div>
@@ -440,19 +404,6 @@
             <script>
                 function detailDataBound(args) {
                     let params = args.data;
-                    $('#payFrequencyId', `#generalTabTemplate${params.id}`).multiselect(options);
-                    cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayFrequency.getAllPayFrequencies().done(function (data) {
-                        $('#payGroupsLoader').slideUp(100);
-
-                        let dataMS = [];
-                        for (let i = 0; i < data.length; i++) {
-                            let item = data[i];
-                            dataMS.push({ label: `${item.code} - ${item.name}`, value: item.id, data: item });
-                        }
-                        $('.payFrequencyId', `#generalTabTemplate${params.id}`).multiselect('dataprovider', dataMS)
-                        $('.payFrequencyId', `#generalTabTemplate${params.id}`).multiselect('select', params.payFrequencyId)
-                    });
-
                     elmm = args;
                     var accordion = new ej.navigations.Accordion({
                         items: [
@@ -499,6 +450,7 @@
                     $('#payGroupsLoader').slideDown(100);
                     cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayGroup.get(params.id).done(function (data) {
                         $('#payGroupsLoader').slideUp(100);
+                        console.log(data);
                     });
                     cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PayGroup.getAllReferences(params.id).done(function (data) {
 

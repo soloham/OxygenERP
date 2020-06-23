@@ -15,7 +15,7 @@ namespace CERP.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.4")
+                .HasAnnotation("ProductVersion", "3.1.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -2502,7 +2502,7 @@ namespace CERP.Migrations
                     b.Property<int>("PayGradeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PayGroupId")
+                    b.Property<int>("PaySubGroupId")
                         .HasColumnType("int");
 
                     b.Property<string>("PlaceOfBirth")
@@ -2567,7 +2567,7 @@ namespace CERP.Migrations
 
                     b.HasIndex("PayGradeId");
 
-                    b.HasIndex("PayGroupId");
+                    b.HasIndex("PaySubGroupId");
 
                     b.HasIndex("PreferredLanguageId");
 
@@ -3923,7 +3923,7 @@ namespace CERP.Migrations
                     b.Property<int>("PayGradeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PayGroupId")
+                    b.Property<int>("PaySubGroupId")
                         .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")
@@ -3940,7 +3940,7 @@ namespace CERP.Migrations
 
                     b.HasIndex("PayGradeId");
 
-                    b.HasIndex("PayGroupId");
+                    b.HasIndex("PaySubGroupId");
 
                     b.ToTable("DepartmentTemplates","HR.OrganizationalManagement.OrganizationStructure");
                 });
@@ -4540,7 +4540,7 @@ namespace CERP.Migrations
                     b.Property<Guid>("LocationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("PayGroupId")
+                    b.Property<int>("PaySubGroupId")
                         .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")
@@ -4559,7 +4559,7 @@ namespace CERP.Migrations
 
                     b.HasIndex("LocationId");
 
-                    b.HasIndex("PayGroupId");
+                    b.HasIndex("PaySubGroupId");
 
                     b.ToTable("OrganizationStructureTemplateBusinessUnits","HR.OrganizationalManagement.OrganizationStructure");
                 });
@@ -5930,9 +5930,6 @@ namespace CERP.Migrations
                         .HasColumnName("ExtraProperties")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("FrequencyId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("datetime2");
 
@@ -5951,9 +5948,86 @@ namespace CERP.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FrequencyId");
-
                     b.ToTable("PayGroups","HR.OrganizationalManagement.PayrollStructure");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayPeriod", b =>
+                {
+                    b.Property<int>("PayrollPeriodId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ApprovalDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ApprovalReminderIssuanceDays")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AttendanceCutOffDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("EmployeeTransactionCutOffDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GLExpensePostingDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameLocalized")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("OffCyclePayroll")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PaymentDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PayrollProcessingDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PayrollReminderIssuanceDays")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PostPaymentSelfServiceAvailabilityDays")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("PayrollPeriodId", "Id");
+
+                    b.ToTable("PayPeriods","HR.OrganizationalManagement.PayrollStructure");
                 });
 
             modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayRange", b =>
@@ -6012,6 +6086,496 @@ namespace CERP.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PayRanges","HR.OrganizationalManagement.PayrollStructure");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaySubGroup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("AllowThirdPartyPayments")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FrequencyId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsBankPaymentAllowed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsCashPaymentAllowed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsChequePaymentAllowed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("LegalEntityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameLocalized")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("OrganizationStructureTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PS_PayGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PayGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PayrollPeriodId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FrequencyId");
+
+                    b.HasIndex("LegalEntityId");
+
+                    b.HasIndex("OrganizationStructureTemplateId");
+
+                    b.HasIndex("PS_PayGroupId");
+
+                    b.HasIndex("PayGroupId");
+
+                    b.HasIndex("PayrollPeriodId");
+
+                    b.ToTable("PaySubGroups","HR.OrganizationalManagement.PayrollStructure");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaySubGroupBank", b =>
+                {
+                    b.Property<int>("PaySubGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BankId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnName("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnName("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsThirdParty")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnName("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnName("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("PaySubGroupId", "BankId", "Id");
+
+                    b.HasIndex("BankId");
+
+                    b.ToTable("PaySubGroupBanks","HR.OrganizationalManagement.PayrollStructure");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaySubGroupBusinessUnit", b =>
+                {
+                    b.Property<int>("PaySubGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrganizationStructureTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BusinessUnitId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnName("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnName("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnName("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnName("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("PaySubGroupId", "OrganizationStructureTemplateId");
+
+                    b.ToTable("PaySubGroupBusinessUnits","HR.OrganizationalManagement.PayrollStructure");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaySubGroupBusinessUnitDivision", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BusinessUnitDivisionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BusinessUnitId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("PS_PaySubGroupBusinessUnitOrganizationStructureTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PS_PaySubGroupBusinessUnitPaySubGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PaySubGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PS_PaySubGroupBusinessUnitPaySubGroupId", "PS_PaySubGroupBusinessUnitOrganizationStructureTemplateId");
+
+                    b.ToTable("PS_PaySubGroupBusinessUnitDivision");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaySubGroupBusinessUnitDivisionDepartment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BusinessUnitDivisionDepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BusinessUnitDivisionHeadDepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BusinessUnitDivisionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BusinessUnitId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("PS_PaySubGroupBusinessUnitDivisionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PaySubGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PS_PaySubGroupBusinessUnitDivisionId");
+
+                    b.ToTable("PS_PaySubGroupBusinessUnitDivisionDepartment");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaymentBank", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AccountDigits")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AccountInitials")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AddressLine1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AddressLine2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CountryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("EffectiveFrom")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("HasAccountNumberRestriction")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasIBANNumberRestriction")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("IBANDigits")
+                        .HasColumnType("int");
+
+                    b.Property<string>("IBANInitials")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameLocalized")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostalCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("State")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountryId");
+
+                    b.ToTable("PaymentBanks","HR.OrganizationalManagement.PayrollStructure");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaymentBankFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameLocalized")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PaymentBankFiles","HR.OrganizationalManagement.PayrollStructure");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaymentBankFileBank", b =>
+                {
+                    b.Property<int>("PaymentBankFileId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BankId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnName("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnName("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnName("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnName("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("PaymentBankFileId", "BankId", "Id");
+
+                    b.HasIndex("BankId");
+
+                    b.ToTable("PaymentBankFileBanks","HR.OrganizationalManagement.PayrollStructure");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayrollPeriod", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnName("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnName("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ExtraPeriods")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnName("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnName("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PeriodEndDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PeriodFrequency")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PeriodStartDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PayrollPeriods","HR.OrganizationalManagement.PayrollStructure");
                 });
 
             modelBuilder.Entity("CERP.HR.Timesheets.Timesheet", b =>
@@ -9826,9 +10390,9 @@ namespace CERP.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayGroup", "PayGroup")
+                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaySubGroup", "PaySubGroup")
                         .WithMany()
-                        .HasForeignKey("PayGroupId")
+                        .HasForeignKey("PaySubGroupId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -10197,9 +10761,9 @@ namespace CERP.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayGroup", "PayGroup")
+                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaySubGroup", "PaySubGroup")
                         .WithMany()
-                        .HasForeignKey("PayGroupId")
+                        .HasForeignKey("PaySubGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -10356,9 +10920,9 @@ namespace CERP.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayGroup", "PayGroup")
+                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaySubGroup", "PaySubGroup")
                         .WithMany()
-                        .HasForeignKey("PayGroupId")
+                        .HasForeignKey("PaySubGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -10697,11 +11261,108 @@ namespace CERP.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayGroup", b =>
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayPeriod", b =>
+                {
+                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayrollPeriod", null)
+                        .WithMany("PayPeriods")
+                        .HasForeignKey("PayrollPeriodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaySubGroup", b =>
                 {
                     b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayFrequency", "Frequency")
                         .WithMany()
                         .HasForeignKey("FrequencyId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.Setup.Company", "LegalEntity")
+                        .WithMany()
+                        .HasForeignKey("LegalEntityId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.OrganizationStructure.OS_OrganizationStructureTemplate", null)
+                        .WithMany()
+                        .HasForeignKey("OrganizationStructureTemplateId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayGroup", null)
+                        .WithMany("PaySubGroups")
+                        .HasForeignKey("PS_PayGroupId");
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayGroup", "PayGroup")
+                        .WithMany()
+                        .HasForeignKey("PayGroupId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PayrollPeriod", "PayrollPeriod")
+                        .WithMany()
+                        .HasForeignKey("PayrollPeriodId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaySubGroupBank", b =>
+                {
+                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaymentBank", "Bank")
+                        .WithMany()
+                        .HasForeignKey("BankId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaySubGroup", null)
+                        .WithMany("AllowedBanks")
+                        .HasForeignKey("PaySubGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaySubGroupBusinessUnit", b =>
+                {
+                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaySubGroup", null)
+                        .WithMany("BusinessUnits")
+                        .HasForeignKey("PaySubGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaySubGroupBusinessUnitDivision", b =>
+                {
+                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaySubGroupBusinessUnit", null)
+                        .WithMany("Divisions")
+                        .HasForeignKey("PS_PaySubGroupBusinessUnitPaySubGroupId", "PS_PaySubGroupBusinessUnitOrganizationStructureTemplateId");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaySubGroupBusinessUnitDivisionDepartment", b =>
+                {
+                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaySubGroupBusinessUnitDivision", null)
+                        .WithMany("Departments")
+                        .HasForeignKey("PS_PaySubGroupBusinessUnitDivisionId");
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaymentBank", b =>
+                {
+                    b.HasOne("CERP.App.DictionaryValue", "Country")
+                        .WithMany()
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaymentBankFileBank", b =>
+                {
+                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaymentBank", "Bank")
+                        .WithMany()
+                        .HasForeignKey("BankId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CERP.HR.OrganizationalManagement.PayrollStructure.PS_PaymentBankFile", null)
+                        .WithMany("PaymentBanks")
+                        .HasForeignKey("PaymentBankFileId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });

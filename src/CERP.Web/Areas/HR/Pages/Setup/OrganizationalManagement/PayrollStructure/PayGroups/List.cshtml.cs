@@ -61,6 +61,8 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.PayrollStructure.Page
                     var FormData = Request.Form;
 
                     PS_PayGroup_Dto payGroup_Dto = JsonSerializer.Deserialize<PS_PayGroup_Dto>(FormData["info"]);
+                    //if (payGroup_Dto.Min > payGroup_Dto.Max || payGroup_Dto.Min > payGroup_Dto.Mid || payGroup_Dto.Mid > payGroup_Dto.Max)
+                    //    return StatusCode(500, new Exception("Please provide valid Min, Mid & Max Configuration"));
 
                     bool IsEditing = payGroup_Dto.Id > 0;
                     if (IsEditing)
@@ -208,8 +210,6 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.PayrollStructure.Page
                         curPayGroup.NameLocalized = payGroup_Dto.NameLocalized;
                         curPayGroup.Code = payGroup_Dto.Code;
                         curPayGroup.Description = payGroup_Dto.Description;
-                        curPayGroup.FrequencyId = payGroup_Dto.FrequencyId;
-                        curPayGroup.Frequency = null;
 
                         PS_PayGroup_Dto updated = ObjectMapper.Map<PS_PayGroup, PS_PayGroup_Dto>(await PS_PayGroupAppService.Repository.UpdateAsync(curPayGroup));
 
@@ -218,7 +218,6 @@ namespace CERP.Web.Areas.HR.Setup.OrganizationalManagement.PayrollStructure.Page
                     else
                     {
                         payGroup_Dto.Id = 0;
-                        payGroup_Dto.Frequency = null;
 
                         PS_PayGroup_Dto added = await PS_PayGroupAppService.CreateAsync(payGroup_Dto);
                         added = await PS_PayGroupAppService.GetAsync(added.Id);
