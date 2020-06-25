@@ -1,0 +1,544 @@
+﻿@model List<CERP.Web.Pages.Shared.Components.DataAuditRowObject>
+@using Syncfusion.EJ2.Grids;
+@using Syncfusion.EJ2.Navigations;
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Syncfusion.EJ2
+@{
+    List<GridColumn> primaryGridColumns = new List<GridColumn>()
+    {
+        new GridColumn { Field = "Id", HeaderText = "", TextAlign=TextAlign.Center, Visible=false, ShowInColumnChooser=false,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+        new GridColumn { Field = "ModificationDateTime", HeaderText = "Timestamp", TextAlign=TextAlign.Center,  AllowEditing=false, MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+        new GridColumn { Field = "ModifiedBy", HeaderText = "User", TextAlign=TextAlign.Center,  AllowEditing=false,  MinWidth = "10", CustomAttributes=new {id="detailed"}  },
+    };
+
+    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+
+    var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, new { text = "ExcelExport", tooltipText = "Excel Export", prefixIcon = "e-excelexport", id = "excelexport", align = "Right" }, "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
+}
+<style>
+    #timelineSpace .container{
+        width: 90% !important;
+    }
+    #timeline {
+        list-style: none;
+        position: relative;
+    }
+
+        #timeline:before {
+            top: 0;
+            bottom: 0;
+            position: absolute;
+            content: " ";
+            width: 2px;
+            background-color: #4997cd;
+            left: 50%;
+            margin-left: -1.5px;
+        }
+
+        #timeline .clearFix {
+            clear: both;
+            height: 0;
+        }
+
+        #timeline .timeline-badge {
+            display: grid;
+            color: #fff;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            margin-left: -25px;
+            background-color: #4997cd;
+            z-index: 100;
+            border-top-right-radius: 50%;
+            border-top-left-radius: 50%;
+            border-bottom-right-radius: 50%;
+            border-bottom-left-radius: 50%;
+            font-size: 1.2em;
+            padding-top: 6px;
+        }
+
+            #timeline .timeline-badge span.timeline-balloon-date-day {
+                font-size: 1.4em;
+            }
+
+            #timeline .timeline-badge span.timeline-balloon-date-month {
+                font-size: .7em;
+                position: relative;
+                top: -10px;
+            }
+
+            #timeline .timeline-badge.timeline-filter-movement {
+                background-color: #ffffff;
+                font-size: 1.7em;
+                height: 35px;
+                margin-left: -18px;
+                width: 35px;
+                top: 40px;
+            }
+
+                #timeline .timeline-badge.timeline-filter-movement a span {
+                    color: #4997cd;
+                    font-size: 1.3em;
+                    top: -1px;
+                }
+
+            #timeline .timeline-badge.timeline-future-movement {
+                background-color: #ffffff;
+                height: 35px;
+                width: 35px;
+                font-size: 1.7em;
+                top: -16px;
+                margin-left: -18px;
+            }
+
+                #timeline .timeline-badge.timeline-future-movement a span {
+                    color: #4997cd;
+                    font-size: .9em;
+                    top: 2px;
+                    left: 1px;
+                }
+
+        #timeline .timeline-movement {
+            border-bottom: dashed 1px #4997cd;
+            position: relative;
+        }
+
+            #timeline .timeline-movement.timeline-movement-top {
+                height: 60px;
+            }
+
+            #timeline .timeline-movement .timeline-item {
+                padding: 20px 0;
+            }
+
+                #timeline .timeline-movement .timeline-item .timeline-panel {
+                    border: 1px solid #d4d4d4;
+                    border-radius: 3px;
+                    background-color: #FFFFFF;
+                    color: #666;
+                    padding: 10px;
+                    position: relative;
+                    -webkit-box-shadow: 0 1px 6px rgba(0, 0, 0, 0.175);
+                    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.175);
+                }
+
+                    #timeline .timeline-movement .timeline-item .timeline-panel .timeline-panel-ul {
+                        list-style: none;
+                        padding: 0;
+                        margin: 0;
+                    }
+
+                    #timeline .timeline-movement .timeline-item .timeline-panel.credits .timeline-panel-ul {
+                        text-align: right;
+                    }
+
+                        #timeline .timeline-movement .timeline-item .timeline-panel.credits .timeline-panel-ul li {
+                            color: #666;
+                        }
+
+                            #timeline .timeline-movement .timeline-item .timeline-panel.credits .timeline-panel-ul li span.importo {
+                                color: #468c1f;
+                                font-size: 1.3em;
+                            }
+
+                    #timeline .timeline-movement .timeline-item .timeline-panel.debits .timeline-panel-ul {
+                        text-align: left;
+                    }
+
+                        #timeline .timeline-movement .timeline-item .timeline-panel.debits .timeline-panel-ul span.importo {
+                            color: #e2001a;
+                            font-size: 1.3em;
+                        }
+</style>
+<script>
+    $(document).ready(function () {
+        auditsGridObj = $('#AuditTrailGrid')[0].ej2_instances[0];
+        function populateTrail(data) {
+            auditsGridObj.dataSource = [];
+            let timelineHtml = '';
+            let lastDate;
+            for (var i = 0; i < data.length; i++) {
+                let curData = data[i];
+
+                //Grid
+                let flatRow = { ...curData };
+                flatRow.propertyChanges = null;
+                flatRow.nid = auditsGridObj.dataSource.length + 1;
+
+                //Timeline
+                let date = new Date(curData.modificationDateTime);
+                var selectedMonthName = date.getMonthName(date.getMonth());
+                let dateDate = date.getDate();
+                if (lastDate != dateDate) {
+                    if (i > 0) {
+                        timelineHtml += `
+                            </div>
+                        `;
+                    }
+                    timelineHtml += `
+                         <div class="row timeline-movement">
+                            <div class="timeline-badge">
+                                <span class="timeline-balloon-date-day">${dateDate}</span>
+                                <span class="timeline-balloon-date-month">${selectedMonthName}</span>
+                            </div>
+                    `
+                }
+                if (flatRow.type == "Created") {
+                    timelineHtml += `
+                        <div class="col-sm-6  timeline-item">
+                            <div class="row">
+                                <div class="col-sm-11">
+                                    <div class="timeline-panel credits">
+                                        <ul class="timeline-panel-ul">
+                                            <li><span class="importo">${flatRow.type}</span></li>
+                                            <br/>
+                        `
+                }
+                else {
+                    timelineHtml += `
+                        <div class="col-sm-offset-6 col-sm-6 timeline-item">
+                            <div class="row">
+                                <div class="col-sm-offset-1 col-sm-11">
+                                    <div class="timeline-panel credits">
+                                        <ul class="timeline-panel-ul">
+                                            <li><span class="importo">${flatRow.type}</span></li>
+                                            <br/> 
+                        `
+                }
+                lastDate = dateDate;
+
+                for (var y = 0; y < curData.propertyChanges.length; y++) {
+                    let curChange = curData.propertyChanges[y];
+                    flatRow.originalValue = curChange.originalValue;
+                    flatRow.newValue = curChange.newValue;
+                    flatRow.propertyName = curChange.propertyName;
+
+                    //Grid
+                    auditsGridObj.dataSource.push(flatRow);
+                    flatRow.nid += y+1;
+
+                    //Timeline
+                    timelineHtml += `
+                        <li><span class="causale">Field: <span style='font-weight: 600'>${flatRow.propertyName}</span> </span> </li>
+                        <li><span class="causale">Original Value: ${flatRow.originalValue} </span> </li>
+                        <li><span class="causale">New Value: <span style='font-weight: 600'>${flatRow.newValue}</span> </span> </li>
+                        <br>
+                    `;
+                }
+                if (curData.propertyChanges.length == 0) {
+                    flatRow.originalValue = '-';
+                    flatRow.newValue = '-';
+                    auditsGridObj.dataSource.push(flatRow);
+
+
+                    //Timeline
+                    timelineHtml += `
+                        <li><span class="causale">By: <span style='font-weight: 600'>${flatRow.modifiedBy}</span> </span> </li>
+                        <li><p><small class="text-muted p-t-5"><i class="e-icons e-audit-clock"></i> ${date.toLocaleString()} </small></p> </li>
+                        <br>
+                    `;
+                }
+                else {
+                    timelineHtml += `
+                        <li><span class="causale">By: <span style='font-weight: 600'>${flatRow.modifiedBy}</span> </span> </li>
+                        <li><p><small class="text-muted p-t-5"><i class="e-icons e-audit-clock"></i> ${date.toLocaleString()} </small></p> </li>
+                    `;
+                }
+                timelineHtml += `
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                $('#timelineGraph').html(timelineHtml);
+            }
+            console.log(auditsGridObj.dataSource);
+            auditsGridObj.refresh();
+        }
+        abp.widgets.AuditTrailWidget = function ($wrapper)
+        {
+            var getFilters = function () {
+                return {
+
+                };
+            }
+
+            var refresh = function (trailData) {
+                console.log(trailData);
+                populateTrail(trailData);
+            };
+
+            var init = function (trailData) {
+                populateTrail(trailData);
+            };
+
+            return {
+                getFilters: getFilters,
+                init: init,
+                refresh: refresh
+            };
+        };
+    })
+</script>
+<div class="control-section">
+    <ejs-tab id="auditTrailTabs" animation="ViewBag.animation">
+        <e-tab-tabitems>
+            <e-tab-tabitem header="@(new TabHeader { Text = "Timeline" })" content="#timelineSpace"></e-tab-tabitem>
+            <e-tab-tabitem header="@(new TabHeader { Text = "Grid" })" content="#gridSpace"></e-tab-tabitem>
+        </e-tab-tabitems>
+    </ejs-tab>
+    <div id="timelineSpace" style="display: none">
+        <div class="container">
+            <div class="page-header">
+            </div>
+            <div id="timeline">
+                <div class="row timeline-movement timeline-movement-top">
+                    <div class="timeline-badge timeline-future-movement">
+                        <a href="#">
+                            @*<span class="glyphicon glyphicon-plus"></span>*@
+                        </a>
+                    </div>
+                    <div class="timeline-badge timeline-filter-movement">
+                        <a href="#">
+                            <span class="e-icons e-audit-clock"></span>
+                        </a>
+                    </div>
+
+                </div>
+
+                <div id="timelineGraph">
+
+                    <div class="row timeline-movement">
+
+                        <div class="timeline-badge">
+                            <span class="timeline-balloon-date-day">18</span>
+                            <span class="timeline-balloon-date-month">APR</span>
+                        </div>
+
+
+                        <div class="col-sm-6  timeline-item">
+                            <div class="row">
+                                <div class="col-sm-11">
+                                    <div class="timeline-panel credits">
+                                        <ul class="timeline-panel-ul">
+                                            <li><span class="importo">Mussum ipsum cacilds</span></li>
+                                            <li><span class="causale">Lorem ipsum dolor sit amet, consectetur adipiscing elit. </span> </li>
+                                            <li><p><small class="text-muted"><i class="e-icons e-audit-clock"></i> 11/09/2014</small></p> </li>
+                                        </ul>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6  timeline-item">
+                            <div class="row">
+                                <div class="col-sm-offset-1 col-sm-11">
+                                    <div class="timeline-panel debits">
+                                        <ul class="timeline-panel-ul">
+                                            <li><span class="importo">Mussum ipsum cacilds</span></li>
+                                            <li><span class="causale">Lorem ipsum dolor sit amet, consectetur adipiscing elit. </span> </li>
+                                            <li><p><small class="text-muted"><i class="e-icons e-audit-clock"></i> 11/09/2014</small></p> </li>
+                                        </ul>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--due -->
+
+                    <div class="row timeline-movement">
+
+
+                        <div class="timeline-badge">
+                            <span class="timeline-balloon-date-day">13</span>
+                            <span class="timeline-balloon-date-month">APR</span>
+                        </div>
+
+                        <div class="col-sm-offset-6 col-sm-6  timeline-item">
+                            <div class="row">
+                                <div class="col-sm-offset-1 col-sm-11">
+                                    <div class="timeline-panel debits">
+                                        <ul class="timeline-panel-ul">
+                                            <li><span class="importo">Mussum ipsum cacilds</span></li>
+                                            <li><span class="causale">Lorem ipsum dolor sit amet, consectetur adipiscing elit. </span> </li>
+                                            <li><p><small class="text-muted"><i class="e-icons e-audit-clock"></i> 11/09/2014</small></p> </li>
+                                        </ul>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6  timeline-item">
+                            <div class="row">
+                                <div class="col-sm-11">
+                                    <div class="timeline-panel credits">
+                                        <ul class="timeline-panel-ul">
+                                            <li><span class="importo">Mussum ipsum cacilds</span></li>
+                                            <li><span class="causale">Lorem ipsum dolor sit amet, consectetur adipiscing elit. </span> </li>
+                                            <li><p><small class="text-muted"><i class="e-icons e-audit-clock"></i> 11/09/2014</small></p> </li>
+                                        </ul>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="row timeline-movement">
+
+
+                        <div class="timeline-badge">
+                            <span class="timeline-balloon-date-day">10</span>
+                            <span class="timeline-balloon-date-month">APR</span>
+                        </div>
+
+                        <div class="col-sm-offset-6 col-sm-6  timeline-item">
+                            <div class="row">
+                                <div class="col-sm-offset-1 col-sm-11">
+                                    <div class="timeline-panel debits">
+                                        <ul class="timeline-panel-ul">
+                                            <li><span class="importo">Mussum ipsum cacilds</span></li>
+                                            <li><span class="causale">Lorem ipsum dolor sit amet, consectetur adipiscing elit. </span> </li>
+                                            <li><p><small class="text-muted"><i class="e-icons e-audit-clock"></i> 11/09/2014</small></p> </li>
+                                        </ul>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6  timeline-item">
+                            <div class="row">
+                                <div class="col-sm-11">
+                                    <div class="timeline-panel credits">
+                                        <ul class="timeline-panel-ul">
+                                            <li><span class="importo">Mussum ipsum cacilds</span></li>
+                                            <li><span class="causale">Lorem ipsum dolor sit amet, consectetur adipiscing elit. </span> </li>
+                                            <li><p><small class="text-muted"><i class="e-icons e-audit-clock"></i> 11/09/2014</small></p> </li>
+                                        </ul>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="gridSpace" style="display: none">
+        <ejs-grid id="AuditTrailGrid"
+                  enableAutoFill="true"
+                  allowExcelExport="true" height="100%" allowPdfExport="true"
+                  hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                  allowSorting="true" allowMultiSorting="true" gridLines="Horizontal"
+                  toolbarClick="ATGtoolbarClick" showColumnChooser="true" toolbar="@initialToolBar"
+                  contextMenuItems="@(new List<object>() { "AutoFit", "AutoFitAll", "SortAscending", "SortDescending","Copy", "Edit", "PdfExport", "ExcelExport", "CsvExport", "FirstPage", "PrevPage","LastPage", "NextPage"})"
+                  allowPaging="true" allowResizing="true">
+
+            <e-grid-columns>
+                <e-grid-column field="id" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                <e-grid-column field="nid" headerText="Id" textAlign="Center" visible="true"></e-grid-column>
+                <e-grid-column field="type" allowEditing="false" headerText="Type" textAlign="Center"></e-grid-column>
+                <e-grid-column field="modificationDateTime" allowEditing="false" headerText="Modification Time" textAlign="Center"></e-grid-column>
+                <e-grid-column field="modifiedBy" allowEditing="false" headerText="Modified By" textAlign="Center"></e-grid-column>
+                <e-grid-column field="originalValue" allowEditing="false" headerText="Original Value" textAlign="Center"></e-grid-column>
+                <e-grid-column field="newValue" allowEditing="false" headerText="New Value" textAlign="Center"></e-grid-column>
+                @*<e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>*@
+            </e-grid-columns>
+
+            <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+            <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="false" allowAdding="false" allowDeleting="false" allowEditing="true"></e-grid-editSettings>
+            <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+            <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+        </ejs-grid>
+    </div>
+
+    <form>
+    </form>
+</div>
+<script>
+    function ATGtoolbarClick(args) {
+        var auditsGridObj = document.getElementById("AuditTrailGrid").ej2_instances[0];
+        if (args.item.id === 'AuditTrailGrid_pdfexport') {
+            auditsGridObj.pdfExport();
+        }
+        if (args.item.id === 'AuditTrailGrid_excelexport') {
+            auditsGridObj.excelExport();
+        }
+        if (args.item.id === 'AuditTrailGrid_csvexport') {
+            auditsGridObj.csvExport();
+        }
+        if (this.getSelectedRecords().length > 0) {
+            var withHeader = false;
+            if (args.item.id === 'copyHeader') {
+                withHeader = true;
+            }
+            this.copy(withHeader);
+        } else {
+            if (args.item.id === 'copyHeader') {
+                var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+                dialogObj.show();
+            }
+            else if (args.item.id === 'copy') {
+                var dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+                dialogObj.show();
+            }
+        }
+        if (args.item.id === 'showActions') {
+            auditsGridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, { text: "ExcelExport", tooltipText: "Excel Export", prefixIcon: "e-excelexport", id: "excelexport", align: 'Right' }, "CsvExport", "Print", "Search", { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, "Search", { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            auditsGridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            auditsGridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            auditsGridObj.showColumnChooser = true;
+            auditsGridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            auditsGridObj.allowGrouping = !auditsGridObj.allowGrouping;
+            auditsGridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            var visCount = 0;
+            for (var i = 0; i < auditsGridObj.columns.length; i++) {
+                if (auditsGridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == auditsGridObj.columns.length) {
+                for (var i = 0; i < auditsGridObj.columns.length; i++) {
+                    var col = auditsGridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        auditsGridObj.showHider.hide(col.headerText, 'headerText');
+                    else if (col.showInColumnChooser)
+                        auditsGridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (var i = 0; i < auditsGridObj.columns.length; i++) {
+                    var col = auditsGridObj.columns[i];
+                    if (col.showInColumnChooser)
+                        auditsGridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+        }
+    }
+    function alertBtnClick() {
+        var dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+        var dialogObj1 = document.getElementById('alert_dialog_1').ej2_instances[0];
+        dialogObj.hide();
+        dialogObj1.hide();
+    }
+</script>

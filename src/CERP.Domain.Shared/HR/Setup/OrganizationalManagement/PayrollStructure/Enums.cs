@@ -5,6 +5,13 @@ using System.Text;
 
 namespace CERP.HR.Setup.OrganizationalManagement.PayrollStructure
 {
+    public enum PS_ActiveStatus
+    {
+        [Description("Active")]
+        Active,
+        [Description("Inactive")]
+        Inactive
+    }
     public enum PS_PayGradeStatus
     {
         [Description("Active")]

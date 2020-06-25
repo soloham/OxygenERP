@@ -200,6 +200,8 @@
     "PaymentChequeFiles": "Payment Cheque Files",
     "PaymentChequeFile": "Payment Cheque File",
 
+    "PayrollPeriod": "Payroll Period",
+
     "Welcome": "Welcome",
     "LongWelcomeMessage": "Welcome to the application."
   }

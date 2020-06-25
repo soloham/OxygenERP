@@ -588,6 +588,9 @@ vhr {
 .e-custom-show-actions:before {
     content: '\e22f';
 }
+.e-preview:before {
+    content: '\e345';
+}
 
 /*button[id$='_columnchooser']:before {
     font-family: "e-icons";
@@ -1448,7 +1451,15 @@ h1{
     border-bottom: none !important;
     text-align: start !important;
 }
+.multiselect-native-select .btn-default[disabled] {
+    border: none;
+    border-bottom: none !important;
+    text-align: start !important;
+}
 
+    .multiselect-native-select .btn-default[disabled] .caret {
+        display: none;
+    }
 .multiselect-native-select .btn-default[readonly] .caret {
     display:none;
 }
@@ -1463,4 +1474,16 @@ h1{
     -webkit-text-fill-color: rgba(0, 0, 0, 1) !important;
     font-weight: 600 !important;
     cursor: default !important;
+}
+
+.dropdownValueTemplate{
+    width: 100%;
+    display: flex;
+    flex-direction:row;
+}
+.dropdownValueTemplate .ename {
+    justify-self: flex-start;
+}
+.dropdownValueTemplate .popupView {
+    justify-self: flex-end;
 }

@@ -22,10 +22,10 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.PayrollStructure
         public PS_PaySubGroup_Dto()
         {
         }
-        public string Code { get; set; }
-        public string Name { get; set; }
-        public string NameLocalized { get; set; }
-        public string Description { get; set; }
+        public string Code { get; set; } //Immutable //As of exclusive
+        public string Name { get; set; } //Triggered Immutablility //As of exclusive
+        public string NameLocalized { get; set; } //As of exclusive
+        public string Description { get; set; } //As of exclusive
 
         public PS_PayGroup_Dto PayGroup { get; set; }
         public int? PayGroupId { get; set; }
@@ -46,6 +46,9 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.PayrollStructure
 
         public List<PS_PaySubGroupBank_Dto> AllowedBanks { get; set; }
 
+        public string ActiveStatusDescription { get => EnumExtensions.GetDescription(ActiveStatus); set => ActiveStatus = EnumExtensions.GetValueFromDescription<PS_ActiveStatus>(value); }
+        public PS_ActiveStatus ActiveStatus { get; set; }
+
         public PS_PayrollPeriod_Dto PayrollPeriod { get; set; } = new PS_PayrollPeriod_Dto();
         public int PayrollPeriodId { get; set; }
     }
@@ -54,10 +57,12 @@ namespace CERP.ApplicationContracts.HR.OrganizationalManagement.PayrollStructure
     {
         public string Name { get; set; }
 
+        public string PeriodFrequencyDescription { get => EnumExtensions.GetDescription(PeriodFrequency); set => PeriodFrequency = EnumExtensions.GetValueFromDescription<PS_PayFrequencyAnnualizationFactor>(value); }
         public PS_PayFrequencyAnnualizationFactor PeriodFrequency { get; set; }
         public string PeriodStartDate { get; set; }
         public string PeriodEndDate { get; set; }
         public int ExtraPeriods { get; set; }
+        public int TotalPeriods { get => PayPeriods.Count; }
         public virtual List<PS_PayPeriod_Dto> PayPeriods { get; set; } = new List<PS_PayPeriod_Dto>();
 
         public Guid? TenantId { get; set; }

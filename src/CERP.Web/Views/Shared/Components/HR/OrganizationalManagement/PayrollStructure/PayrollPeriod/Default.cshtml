@@ -1,0 +1,675 @@
+﻿@model PS_PayrollPeriod_Dto;
+@using CERP.ApplicationContracts.HR.OrganizationalManagement.PayrollStructure;
+@using CERP.App.Helpers;
+@using CERP.HR.Setup.OrganizationalManagement.PayrollStructure;
+@{
+
+    var alertanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings { Effect = Syncfusion.EJ2.Popups.DialogEffect.None };
+
+    var initialToolBar = new List<object>() { new { text = "Show Actions", tooltipText = "Actions", prefixIcon = "e-custom-show-actions", id = "showActions" }, "Search", "ColumnChooser" };
+    var fullToolBar = new List<object>() { new { text = "Hide Actions", tooltipText = "Actions", prefixIcon = "e-custom-hide-actions", id = "hideActions" }, new { text = "Toggle Grouping", tooltipText = "Grouping", prefixIcon = "zmdi-chevron-up", id = "toggleGrouping" }, new { text = "Audit Trail", tooltipText = "View Audit Trail", prefixIcon = "e-toggleaudittrail", id = "toggleaudittrail" }, new { text = "Toggle Detailed", tooltipText = "Toggle Detailed", prefixIcon = "e-toggledetailed", id = "toggleDetailed" }, new { text = "ExcelExport", tooltipText = "Excel Export", prefixIcon = "e-excelexport", id = "excelexport", align = "Right" }, "CsvExport", "Print", "Search", new { text = "Copy", tooltipText = "Copy", prefixIcon = "e-copy", id = "copy" }, new { text = "Copy With Header", tooltipText = "Copy With Header", prefixIcon = "e-copy", id = "copyHeader" }, "ColumnChooser" };
+
+    var payFrequencies = EnumExtensions.GetDescriptions(typeof(PS_PayFrequencyAnnualizationFactor));
+}
+<script>
+    let frequencyPeriods = [];
+    @for (int i = 0; i < payFrequencies.Length; i++)
+    {
+        <text>
+            frequencyPeriods.push({label: '@payFrequencies[i]', value: @i});
+        </text>
+    }
+
+    let curPeriod;
+    let isEditingPayrollPeriodCrudSpace = false;
+    $(document).ready(function () {
+        function setPayrollPeriod(period, editable)
+        {
+            console.log(period);
+            if (period)
+            {
+                curPeriod = period;
+                console.log(frequencyPeriods);
+                setTimeout(function () {
+                    let curValue = $('#periodFrequency').val();
+                    $('#periodFrequency').multiselect('dataprovider', frequencyPeriods);
+                    $('#periodFrequency').multiselect('select', curValue);
+                }, 500);
+                $('#PayrollPeriodsGrid')[0].ej2_instances[0].dataSource = [];
+                FillDivFormByObject(curPeriod, $('#payPeriodFormSpaceForm :input'), !editable);
+
+                console.log(curPeriod);
+                $('#payrollCalendarRange')[0].ej2_instances[0].value = [new Date(curPeriod.periodStartDate), new Date(curPeriod.periodEndDate)];
+                $('#PayrollPeriodsGrid')[0].ej2_instances[0].dataSource = curPeriod.payPeriods;
+                $('#PayrollPeriodsGrid')[0].ej2_instances[0].allowEditing = editable;
+                $('#PayrollPeriodsGrid')[0].ej2_instances[0].refresh();
+                isEditingPayrollPeriodCrudSpace = editable;
+
+                if (!editable) {
+                    $('#crudSubmitPayrollPeriodBtn').slideUp();
+                }
+                else {
+                    setTimeout(function () {
+                        $('#crudSubmitPayrollPeriodBtn').text('Update Pay Period');
+                        $('#crudSubmitPayrollPeriodBtn').slideDown();
+                    }, 1000);
+                }
+            }
+        }
+        abp.widgets.PayrollPeriodWidget = function ($wrapper) {
+
+            var loadPayrollPeriodDependencies = function () {
+                $('#periodFrequency').multiselect('dataprovider', frequencyPeriods);
+            }
+
+            var getFilters = function () {
+                return {
+
+                };
+            }
+
+            var refresh = function (payrollPeriod) {
+                loadPayrollPeriodDependencies();
+                setPayrollPeriod(payrollPeriod, false);
+            };
+
+            var init = function (payrollPeriod) {
+                loadPayrollPeriodDependencies();
+                setPayrollPeriod(payrollPeriod, false);
+            };
+
+            return {
+                getFilters: getFilters,
+                init: init,
+                refresh: refresh
+            };
+        };
+        $('#payrollPeriodBeginEditToggle').on('click', function () {
+            setPayrollPeriod(curPeriod, true);
+        })
+        $('#payrollPeriodPreviewToggle').on('click', function () {
+            setPayrollPeriod(curPeriod, false);
+        })
+
+        $('#crudSubmitPayrollPeriodBtn').on('click', function (e) {
+            e.preventDefault();
+            submitPayrollPeriodBtn('payPeriodFormSpaceForm');
+        });
+        function submitPayrollPeriodBtn(formId = '', _id = null) {
+            if (ValidateForm(formId)) {
+                gridObj.showSpinner();
+                Swal.showLoading();
+
+                let sid = ''
+                if (_id != null && typeof _id != 'object' && typeof _id != 'undefined')
+                    sid = _id;
+
+                let form = [];
+                let functionDetails = $('#' + formId).find("textarea, input, select").serializeArray();
+                form = form.concat(functionDetails);
+
+                let params = objectifyForm(form);
+                console.log('sid');
+                console.log([$('.payrollCalendarRange > input', '#' + formId)[0].ej2_instances[0].startDate, $('.payrollCalendarRange > input', '#payPeriodFormSpaceForm')[0].ej2_instances[0].endDate]);
+                let payrollPeriod = [$('.payrollCalendarRange > input', '#' + formId)[0].ej2_instances[0].startDate, $('.payrollCalendarRange > input', '#payPeriodFormSpaceForm')[0].ej2_instances[0].endDate];
+                if (payrollPeriod && payrollPeriod.length == 2) {
+                    params.PeriodStartDate = payrollPeriod[0].toLocaleDateString();
+                    params.PeriodEndDate = payrollPeriod[1].toLocaleDateString();
+                }
+                if (!isSearchingCrudSpace) {
+                    params.PayPeriods = $('#PayrollPeriodsGrid', '#' + formId)[0].ej2_instances[0].dataSource;
+
+                    params.AsOf = $('#asOfDate', '#' + formId).value;
+                }
+
+                if (params.ExtraPeriods == null)
+                    params.ExtraPeriods = 0;
+                if (isSearchingCrudSpace) {
+                    let selectedPeriodFrequency = $('#periodFrequency', '#' + formId).val();
+                    if (selectedPeriodFrequency) {
+                        params.PeriodFrequency = [];
+                        selectedPeriodFrequency.forEach(function (val, i) {
+                            params.PeriodFrequency.push(val);
+                        });
+                    }
+                    params.AsOf = $('#searchAsOfDate', '#' + formId).value;
+                }
+
+                let id = 0;
+                if (gridObj.dataSource.length > 0)
+                    id = gridObj.dataSource[gridObj.dataSource.length - 1].id;
+
+                params.IsEditing = isEditingPayrollPeriodCrudSpace;
+                params.IsSearching = isSearchingCrudSpace;
+                if (isEditingPayrollPeriodCrudSpace) {
+                    params.id = curPeriod.id;
+
+                    //cERP.appServices.hR.leaveRequestTemplates.update()
+                }
+                else {
+
+                    //cERP.appServices.hR.leaveRequestTemplates.update()
+                }
+
+                let formData = new FormData();
+                formData.append("info", JSON.stringify(params));
+                formData.append("isSearching", isSearchingCrudSpace);
+                let xhrToken = $('input:hidden[name="__RequestVerificationToken"]').val();
+                formData.append("__RequestVerificationToken", xhrToken);
+                console.log(params);
+
+                $.ajax({
+                    url: "@Url.Content("~")/HR/PayrollStructure/PayrollPeriods?handler=PayrollPeriod",
+                    async: true,
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        Swal.hideLoading();
+                        console.log(data);
+                        if (isSearchingCrudSpace) {
+                            calculateTiles(data);
+
+                            swal.fire("Success", "Search has been successfully completed", "success");
+
+                            goBackSpace();
+                        }
+                        else {
+                            if (isEditingPayrollPeriodCrudSpace) {
+                                gridObj.refresh(); // refresh the Grid.
+
+                                swal.fire("Success", "Pay Period has successfully been updated", "success");
+
+                                for (let i = 0; i < gridObj.dataSource.length; i++) {
+                                    if (gridObj.dataSource[i].id == data.id) {
+                                        gridObj.dataSource[i] = data;
+                                    }
+                                }
+                                gridObj.refresh();
+                                curPeriod = params;
+                                payrollPeriods = payrollPeriods.filter(function (x) { return x.id != $('#payrollPeriodId').val(); });
+                                console.log(payrollPeriods);
+                                payrollPeriods.push(curPeriod);
+                            }
+                            else {
+                                gridObj.dataSource.push(data);
+
+                                gridObj.refresh(); // refresh the Grid.
+
+                                swal.fire("Success", "Pay Period has successfully been added", "success");
+                            }
+
+                            calculateTiles(gridObj.dataSource);
+                        }
+                        gridObj.hideSpinner();
+                    },
+                    error: function (err) {
+                        Swal.hideLoading();
+                        if (isEditingPayrollPeriodCrudSpace)
+                            swal.fire("Failed", "Pay Period couldn't be updated, please fix all errors and try again.", "error");
+                        else
+                            swal.fire("Failed", "Pay Period couldn't be added, please fix all errors and try again.", "error");
+
+                        console.log(err);
+                        gridObj.hideSpinner();
+                    }
+                });
+            }
+            else {
+                Swal.close();
+                Swal.hideLoading();
+            }
+        }
+    });
+</script>
+<div id="payPeriodFormSpaceForm">
+    <div id="payrollPeriodHeader">
+        <div style='display:flex; flex-direction: row; justify-content: space-between;'>
+            <div></div>
+            <div>
+                <button class="e-tbar-btn e-tbtn-txt e-control e-btn e-lib" type="button" id="payrollPeriodBeginEditToggle" tabindex="-1" aria-label="Add" style="width: auto;">
+                    <span class="e-btn-icon e-edit e-icons e-icon-left"></span>
+                    @*<span class="e-tbar-btn-text">Add</span>*@
+                </button>
+                <button class="e-tbar-btn e-tbtn-txt e-control e-btn e-lib" type="button" id="payrollPeriodPreviewToggle" tabindex="-1" aria-label="Add" style="width: auto;">
+                    <span class="e-btn-icon e-preview e-icons e-icon-left"></span>
+                    @*<span class="e-tbar-btn-text">Add</span>*@
+                </button>
+            </div>
+        </div>
+    </div>
+    <ejs-accordion id="payPeriodFormSpaceFormTabs" animation="ViewBag.animation">
+        <e-accordion-accordionitems>
+            <e-accordion-accordionitem header="General" expanded="true" content="#payPeriodGeneralTab"></e-accordion-accordionitem>
+            @*<e-accordion-accordionitem header="References" expanded="false"  content="#referencesTab"></e-accordion-accordionitem>*@
+        </e-accordion-accordionitems>
+    </ejs-accordion>
+    @*<ejs-tab id="formSpaceFormTabs" animation="ViewBag.animation">
+            <e-tab-tabitems>
+                <e-tab-tabitem header="@(new TabHeader { Text = "General" })" content="#generalTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "General" })" visible="false" content="#generalTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Payment Settings" })" visible="true" content="#groupPaymentsTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "Payroll Periods" })" content="#payrollPeriodsTab"></e-tab-tabitem>
+                <e-tab-tabitem header="@(new TabHeader { Text = "References" })" visible="false" content="#referencesTab"></e-tab-tabitem>
+            </e-tab-tabitems>
+        </ejs-tab>*@
+    <div id="payPeriodGeneralTab" style="display:none">
+        <div class="row">
+            <div class="col-sm-1" style="padding:0">
+            </div>
+            <div class="col-sm-9" style="padding:0">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                    <div class="form-group" style="padding: 15px">
+                        <div class="col-sm-6" style="">
+                            <label class="p-t-5 control-label pull-right ">Payroll Calendar Range:</label>
+                        </div>
+                        <div class="col-sm-6" style="">
+                            <ejs-daterangepicker id="payrollCalendarRange" cssClass="payrollCalendarRange" placeholder="Choose a Range" change="payrollCalendarRangeChanged"></ejs-daterangepicker>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                    <div class="form-group" style="padding: 15px">
+                        <div class="col-sm-6" style="">
+                            <label class="p-t-5 control-label pull-right">Period Frequency:</label>
+                        </div>
+                        <div class="col-sm-6" style="">
+                            <select id="periodFrequency" name="PeriodFrequency" class="form-control mltslct" onchange="payrollCalendarRangeChanged(null)" required>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                    <div class="form-group" style="padding: 15px">
+                        <div class="col-sm-6" style="">
+                            <label class="p-t-5 control-label pull-right">Period Name:</label>
+                        </div>
+                        <div class="col-sm-6" style="">
+                            <input type="text" id="periodName" name="Name" class="form-control" onchange="payrollCalendarRangeChanged(null)" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                    <div class="form-group" style="padding: 15px">
+                        <div class="col-sm-6" style="">
+                            <label class="p-t-5 control-label pull-right">Extra Periods:</label>
+                        </div>
+                        <div class="col-sm-6" style="">
+                            <input type="number" min="0" value="0" id="extraPeriods" name="ExtraPeriods" class="form-control" onchange="payrollCalendarRangeChanged(null)" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2" style="padding:0">
+            </div>
+        </div>
+        <div style="padding-top: 15px">
+            <div class="col-md-12">
+                <div class="panel-body p-t-0" style="">
+                    <div id="payrollPeriodsCS" class="control-section">
+                        <ejs-grid id="PayrollPeriodsGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                  allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                  hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true" actionBegin="payPeriodActionBegin"
+                                  actionComplete="payPeriodActionComplete"
+                                  allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                  toolbar="@initialToolBar" toolbarClick="payrollPeriodToolbarClick" created="payrollPeriodGridCreated"
+                                  allowPaging="false" allowResizing="true">
+
+                            <e-grid-columns>
+                                <e-grid-column field="id" headerText="ID" width="70px" textAlign="Center" allowEditing="false" visible="false" isPrimaryKey="true"></e-grid-column>
+                                <e-grid-column field="id" headerText="ID" width="70px" textAlign="Center" allowEditing="false"></e-grid-column>
+                                <e-grid-column width="120px" field="name" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                <e-grid-column validationRules="@(new { required=true})" autoFit="true" type="date" format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="attendanceCutOffDate" allowEditing="true" headerText="Attendance Cut Off Date" textAlign="Center"></e-grid-column>
+                                <e-grid-column validationRules="@(new { required=true})" autoFit="true" type="date" format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="employeeTransactionCutOffDate" allowEditing="true" headerText="Transaction Cut Off Date" textAlign="Center"></e-grid-column>
+                                <e-grid-column validationRules="@(new { required=true})" autoFit="true" type="date" format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="payrollProcessingDate" allowEditing="true" headerText="Payroll Processing Date" textAlign="Center"></e-grid-column>
+                                <e-grid-column validationRules="@(new { required=true})" autoFit="true" field="payrollReminderIssuanceDays" allowEditing="true" headerText="Payroll Reminder Issuance Days" textAlign="Center"></e-grid-column>
+                                <e-grid-column validationRules="@(new { required=true})" autoFit="true" type="date" format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="approvalDate" allowEditing="true" headerText="Approval Date" textAlign="Center"></e-grid-column>
+                                <e-grid-column validationRules="@(new { required=true})" autoFit="true" field="approvalReminderIssuanceDays" allowEditing="true" headerText="Approval Reminder Issuance Days" textAlign="Center"></e-grid-column>
+                                <e-grid-column validationRules="@(new { required=true})" autoFit="true" type="date" format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="paymentDate" allowEditing="true" headerText="Payment Date" textAlign="Center"></e-grid-column>
+                                <e-grid-column validationRules="@(new { required=true})" autoFit="true" field="postPaymentSelfServiceAvailabilityDays" allowEditing="true" headerText="Self Service Availability Days" textAlign="Center"></e-grid-column>
+                                <e-grid-column validationRules="@(new { required=true})" autoFit="true" type="date" format="dd/MM/yyyy" edit="@(new { @params = new { format="dd/MM/yyyy" } })" editType='datepickeredit' field="glExpensePostingDate" allowEditing="true" headerText="GL Posting Date" textAlign="Center"></e-grid-column>
+                                <e-grid-column autoFit="true" editType='booleanedit' field="offCyclePayroll" allowEditing="true" headerText="Off Cycle" displayAsCheckBox="true" textAlign="Center"></e-grid-column>
+                                <e-grid-column visible="false" autoFit="true" format="dd/MM/yyyy" field="periodStartDate" allowEditing="true" textAlign="Center"></e-grid-column>
+                                <e-grid-column visible="false" autoFit="true" format="dd/MM/yyyy" field="periodEndDate" allowEditing="true" textAlign="Center"></e-grid-column>
+                            </e-grid-columns>
+
+                            <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                            <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                            <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                            @*<e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>*@
+                        </ejs-grid>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="referencesTab" class="areaForm" style="display:none">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel-body p-t-0" style="">
+                    <div id="referencesCS" class="control-section">
+                        <ejs-grid id="ReferenceReferenceGrid" enableAutoFill="true" dataBound="dataBoundResponsive"
+                                  allowExcelExport="true" height="100%" allowPdfExport="true" allowReordering="true"
+                                  hierarchyPrintMode="Expanded" allowSelection="true" allowFiltering="true"
+                                  allowSorting="true" allowMultiSorting="true" gridLines="Horizontal" dataSource="new List<dynamic>()"
+                                  toolbar="@initialToolBar" toolbarClick="defaultToolbarClick"
+                                  allowPaging="true" allowResizing="true">
+
+                            <e-grid-columns>
+                                <e-grid-column field="id" headerText="Id" textAlign="Center" visible="false" isPrimaryKey="true" showInColumnChooser="false"></e-grid-column>
+                                <e-grid-column field="type" allowEditing="false" headerText="Type" textAlign="Center"></e-grid-column>
+                                <e-grid-column field="name" allowEditing="false" headerText="Name" textAlign="Center"></e-grid-column>
+                                <e-grid-column field="code" allowEditing="false" headerText="Code" textAlign="Center"></e-grid-column>
+                                @*<e-grid-column headerText="Actions" textAlign="Center" commands="referenceCommands"></e-grid-column>*@
+                            </e-grid-columns>
+
+                            <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                            <e-grid-editSettings showDeleteConfirmDialog="true" showConfirmDialog="true" allowAdding="true" allowDeleting="true" allowEditing="true"></e-grid-editSettings>
+                            <e-grid-selectionsettings type="Multiple"></e-grid-selectionsettings>
+                            <e-grid-pagesettings pageCount="5" pageSizes="@(new string[] { "5", "10" , "20", "All" })"></e-grid-pagesettings>
+                        </ejs-grid>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <label class="control-label m-b-5 "></label>
+            <input id="crudSubmitPayrollPeriodBtn" type="button" class="btn btn-success btn-block" value="Update Pay Period" required />
+        </div>
+    </div>
+</div>
+<script>
+
+    function payPeriodActionComplete(args)
+    {
+        if (args.requestType == "delete") {
+            if (this.dataSource.length == 0) {
+                this.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Add", "Cancel", "Search"];
+                this.refresh();
+            }
+        }
+        if (args.requestType == "save") {
+            if (this.dataSource.length <= 1) {
+                //args.cancel = true;
+
+                this.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search"];
+                this.refresh();
+
+                let initialPeriod = args.data;
+                let payrollPeriod = $('.payrollCalendarRange > input', '#payPeriodFormSpaceForm')[0].ej2_instances[0].value;
+                let payrollFrequency = $('#periodFrequency').val();
+                let periodName = $('#periodName').val();
+
+                setPayPeriodsMinMaxDates(payrollPeriod[0], payrollPeriod[1]);
+                console.log(initialPeriod);
+                this.dataSource = calculatePayrollPeriods(payrollPeriod, initialPeriod, payrollFrequency, periodName);
+            }
+            else
+                args.cancel = true;
+
+
+        }
+    }
+    function payPeriodActionBegin(args)
+    {
+        console.log(args);
+        if (args.requestType == "delete") {
+            if (this.dataSource.length == 0) {
+                this.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Add", "Cancel", "Search", "ColumnChooser"];
+                this.refresh();
+            }
+        }
+        if (args.requestType == "add") {
+            console.log(args);
+            if (this.dataSource.length > 0) {
+                args.cancel = true;
+
+                this.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+                this.refresh();
+            }
+        }
+    }
+
+    function payrollPeriodGridCreated(args) {
+        abp.log.debug('PayrollPeriodWidget loaded :)');
+        let gridObj = document.getElementById("PayrollPeriodsGrid").ej2_instances[0];
+        gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Add", "Cancel", "Search", "ColumnChooser"];
+    }
+    function payrollPeriodToolbarClick(args) {
+        let gridObj = document.getElementById("PayrollPeriodsGrid").ej2_instances[0];
+
+        if (args.item.id === 'PayrollPeriodsGrid_pdfexport') {
+            gridObj.pdfExport();
+        }
+        if (args.item.id === 'PayrollPeriodsGrid_excelexport') {
+            gridObj.excelExport();
+        }
+        if (args.item.id === 'PayrollPeriodsGrid_csvexport') {
+            gridObj.csvExport();
+        }
+        if (this.getSelectedRecords().length > 0) {
+            let withHeader = false;
+            if (args.item.id === 'copyHeader') {
+                withHeader = true;
+            }
+            this.copy(withHeader);
+        }
+        else {
+            if (args.item.id === 'copyHeader') {
+                let dialogObj = document.getElementById('alert_dialog').ej2_instances[0];
+                dialogObj.show();
+            }
+            else if (args.item.id === 'copy') {
+                let dialogObj = document.getElementById('alert_dialog_1').ej2_instances[0];
+                dialogObj.show();
+            }
+        }
+        if (args.item.id === 'showActions') {
+            gridObj.toolbar = [{ text: "Hide Actions", tooltipText: "Actions", prefixIcon: "e-custom-hide-actions", id: "hideActions" }, { text: "Toggle Grouping", tooltipText: "Grouping", prefixIcon: "e-custom-group-toggle", id: "toggleGrouping" }, { text: "Audit Trail", tooltipText: "View Audit Trail", prefixIcon: "e-custom-audit-trail", id: "toggleaudittrail" }, { text: "Toggle Detailed", tooltipText: "Toggle Detailed", prefixIcon: "e-toggledetailed", id: "toggleDetailed" }, { text: "ExcelExport", tooltipText: "Excel Export", prefixIcon: "e-excelexport", id: this.element.id + "_excelexport", align: 'Right' }, { text: this.element.id + "_PdfExport", tooltipText: "Pdf Export", prefixIcon: "e-pdfexport", id: "pdfexport", align: 'Right' }, { text: "CsvExport", tooltipText: "Csv Export", prefixIcon: "e-csvexport", id: this.element.id + "_csvexport", align: 'Right' }, { text: "Print", tooltipText: "Print", prefixIcon: "e-print", id: this.element.id + "_print", align: 'Right' }, { text: "Copy", tooltipText: "Copy", prefixIcon: "e-copy", id: "copy" }, "Search", { text: "Copy With Header", tooltipText: "Copy With Header", prefixIcon: "e-copy", id: "copyHeader" }, "ColumnChooser"];
+            gridObj.refresh();
+        }
+        if (args.item.id === 'hideActions') {
+            if (gridObj.dataSource.length == 0)
+                gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Add", "Cancel", "Search", "ColumnChooser"];
+            else
+                gridObj.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search", "ColumnChooser"];
+            gridObj.showColumnChooser = true;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleGrouping') {
+            gridObj.allowGrouping = !gridObj.allowGrouping;
+            gridObj.refresh();
+        }
+        if (args.item.id === 'toggleDetailed') {
+            let visCount = 0;
+            for (let i = 0; i < gridObj.columns.length; i++) {
+                if (gridObj.columns[i].visible) visCount++;
+            }
+            if (visCount == gridObj.columns.length) {
+                for (let i = 0; i < gridObj.columns.length; i++) {
+                    let col = gridObj.columns[i];
+                    if (typeof col.customAttributes != 'undefined' && typeof col.customAttributes.id != 'undefined' && col.customAttributes.id == 'detailed')
+                        gridObj.showHider.hide(col.headerText, 'headerText');
+                    else if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+            else {
+                for (let i = 0; i < gridObj.columns.length; i++) {
+                    let col = gridObj.columns[i];
+                    if (col.showInColumnChooser)
+                        gridObj.showHider.show(col.headerText, 'headerText');
+                }
+            }
+        }
+        if (args.item.id === 'toggleaudittrail') {
+
+            if (!isAuditTrail) {
+                var agtGrid = $("#AuditTrailGrid")[0].ej2_instances[0];
+                gridObj.showSpinner();
+
+                $.ajax({
+                    url: '?handler=DataAuditTrail',
+                    async: true,
+                    type: "GET",
+                    data: {},
+                    success: function (data) {
+                        gridObj.hideSpinner();
+
+                        //agtGrid.childGrid.childGrid.dataSource = data.tertiaryDS;
+                        //agtGrid.childGrid.dataSource = data.secondaryDS;
+                        agtGrid.dataSource = data.ds;
+                        agtGrid.refresh();
+
+                        $(".customContentArea").css('position', 'unset');
+                        $("#auditTrail").slideDown(200);
+                    },
+                    error: function (data) {
+                        gridObj.hideSpinner();
+
+                        $(".customContentArea").css('position', 'absolute');
+                        $("#auditTrail").slideUp(200);
+
+                        swal.fire('Failed', `An error occured while generating the audit trail`, 'error');
+                    }
+                });
+
+            }
+            else {
+                $(".customContentArea").css('position', 'absolute');
+                $("#auditTrail").slideUp(200);
+            }
+
+            isAuditTrail = !isAuditTrail;
+        }
+        setTimeout(function () { gridObj.hideSpinner() }, 200);
+    }
+
+    function asOfDateChanged(args) {
+        cERP.appServices.hR.organizationalManagement.payrollStructure.pS_PaySubGroup.getPaySubGroup(lastCrudData.id, this.value).done(function (data) {
+            lastCrudData = data;
+            onCardButtonClickedData(lastCrudType, lastCrudData);
+        });
+    }
+
+    function payrollCalendarRangeChanged(_id = null) {
+        if (!isEditingPayrollPeriodCrudSpace) return;
+        let id = '';
+        if (_id == null || typeof _id == 'object')
+            id = '';
+        else
+            id = _id;
+
+        let grid = $('#PayrollPeriodsGrid' + id)[0].ej2_instances[0];
+        let _dataSource = grid.dataSource;
+
+        if (_dataSource && _dataSource.length > 0) {
+            let initialPeriod = _dataSource[0];
+            let payrollPeriod = $('.payrollCalendarRange > input'  + id)[0].ej2_instances[0].value;
+            let payrollFrequency = $('#periodFrequency' + id).val();
+            let periodName = $('#periodName' + id).val();
+            let extraPeriods = $('#extraPeriods' + id).val();
+
+            setPayPeriodsMinMaxDates(payrollPeriod[0], payrollPeriod[1]);
+
+            grid.dataSource = calculatePayrollPeriods(payrollPeriod, initialPeriod, payrollFrequency, periodName, extraPeriods);
+        }
+        if (_dataSource && _dataSource.length == 0) {
+            grid.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Add", "Cancel", "Search", "ColumnChooser"];
+        }
+    }
+    function setPayPeriodsMinMaxDates(min, max) {
+        let grid = $('#PayrollPeriodsGrid')[0].ej2_instances[0];
+        for (var i = 0; i < grid.columns.length; i++) {
+            if (grid.columns[i].type == 'datepickeredit') {
+                grid.columns[i].edit.params.min = min;
+                grid.columns[i].edit.params.max = max;
+            }
+        }
+    }
+    function calculatePayrollPeriods(payrollPeriod, initialPeriod, payrollFrequency, periodName, extraPeriods) {
+        let _dataSource = [];
+        initialPeriod.id = 1;
+        initialPeriod.name = periodName + ' - ' + 1;
+
+        console.log(initialPeriod);
+        console.log(payrollPeriod);
+        let attendanceCOD = new Date(initialPeriod.attendanceCutOffDate);
+        let transCOD = new Date(initialPeriod.employeeTransactionCutOffDate);
+        let payrollProcessingDate = new Date(initialPeriod.payrollProcessingDate);
+        let approvalDate = new Date(initialPeriod.approvalDate);
+        let paymentDate = new Date(initialPeriod.paymentDate);
+        let gLExpensePostingDate = new Date(initialPeriod.glExpensePostingDate);
+        let SSAvailDays = initialPeriod.postPaymentSelfServiceAvailabilityDays;
+
+        let noOfPeriods = 0;
+        let incremental = 0;
+        switch (payrollFrequency) {
+            case '@((int)PS_PayFrequencyAnnualizationFactor.WEEKLY)':
+                let noOfWeeks = diff_weeks(payrollPeriod[1], payrollPeriod[0]);
+                noOfPeriods = noOfWeeks;
+                incremental = 7;
+                break;
+            case '@((int)PS_PayFrequencyAnnualizationFactor.BI_WEEKLY)':
+                let noOfBiweeks = diff_weeks(payrollPeriod[1], payrollPeriod[0]) / 2;
+                noOfPeriods = noOfBiweeks;
+                incremental = 14;
+                break;
+            case '@((int)PS_PayFrequencyAnnualizationFactor.MONTHLY)':
+                let noOfMonths = diff_months(payrollPeriod[1], payrollPeriod[0]);
+                noOfPeriods = noOfMonths;
+                incremental = 30;
+                break;
+            case '@((int)PS_PayFrequencyAnnualizationFactor.QUATERLY)':
+                let noOfQuaters = diff_quarters(payrollPeriod[1], payrollPeriod[0]);
+                noOfPeriods = noOfQuaters;
+                incremental = 30 * 3;
+                break;
+            case '@((int)PS_PayFrequencyAnnualizationFactor.HALF_YEARLY)':
+                let noOfHalfYears = diff_halfYears(payrollPeriod[1], payrollPeriod[0]);
+                noOfPeriods = noOfHalfYears;
+                incremental = 30 * 6;
+                break;
+            case '@((int)PS_PayFrequencyAnnualizationFactor.YEARLY)':
+                let noOfYears = diff_years(payrollPeriod[1], payrollPeriod[0]);
+                noOfPeriods = noOfYears;
+                incremental = 30 * 12;
+                break;
+        }
+        for (var i = 0; i < noOfPeriods; i++) {
+            let curAttendanceCOD = attendanceCOD.addDays(i * incremental);
+            let curtransCOD = transCOD.addDays(i * incremental);
+            let curPayrollProcessingDate = payrollProcessingDate.addDays(i * incremental);
+            let curApprovalDate = approvalDate.addDays(i * incremental);
+            let curPaymentDate = paymentDate.addDays(i * incremental);
+            let curGLExpensePostingDate = gLExpensePostingDate.addDays(i * incremental);
+            let nextPeriod = {
+                id: i + 1,
+                name: periodName + ' - ' + (i + 1),
+                attendanceCutOffDate: curAttendanceCOD,
+                employeeTransactionCutOffDate: curtransCOD,
+                payrollProcessingDate: curPayrollProcessingDate,
+                approvalDate: curApprovalDate,
+                paymentDate: curPaymentDate,
+                glExpensePostingDate: curGLExpensePostingDate,
+                payrollReminderIssuanceDays: initialPeriod.payrollReminderIssuanceDays,
+                approvalReminderIssuanceDays: initialPeriod.approvalReminderIssuanceDays,
+                postPaymentSelfServiceAvailabilityDays: SSAvailDays,
+            };
+            if (i == noOfPeriods - 1) {
+                for (var y = 0; y < extraPeriods; y++) {
+                    nextPeriod.id = i + (y + 1);
+                    nextPeriod.periodName = periodName + ' - ' + nextPeriod.id,
+                    _dataSource.push(rfdc()(nextPeriod));
+                }
+            }
+            else
+                _dataSource.push(nextPeriod);
+        }
+
+        return _dataSource;
+    }
+</script>

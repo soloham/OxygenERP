@@ -72,6 +72,7 @@ namespace CERP.AppServices.HR.OrganizationalManagement.PayrollStructure
                 .Include(x => x.LegalEntity)
                 .Include(x => x.Frequency)
                 .Include(x => x.PayrollPeriod)
+                    .ThenInclude(x => x.PayPeriods)
                 .Include(x => x.AllowedBanks)
                 .Select(MapToGetListOutputDto).ToList());
 
@@ -103,6 +104,7 @@ namespace CERP.AppServices.HR.OrganizationalManagement.PayrollStructure
                 .Include(x => x.LegalEntity)
                 .Include(x => x.Frequency)
                 .Include(x => x.PayrollPeriod)
+                 .ThenInclude(x => x.PayPeriods)
                 .Include(x => x.AllowedBanks)
                 .First(x => x.Id == id)));
 

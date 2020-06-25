@@ -40,6 +40,9 @@
     <link href="~/libs/jq-orgchart/dist/css/jquery.orgchart.css" rel="stylesheet" />
     @*<abp-style-bundle>
         </abp-style-bundle>*@
+    @*<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>*@
     <style>
         .calendars-popup {
             z-index: 10000 !important;
@@ -565,23 +568,25 @@
                             <li class="menu-subtitle">Employees</li>
 
                             @*<li class="">
-                                <a asp-area="HR" asp-page="/EmployeeCentral/Employee">
-                                    <span class="menu-icon">
-                                        <i class="zmdi zmdi-minus"></i>
-                                    </span> <span class="menu-text">Employee Central</span>
-                                </a>
-                            </li>*@
+                                    <a asp-area="HR" asp-page="/EmployeeCentral/Employee">
+                                        <span class="menu-icon">
+                                            <i class="zmdi zmdi-minus"></i>
+                                        </span> <span class="menu-text">Employee Central</span>
+                                    </a>
+                                </li>*@
                             <li class="" style="display:none">
                                 <a asp-area="HR" asp-page="/EmployeeCentral/List">
-                                <span class="menu-icon">
-                                    <i class="zmdi zmdi-minus"></i>
-                                </span> <span class="menu-text">Employees List</span></a>
+                                    <span class="menu-icon">
+                                        <i class="zmdi zmdi-minus"></i>
+                                    </span> <span class="menu-text">Employees List</span>
+                                </a>
                             </li>
                             <li class="">
                                 <a asp-area="HR" asp-page="/EmployeeCentral/List">
-                                <span class="menu-icon">
-                                    <i class="zmdi zmdi-minus"></i>
-                                </span> <span class="menu-text">Employees List</span></a>
+                                    <span class="menu-icon">
+                                        <i class="zmdi zmdi-minus"></i>
+                                    </span> <span class="menu-text">Employees List</span>
+                                </a>
                             </li>
                             <li class="">
                                 <a asp-area="HR" asp-page="/Documents/List">
@@ -841,6 +846,12 @@
                                                 </a>
                                             </li>
                                             <li class="">
+                                                <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/PayrollStructure/PayrollPeriods/List">
+                                                    <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
+                                                    <span class="menu-text">Payroll Periods</span>
+                                                </a>
+                                            </li>
+                                            <li class="">
                                                 <a asp-area="HR" asp-page="/Setup/OrganizationalManagement/PayrollStructure/PayRanges/List">
                                                     <span class="menu-icon"><i class="zmdi zmdi-minus"></i></span>
                                                     <span class="menu-text">Pay Ranges</span>
@@ -1060,8 +1071,8 @@
                     <div class="loader">
                         <div class="loader">
                             @*<div class="loader">
-                                <img id="" src="~/img/logos/OxygenERPLogo.png" alt="" height="35">
-                            </div>*@
+                                    <img id="" src="~/img/logos/OxygenERPLogo.png" alt="" height="35">
+                                </div>*@
                         </div>
                     </div>
                 </div>
@@ -1160,8 +1171,11 @@
 
     <script src="~/libs/bootstrap-multiselect-0.9.15/js/bootstrap-multiselect.js"></script>
 
-    <script src="/libs/abp/core/abp.js?_v=637228051040000000"></script>
+    <script src="/libs/abp/utils/abp-utils.umd.min.js"></script>
+    <script src="/libs/abp/core/abp.js"></script>
     <script src="~/libs/abp/jquery/abp.jquery.js"></script>
+    <script src="/libs/abp/aspnetcore-mvc-ui-theme-shared/jquery/widget-manager.js?"></script>
+    @*<script src="/libs/abp/aspnetcore-mvc-ui-theme-shared/bootstrap/modal-manager.js?"></script>*@
     <script src="/Abp/ApplicationConfigurationScript"></script>
     <script src="/Abp/ServiceProxyScript"></script>
 

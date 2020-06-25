@@ -32,6 +32,12 @@ Date.prototype.addDays = function (days) {
     date.setDate(date.getDate() + days);
     return date;
 }
+Date.prototype.getMonthName = function (month) {
+    var months = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
+
+    return months[month-1];
+}
 Object.byString = function (o, s) {
     s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
     s = s.replace(/^\./, '');           // strip a leading dot
@@ -1177,10 +1183,10 @@ function loadCodeNameTypes(serviceFuncion, gridsArray = [], columnsArray = [], m
 
 function generateCardTiles(data, title, subTitle, fields, cardActionBtns, isHorizontal)
 {
-    $('.tile_layout > .row > #staticContent .loader-inline').slideDown();
+    $('.tile_layout > .content > #staticContent .loader-inline').slideDown();
     let result = [];
-
-    var def = $('.tile_layout > .row > #staticContent');
+    console.log(data);
+    var def = $('.tile_layout > .content > #staticContent');
     $('.e-card-layout > .card-container').empty();
     for (var i = 0; i < data.length; i++) {
         let curCardActionBtns = rfdc()(cardActionBtns);
@@ -1227,11 +1233,11 @@ function generateCardTiles(data, title, subTitle, fields, cardActionBtns, isHori
         result.push(card);
     }
 
-    $('.tile_layout > .row > #staticContent .loader-inline').slideUp();
+    $('.tile_layout > .content > #staticContent .loader-inline').slideUp();
     return result;
 }
 function onCardButtonClickedData(type, data) {
-
+    console.log(type);
     if (type == 'view' || type == 'edit') {
         isEditingCrudSpace = false;
         isSearchingCrudSpace = false;
@@ -1244,9 +1250,12 @@ function onCardButtonClickedData(type, data) {
         let isReadonly = false;
         curCrudSpaceEdit = data;
         if (type == 'view') {
-           
+
             isReadonly = true;
             $('.formSpaceSubmitBtn', '#crudSpace').slideUp();
+
+            spaceTabs.items[crudSpaceIndex].header.properties.text = "View";
+            spaceTabs.refresh()
         }
         else {
             isEditingCrudSpace = true;
@@ -1257,11 +1266,17 @@ function onCardButtonClickedData(type, data) {
             curValue = curValue.replace('Create', 'Update');
             $('.formSpaceSubmitBtn', '#crudSpace').val(curValue);
             $('.formSpaceSubmitBtn', '#crudSpace').slideDown();
+
+            spaceTabs.items[crudSpaceIndex].header.properties.text = "Edit";
+            spaceTabs.refresh()
         }
 
         FillDivFormByObject(data, $('#formSpaceForm :input', '#crudSpace'), isReadonly);
     }
-
+    else if (type == "auditTrail") {
+        console.log("Fdfds");
+        toggleAuditTrail(data);
+    }
     try {
         onCardButtonClickedDataCustom(type, data);
     }
@@ -1279,7 +1294,8 @@ function onCardButtonClicked(btn) {
 }
 
 function cardRendering(cardObj) {
-    var staticContent = document.querySelector('.tile_layout > .row');
+    console.log(cardObj);
+    var staticContent = document.querySelector('.tile_layout > .content');
     if (cardObj.length > 0) {
         staticContent.style.display = 'none';
         cardObj.forEach(function (data, index) {
@@ -1299,4 +1315,15 @@ function destroyAllCard() {
     [].slice.call(cards).forEach(function (el) {
         ej.base.detach(el);
     });
+}
+
+function onOverlayClick() {
+    this.hide();
+}
+
+function spacesTabSelected(args) {
+    console.log(this);
+    if (this.templateEle[0] == "#crudSpace") {
+        toggleCreateNew(false);
+    }
 }

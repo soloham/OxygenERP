@@ -1,4 +1,4 @@
-﻿@page "/HR/PayrollStructure/PayrollPeriod"
+﻿@page "/HR/PayrollStructure/PayrollPeriods"
 @using CERP.Localization;
 @using Microsoft.AspNetCore.Mvc.Localization;
 @using CERP.App;
@@ -204,8 +204,8 @@
 
                 let params = objectifyForm(form);
                 console.log('sid');
-                console.log([$('.payrollCalendarRange > input', '#' + formId)[0].ej2_instances[0].startDate, $('.payrollCalendarRange > input', '#crudSpace')[0].ej2_instances[0].startDate]);
-                let payrollPeriod = [$('.payrollCalendarRange > input', '#' + formId)[0].ej2_instances[0].startDate, $('.payrollCalendarRange > input', '#crudSpace')[0].ej2_instances[0].startDate];
+                console.log([$('.payrollCalendarRange > input', '#' + formId)[0].ej2_instances[0].startDate, $('.payrollCalendarRange > input', '#crudSpace')[0].ej2_instances[0].endDate]);
+                let payrollPeriod = [$('.payrollCalendarRange > input', '#' + formId)[0].ej2_instances[0].startDate, $('.payrollCalendarRange > input', '#crudSpace')[0].ej2_instances[0].endDate];
                 if (payrollPeriod && payrollPeriod.length == 2) {
                     params.PeriodStartDate = payrollPeriod[0].toLocaleDateString();
                     params.PeriodEndDate = payrollPeriod[1].toLocaleDateString();
@@ -395,7 +395,7 @@
             <e-tab-tabitem header="@(new TabHeader { Text = "Home" })" icon="fas fa-home" content="#tileSpace"></e-tab-tabitem>
             <e-tab-tabitem header="@(new TabHeader { Text = "Search" })" content="#searchSpace"></e-tab-tabitem>
             <e-tab-tabitem header="@(new TabHeader { Text = "Reporting" })" content="#reportSpace"></e-tab-tabitem>
-            <e-tab-tabitem header="@(new TabHeader { Text = "Create New" })" visible="false" content="#crudSpace"></e-tab-tabitem>
+            <e-tab-tabitem header="@(new TabHeader { Text = "Create New" })" visible="true" content="#crudSpace"></e-tab-tabitem>
         </e-tab-tabitems>
     </ejs-tab>
     <div id="tileSpace">
@@ -834,6 +834,8 @@
         }
     }
     function editViewCrudSpace(type, data) {
+        console.log(type);
+        console.log(data);
         loadAllDependencies(data);
         $('.payrollCalendarRange > input', '#crudSpace')[0].ej2_instances[0].value = [new Date(data.periodStartDate), new Date(data.periodEndDate)];
         $('#PayrollPeriodsGrid', '#crudSpace')[0].ej2_instances[0].dataSource = data.payrollPeriods;
@@ -857,9 +859,6 @@
                 $('.formSpaceSubmitBtn', '#crudSpace').attr('value', 'Update Pay Period');
             }, 1000);
         }
-
-        $('#allowedPaymentBanks', '#crudSpace').multiselect('select', data.allowedBanks.map(function (x) { return x.bankId }));
-        $('#thirdPartyBanks', '#crudSpace').multiselect('select', data.allowedBanks.filter(function (x) { return x.isThirdParty == true }).map(function (x) { return x.bankId }));
     } 
     function calculateTiles(data) {
         listOfData = generateCardTiles(data, 'name', '',
@@ -1225,7 +1224,7 @@
 
             grid.dataSource = calculatePayrollPeriods(payrollPeriod, initialPeriod, payrollFrequency, periodName, extraPeriods);
         }
-        if (grid.dataSource.length == 0) {
+        if (grid.dataSource && grid.dataSource.length == 0) {
             grid.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Add", "Cancel", "Search", "ColumnChooser"];
         }
     }
@@ -1258,7 +1257,9 @@
         switch (payrollFrequency) {
             case '@((int)PS_PayFrequencyAnnualizationFactor.WEEKLY)':
                 let noOfWeeks = diff_weeks(payrollPeriod[1], payrollPeriod[0]);
+                console.log('noOfWeeks: ' + noOfWeeks);
                 noOfPeriods = noOfWeeks;
+                console.log('noOfPeriods: ' + noOfPeriods);
                 incremental = 7;
                 break;
             case '@((int)PS_PayFrequencyAnnualizationFactor.BI_WEEKLY)':
@@ -1287,6 +1288,7 @@
                 incremental = 30 * 12;
                 break;
         }
+        console.log('no of periods: ' + noOfPeriods);
         for (var i = 0; i < noOfPeriods; i++) {
             let curAttendanceCOD = attendanceCOD.addDays(i * incremental);
             let curtransCOD = transCOD.addDays(i * incremental);
@@ -1327,16 +1329,18 @@
                 this.refresh();
             }
         }
+            console.log(this); 
             console.log(args); 
         if (args.requestType == "save") {
-            if (this.dataSource && this.dataSource.length <= 1) {
+            console.log(this.dataSource);
+            if (!this.dataSource || this.dataSource.length <= 1) {
                 //args.cancel = true;
 
                 this.toolbar = [{ text: "Show Actions", tooltipText: "Actions", prefixIcon: "e-custom-show-actions", id: "showActions" }, "Search"];
                 this.refresh();
 
                 let initialPeriod = args.data;
-                let payrollPeriod = [$('.payrollCalendarRange > input', '#crudSpace')[0].ej2_instances[0].startDate, $('.payrollCalendarRange > input', '#crudSpace')[0].ej2_instances[0].startDate];
+                let payrollPeriod = [$('.payrollCalendarRange > input', '#crudSpace')[0].ej2_instances[0].startDate, $('.payrollCalendarRange > input', '#crudSpace')[0].ej2_instances[0].endDate];
                 let payrollFrequency = $('#periodFrequency').val();
                 let periodName = $('#periodName').val();
 

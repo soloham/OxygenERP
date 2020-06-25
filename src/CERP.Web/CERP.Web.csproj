@@ -57,6 +57,16 @@
   <ItemGroup>
     <EmbeddedResource Remove="Pages\Account\Register.cshtml" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Pages\Shared\Components\Default.css" />
+    <None Remove="Pages\Shared\Components\HR\OrganizationalManagement\PayrollStructure\PayrollPeriodWidget\Default.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Pages\Shared\Components\Default.css" />
+    <Compile Include="Pages\Shared\Components\HR\OrganizationalManagement\PayrollStructure\PayrollPeriodWidget\Default.css" />
+  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.WebPages" Version="3.2.7" />
@@ -92,6 +102,8 @@
   <ItemGroup>
     <Folder Include="Areas\FM\Pages\COA\Categories\" />
     <Folder Include="Areas\FM\Pages\COA\Main\" />
+    <Folder Include="Pages\Shared\Components\HR\OrganizationalManagement\OrganizationStructure\" />
+    <Folder Include="Views\Shared\Components\HR\OrganizationalManagement\OrganizationStructure\" />
   </ItemGroup>
 
   <ItemGroup>

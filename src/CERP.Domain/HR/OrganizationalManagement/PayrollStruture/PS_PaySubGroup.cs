@@ -60,8 +60,11 @@ namespace CERP.HR.OrganizationalManagement.PayrollStructure
 
         public virtual ICollection<PS_PaySubGroupBank> AllowedBanks { get; set; }
 
+        public PS_ActiveStatus ActiveStatus { get; set; }
+
         public virtual PS_PayrollPeriod PayrollPeriod { get; set; }
         public virtual int PayrollPeriodId { get; set; }
+
         //Bank Upload File
         //EOSB Selection
         //GOSI Selection
