@@ -299,7 +299,7 @@
                                 <select id="countryId" name="locationCountryId" onchange="
                                         let country = $('option:selected', '#countryId').attr('data-value');
                                         if (country.includes('Saudi')) { $('#nationalAddressInfo').slideDown(); $('#hasNationalAddress').val('true'); } else { $('#nationalAddressInfo').slideUp(); $('#hasNationalAddress').val('false'); }
-                                        $('#gmap').attr('src', 'https://www.google.com/maps/embed/v1/search?key=AIzaSyCvsn-sVRnoujxTLlO1atl49obqHA6xRqw&q=' + country.replace(' ', '+'));
+                                        $('#gmap').attr('src', 'https://www.google.com/maps/embed/v1/search?key=[key]&q=' + country.replace(' ', '+'));
                                     " class="form-control">
                                     @for (int i = 0; i < countries.Count; i++)
                                     {
@@ -317,7 +317,7 @@
                                         if (event.key == 'Enter') {
                                             let country = $('option:selected', '#countryId').attr('data-value');
                                             let city = $('#cityId').val();
-                                            $('#gmap').attr('src', 'https://www.google.com/maps/embed/v1/search?key=AIzaSyCvsn-sVRnoujxTLlO1atl49obqHA6xRqw&q=' + country.replace(' ', '+') + ',' + city.replace(' ', '+'));
+                                            $('#gmap').attr('src', 'https://www.google.com/maps/embed/v1/search?key=[key]&q=' + country.replace(' ', '+') + ',' + city.replace(' ', '+'));
                                         }
                                     " class="form-control">
                             </div>
@@ -344,7 +344,7 @@
                                             let country = $('option:selected', '#countryId').attr('data-value');
                                             let city = $('#cityId').val();
                                             let ad1 = $('#addressLine1').val();
-                                            $('#gmap').attr('src', 'https://www.google.com/maps/embed/v1/search?key=AIzaSyCvsn-sVRnoujxTLlO1atl49obqHA6xRqw&q=' + ad1.replace(' ', '+') + ',' + city.replace(' ', '+') + ',' + country.replace(' ', '+'));
+                                            $('#gmap').attr('src', 'https://www.google.com/maps/embed/v1/search?key=[key]&q=' + ad1.replace(' ', '+') + ',' + city.replace(' ', '+') + ',' + country.replace(' ', '+'));
                                         }
                                     " class="form-control" required>
                             </div>
@@ -358,7 +358,7 @@
                                             let city = $('#cityId').val();
                                             let ad1 = $('#addressLine1').val();
                                             let ad2 = $('#addressLine2').val();
-                                            $('#gmap').attr('src', 'https://www.google.com/maps/embed/v1/search?key=AIzaSyCvsn-sVRnoujxTLlO1atl49obqHA6xRqw&q=' + ad2.replace(' ', '+') + ',' + ad1.replace(' ', '+') + ',' + city.replace(' ', '+') + ',' + country.replace(' ', '+'));
+                                            $('#gmap').attr('src', 'https://www.google.com/maps/embed/v1/search?key=[key]&q=' + ad2.replace(' ', '+') + ',' + ad1.replace(' ', '+') + ',' + city.replace(' ', '+') + ',' + country.replace(' ', '+'));
                                         }
                                     " class="form-control">
                             </div>
@@ -369,7 +369,7 @@
                             <iframe id="gmap" width="100%"
                                     height="250"
                                     frameborder="0" style="border:0"
-                                    src="https://www.google.com/maps/embed/v1/search?key=AIzaSyCvsn-sVRnoujxTLlO1atl49obqHA6xRqw&q=Saudi+Arabia" allowfullscreen>
+                                    src="https://www.google.com/maps/embed/v1/search?key=[key]&q=Saudi+Arabia" allowfullscreen>
                             </iframe>
                         </div>
                     </div>
